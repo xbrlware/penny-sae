@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:node"
+      name = "node">
+      <FileRef
+         location = "group:qp.js">
+      </FileRef>
+      <FileRef
+         location = "group:sar_generator.js">
+      </FileRef>
+      <FileRef
+         location = "group:server.js">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:starter-kit-1.4.0 2"
+      name = "edward">
+      <Group
+         location = "group:css"
+         name = "css">
+         <FileRef
+            location = "group:base.css">
+         </FileRef>
+         <FileRef
+            location = "group:normalize.css">
+         </FileRef>
+         <FileRef
+            location = "group:style.css">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:index.html">
+      </FileRef>
+      <FileRef
+         location = "group:cse.html">
+      </FileRef>
+      <Group
+         location = "group:js"
+         name = "js">
+         <FileRef
+            location = "group:../js/splash_charts.js">
+         </FileRef>
+         <FileRef
+            location = "group:forum_charts.js">
+         </FileRef>
+         <FileRef
+            location = "group:network.js">
+         </FileRef>
+         <FileRef
+            location = "group:app.js">
+         </FileRef>
+         <FileRef
+            location = "group:sar_generator.js">
+         </FileRef>
+         <FileRef
+            location = "group:mininetwork.js">
+         </FileRef>
+         <FileRef
+            location = "group:pva_charts.js">
+         </FileRef>
+         <FileRef
+            location = "group:tenk.js">
+         </FileRef>
+         <Group
+            location = "group:libs"
+            name = "libs">
+            <FileRef
+               location = "group:ember-1.4.0.js">
+            </FileRef>
+            <FileRef
+               location = "group:handlebars-1.1.2.js">
+            </FileRef>
+            <FileRef
+               location = "group:jquery-1.10.2.js">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:parser.js">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:README.md">
+      </FileRef>
+   </Group>
+</Workspace>

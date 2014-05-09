@@ -1,0 +1,471 @@
+<!-- 
+    Index.html for SEC Tool (2014-04-30)
+    BKJ for Phronesis
+    Propriety Code, may not be used w/o explicit permission of creators
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="p.ico" >
+    <title> Suspicious Activity Explorer: Penny Stocks </title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/rickshaw.min.css">
+    <link href="http://fonts.googleapis.com/css?family=Gafata" rel="stylesheet" type="text/css">
+    <link type="text/css" href="css/base.css" rel="stylesheet">
+</head>
+<body>
+
+    <script type="text/x-handlebars">{{outlet}}</script>
+
+<!-- Splash Page ---------------------------------------------------------------------------------------------------------->
+    <script type="text/x-handlebars" data-template-name="queries/index">
+        <center>
+            {{partial "crowdsar_splash"}}
+        </center>
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="_crowdsar_splash">
+        <center>
+            <div class="list-group">
+                {{view App.BannerView}}
+            </div>
+            <div class="list-group" id="splashgroup">
+                {{#each h in hits}}
+                    {{#link-to 'detail' h.cik}}
+                        {{view App.SplashitemView h=h}}
+                    {{/link-to}}
+                {{/each}}
+                
+                <center>
+                    <ul class="pagination pagination-lg" style="text-align:center">
+                        {{#if goBack}}
+                            <li><a {{action "iterateSplash" -1}}>&laquo;</a></li>
+                        {{else}}
+                            <li class="disabled"><a>&laquo;</a></li>
+                        {{/if}}
+                        {{#if goForward}}
+                            <li><a {{action "iterateSplash" 1}}>&raquo;</a></li>
+                        {{else}}
+                            <li class="disabled"><a>&raquo;</a></li>
+                        {{/if}}
+                    </ul>
+                <center>
+            </div>
+        </center>
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="splashitem">
+        <div class="list-group-item twohundred">
+        
+{{!--
+            <div class="splash-meter-wrapper" {{bind-attr style="h.style.wrapper"}}>
+                <div class="splash-meter" {{bind-attr style="h.style.meter"}}></div>
+            </div>
+--}}
+
+            {{view "donut" risk=h.risk cik=h.cik}}
+
+            <div class="splash-text-wrapper">
+                <h3 class="list-group-item-heading splash-company"> {{h.currentName}} </h3>
+            </div>
+        
+            <div class="splash-chart-wrapper">
+                {{view "mininetwork" cik=h.cik}}
+            </div>
+            
+            {{#if view.hover}}
+                {{view App.SplashdetailView h=h}}
+            {{/if}}
+            
+        </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="banner">
+        <div class="list-group-item" style="color:rgb(255, 57, 57);">
+            <h1>Suspicious Activity Explorer: Penny Stocks </h1>
+            <h4> Phr<b>ō</b>nesis </h4>
+        </div>
+        <div id="banner-anchor"></div>
+        <div class="list-group-item" id="banner">
+            {{#if splashTypeIsVolume}}
+                <h2>Highest Delta Volume Penny Stocks</h2>
+            {{else}}
+                <h2>Most Suspicious Penny Stocks</h2>
+            {{/if}}
+            <h4>of the past 30 days</h4>
+            <div class = "banner-button-wrapper">
+                {{#unless splashTypeIsVolume}}
+                    <button class="btn btn-banner" style="top:2.5%;" {{action "changeSplashType" 'volume'}}>
+                        Sort by Volume
+                    </button>
+                {{/unless}}
+                <br>
+                {{#if splashTypeIsVolume}}
+                    <button class="btn btn-banner" style="bottom:2.5%;" {{action "changeSplashType" 'risk'}}>
+                        Sort by Risk Score
+                    </button>
+                {{/if}}
+            </div>
+            <div class = "banner-network-label">
+                Network of Known Associates
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="splashdetail">
+        <div class="well left-legend">
+            <h3> Network Legend </h3>
+            <b> Color </b> indicates risk score:
+                <ul> Red: High Risk</ul>
+                <ul> Yellow: Medium Risk</ul>
+                <ul> Green: Low Risk </ul>
+            <br>
+            <b> Shape </b> indicates type of entity:
+                <ul> Star: Original Node </ul>
+                <ul> Circle: Company </ul>
+                <ul> Square: Individual </ul>
+            <br>
+            <b> Size </b> indicates number of neighbors:
+                <ul> Larger implies more neighbors </ul>
+        </div>
+    </script>
+<!-- End Splash Page ------------------------------------------------------------------------------------------------------->
+
+<!-- Query Builder --------------------------------------------------------------------------------------------------------->
+    <script type="text/x-handlebars" data-template-name="queries">
+        <div class="col-md-3" id="queriesNav" style="position:fixed;">
+        
+            <div class="list-group">
+                <div class="list-group-item" style="background-color:#F0F0F0;">
+                    <center>
+                        <small>Search Company Name, Ticker or CIK</small>
+                    </center>
+                </div>
+                <div class="list-group-item">
+                    {{focus-input style="text-align:center;"
+                            placeholder="- Quick Search -"
+                            value=newQS insert-newline="quickSearch" }}
+                    <button class="btn btn-success btn-sm" {{action "quickSearch"}} style="margin-left:5px;">
+                        Go
+                    </button>
+
+                </div>
+
+                {{!-- <div class="list-group-item">
+                    {{query-builder-input style="text-align:center;"
+                            placeholder="- Query Builder -"
+                            value=newName insert-newline="addQuery" }}
+                    <button class="btn btn-primary btn-sm" {{action "addQuery"}}>
+                        Build
+                    </button>
+                </div> --}}
+                {{!-- {{#each model}}
+                 <div class="list-group-item">
+                    {{#link-to "query.filts" this}}
+                    <button class="btn btn-primary btn-sm">
+                        {{name}}
+                    </button>
+                    {{/link-to}}
+                    {{#link-to "results" this}}
+                        <button class="btn btn-danger pull-right" {{action "runQuery"}}>
+                            Run
+                        </button>
+                    {{/link-to}}
+                </div>
+                {{/each}} --}}
+
+              </div>
+        </div>
+        <div class="col-md-9" id="queryNav" style="position:absolute; left:25%;">
+          <div class="list-group">
+            {{outlet}}
+          </div>
+        </div>
+    </script>
+<!-- End Query Builder ----------------------------------------------------------------------------------------------->
+
+<!-- Results ---------------------------------------------------------------------------------------------------------------------->
+    <script type="text/x-handlebars" data-template-name="results">
+        {{#if isLoading}}
+            <img id="spinner" src="css/ajax-loader.gif">
+        {{else}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button class="btn btn-success btn-back"
+                    {{action 'backToHome'}}> << Home </button>
+                <center>
+                    <b> Results from <font color="#33cc33">{{name}}</font> query </b>
+                    <br>
+                    <font color="red">
+                        Number of Hits: {{results.total}}<br>
+                    </font>
+                </center>
+                <div style="position: absolute;top: 0px;right:5%;">
+                    <p style="margin:0px;">From: {{from}}</p>
+                    <ul class="pagination pagination-lg" style="text-align:center;margin:0px;">
+                        {{#if goBack}}
+                            <li><a {{action "iterateQuery" -1}}>&laquo;</a></li>
+                        {{else}}
+                            <li class="disabled"><a>&laquo;</a></li>
+                        {{/if}}
+                        {{#if goForward}}
+                            <li><a {{action "iterateQuery" 1}}>&raquo;</a></li>
+                        {{else}}
+                            <li class="disabled"><a>&raquo;</a></li>
+                        {{/if}}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="resgroup">
+                    {{#each c in results.companies}}
+                            {{#link-to "detail" c.cik}}
+                                {{view App.ResultitemView}}
+                            {{/link-to}}
+                    {{/each}}
+                </div>
+                {{outlet}}
+            </div>
+        </div>
+        {{/if}}
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="resultitem">
+        <div class="list-group-item twohundred">
+            {{view "donut" risk=c.risk cik=c.cik}}
+
+            <div class="splash-text-wrapper">
+                <h3 class="list-group-item-heading splash-company"> {{c.currentName}} </h3>
+                <h4 class="list-group-item-heading splash-company"> Risk Score: {{c.risk.risk_quant}} </h4>
+                <b> {{c.n_records}} records </b><br>
+                <b> Query Relevance: {{c.score}} </b>
+            </div>
+        
+            <div class="splash-chart-wrapper">
+                {{view "mininetwork" cik=c.cik}}
+            </div>
+            
+        </div>
+    </script>
+<!-- End Results ------------------------------------------------------------------------------------------------------------------->
+
+<!-- Details ----------------------------------------------------------------------------------------------------------------------->
+    <script type="text/x-handlebars" data-template-name="detail">
+
+    
+    <nav id="detailnav" class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container" style="width:95%;">
+            <button class="btn btn-success btn-back btn-back-detail" {{action 'backToHome'}}> << Home </button>
+            <div>
+                <a class="navbar-brand" style="margin-left:2.5%;width:25%;margin-bottom:10px;"><font color="#33cc33">{{currentName}}</font></a>
+                <p class="navbar-text"><font color="grey">CIK: {{cik}}&nbsp;</font></p>
+                <p class="navbar-text">Estimated Risk: {{risk.risk_quant}} </p>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <button class="btn btn-success btn-back btn-sar" data-toggle="modal" data-target="#sarModal">
+                    Generate SAR
+                </button>
+            </ul>
+        </div>
+    </nav>
+    {{partial "sarModal"}}
+    <div class="container" style="width:100%">
+        <hr>
+        <div class="row" style="min-height:400px;">
+            <div class="col-md-6" name="companyinfo">
+                {{partial "uniqueRecords"}}
+            </div>
+            <div class="col-md-6">
+                {{partial "googleNews"}}
+            </div>
+        </div>
+        <br><hr>
+        <div class="col-md-12">
+            {{partial "previousReg"}}
+        </div>
+        <div class="col-md-12">
+            {{partial "associates"}}
+        </div>
+        <br>
+        <div class="col-md-12">
+            {{partial "pvChart"}}
+        </div>
+        <br>
+    </div>
+    </script>
+    
+    <!-- ID Record Table -->
+    <script type="text/x-handlebars" data-template-name="_uniqueRecords">
+    <center><h3>Unique Records</h3></center>
+    <table class="table table-bordered" id="uniqueRecordsTable">
+        <tr><th>Date</th><th>Name</th><th>SIC</th><th>State Inc.</th></tr>
+        {{#each r in companyTable}}
+            <tr>
+                <td>{{r.date}}</td>
+                <td>{{r.name}}</td>
+                <td>{{r.sic}}</td>
+                <td>{{r.state}}</td>
+            </tr>
+        {{/each}}
+    </table>
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="_sarModal">
+        <div class="modal fade" id="sarModal" tabindex="-1" role="dialog" aria-labelledby="sarModelLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="sarModalLabel">Generate Suspicious Activity report for: <br> {{currentName}}</h4>
+              </div>
+              <div class="modal-body" onmouseover="document.body.style.overflow='hidden';"
+                    onmouseout="document.body.style.overflow='auto';">
+                <div id="sar-bg">
+                    {{textarea id="sar-input" value=sarreport}}
+                </div>
+            </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Copy To Clipboard</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </script>
+
+    <!-- Google News Plugin -->
+    <script type="text/x-handlebars" data-template-name="_googleNews">
+        <center>
+            <h3>News</h3>
+        </center>
+        {{!--view App.NewsView valueBinding="cse_url"--}}
+    </script>
+    
+    <!-- Price and Volume Chart -->
+    <script type="text/x-handlebars" data-template-name="_pvChart">
+    <center><h3>Price / Volume Chart</h3></center>
+    <div>
+        {{view App.ChartView}}
+    </div>
+    {{#if spikesTable}}
+        <br>
+        <div class="accordion" id="pv_accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#pv_accordion" href="#pvt1">
+                        Show List of Price Changes
+                    </a>
+                </div>
+                <div id="pvt1" class="accordion-body collapse out">
+                    <div class="accordion-inner">
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Date</th><th>Size</th><th>From</th><th>To</th><th>Volume</th>
+                            </tr>
+                            {{#each r in spikesTable}}
+                            <tr>
+                                <td>{{r.spike_date}}</td>
+                                <td>{{r.spike_size}}</td>
+                                <td>{{r.spike_from}}</td>
+                                <td>{{r.spike_to}}</td>
+                                <td>{{r.spike_vol}}</td>
+                            </tr>
+                            {{/each}}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+    </script>
+    
+    <!-- Network of Known Associates -->
+    <script type="text/x-handlebars" data-template-name="_associates">
+        <center><h3>Known Associates</h3></center>
+        
+        {{view App.NetView data=this}}
+        <center>
+            <div onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';" id="main-center-container">
+                <input type="button" class="btn btn-default" value="Toggle Terminal Nodes" id="toggle-terminal">
+                <div id="main-infovis"></div>
+            </div>
+            <div id="right-container">
+                <div id="inner-details"></div>
+            </div>
+        </center>
+        <br>
+        {{#if rgraph}}
+        <div class="accordion" id="associates_accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#associates_accordion" href="#a1">
+                        Show List of Associates
+                    </a>
+                </div>
+                <div id="a1" class="accordion-body collapse out">
+                    <div class="accordion-inner">
+                        <table class="table table-hover">
+                            <tr><th>CIK</th><th>Name</th><th>Type</th><th>OTC</th><th>Terminal</th><th>Depth</th></tr>
+                            {{#each s in rgraph}}
+                                {{#if ht}}
+                                    {{#unless s.terminal}}
+                                        {{partial "associates_table_row"}}
+                                    {{/unless}}
+                                {{else}}
+                                    {{partial "associates_table_row"}}
+                                {{/if}}
+                            {{/each}}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </script>
+    <script type="text/x-handlebars" data-template-name="_associates_table_row">
+        {{#if s.isOwner}}
+        <tr style="background-color:#FFFFCC">
+        {{else}}
+        <tr style="background-color:#B0E0E6">
+        {{/if}}
+            <td>{{s.id}}</td>
+            <td>{{s.name}}</td>
+            <td>{{s.type}}</td>
+            <td>{{s.otc}}</td>
+            <td>{{s.terminal}}</td>
+            <td>{{s.depth}}</td>
+        </tr>
+    </script>
+ 
+    <!-- Previous Regulatory Action -->
+    <script type="text/x-handlebars" data-template-name="_previousReg">
+        {{#if tradingHalt}}
+            <center><h3>Previous Regulatory Actions</h3></center>
+                {{#each tradingHalt}}
+                    <h4> Trading in this security was halted on <a {{bind-attr href="url"}}>{{date}}</a></h4>
+                {{/each}}
+                <br><hr>
+        {{/if}}
+    </script>
+
+    <!-- Download these libraries while you're on the internet -->
+    <script type="text/javascript" src="js/libs/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="js/libs/jquery-ui/jquery-ui.min.js"></script>
+    <script src="js/libs/handlebars-1.1.2.js"></script>
+    <script src="js/libs/ember-1.4.0.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pva_charts.js"></script>
+    <script src="js/network.js"></script>
+    <script src="js/mininetwork.js"></script>
+    <script src="js/splash_charts.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>
+    <script src="js/libs/rickshaw/vendor/d3.v3.js"></script>
+    <script src="js/libs/rickshaw/rickshaw.js"></script>
+    <script src="js/libs/flot/jquery.flot.js"></script>
+    <script src="js/libs/flot/jquery.flot.pie.js"></script>
+    <script src="js/libs/jit/jit.js"></script>
+</body>
+</html>
