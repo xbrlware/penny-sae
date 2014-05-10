@@ -66,6 +66,297 @@
          <Group
             location = "group:libs"
             name = "libs">
+            <Group
+               location = "group:jit"
+               name = "jit">
+               <Group
+                  location = "group:Examples"
+                  name = "Examples">
+                  <Group
+                     location = "group:AreaChart"
+                     name = "AreaChart">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:BarChart"
+                     name = "BarChart">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:css"
+                     name = "css">
+                     <FileRef
+                        location = "group:AreaChart.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:BarChart.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:base.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:col1.png">
+                     </FileRef>
+                     <FileRef
+                        location = "group:col2.png">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ForceDirected.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ForceDirected3D.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:gradient.png">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HeatMap.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Hypertree.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Icicle.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Other.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PieChart.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:RGraph.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Spacetree.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Sunburst.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:TimeGraph.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Treemap.css">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:ForceDirected"
+                     name = "ForceDirected">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Hypertree"
+                     name = "Hypertree">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Icicle"
+                     name = "Icicle">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Other"
+                     name = "Other">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:PieChart"
+                     name = "PieChart">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:RGraph"
+                     name = "RGraph">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example4.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example4.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Spacetree"
+                     name = "Spacetree">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example4.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example4.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example5.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example5.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Sunburst"
+                     name = "Sunburst">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Treemap"
+                     name = "Treemap">
+                     <FileRef
+                        location = "group:example1.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example1.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example2.js">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.html">
+                     </FileRef>
+                     <FileRef
+                        location = "group:example3.js">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Extras"
+                  name = "Extras">
+                  <FileRef
+                     location = "group:excanvas.js">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:jit-yc.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jit.js">
+               </FileRef>
+            </Group>
             <FileRef
                location = "group:ember-1.4.0.js">
             </FileRef>

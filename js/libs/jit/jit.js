@@ -70,6 +70,10 @@ $jit.version = '2.0.1';
  are widely used and tested in many different platforms/browsers. Use these functions only if you have to.
  
  */
+ 
+ 
+ 
+ 
 var $ = function(d) {
   return document.getElementById(d);
 };
@@ -6221,23 +6225,6 @@ var NodeHelper = {
   Object: NodeHelper.triangle
   */
   'triangle': {
-    /*
-    Method: render
-    
-    Renders a triangle into the canvas.
-    
-    Parameters:
-    
-    type - (string) Possible options are 'fill' or 'stroke'.
-    pos - (object) An *x*, *y* object with the position of the center of the triangle.
-    dim - (number) Half the base and half the height of the triangle.
-    canvas - (object) A <Canvas> instance.
-    
-    Example:
-    (start code js)
-    NodeHelper.triangle.render('stroke', { x: 10, y: 30 }, 40, viz.canvas);
-    (end code)
-    */
     'render': function(type, pos, dim, canvas){
       var ctx = canvas.getCtx(), 
           c1x = pos.x, 
@@ -6253,30 +6240,11 @@ var NodeHelper = {
       ctx.closePath();
       ctx[type]();
     },
-    /*
-    Method: contains
-    
-    Returns *true* if *pos* is contained in the area of the shape. Returns *false* otherwise.
-    
-    Parameters:
-    
-    npos - (object) An *x*, *y* object with the <Graph.Node> position.
-    pos - (object) An *x*, *y* object with the position to check.
-    dim - (number) Half the base and half the height of the triangle.
-    
-    Example:
-    (start code js)
-    NodeHelper.triangle.contains({ x: 10, y: 30 }, { x: 15, y: 35 }, 30);
-    (end code)
-    */
     'contains': function(npos, pos, dim) {
       return NodeHelper.circle.contains(npos, pos, dim);
     }
   },
-  /*
-  Object: NodeHelper.star
-  */
-  'star': {
+    'star': {
     /*
     Method: render
     
@@ -6299,25 +6267,26 @@ var NodeHelper = {
           pi5 = Math.PI / 5;
       ctx.save();
       ctx.translate(pos.x, pos.y);
-//      ctx.beginPath();
-//      ctx.moveTo(dim, 0);
-//      for (var i = 0; i < 9; i++) {
-//        ctx.rotate(pi5);
-//        if (i % 2 == 0) {
-//          ctx.lineTo((dim / 0.525731) * 0.200811, 0);
-//        } else {
-//          ctx.lineTo(dim, 0);
-//        }
-//      }
-//      ctx.closePath();
-//      ctx[type]();
+      ctx.beginPath();
+      ctx.moveTo(dim, 0);
+      for (var i = 0; i < 9; i++) {
+        ctx.rotate(pi5);
+        if (i % 2 == 0) {
+          ctx.lineTo((dim / 0.525731) * 0.200811, 0);
+        } else {
+          ctx.lineTo(dim, 0);
+        }
+      }
+      ctx.closePath();
+      ctx[type]();
 
-        var ctx = canvas.getCtx();
-        var img = new Image;
-        img.src = 'http://upload.wikimedia.org/wikipedia/en/1/13/Stick_figure.png'
-        ctx.drawImage(img, 0, 0);
-
-
+//        var img = new Image()
+//
+//        img.onload = function () {
+//            ctx.drawImage(img, pos.x, pos.y);
+//        };
+//        img.src = 'img/person.png';
+//        ctx.drawImage(img, 10, 10);
 
       ctx.restore();
 // ------------------

@@ -108,6 +108,53 @@ function networkInfo(node) {
 
 var ht = false; // "Hide terminal nodes" -- implementation is ugly and should be fixed (by someone who understands Ember better)
 App.NetView = Ember.View.extend({
+    willInsertElement: function() {
+        $jit.RGraph.Plot.NodeTypes.implement({
+            'image': {
+                    'render': function(node, canvas){
+                        var entity_type = node.data['type']
+                        if(entity_type == 'owner'){
+                            var person;
+                            switch(node.data['$color']){
+                                case 'green':
+                                    person = node.data['hidden'] == 0 ? window.network_greenPerson : window.network_greenPerson_hole;
+                                    break;
+                                case 'red':
+                                    person = node.data['hidden'] == 0 ? window.network_redPerson_pulse : window.network_redPerson_pulse;
+                                    break;
+                                case 'yellow':
+                                    person = node.data['hidden'] == 0 ? window.network_yellowPerson : window.network_yellowPerson_hole;
+                                    break;
+                            }
+                            var ctx = canvas.getCtx();
+                            var pos = node.pos.getc(true);
+                            ctx.drawImage(person, pos.x - 25, pos.y - 25, 50, 50);
+                        } else if (entity_type == 'issuer') {
+                            var building;
+                            switch(node.data['$color']){
+                                case 'green':
+                                    building = window.network_greenBuilding;
+                                    break;
+                                case 'yellow':
+                                    building = window.network_yellowBuilding;
+                                    break;
+                                case 'red':
+                                    building = window.network_redBuilding;
+                                    break;
+                            }
+                            var ctx = canvas.getCtx();
+                            var pos = node.pos.getc(true);
+                            ctx.drawImage(building, pos.x - 25, pos.y - 25, 50, 50);
+                        }
+                    },
+                    'contains': function(node,pos){ 
+                        var npos = node.pos.getc(true); 
+                        dim = node.getData('dim'); 
+                        return this.nodeHelper.circle.contains(npos, pos, dim); 
+                    } 
+            }
+        });
+    },
     didInsertElement: function() {
         this.initRGraph(this, true);
     },
@@ -116,6 +163,7 @@ App.NetView = Ember.View.extend({
         this.initRGraph(this, false);
     }.observes('controller.model'),
     initRGraph: function(that, is_new) {
+
         $jit.id('inner-details').innerHTML = "";
         console.log(that);
         var con = that.get('controller');
@@ -140,6 +188,7 @@ App.NetView = Ember.View.extend({
                                 console.log('rgraph', rgraph)
                             }
                             rgraph.loadJSON(json);
+                            
                             rgraph.refresh();
                             
                             con.set('vis_center', center.hits.hits[0]._id);
@@ -293,8 +342,7 @@ function makeRGraph(con, into) {
             zooming : 10
         },
         Node: {
-            type        : 'circle',
-            color       : '#867970',
+            type        : 'image',
             dim         : 3,
             overridable : true
         },
@@ -338,6 +386,7 @@ function makeRGraph(con, into) {
                 };
             };
         },
+        
         //Change some label dom properties.
         //This method is called each time a label is plotted.
         onPlaceLabel: function(domElement, node){
@@ -348,14 +397,14 @@ function makeRGraph(con, into) {
 
             if (node._depth <= 1) {
                 style.fontSize = "0.7em";
-                style.color = "#FFFFFF";
+                style.color    = "#FFFFFF";
                 style.textShadow = "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black";
             } else if(node._depth == 2 || node._depth == 3){
                 style.fontSize = "0.5em";
-                style.color = "#FFFFFF";
+                style.color    = "#FFFFFF";
             } else {
                 style.fontSize = "0.2em";
-                style.color = "#494949";
+                style.color    = "#494949";
             }
 
             var left = parseInt(style.left);
@@ -369,13 +418,13 @@ function makeRGraph(con, into) {
 
             } else {
                 node.data['$dim'] = 3 + 2 * Math.log(1 + node.data['hidden']);
-                if(node.data['devisited']){
-                    node.data['$type'] = 'square';
-                } else {
-                    if(node.data['explored']){
-                        node.data['$type'] = 'triangle';
-                    }
-                }
+//                if(node.data['devisited']){
+////                    node.data['$type'] = 'square';
+//                } else {
+//                    if(node.data['explored']){
+////                        node.data['$type'] = 'triangle';
+//                    }
+//                }
             }
 
             if(ht && node.data['terminal'])
@@ -383,10 +432,8 @@ function makeRGraph(con, into) {
             
             // Companies
             if(node.data.have_data == true) {
-                node.data['$type'] = "circle"
                 var risk = node.data.risk.risk_quant;
             } else {
-                node.data['$type'] = "square"
                 var risk = node.data.ex_risk.ex_risk_quant; // Fix this scaling issue
             }
             
@@ -400,9 +447,6 @@ function makeRGraph(con, into) {
                 node.data["$color"] = "orange"
             }
             
-            
-            if(node.data["first"])
-                node.data['$type'] = "star"
         },
         onBeforeCompute: function(node) {
             var inf = networkInfo(node);

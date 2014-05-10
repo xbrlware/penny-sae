@@ -23,6 +23,7 @@
 <!-- Splash Page ---------------------------------------------------------------------------------------------------------->
     <script type="text/x-handlebars" data-template-name="queries/index">
         <center>
+            <img src="../person.png"/>
             {{partial "crowdsar_splash"}}
         </center>
     </script>
@@ -382,7 +383,35 @@
     {{/if}}
     </script>
     
+
+    
     <!-- Network of Known Associates -->
+    <script>
+        var network_greenPerson  = new Image();
+        var network_yellowPerson = new Image();
+        var network_redPerson_pulse    = new Image();
+
+        network_greenPerson.src  = 'img/green_person.png';
+        network_yellowPerson.src = 'img/yellow_person.png';
+        network_redPerson_pulse.src    = 'img/red_person_pulse.gif';
+
+        var network_greenPerson_hole  = new Image();
+        var network_yellowPerson_hole = new Image();
+        var network_redPerson_hole    = new Image();
+
+        network_greenPerson_hole.src  = 'img/green_person_hole.png';
+        network_yellowPerson_hole.src = 'img/yellow_person_hole.png';
+        network_redPerson_hole.src    = 'img/red_person_hole.png';
+
+        var network_greenBuilding  = new Image();
+        var network_yellowBuilding = new Image();
+        var network_redBuilding    = new Image();
+
+        network_greenBuilding.src  = 'img/green_building.png';
+        network_yellowBuilding.src = 'img/yellow_building.png';
+        network_redBuilding.src    = 'img/red_building.png';
+    </script>
+
     <script type="text/x-handlebars" data-template-name="_associates">
         <center><h3>Known Associates</h3></center>
         
