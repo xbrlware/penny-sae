@@ -113,6 +113,7 @@ App.NetView = Ember.View.extend({
             'image': {
                     'render': function(node, canvas){
                         var entity_type = node.data['type']
+                        var icon_size = 50;
                         if(entity_type == 'owner'){
                             var person;
                             switch(node.data['$color']){
@@ -120,7 +121,7 @@ App.NetView = Ember.View.extend({
                                     person = node.data['hidden'] == 0 ? window.network_greenPerson : window.network_greenPerson_hole;
                                     break;
                                 case 'red':
-                                    person = node.data['hidden'] == 0 ? window.network_redPerson_pulse : window.network_redPerson_pulse;
+                                    person = node.data['hidden'] == 0 ? window.network_redPerson : window.network_redPerson_hole;
                                     break;
                                 case 'yellow':
                                     person = node.data['hidden'] == 0 ? window.network_yellowPerson : window.network_yellowPerson_hole;
@@ -128,7 +129,7 @@ App.NetView = Ember.View.extend({
                             }
                             var ctx = canvas.getCtx();
                             var pos = node.pos.getc(true);
-                            ctx.drawImage(person, pos.x - 25, pos.y - 25, 50, 50);
+                            ctx.drawImage(person, pos.x - icon_size / 2, pos.y - icon_size / 2, icon_size, icon_size);
                         } else if (entity_type == 'issuer') {
                             var building;
                             switch(node.data['$color']){
@@ -144,7 +145,7 @@ App.NetView = Ember.View.extend({
                             }
                             var ctx = canvas.getCtx();
                             var pos = node.pos.getc(true);
-                            ctx.drawImage(building, pos.x - 25, pos.y - 25, 50, 50);
+                            ctx.drawImage(building, pos.x - icon_size / 2, pos.y - icon_size / 2, icon_size, icon_size);
                         }
                     },
                     'contains': function(node,pos){ 
