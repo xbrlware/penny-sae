@@ -23,7 +23,6 @@
 <!-- Splash Page ---------------------------------------------------------------------------------------------------------->
     <script type="text/x-handlebars" data-template-name="queries/index">
         <center>
-            <img src="../person.png"/>
             {{partial "crowdsar_splash"}}
         </center>
     </script>
@@ -386,32 +385,7 @@
 
     
     <!-- Network of Known Associates -->
-    <script>
-        var network_greenPerson  = new Image();
-        var network_yellowPerson = new Image();
-        var network_redPerson    = new Image();
-
-        network_greenPerson.src  = 'img/green_person.png';
-        network_yellowPerson.src = 'img/yellow_person.png';
-        network_redPerson.src    = 'img/red_person.gif';
-
-        var network_greenPerson_hole  = new Image();
-        var network_yellowPerson_hole = new Image();
-        var network_redPerson_hole    = new Image();
-
-        network_greenPerson_hole.src  = 'img/green_person_hole.png';
-        network_yellowPerson_hole.src = 'img/yellow_person_hole.png';
-        network_redPerson_hole.src    = 'img/red_person_hole.png';
-
-        var network_greenBuilding  = new Image();
-        var network_yellowBuilding = new Image();
-        var network_redBuilding    = new Image();
-
-        network_greenBuilding.src  = 'img/green_building.png';
-        network_yellowBuilding.src = 'img/yellow_building.png';
-        network_redBuilding.src    = 'img/red_building.png';
-    </script>
-
+ 
     <script type="text/x-handlebars" data-template-name="_associates">
         <center><h3>Known Associates</h3></center>
         
@@ -487,6 +461,7 @@
     <script src="js/libs/ember-1.4.0.js"></script>
     <script src="js/app.js"></script>
     <script src="js/pva_charts.js"></script>
+    <script src="js/icons.js"></script>
     <script src="js/network.js"></script>
     <script src="js/mininetwork.js"></script>
     <script src="js/splash_charts.js"></script>

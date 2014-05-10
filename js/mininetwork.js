@@ -55,9 +55,9 @@ function miniRGraph(into) {
           }
         },
         Node: {
-            type    : 'circle',
-            color   : '#867970',
-            dim     : 5,
+            type  : 'image',
+            color : '#867970',
+            dim   : 5,
             overridable : true
         },
         Edge: {
@@ -79,10 +79,8 @@ function miniRGraph(into) {
             
             // Companies
             if(node.data.have_data) {
-                node.data['$type'] = "circle"
                 var risk = node.data.risk.risk_quant;
             } else {
-                node.data['$type'] = "square"
                 var risk = node.data.ex_risk.ex_risk_quant; // Fix this scaling issue
             }
             
@@ -94,12 +92,10 @@ function miniRGraph(into) {
             } else if (risk > HIGH_RISK_THRESH){
                 node.data["$color"] = "red";
             } else {
-                node.data["$type"]  = "square";
                 node.data["$color"] = "grey";
             }
             
             if(node.data["first"]){
-                node.data["$type"] = "star";
                 node.data["$dim"] = 5;
             }
         }
@@ -119,6 +115,9 @@ App.MininetworkView = Ember.View.extend({
                 buffer.push('<div class="mini-infovis" id="mini-infovis-' + this.get('cik') + '"></div>');
             buffer.push('</div>');
         buffer.push('<center>');
+    },
+    willInsertElement: function() {
+        implementIcons();
     },
     didInsertElement: function() {
         this.makeMininetworkView();

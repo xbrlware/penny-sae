@@ -109,52 +109,7 @@ function networkInfo(node) {
 var ht = false; // "Hide terminal nodes" -- implementation is ugly and should be fixed (by someone who understands Ember better)
 App.NetView = Ember.View.extend({
     willInsertElement: function() {
-        $jit.RGraph.Plot.NodeTypes.implement({
-            'image': {
-                    'render': function(node, canvas){
-                        var entity_type = node.data['type']
-                        var icon_size = 50;
-                        if(entity_type == 'owner'){
-                            var person;
-                            switch(node.data['$color']){
-                                case 'green':
-                                    person = node.data['hidden'] == 0 ? window.network_greenPerson : window.network_greenPerson_hole;
-                                    break;
-                                case 'red':
-                                    person = node.data['hidden'] == 0 ? window.network_redPerson : window.network_redPerson_hole;
-                                    break;
-                                case 'yellow':
-                                    person = node.data['hidden'] == 0 ? window.network_yellowPerson : window.network_yellowPerson_hole;
-                                    break;
-                            }
-                            var ctx = canvas.getCtx();
-                            var pos = node.pos.getc(true);
-                            ctx.drawImage(person, pos.x - icon_size / 2, pos.y - icon_size / 2, icon_size, icon_size);
-                        } else if (entity_type == 'issuer') {
-                            var building;
-                            switch(node.data['$color']){
-                                case 'green':
-                                    building = window.network_greenBuilding;
-                                    break;
-                                case 'yellow':
-                                    building = window.network_yellowBuilding;
-                                    break;
-                                case 'red':
-                                    building = window.network_redBuilding;
-                                    break;
-                            }
-                            var ctx = canvas.getCtx();
-                            var pos = node.pos.getc(true);
-                            ctx.drawImage(building, pos.x - icon_size / 2, pos.y - icon_size / 2, icon_size, icon_size);
-                        }
-                    },
-                    'contains': function(node,pos){ 
-                        var npos = node.pos.getc(true); 
-                        dim = node.getData('dim'); 
-                        return this.nodeHelper.circle.contains(npos, pos, dim); 
-                    } 
-            }
-        });
+        implementIcons();
     },
     didInsertElement: function() {
         this.initRGraph(this, true);

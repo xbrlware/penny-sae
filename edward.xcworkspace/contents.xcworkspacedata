@@ -49,6 +49,9 @@
             location = "group:network.js">
          </FileRef>
          <FileRef
+            location = "group:icons.js">
+         </FileRef>
+         <FileRef
             location = "group:app.js">
          </FileRef>
          <FileRef
