@@ -136,7 +136,7 @@ App.NetView = Ember.View.extend({
                         query_type : 'networkQuery_neighbors',
                         query_args : [center.hits.hits[0]._source.adjacencies],
                         callback : function(neighbors) {
-                            var json   = initElastic(center, neighbors, []);
+                            var json   = initElasticBig(center, neighbors, []);
                             if(is_new == true) {
                                 var rgraph = makeRGraph(con, 'main-infovis');
                             } else {
@@ -184,7 +184,7 @@ App.NetView = Ember.View.extend({
     }
 });
 
-function initElastic(center, neighbors){
+function initElasticBig(center, neighbors){
     var network = [];
     var neibs   = neighbors.hits.hits;
     var ths     = center.hits.hits[0]._source;

@@ -26,7 +26,40 @@
             {{partial "crowdsar_splash"}}
         </center>
     </script>
-    
+
+    <script type="text/x-handlebars" data-template-name="banner">
+        <div class="list-group-item" style="color:rgb(255, 57, 57);">
+            <h1>Suspicious Activity Explorer: Penny Stocks </h1>
+            <h4> Phr<b>ō</b>nesis </h4>
+        </div>
+        <div id="banner-anchor"></div>
+        <div class="list-group-item" id="banner">
+            {{#if splashTypeIsVolume}}
+                <h2>Highest Delta Volume Penny Stocks</h2>
+            {{else}}
+                <h2>Most Suspicious Penny Stocks</h2>
+            {{/if}}
+            <h4>of the past 30 days</h4>
+            <div class = "banner-button-wrapper">
+                {{#unless splashTypeIsVolume}}
+                    <button class="btn btn-banner" style="top:2.5%;" {{action "changeSplashType" 'volume'}}>
+                        Sort by Volume
+                    </button>
+                {{/unless}}
+                <br>
+                {{#if splashTypeIsVolume}}
+                    <button class="btn btn-banner" style="bottom:2.5%;" {{action "changeSplashType" 'risk'}}>
+                        Sort by Risk Score
+                    </button>
+                {{/if}}
+            </div>
+            <div class = "banner-network-label">
+                Network of Known Associates
+            </div>
+        </div>
+    </script>
+
+ 
     <script type="text/x-handlebars" data-template-name="_crowdsar_splash">
         <center>
             <div class="list-group">
@@ -60,16 +93,12 @@
     <script type="text/x-handlebars" data-template-name="splashitem">
         <div class="list-group-item twohundred">
         
-{{!--
-            <div class="splash-meter-wrapper" {{bind-attr style="h.style.wrapper"}}>
-                <div class="splash-meter" {{bind-attr style="h.style.meter"}}></div>
-            </div>
---}}
-
             {{view "donut" risk=h.risk cik=h.cik}}
 
             <div class="splash-text-wrapper">
-                <h3 class="list-group-item-heading splash-company"> {{h.currentName}} </h3>
+                <h3 class="list-group-item-heading splash-company">
+                    {{h.currentName}}
+                </h3>
             </div>
         
             <div class="splash-chart-wrapper">
@@ -80,38 +109,6 @@
                 {{view App.SplashdetailView h=h}}
             {{/if}}
             
-        </div>
-    </script>
-
-    <script type="text/x-handlebars" data-template-name="banner">
-        <div class="list-group-item" style="color:rgb(255, 57, 57);">
-            <h1>Suspicious Activity Explorer: Penny Stocks </h1>
-            <h4> Phr<b>ō</b>nesis </h4>
-        </div>
-        <div id="banner-anchor"></div>
-        <div class="list-group-item" id="banner">
-            {{#if splashTypeIsVolume}}
-                <h2>Highest Delta Volume Penny Stocks</h2>
-            {{else}}
-                <h2>Most Suspicious Penny Stocks</h2>
-            {{/if}}
-            <h4>of the past 30 days</h4>
-            <div class = "banner-button-wrapper">
-                {{#unless splashTypeIsVolume}}
-                    <button class="btn btn-banner" style="top:2.5%;" {{action "changeSplashType" 'volume'}}>
-                        Sort by Volume
-                    </button>
-                {{/unless}}
-                <br>
-                {{#if splashTypeIsVolume}}
-                    <button class="btn btn-banner" style="bottom:2.5%;" {{action "changeSplashType" 'risk'}}>
-                        Sort by Risk Score
-                    </button>
-                {{/if}}
-            </div>
-            <div class = "banner-network-label">
-                Network of Known Associates
-            </div>
         </div>
     </script>
 
@@ -448,7 +445,7 @@
         {{#if tradingHalt}}
             <center><h3>Previous Regulatory Actions</h3></center>
                 {{#each tradingHalt}}
-                    <h4> Trading in this security was halted on <a {{bind-attr href="url"}}>{{date}}</a></h4>
+                    <h4> Trading in this security was suspended on <a {{bind-attr href="url"}}>{{date}}</a></h4>
                 {{/each}}
                 <br><hr>
         {{/if}}

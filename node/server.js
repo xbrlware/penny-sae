@@ -33,6 +33,7 @@ app.post('/fetch_companies', function(req, res) {
     req.on('end', function() {
         try{
             d     = JSON.parse(d);
+
 //            index = d.index;
 //            query_type = d.query_type;
 //            query_args = d.query_args;

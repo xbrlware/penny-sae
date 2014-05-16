@@ -39,14 +39,15 @@ function riskyReport(src, net){
 
     // Changes in Name
     var uniqueNames = _.uniq(cd.company_name);
-    console.log(uniqueNames);
     if(uniqueNames.length > 1) {
         grounds_by_company_info++;
-        out += "The company has changed its name "+ (uniqueNames.length - 1) +" times in the past "+ since +" years, from "+
-                uniqueNames[0].name + " to " + uniqueNames[1].name;
-        for(i=2; i < uniqueNames.length; i++){
-            out += " to " + uniqueNames[i].name;
-        }
+        out += "The company has changed its name "
+        out += uniqueNames.length > 2 ? (uniqueNames.length - 1) + "times " : "once "
+        out += "in the past "
+        out += since > 1 ? since + " years, " : "year"
+        out += "from "+ uniqueNames[0] + " to " + uniqueNames[1];
+        for(i=2; i < uniqueNames.length; i++)
+            out += " to " + uniqueNames[i];
         out += ".  ";
     }
     
@@ -54,11 +55,11 @@ function riskyReport(src, net){
     var uniqueSIC = _.uniq(cd.sic);
     if(uniqueSIC.length > 1) {
         grounds_by_company_info++;
-        out += "Over the same time period, they changed their Standard industrial Classification (SIC) " + (uniqueSIC.length - 1) +
-                " times, from " + uniqueSIC[0].sic + " to " + uniqueSIC[1].sic;
-        for(i = 2; i < uniqueSIC.length; i++){
-            out += " to " + uniqueSIC[i].sic;
-        }
+        out += "Over the same time period, they changed their Standard industrial Classification (SIC) "
+        out += uniqueSIC.length > 2 ? (uniqueSIC.length - 1) + " times, " : "once, "
+        out += "from " + uniqueSIC[0] + " to " + uniqueSIC[1];
+        for(i = 2; i < uniqueSIC.length; i++)
+            out += " to " + uniqueSIC[i];
         out += ".  ";
     }
 
@@ -125,7 +126,6 @@ function riskyReport(src, net){
 // Suspicious neighbors
     if(net.hits.hits.length > 0) {
         center = net.hits.hits[0]._source;
-        console.log('center', center)
         
         if(center.data.type == 'issuer'){
             // Average risk quantile on neighbors (needs work)
@@ -135,7 +135,7 @@ function riskyReport(src, net){
                 counter++;
                 avg_neighbor_risk += x.data.ex_risk.ex_risk_quant;
             })
-//            console.log('avg_neighbor_risk', avg_neighbor_risk);
+
             avg_neighbor_risk = avg_neighbor_risk / counter;
             
             var avg_neighbor_risk2 = 0;
@@ -146,8 +146,7 @@ function riskyReport(src, net){
                     avg_neighbor_risk2 += x.data.ex_risk.ex_risk_quant;
                 }
             })
-//            console.log('counter2', counter)
-//            console.log('avg_neighbor_risk2', avg_neighbor_risk2);
+            
             avg_neighbor_risk2 = avg_neighbor_risk2 / counter;
 
             var n_risky_neighbors = 0;
@@ -160,8 +159,7 @@ function riskyReport(src, net){
                     }
                 }
             })
-//            console.log('counter3', counter)
-//            console.log('n_risky_neighbors', n_risky_neighbors);
+
             var n_non_terminal_neighbors = counter;
         }
     }
@@ -190,7 +188,6 @@ function riskyReport(src, net){
 
 exports.writeReport = function(comp, net) {
     var src = comp.hits.hits[0]._source;
-    console.log(src);
     if(src.risk.risk_quant > HIGH_RISK_THRESH) {
         return riskyReport(src, net);
     } else {

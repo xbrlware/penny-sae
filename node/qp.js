@@ -223,6 +223,18 @@ function cikQuery(cik) {
     return query;
 }
 
+function splashNetworkQuery(ciks) {
+     return {
+        "query": {
+            "ids" : {
+                "values" : ciks
+            }
+        },
+        "size" : 9999
+    }
+}
+
+
 function networkQuery_center(narg) {
     if(narg.id != undefined) {
         var cik = narg.id;
@@ -275,6 +287,8 @@ exports.parse = function(type, args) {
             return networkQuery_center(args[0]);
         case 'networkQuery_neighbors':
             return networkQuery_neighbors(args[0]);
+        case 'splashNetworkQuery':
+            return splashNetworkQuery(args);
         default:
             console.log('unsupported query:', type)
             return undefined;

@@ -3,17 +3,22 @@
 // -------------------------------------------------------------
 
 var ht = false; // "Hide terminal nodes" -- implementation is ugly and should be fixed (by someone who understands Ember better)
-function initElastic(center, neighbors){
+function initElasticMini(center, neighbors, type){
     var network = [];
     var neibs   = neighbors.hits.hits;
-    var ths     = center.hits.hits[0]._source;
+
+    if(type == 'inefficient'){
+        console.log(center);
+        center = center.hits.hits[0]._source;
+    }
+
 
     // Add central terminal
-    ths.data.explored = true;
-    ths.data.first    = true;
-    ths.data.hidden   = 0;
-    ths.data.depth    = 0;
-    network.push(ths);
+    center.data.explored = true;
+    center.data.first    = true;
+    center.data.hidden   = 0;
+    center.data.depth    = 0;
+    network.push(center);
 
     for(i = 0; i < neibs.length; i++){
         var src = neibs[i]._source;
@@ -120,35 +125,54 @@ App.MininetworkView = Ember.View.extend({
         implementIcons();
     },
     didInsertElement: function() {
-        this.makeMininetworkView();
+        console.log(this.get('nqt'))
+        this.makeMininetworkView(this.get('nqt'));
     },
-    makeMininetworkView : function() {
-        that    = this
-        var cik = this.get('cik');
-        
-        return fetch_companies({
-            index      : 'network',
-            query_type : 'networkQuery_center',
-            query_args : [cik],
-            callback   : function(center) {
-                if(center.hits.hits.length > 0){
-                    fetch_companies({
-                        index : 'network',
-                        query_type : 'networkQuery_neighbors',
-                        query_args : [center.hits.hits[0]._source.adjacencies],
-                        callback : function(neighbors) {
-                            var json   = initElastic(center, neighbors, []);
-                            var rgraph = miniRGraph('mini-infovis-' + cik);
-                            rgraph.loadJSON(json);
-                            rgraph.refresh();
-                        }
-                    });
-                };
-            }
-        });
+    makeMininetworkView : function(type) {
+
+        if(type == 'efficient'){
+            that    = this
+            var h   = this.get('h');
+            var cik = h['cik'];
+            
+            var center = h['network'];
+            if(center != undefined){
+                fetch_companies({
+                    index : 'network',
+                    query_type : 'networkQuery_neighbors',
+                    query_args : [center.adjacencies],
+                    callback : function(neighbors) {
+                        var json   = initElasticMini(center, neighbors, 'efficient');
+                        var rgraph = miniRGraph('mini-infovis-' + cik);
+                        rgraph.loadJSON(json);
+                        rgraph.refresh();
+                    }
+                });
+            };
+        } else if (type == 'inefficient') {
+            that = this
+            var cik = this.get('cik');
+            
+            return fetch_companies({
+                index      : 'network',
+                query_type : 'networkQuery_center',
+                query_args : [cik],
+                callback   : function(center) {
+                    if(center.hits.hits.length > 0){
+                        fetch_companies({
+                            index : 'network',
+                            query_type : 'networkQuery_neighbors',
+                            query_args : [center.hits.hits[0]._source.adjacencies],
+                            callback : function(neighbors) {
+                                var json   = initElasticMini(center, neighbors, 'inefficient');
+                                var rgraph = miniRGraph('mini-infovis-' + cik);
+                                rgraph.loadJSON(json);
+                                rgraph.refresh();
+                            }
+                        });
+                    };
+                }
+            });
+        }
     }
 });
-
-
-
-
