@@ -3,8 +3,9 @@ App = Ember.Application.create();
 // Global Variables
 var QUERY_DATABASE = [];
 var SIZE           = 25;
-var SERVER_PATH    = "http://localhost:8080/"
-//var SERVER_PATH = "http://184.72.165.94:8080/"
+//var SERVER_PATH    = "http://localhost:8080/"
+var SERVER_PATH = "http://184.72.165.94:8080/"
+//var SERVER_PATH = "http://107.140.154.23:8080/"
 
 var HIGH_RISK_THRESH = 85;
 var LOW_RISK_THRESH  = 75;
