@@ -346,10 +346,10 @@ function makeRGraph(con, into) {
         //Change some label dom properties.
         //This method is called each time a label is plotted.
         onPlaceLabel: function(domElement, node){
-//            console.log('calling onPlaceLavel')
-            var style = domElement.style;
+
+            var style     = domElement.style;
             style.display = '';
-            style.cursor = 'pointer';
+            style.cursor  = 'pointer';
 
             if (node._depth <= 1) {
                 style.fontSize = "0.7em";
