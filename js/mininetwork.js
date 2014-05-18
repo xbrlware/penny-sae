@@ -67,10 +67,10 @@ function miniRGraph(into) {
         },
         onBeforePlotNode: function(node) {
             if(node.data['terminal']){
-                node.data['$color'] = "#FF00FF"
-                node.data['$dim'] = 2;
+//                node.data['$color'] = "#FF00FF"
+//                node.data['$dim'] = 2;
             } else {
-                node.data['$dim'] = 3 + 2 * Math.log(1 + node.data['hidden']);
+//                node.data['$dim'] = 3 + 2 * Math.log(1 + node.data['hidden']);
             }
 
             if(ht && node.data['terminal']){
@@ -95,10 +95,12 @@ function miniRGraph(into) {
                 node.data["$color"] = "grey";
             }
             
-            if(node.data["first"]){
+             if(node.data["first"]){
+                node.data["$dim"] = 5;
+            } else {
                 node.data["$dim"] = 5;
             }
-        }
+       }
     });
     rgraph.canvas.scale(.9, .9)
     return rgraph;
