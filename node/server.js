@@ -92,6 +92,6 @@ app.post('/sar_generator', function(req, res) {
 });
 
 
-app.listen(8080);
-console.log('SEC API --- 8080');
+app.listen(7070);
+console.log('SEC API --- 7070');
 
