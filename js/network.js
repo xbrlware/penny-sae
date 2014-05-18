@@ -299,7 +299,7 @@ function makeRGraph(con, into) {
         },
         Node: {
             type        : 'image',
-            dim         : 3,
+            dim         : 5,
             overridable : true
         },
         Edge: {
@@ -369,9 +369,9 @@ function makeRGraph(con, into) {
             
         },
         onBeforePlotNode: function(node) {
+            node.data["$dim"] = 5;
             if(node.data['terminal']){
-                node.data['$dim'] = 1.5;
-
+//                node.data['$dim'] = 1.5;
             } else {
                 node.data['$dim'] = 3 + 2 * Math.log(1 + node.data['hidden']);
 //                if(node.data['devisited']){
