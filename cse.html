@@ -1,18 +1,16 @@
 <!-- 
-    Google News API for SEC Tool (2014-04-30)
+    Google News API for SEC Tool
     BKJ for Phronesis
     Propriety Code, may not be used w/o explicit permission of creators
 -->
-
 <script>
   (function() {
-    var cx = '008243922040576696960:zngc3pg5bka';
-    var gcse = document.createElement('script');
-    gcse.type = 'text/javascript';
+    var cx     = '008243922040576696960:zngc3pg5bka';
+    var gcse   = document.createElement('script');
+    gcse.type  = 'text/javascript';
     gcse.async = true;
-    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-        '//www.google.com/cse/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0];
+    gcse.src   = 'http://www.google.com/cse/cse.js?cx=' + cx;
+    var s      = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(gcse, s);
   })();
 </script>
