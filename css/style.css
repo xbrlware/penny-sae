@@ -5,35 +5,22 @@
 
 /* Front Page */
 
-.front-page {
-    border: none;
+.h3-small {
     font-size: 20px;
 }
 
-.front-page td {
-    text-align: left;
+.front-page {
+    border    : none;
+    font-size : 20px;
 }
 
 .front-page > tbody > tr > td,
-.front-page > tbody > tr > th{
-    border: none;
+.front-page > tbody > tr > th {
+    border : none;
 }
 
-.front-page button {
-    position: inherit;
-    width: 100%;
-}
-
-.sidebar-index-table {
-    border: none;
-    font-size: 13px;
-}
-
-.sidebar-index-table > tbody > tr > td,
-.sidebar-index-table > tbody > tr > th{
-    border: none;
-    padding-top:7px;
-    padding-bottom:7px;
+.front-page td {
+    text-align : left;
 }
 
 .glyphicon {
@@ -47,13 +34,31 @@
     font-size  : 10px;
 }
 
-.h3-small {
-    font-size: 20px;
+.front-page .btn-submit-frontpage {
+    position : inherit;
+    width    : 100%;
+}
+
+/* Dropdown Menu table */
+.sidebar-index-table {
+    border: none;
+    font-size: 13px;
+}
+
+.sidebar-index-table > tbody > tr > td,
+.sidebar-index-table > tbody > tr > th{
+    border: none;
+    padding-top:7px;
+    padding-bottom:7px;
 }
 
 .yamm .yamm-content {
     padding: 0px 0px;
 }
+
+/* Need to keep ordering these in a sensible way */
+
+
 
 .associate-list-owner {
     background-color:#FDFDF0;
@@ -173,13 +178,13 @@ select {
     width: 200%;
 }
 
-.open > .dropdown-menu {
+.open > .dropdown-menu-animated {
   -webkit-transform: scale(1, 1);
   transform: scale(1, 1);  
   opacity:1;
 }
   
-.dropdown-menu {
+.dropdown-menu-animated {
   opacity:.3;
   -webkit-transform-origin: top;
   transform-origin: top;
@@ -190,6 +195,55 @@ select {
   transition: all 0.2s linear;
   -webkit-transition: all 0.2s linear;
 }
+
+.dropdown-menu-right {
+    left          : 100%;
+    top           : 0%;
+    margin-top    : 0px;
+    border-radius : 0px;
+}
+
+
+/* OMX */
+.dropdown-menu-omx {
+    max-height : 400px;
+    max-width  : 400px;
+    width      : 400px;
+    overflow   : auto;
+}
+
+.dropdown-menu-omx > li {
+    border-bottom: 1px solid lightgrey;
+}
+
+.dropdown-menu-omx > li > a {
+    white-space: inherit;
+    word-break: break-word;
+}
+
+.omx-head {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.omx-time {
+    font-size      : .8em;
+    font-weight    : lighter;
+    padding-bottom : 10px;
+}
+
+.omx-body {
+    font-family: sans-serif;
+    white-space: pre-line;
+    word-break: break-word;
+    background-color: inherit;
+}
+
+/* End OMX */
+
+
+
+
 
 .btn {
     vertical-align: middle;
@@ -634,4 +688,23 @@ input {
 #ner-table td {
     overflow: auto;
 }
+
+
+/* Leadership Chart */
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+
 

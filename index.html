@@ -160,7 +160,7 @@
 
                 <tr class="no-hover">
                     <td colspan="2">
-                        <button class="btn btn-success" {{action "goToSidebar"}}>
+                        <button class="btn btn-success btn-submit-frontpage" {{action "goToSidebar"}}>
                             Find
                         </button>
                     </td>
@@ -194,7 +194,7 @@
 
                             <li class="dropdown yamm" id="big-dropdown">
                                 <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button" data-toggle="dropdown"> Manage Red Flag Filters </b></a>
-                                    <ul class="dropdown-menu" style="width:65%;">
+                                    <ul class="dropdown-menu dropdown-menu-animated" style="width:65%;">
                                         <li>
                                             <div class="yamm-content">
                                                 {{render "dropdown"}}
@@ -207,7 +207,7 @@
 
                             <li class="dropdown yamm" id="big-dropdown-topic">
                                 <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button-topic" data-toggle="dropdown"> Search Topic of Interest </b></a>
-                                    <ul class="dropdown-menu" style="width:30%; height:100px;">
+                                    <ul class="dropdown-menu dropdown-menu-animated" style="width:30%; height:100px;">
                                         <li>
                                             <div class="yamm-content">
                                                 <div class="form-group">
@@ -898,6 +898,7 @@
                         <li>{{#link-to 'previousReg' }} Regulatory <br> Actions {{/link-to}}</li>
                         <li>{{#link-to 'associates' }} Network <br> Analysis {{/link-to}}</li>
                         <li>{{#link-to 'promotions' }} Stock Promotions {{/link-to}}</li>
+{{!--                        <li>{{#link-to 'leadership' }} Leadership {{/link-to}}</li>    --}}
                     </ul>
                 </nav>
             </div>
@@ -939,8 +940,60 @@
     <!-- Google News Plugin -->
     <script type="text/x-handlebars" data-template-name="googleNews">
 		<div id="google-news"></div>
-        <center><h3> News </h3></center>
+        <div class="row">
+            <div class="col-sm-2">
+                {{#if model}}
+                    <div class="btn-group-vertical">
+                        <button type="button" class="btn btn-default">
+                            {{#link-to "subNews"}}
+                                Google Search
+                            {{/link-to}}
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                Globe NewsWire
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
+                                {{#each release in model}}
+                                    <li class="li-omx">
+                                        {{#link-to "omxNews" release._id}}
+                                            {{release.head}}
+                                        {{/link-to}}
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                {{/if}}
+            </div>
+
+            <div class="col-sm-10">
+                {{outlet}}
+            </div>
+        </div>
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="subNews">
         {{view App.NewsView valueBinding="model"}}
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="omxNews">
+        <div class="omx-wrapper">
+            <div class="omx-head">
+                {{model.head}}
+            </div>
+            <div class="omx-time">
+                {{model.time}}
+            </div>
+            <div class="omx-body">
+{{!--
+                <button type="button" class="btn btn-default pull-right" {{action "run_mitie"}}>
+                    Run MITIE NER
+                </button>
+--}}
+                {{model.body}}
+            </div>
+        </div>
     </script>
 
     <!-- Late Filing History -->
@@ -1174,6 +1227,24 @@
             {{/if}}
         </center>
     </script>
+    
+    <script type="text/x-handlebars" data-template-name="leadership">
+        <center>
+            {{#unless no_data}}
+                {{#if view.e}}
+                    {{view.e.pos}} <br>
+                    ({{view.e.value.start}} to {{view.e.value.stop}})
+                {{/if}}
+                <div id="chart">
+                    <label><input id="d3inp" type="checkbox"> Sort values</label>
+                    <br>
+                    This can be swapped for sorting by name, date, length of tenure, etc...
+                </div>
+            {{else}}
+                Form 4 filing data for this company is unavailable.
+            {{/unless}}
+        </center>
+    </script>
 
     <script type="text/x-handlebars" data-template-name="_ner">
         <center>
@@ -1245,7 +1316,13 @@
 
 
     <script src="js/libs/bootstrap.min.js"></script>
-    <script src="js/libs/rickshaw/vendor/d3.v3.js"></script>
+
+    <script src="http://momentjs.com/downloads/moment.js"></script>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+
     <script src="js/libs/flot/jquery.flot.js"></script>
     <script src="js/libs/flot/jquery.flot.pie.js"></script>
     <script src="js/libs/jit/jit.js"></script>
@@ -1269,7 +1346,7 @@
 	<script src="js/app/ner.js"> </script>
 	<script src="js/app/network.js"> </script>
 	<script src="js/app/previous_reg.js"> </script>
-	<script src="js/app/promotion_charts.js"> </script>
+	<script src="js/app/promotions.js"> </script>
 	<script src="js/app/pva_charts.js"> </script>
 	<script src="js/app/red_flag_query.js"> </script>
 	<script src="js/app/sar_generator.js"> </script>
@@ -1278,6 +1355,6 @@
 	<script src="js/app/slider.js"> </script>
 	<script src="js/app/topic.js"> </script>
 	<script src="js/app/tts_charts.js"> </script>
-	
+	<script src="js/app/leadership.js"> </script>	
 </body>
 </html>
