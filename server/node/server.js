@@ -15,8 +15,7 @@ if(cluster.isMaster) {
         cluster.fork();
     });
 } else {
-	var config = require('../../config/local_config.js')
-	var gconfig = require('../../config/global_config.js')
+	var config = require('../server_config.js')
 
 	// Elasticsearch interface
 	var es         = require('elasticsearch');
@@ -123,7 +122,7 @@ if(cluster.isMaster) {
     };
 
 
-    if(gconfig.gconfig.TTS_TYPE == 'js') {
+    if(config.TTS_TYPE == 'js') {
         app.post('/fetch_tts', function(req, res) {
             b.info(req.connection.remoteAddress, 'remoteAddress')
             var d = ''
@@ -150,7 +149,7 @@ if(cluster.isMaster) {
 
             })
         })
-    } else if(gconfig.gconfig.TTS_TYPE == 'r'){
+    } else if(config.TTS_TYPE == 'r'){
         app.post('/fetch_tts', function(req, res) {
             console.log('fetching tts')
             b.info(req.connection.remoteAddress, 'remoteAddress')
@@ -274,10 +273,10 @@ if(cluster.isMaster) {
                     from : d.from == undefined ? 0 : d.from
                 }
                
-                if(d.index != config.config.NETWORK_INDEX && d.index != 'network') {
+                if(d.index != config.NETWORK_INDEX && d.index != 'network') {
                     search_params['index'] = d.index;
                 } else {
-                    search_params['index'] = [config.config.NETWORK_INDEX, 'companies'];
+                    search_params['index'] = [config.NETWORK_INDEX, 'companies'];
                 }
 
                 client.search(
@@ -402,7 +401,7 @@ if(cluster.isMaster) {
             try {
                 d = JSON.parse(d);
                 client.get({
-                    index : config.config.NETWORK_INDEX,
+                    index : config.NETWORK_INDEX,
                     type  : "actor",
                     id    : d.cik
                 }).then(function (orig) {
@@ -422,7 +421,7 @@ if(cluster.isMaster) {
                     console.log('orig_adj', orig._source.adjacencies);
                     
                     client.index({
-                      index : config.config.NETWORK_INDEX,
+                      index : config.NETWORK_INDEX,
                       type  : 'actor',
                       id    : d.cik,
                       body  : orig._source
@@ -459,7 +458,7 @@ if(cluster.isMaster) {
                 }).then(function(comp) {
                     var network_body = qp.parse('networkQuery_center', {"cik" : d.cik}, d.rf);
                     client.search({
-                      index : config.config.NETWORK_INDEX,
+                      index : config.NETWORK_INDEX,
                       body  : network_body,
                       from  : 0,
                     }).then(function (net) {
@@ -484,14 +483,13 @@ if(cluster.isMaster) {
                 b.debug(d);
                
                 all_ciks = d.query_args.all_ciks;
-                console.log('all_ciks');
                
                 function calculate_rf_individual(cik, callback) {
                     // Get companies that individual is connected to
                     console.log('>>> cik', cik);
                     var rf_total, rf_possible, n_ass, rf_score;
                     client.search({
-                      index : config.config.NETWORK_INDEX,
+                      index : config.NETWORK_INDEX,
                       body  : qp.parse('networkQuery_center', {"cik" : cik}, d.rf),
                       from  : 0,
                     }).then(function(data) {

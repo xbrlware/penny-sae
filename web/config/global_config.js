@@ -1,16 +1,17 @@
 // Global Config
+//
+// These are mostly stylistic and interface config options
+// that should be independant of where the app is deployed
 
 var gconfig = {
-		SIZE : 15,
-		RES_THRESH : 2,
+    SIZE       : 15,
+    RES_THRESH : 2,
     
     NETWORK_EDGE_COLOR : 'lightgrey',
     NETWORK_EDGE_WIDTH : 1,
     
     STANDARD_NODE_SIZE : 7,
     DRAG_NODE_SIZE     : 12,
-    
-    TTS_TYPE : "js",
     
     DEFAULT_HIDE_TERMINAL : false,
     DEFAULT_HIDE_NER      : true,
@@ -61,8 +62,4 @@ var gconfig = {
         pv            : false,
         crowdsar      : false
     }
-}
-
-if(typeof exports != "undefined") {
-	module.exports = gconfig
 }
