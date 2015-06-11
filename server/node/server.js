@@ -6,7 +6,10 @@
 var cluster = require('cluster');
 
 if(cluster.isMaster) {
+    
     var cpuCount = Math.floor(require('os').cpus().length / 2);
+    var cpuCount = cpuCount || 1;
+    
     for (var i = 0; i < cpuCount; i += 1) {
             cluster.fork();
     }
@@ -15,26 +18,26 @@ if(cluster.isMaster) {
         cluster.fork();
     });
 } else {
-	var config = require('../server_config.js')
+	var config = require('../server_config.js');
 
-	// Elasticsearch interface
-	var es         = require('elasticsearch');
-	var client     = new es.Client();
-	var cs_client  = new es.Client({hosts: ['localhost:9210']});
+	var express  = require('express'),
+         es      = require('elasticsearch'),
+         bunyan  = require('bunyan'),
+         app     = express(),
+         url     = require('url'),
+         qs      = require('querystring'),
+         util    = require('util'),
+         async   = require('async'),
+         request = require('request'),
+         _       = require('underscore'),
+         _s      = require('underscore.string');
 
-	var express = require('express');
-	var app     = express();
-	var url     = require('url');
-	var qs      = require('querystring');
-	var util    = require('util');
-	var async   = require('async')
-	var request = require('request')
-	var _       = require('underscore');
-    var _s      = require('underscore.string');
+	// Elasticsearch clients
+	var client     = new es.Client({hosts : [config.ES_HOST]});
+	var cs_client  = new es.Client({hosts : [config.AUX_HOST]});
 
 	// Logging
-	var bunyan  = require('bunyan');
-	var b = new bunyan({'name' : 'test', 'level' : 'debug'})
+	var b = new bunyan({'name' : 'nodesec-server', 'level' : 'debug'})
 
 	// Import scripts
 	var qp = require('./qp.js');
@@ -701,8 +704,6 @@ if(cluster.isMaster) {
         });
     });
     
-    
-    
-    app.listen(8090);
-    console.log('SEC Novo API --- 8090');
+    app.listen(config.NODE_PORT);
+    console.log('NODESEC API --- ' + config.NODE_PORT);
 }

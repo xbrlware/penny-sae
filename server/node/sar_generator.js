@@ -1,11 +1,13 @@
 
+// Automatic SAR Generator
+// Not currently being used
+
 var qp = require('./qp.js');
 var _ = require('underscore');
 
 var HIGH_RISK_THRESH = 85;
 var LOW_RISK_THRESH  = 75;
-var MAX_RISK = 40;
-
+var MAX_RISK         = 40;
 
 function benignReport(src) {
     var cik = parseInt(src.company_data.cik[0]);

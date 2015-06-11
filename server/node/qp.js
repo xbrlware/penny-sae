@@ -1,6 +1,9 @@
-var bunyan = require('bunyan');
-var b = new bunyan({'name' : 'qp_logger', 'level' : 'debug'});
-var _ = require('underscore')._;
+// Query Parser -- write Elasticsearch queries
+
+var bunyan = require('bunyan'),
+        _  = require('underscore')._;
+
+var b = new bunyan({'name' : 'nodesec-query-parser', 'level' : 'debug'});
 
 var SIZE = 15;
 var CURRENT_NAME_QUERY =  {"script" : "if(_source.company_data != null) { \n\
