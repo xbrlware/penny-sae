@@ -67,7 +67,7 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                         con.set('isLoading', true) //*
                     }
                     
-                    network_center.companies = center.hits.hits.findBy('_index', 'companies');
+                    network_center.companies = center.hits.hits.findBy('_index', config.COMPANY_INDEX);
 
                     fetch_companies({
                         index : config.NETWORK_INDEX,
@@ -80,7 +80,7 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                 _.sortBy(
                                     _.pluck(
                                         _.filter(neighbors.hits.hits, function(hit) {
-                                            return hit._index != 'companies'
+                                            return hit._index != config.COMPANY_INDEX
                                         }),
                                         '_source'
                                     ),
@@ -94,7 +94,7 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                             };
                             
                             companies = _.filter(neighbors.hits.hits, function(hit) {
-                                return hit._index == 'companies'
+                                return hit._index == config.COMPANY_INDEX
                             });
                             network_neighbors = _.filter(neighbors.hits.hits, function(hit) {
                                 return hit._index == config.NETWORK_INDEX

@@ -57,7 +57,7 @@ function generate_sar(args){
 function get_detail(cik, rf_clean) {
     return new Ember.RSVP.Promise(function(resolve, reject) {
         fetch_companies({
-            index      : 'companies',
+            index      : config.COMPANY_INDEX,
             query_type : "detailQuery",
             query_args : {"cik" : cik},
             rf         : rf_clean,
@@ -101,7 +101,7 @@ App.Search.reopenClass({
             fetch_companies({
                 query_type : "companyQuery",
                 query_args : {"searchTerm" : searchTerm},
-                index      : 'companies',
+                index      : config.COMPANY_INDEX,
                 rf         : rf_clean,
                 from       : 0,
                 callback   : function(data) {
@@ -138,7 +138,7 @@ App.Search.reopenClass({
             fetch_companies({
                 query_type : "rfFilterQuery",
                 query_args : {},
-                index      : 'companies',
+                index      : config.COMPANY_INDEX,
                 rf         : rf_clean,
                 from       : from,
                 callback   : function (data) {
