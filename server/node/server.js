@@ -267,6 +267,8 @@ if(cluster.isMaster) {
         var d = ''
         req.on('data', function(data) { d += data; });
         req.on('end', function() {
+            console.log('>>d', JSON.stringify(d));
+        
             try{
                 d = JSON.parse(d);
                 b.debug(d);
