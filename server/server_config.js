@@ -1,5 +1,6 @@
 module.exports = {
 
+	"COMPANY_INDEX" : "companies_restore",
     "NETWORK_INDEX" : 'petwork',
     "TTS_TYPE"      : "js",
 

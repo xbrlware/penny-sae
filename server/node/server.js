@@ -279,7 +279,7 @@ if(cluster.isMaster) {
                 if(d.index != config.NETWORK_INDEX && d.index != 'network') {
                     search_params['index'] = d.index;
                 } else {
-                    search_params['index'] = [config.NETWORK_INDEX, 'companies'];
+                    search_params['index'] = [config.NETWORK_INDEX, config.COMPANY_INDEX];
                 }
 
                 client.search(
@@ -318,7 +318,7 @@ if(cluster.isMaster) {
                     };
                     
                     client.search({
-                        index : 'companies',
+                        index : config.COMPANY_INDEX,
                         body  : qp.parse('multiCIKQuery', {"ciks" : ciks}, d.rf) // ----> Add aggregations here
                     }).then(function(es_response2) {
                     
@@ -455,7 +455,7 @@ if(cluster.isMaster) {
                
                 var company_body = qp.parse('cikQuery', {"cik" : d.cik}, d.rf)
                 client.search({
-                    index : 'companies',
+                    index : config.COMPANY_INDEX,
                     body  : company_body,
                     from  : 0
                 }).then(function(comp) {
@@ -502,7 +502,7 @@ if(cluster.isMaster) {
                         var nodeTos = _.pluck(adj, 'nodeTo');
                         console.log('nodeTos', nodeTos);
                         client.search({
-                            index : 'companies',
+                            index : config.COMPANY_INDEX,
                             body  : qp.parse('multiCIKQuery', {"ciks": nodeTos}, d.rf),
                             from  : 0
                         }).then(function(company_data) {
