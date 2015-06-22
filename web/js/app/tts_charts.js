@@ -3,10 +3,11 @@
 // ---------------------------------------------------------------------------
 
 function fetch_tts(args){
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'fetch_tts',
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'fetch_tts',
         data    : JSON.stringify({
                     "query_args" : args.query_args
                   }),

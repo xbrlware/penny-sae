@@ -29,10 +29,11 @@ App.AssociatesController = Ember.ObjectController.extend({
     searchTerm_er  : '',
 
     set_ner : function(args){
-        $.ajax({
-            type    : 'POST',
-            dataType: 'json',
-            url     : config.SERVER_PATH + 'set_ner',
+        Ember.$.ajax({
+            type        : 'POST',
+			contentType : 'application/json',
+			dataType    : "json",
+            url     : 'set_ner',
             data    : JSON.stringify({"cik" : args.cik, "updates" : args.updates}),
             success : args.callback,
             error   : function (xhr, status, error) {

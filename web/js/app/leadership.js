@@ -2,9 +2,10 @@
 function fetch_leadership(args) {
     return new Ember.RSVP.Promise(function(resolve, reject) {
         Ember.$.ajax({
-            type    : 'POST',
-            dataType: 'json',
-            url     : config.SERVER_PATH + 'fetch_leadership',
+            type        : 'POST',
+			contentType : 'application/json',
+			dataType    : "json",            
+            url     : 'fetch_leadership',
             data    : JSON.stringify({"cik" : args.cik}),
             success : function(response) {resolve(response)},
             error   : function (xhr, status, error) {console.log('Error: ' + error.message)}

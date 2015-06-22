@@ -1,9 +1,6 @@
 // Query Parser -- write Elasticsearch queries
 
-var bunyan = require('bunyan'),
-        _  = require('underscore')._;
-
-var b = new bunyan({'name' : 'nodesec-query-parser', 'level' : 'debug'});
+var _  = require('underscore')._;
 
 var SIZE = 15;
 var CURRENT_NAME_QUERY =  {"script" : "if(_source.company_data != null) { \n\
@@ -45,6 +42,7 @@ function setFunctions(rf){
         func.push({
             "script_score" : {
                 "script": "delta_score",
+                "lang" : "js",
                 "params": {
                     "type"   : delta.type,
                     "thresh" : parseInt(delta.thresh, 10)
@@ -56,6 +54,7 @@ function setFunctions(rf){
     if(rf.toggles.trading_halts) {
         func.push({
             "script_score" : {
+                "lang" : "js",
                 "script": "trading_halt_score"
             }
         });
@@ -66,6 +65,7 @@ function setFunctions(rf){
         var financials = rf.financials;
         func.push({
             "script_score" : {
+              "lang" : "js",
               "script" : "financials_score",
               "params" : {
                 "type"         : financials.type,
@@ -81,11 +81,13 @@ function setFunctions(rf){
         var crowdsar = rf.crowdsar;
         func.push({
             "script_score" : {
-              "script" : "crowdsar_score",
-              "params" : {
-                "type"        : crowdsar.type,
-                "past_months" : parseInt(crowdsar.past_months, 10)
-              }}
+                "lang"   : "js",
+                "script" : "crowdsar_score",
+                "params" : {
+                    "type"        : crowdsar.type,
+                    "past_months" : parseInt(crowdsar.past_months, 10)
+                }
+            }
         });
     }
 
@@ -93,11 +95,13 @@ function setFunctions(rf){
         var tout = rf.tout;
         func.push({
             "script_score" : {
+              "lang" : "js",
               "script" : "tout_score",
               "params" : {
                 "type"        : tout.type,
                 "past_months" : parseInt(tout.past_months, 10)
-              }}
+              }
+            }
         });
     }
 
@@ -105,6 +109,7 @@ function setFunctions(rf){
         var pv      = rf.pv;
         func.push({
             "script_score" : {
+                "lang" : "js",
                 "script": "pv_score",
                 "params": {
                     "price_jump"        : parseFloat(pv.price_jump) / 100 + 1, // Converts 0% jump to 100% of last days price
@@ -120,6 +125,7 @@ function setFunctions(rf){
         var delinquency      = rf.delinquency;
         func.push({
             "script_score" : {
+                "lang" : "js",
                 "script": "delinquency_score",
                 "params": {
                     "since"  : delinquency.since,
@@ -132,6 +138,7 @@ function setFunctions(rf){
         var network = rf.network;
         func.push({
             "script_score" : {
+                "lang" : "js",
                 "script" : "otc_ass_score",
                 "params" : {
                     "type"   : network.type,
@@ -165,6 +172,7 @@ function setScriptFields(rf, include_generic){
         var delta = rf.delta;
         if(delta.type != undefined){
             sf.delta = {
+                "lang" : "js",
                 "script": "delta",
                 "params": {
                     "type" : delta.type
@@ -176,6 +184,7 @@ function setScriptFields(rf, include_generic){
     // Number of trading halts
     if(rf.toggles.trading_halts) {
         sf.trading_halts = {
+            "lang" : "js",
             "script" : "trading_halt_scriptfield"
         }
     };
@@ -184,6 +193,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.financials){
         var financials = rf.financials;
         sf.financials_scriptfield = {
+            "lang" : "js",
             "script" : "financials_scriptfield",
             "params" : {
                 "type"         : financials.type,
@@ -198,6 +208,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.crowdsar){
         var crowdsar = rf.crowdsar;
         sf.crowdsar_scriptfield = {
+            "lang" : "js",
           "script" : "crowdsar_scriptfield",
           "params" : {
             "type"        : crowdsar.type,
@@ -210,6 +221,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.tout){
         var tout = rf.tout;
         sf.tout_scriptfield = {
+            "lang" : "js",
           "script" : "tout_scriptfield",
           "params" : {
             "type"        : tout.type,
@@ -222,6 +234,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.pv){
         var pv      = rf.pv;
         sf.pv_scriptfield = {
+            "lang" : "js",
             "script": "pv_scriptfield",
             "params": {
                   "price_jump"        : parseFloat(pv.price_jump) / 100 + 1, // Converts 0% jump to 100% of last days price
@@ -236,6 +249,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.delinquency) {
         var delinquency      = rf.delinquency;
         sf.delinquency_scriptfield = {
+                "lang" : "js",
                 "script": "delinquency_scriptfield",
                 "params": {
                     "since"  : delinquency.since,
@@ -247,6 +261,7 @@ function setScriptFields(rf, include_generic){
     if(rf.toggles.network){
         var network = rf.network;
         sf.network_scriptfield = {
+            "lang" : "js",
             "script" : "otc_ass_scriptfield",
             "params" : {
                 "type" : network.type
@@ -269,7 +284,6 @@ function rfFilterQuery(rf) {
     parsed.fields        = ["_source"];
     parsed.script_fields = setScriptFields(rf);
     parsed.size          = SIZE;
-    b.debug(parsed);
     return parsed;
 };
 
@@ -473,10 +487,6 @@ function ttsQuery(searchTerm) {
 
 /* Server Interface */
 exports.parse = function(type, args, rf) {
-//    b.debug(type, 'type');
-//    b.debug(args, 'args');
-//    b.debug(rf, 'rf');
-    
     switch(type) {
 
 

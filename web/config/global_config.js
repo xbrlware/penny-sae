@@ -2,7 +2,6 @@
 //
 // These are mostly stylistic and interface config options
 // that should be independant of where the app is deployed
-
 var gconfig = {
     SIZE       : 15,
     RES_THRESH : 2,

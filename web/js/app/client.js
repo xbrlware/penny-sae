@@ -1,10 +1,11 @@
 // Client
 
 function fetch_companies(args){
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'fetch_companies',
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'fetch_companies',
         data    : JSON.stringify({
                     "index"      : args.index,
                     "query_type" : args.query_type,
@@ -20,37 +21,37 @@ function fetch_companies(args){
 };
 
 function fetch_topic(args) {
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'fetch_topic',
+   Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'fetch_topic',
         data    : JSON.stringify({
-                    "index"      : args.index,
-                    "query_type" : args.query_type,
-                    "query_args" : args.query_args,
-                    "from"       : args.from,
-                    "rf"         : args.rf
-                  }),
+            "index"      : args.index,
+            "query_type" : args.query_type,
+            "query_args" : args.query_args,
+            "from"       : args.from,
+            "rf"         : args.rf
+        }),
         success : args.callback,
         error   : function (xhr, status, error) {
-                    console.log('Error: ' + error.message);
-                  }
+            console.log('Error: ' + error.message);
+        }
     });
 }
 
 function generate_sar(args){
     var cik = args.source.company_data.cik[0];
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'sar_generator',
-        data    : JSON.stringify({
-                    "cik" : cik
-                  }),
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'sar_generator',
+        data    : JSON.stringify({ "cik" : cik }),
         success : args.callback,
         error   : function (xhr, status, error) {
-                    console.log('Error: ' + error.message);
-                  }
+            console.log('Error: ' + error.message);
+        }
     });
 };
 
@@ -189,10 +190,11 @@ App.Search.reopenClass({
     
     search_omx : function(cik) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
-           $.ajax({
-                type    : 'POST',
-                dataType: 'json',
-                url     : config.SERVER_PATH + 'search_omx',
+           Ember.$.ajax({
+                type        : 'POST',
+                contentType : 'application/json',
+                dataType    : "json",
+                url     :  'search_omx',
                 data    : JSON.stringify({"cik" : cik}),
                 success : function(response) {
                     console.log('response', response);
@@ -206,10 +208,11 @@ App.Search.reopenClass({
     },
     fetch_omx : function(omx_id) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
-           $.ajax({
-                type    : 'POST',
-                dataType: 'json',
-                url     : config.SERVER_PATH + 'fetch_omx',
+           Ember.$.ajax({
+                type        : 'POST',
+                contentType : 'application/json',
+                dataType    : "json",
+                url     :  'fetch_omx',
                 data    : JSON.stringify({"omx_id" : omx_id}),
                 success : function(response) {
                     console.log('response', response);

@@ -1,10 +1,11 @@
 // Named Entity Recognition View
 
 function fetch_ner(args){
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'fetch_ner',
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'fetch_ner',
         data    : JSON.stringify({"cik" : args.cik, "show_hidden" : args.show_hidden}),
         success : args.callback,
         error   : function (xhr, status, error) {
@@ -14,10 +15,11 @@ function fetch_ner(args){
 };
 
 function set_ner(args){
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'set_ner',
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'set_ner',
         data    : JSON.stringify({"cik" : args.cik, "data" : args.data}),
         success : args.callback,
         error   : function (xhr, status, error) {

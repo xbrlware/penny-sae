@@ -187,10 +187,11 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
 };
 
 function red_flag_individuals(args) {
-    $.ajax({
-        type    : 'POST',
-        dataType: 'json',
-        url     : config.SERVER_PATH + 'red_flag_individuals',
+    Ember.$.ajax({
+        type        : 'POST',
+        contentType : 'application/json',
+        dataType    : "json",
+        url     : 'red_flag_individuals',
         data    : JSON.stringify({
                     "query_args" : args.query_args,
                     "rf"         : args.rf
