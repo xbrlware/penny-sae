@@ -1,0 +1,33 @@
+{
+  "name": "nodesec",
+  "version": "0.1.0",
+  "description": "SEC penny stock explorer",
+  "main": "server.js",
+  "dependencies": {
+    "async": "^0.9.0",
+    "express": "^4.12.0",
+    "bunyan": "^1.3.4",
+    "querystring": "^0.2.0",
+    "elasticsearch": "^3.1.3",
+    "request": "^2.53.0",
+    "underscore": "^1.8.2",
+    "underscore.string": "^3.0.3",
+    "url": "^0.10.2",
+    "util": "^0.10.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": " -- none yet --",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bkj/nodesec.git"
+  },
+  "author": "ben@gophronesis.com",
+  "license": "Proprietary Phronesis",
+  "bugs": {
+    "url": "https://github.com/bkj/nodesec/issues"
+  },
+  "homepage": "https://github.com/bkj/nodesec"
+}
