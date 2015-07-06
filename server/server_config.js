@@ -4,7 +4,7 @@ module.exports = {
     "NETWORK_INDEX" : 'petwork',
     "TTS_TYPE"      : "js",
 
-    "ES_HOST"   : 'localhost:9205',
-    "AUX_HOST"  : 'localhost:9205',
-    "NODE_PORT" : 8090
+    "ES_HOST"       : 'localhost:9205',
+    "AUX_HOST"      : 'localhost:9205',
+    "NODE_PORT"     : 8090
 }

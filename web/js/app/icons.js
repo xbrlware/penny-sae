@@ -34,11 +34,12 @@ function implementIcons() {
                     var ctx = canvas.getCtx();
                     var pos = node.pos.getc(true);
 
+                    var is_person = entity_type == 'owner' | entity_type == undefined | entity_type == 'Unknown' | entity_type == "NER" | entity_type == "entity";
+
                     var icon;
-                    if(entity_type == 'owner' | entity_type == undefined | entity_type == 'Unknown' | entity_type == "NER" | entity_type == "entity"){
+                    if(is_person){
                         icon = window['network_' + node.data['$color'] + 'Person'];
                     } else if (entity_type == 'issuer' | entity_type == 'both') {
-                        console.log('network_' + node.data['$color'] + 'Building');
                         icon = window['network_' + node.data['$color'] + 'Building'];
                     } else {
                         console.log('icons.js :: unknown entity type!', entity_type);

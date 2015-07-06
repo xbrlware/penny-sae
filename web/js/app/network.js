@@ -1,13 +1,11 @@
 // Ownership Network Visualization 
 // Aesthetics for network visualization
 
-//
 function create_network_associates(network_center, network_associates) {
     if(network_associates.length > 0) {
         return _.chain(network_associates).filter(function(x) {return x.id}).map(function(x) {
+            console.log('network_associate', x);
             var adj = network_center._source.adjacencies.findBy('nodeTo', x.id);
-            
-            // If extracted via NER
             if(x.data.ner) {
                 x.data.type         = 'entity';
                 x.data.relationship = '';
@@ -18,7 +16,6 @@ function create_network_associates(network_center, network_associates) {
                 } else {
                     x.hidden = adj.data.hidden;
                 }
-                
             } else {
                 x.data.relationship = adj.data.relationship;
                 if(adj.data.hidden == undefined) {
@@ -27,11 +24,9 @@ function create_network_associates(network_center, network_associates) {
                 } else {
                     x.hidden = adj.data.hidden;
                 }
-                
             }
             
-            // If augmented, add source
-            if(adj.data.aug) {
+            if(adj.data.aug == true) {
                 x.augmented   = true;
                 x.data.source = "augmented";
             } else {
@@ -42,30 +37,32 @@ function create_network_associates(network_center, network_associates) {
                     x.data.source = "Form 4";
                 }
             }
-                        
-            return Ember.Object.create(x)
             
+            if(x.data.enhanced != undefined) {
+                x.data.enhanced = x.data.enhanced;
+            }
+            
+            return Ember.Object.create(x)
         }).value();
     } else {
         return [];
     }
 }
 
-function add_node(con, action, cik, rf_clean, that, node, rgraph) {
+function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
     return fetch_companies({
         index      : config.NETWORK_INDEX,
         query_type : 'networkQuery_center',
-        query_args : { "cik" : cik },
+        query_args : {"cik" : cik},
         rf         : rf_clean,
         callback   : function(center) {
-            if(center.hits.total > 0){
-                
+            if(center.hits.hits.length > 0){
+                           
                 var network_center = center.hits.hits.findBy('_index', config.NETWORK_INDEX);
-                var orig_adj       = network_center._source.adjacencies;
-                
+                var orig_adj = network_center._source.adjacencies;
                 if(network_center != undefined) {
                     if(action == 'initial') {
-                        con.set('isLoading', true)
+                        con.set('isLoading', true) //*
                     }
                     
                     network_center.companies = center.hits.hits.findBy('_index', config.COMPANY_INDEX);
@@ -139,7 +136,7 @@ function add_node(con, action, cik, rf_clean, that, node, rgraph) {
                                         sub_network_neighbors,
                                         rf_clean,
                                         function(json) {
-                                            var rgraph = makeRGraph(con, 'main-infovis', rf_clean);
+                                            var rgraph = is_new == true ? makeRGraph(con, 'main-infovis', rf_clean) : con.get('rgraph_object');
                                             rgraph.loadJSON(json);
                                             rgraph.refresh();
                                         
@@ -189,10 +186,10 @@ function add_node(con, action, cik, rf_clean, that, node, rgraph) {
 
 function red_flag_individuals(args) {
     Ember.$.ajax({
-        type        : "POST",
-        contentType : "application/json",
+        type        : 'POST',
+        contentType : 'application/json',
         dataType    : "json",
-        url         : "red_flag_individuals",
+        url         : 'red_flag_individuals',
         data : JSON.stringify({
             "query_args" : args.query_args,
             "rf"         : args.rf
@@ -306,24 +303,19 @@ App.NetController = Ember.ObjectController.extend({
 });
 
 App.NetView = Ember.View.extend({
-    // Load icons
-    willInsertElement : function() {
-        implementIcons();
-    },
-    
+    willInsertElement: function() { implementIcons(); },
     didInsertElement: function() {
+        this.get('controller').set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
+        this.get('controller').set('hide_ner', gconfig.DEFAULT_HIDE_NER);
         this.initRGraph(this, true);
     },
-    
     controllerChanged: function() {
+        this.get('controller').set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
+        this.get('controller').set('hide_ner', gconfig.DEFAULT_HIDE_NER);
         this.initRGraph(this, true);
     }.observes('controller.model'),
         
-    initRGraph: function(that) {
-        this.get('controller').set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
-        this.get('controller').set('hide_ner', gconfig.DEFAULT_HIDE_NER);
-
-
+    initRGraph: function(that, is_new) {
         $jit.id('inner-details').innerHTML = "";
 
         var con = that.get('controller');
@@ -357,7 +349,7 @@ App.NetView = Ember.View.extend({
         };
         var rf_clean = rf;
         
-        return add_node(con, 'initial', that.data.get('content').cik, rf_clean, that, undefined, undefined)
+        return add_node(con, 'initial', that.data.get('content').cik, rf_clean, is_new, that, undefined, undefined)
     },
     
     addButton: function(con, rgraph) {

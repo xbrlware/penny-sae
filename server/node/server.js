@@ -117,33 +117,32 @@ function run_server() {
                 body  : body
             }).then(function(es_response) {
                 var buckets = es_response.aggregations.searchTerm_filt.searchTerm_dh.buckets;
-                console.log('tts es_response', buckets);
                 res.send(buckets);
             });
         })
-    } else if(config.TTS_TYPE == 'r'){
-        app.post('/fetch_tts', function(req, res) {
-            var d = req.body;
-            postfields = {"json" : {
-                            "fun" : "term_prevelance",
-                            "params" : {
-                                "search_terms" : d.query_args.searchTerm
-                            }
-                         }};
-            console.log('about to post')
-            request.post(
-                'http://0.0.0.0:9090/',
-                postfields,
-                function (error, response, body) {
-                    console.log('error', error);
-                    console.log('response', response);
-                    console.log('body', body);
-                    
-                    body = JSON.parse(body);
-                    res.send(body);
-                }
-            );
-        })
+//    } else if(config.TTS_TYPE == 'r'){
+//        app.post('/fetch_tts', function(req, res) {
+//            var d = req.body;
+//            postfields = {"json" : {
+//                            "fun" : "term_prevelance",
+//                            "params" : {
+//                                "search_terms" : d.query_args.searchTerm
+//                            }
+//                         }};
+//            console.log('about to post')
+//            request.post(
+//                'http://0.0.0.0:9090/',
+//                postfields,
+//                function (error, response, body) {
+//                    console.log('error', error);
+//                    console.log('response', response);
+//                    console.log('body', body);
+//                    
+//                    body = JSON.parse(body);
+//                    res.send(body);
+//                }
+//            );
+//        })
     } else {
         console.log('illegal TTS_TYPE!');
     }
