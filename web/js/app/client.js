@@ -102,7 +102,7 @@ App.Search.reopenClass({
             fetch_companies({
                 query_type : "companyQuery",
                 query_args : {"searchTerm" : searchTerm},
-                index      : config.COMPANY_INDEX,
+                index      : 'companies',
                 rf         : rf_clean,
                 from       : 0,
                 callback   : function(data) {
@@ -139,7 +139,7 @@ App.Search.reopenClass({
             fetch_companies({
                 query_type : "rfFilterQuery",
                 query_args : {},
-                index      : config.COMPANY_INDEX,
+                index      : 'companies',
                 rf         : rf_clean,
                 from       : from,
                 callback   : function (data) {

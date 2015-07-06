@@ -26,7 +26,7 @@ var gconfig = {
         },
         delta      : {
             type   : "company_name",
-            thresh : 3
+            thresh : 2
         },
         network : {
             type   : "otc_neibs_pct",
@@ -54,9 +54,9 @@ var gconfig = {
     DEFAULT_TOGGLES : {
         financials    : true,
         delta         : true,
-        trading_halts : false,
-        delinquency   : true,
-        network       : true,
+        trading_halts : true,
+        delinquency   : false,
+        network       : false,
 
         pv            : false,
         crowdsar      : false

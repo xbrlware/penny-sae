@@ -41,7 +41,7 @@ App.ApplicationRoute = Ember.Route.extend({
         companySearch: function() {
             var con         = this.get('controller');
             var sidebar_con = this.controllerFor('sidebar');
-            var searchTerm = con.get('searchTerm');
+            var searchTerm  = con.get('searchTerm');
             if(searchTerm != '' & searchTerm != undefined) {
                 sidebar_con.set('isLoading', true);
                 var promise = App.Search.search_company(searchTerm, rf_clean_func(con.get('rf'), undefined));
