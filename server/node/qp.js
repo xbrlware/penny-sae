@@ -360,7 +360,6 @@ function topicQuery(topic, rf) {
                         }
                     }
                 }
-    console.log(parsed);
     return parsed;
 };
 
@@ -451,7 +450,6 @@ function networkQuery_adjacencies(ids, rf){
 function multiCIKQuery(ciks, rf){
 
     var ids = _.map(ciks, smart_parseInt);
-    console.log('multiCIKQuery ids', ids);
     
     var parsed = new Object;
     parsed.query = {
@@ -468,64 +466,34 @@ function multiCIKQuery(ciks, rf){
 function ttsQuery(searchTerm) {
     var parsed   = new Object;
     parsed.query = {"match_all" : {}};
-    parsed.size = 0;
-    parsed.aggs = {"searchTerm_filt" : {   // This gives number of documents, so it's driven by CROWDSAR
-                        "filter" : { "term" : {"body" : searchTerm} },
-                        "aggs" : {
-                            "searchTerm_dh" : {
-                                "date_histogram" : {
-                                    "field"    : "time",
-                                    "interval" : "week"
-                                }
-                            }
-                        }
+    parsed.size  = 0;
+    parsed.aggs  = {"searchTerm_filt" : {   // This gives number of documents, so it's driven by CROWDSAR
+            "filter" : { "term" : {"body" : searchTerm} },
+            "aggs" : {
+                "searchTerm_dh" : {
+                    "date_histogram" : {
+                        "field"    : "time",
+                        "interval" : "week"
                     }
                 }
-    console.log(parsed);
+            }
+        }
+    }
     return parsed;
 }
 
 /* Server Interface */
-exports.parse = function(type, args, rf) {
-    switch(type) {
-
-
-        /* Searches */
-        case 'companyQuery':
-            return companyQuery(args.searchTerm, rf);
-        case 'topicQuery':
-            return topicQuery(args.searchTerm, rf);
-        case 'rfFilterQuery':
-            return rfFilterQuery(rf);
-
-        /* Detail Page */
-        case 'detailQuery':
-            return detailQuery(args.cik, rf);
-
-        case 'multiCIKQuery':
-            return multiCIKQuery(args.ciks, rf);
-            
-        case 'cikQuery':
-            return cikQuery(args.cik);
-        case 'resultsQuery':
-            return resultsQuery(args.q);
-
-        /* Network */
-        case 'currentQuery':
-            return currentQuery(args.id, rf);
-        case 'networkQuery_center':
-            return networkQuery_center(args.cik, rf);
-        case 'networkQuery_neighbors':
-            return networkQuery_neighbors(args.adj, rf);
-        case 'networkQuery_adjacencies':
-            return networkQuery_adjacencies(args.all_ciks, rf);
-
-        /*  */
-        case 'ttsQuery':
-            return ttsQuery(args.searchTerm);
-
-        default:
-            console.log('unsupported query:', type)
-            return undefined;
-    }
+module.exports = {
+    companyQuery             : function(type, args, rf) { return companyQuery(args.searchTerm, rf) },
+    topicQuery               : function(type, args, rf) { return topicQuery(args.searchTerm, rf) },
+    rfFilterQuery            : function(type, args, rf) { return rfFilterQuery(rf) },
+    detailQuery              : function(type, args, rf) { return detailQuery(args.cik, rf) },
+    multiCIKQuery            : function(type, args, rf) { return multiCIKQuery(args.ciks, rf) },
+    cikQuery                 : function(type, args, rf) { return cikQuery(args.cik) },
+    resultsQuery             : function(type, args, rf) { return resultsQuery(args.q) },
+    currentQuery             : function(type, args, rf) { return currentQuery(args.id, rf) },
+    networkQuery_center      : function(type, args, rf) { return networkQuery_center(args.cik, rf) },
+    networkQuery_neighbors   : function(type, args, rf) { return networkQuery_neighbors(args.adj, rf) },
+    networkQuery_adjacencies : function(type, args, rf) { return networkQuery_adjacencies(args.all_ciks, rf) },
+    ttsQuery                 : function(type, args, rf) { return ttsQuery(args.searchTerm) },
 }

@@ -73,7 +73,7 @@ module.exports = function(app, config, client) {
     app.post('/fetch_tts', function(req, res) {
         var d = req.body;
        
-        var body = qp.parse('ttsQuery', d.query_args, undefined)
+        var body = qp.ttsQuery(d.query_args, undefined)
         client.search({
             index : "omx",
             body  : body
@@ -84,7 +84,6 @@ module.exports = function(app, config, client) {
     })
 
     function topic_summary_statistics(data, rf_clean, callback) {
-        console.log('------- topic summary statistics', rf_clean)
         hits = data.hits.hits;
 
         rf_total    = 0;
@@ -156,10 +155,9 @@ module.exports = function(app, config, client) {
     app.post('/fetch_companies', function(req, res) {
         var d = req.body;
         var search_params = {
-            body : qp.parse(d.query_type, d.query_args, d.rf),
+            body : qp[d.query_type](d.query_args, d.rf),
             from : d.from == undefined ? 0 : d.from
         }
-        console.log('body', JSON.stringify(search_params['body']));
        
         if(d.index != config.NETWORK_INDEX && d.index != 'network') {
             search_params['index'] = d.index;
@@ -170,19 +168,17 @@ module.exports = function(app, config, client) {
         client.search(
             search_params
         ).then(function (es_response) {
-            console.log(es_response);
             res.send(es_response);
         });
     });
 
     app.post('/fetch_topic', function(req, res) {
         var d = req.body;
-        var body = qp.parse(d.query_type, d.query_args, d.rf);
+        var body = qp[d.query_type](d.query_args, d.rf);
         client.search({
             body  : body,
             from  : 0,
         }).then(function (es_response) {
-            console.log('process_topic_request', es_response);
             
             var buckets = es_response.aggregations.trending.buckets;
             if(buckets != undefined) {
@@ -191,7 +187,7 @@ module.exports = function(app, config, client) {
             
             client.search({
                 index : config.COMPANY_INDEX,
-                body  : qp.parse('multiCIKQuery', {"ciks" : ciks}, d.rf) // ----> Add aggregations here
+                body  : qp.multiCIKQuery({"ciks" : ciks}, d.rf)
             }).then(function(es_response2) {
             
                 var hits = es_response2.hits.hits;
@@ -203,11 +199,9 @@ module.exports = function(app, config, client) {
                     }
                 };
                 
-                console.log('calling topic summary statistics')
                 topic_summary_statistics(es_response2, d.rf, function(out) {
                     out.hits.hits = arr2.slice(1, 15);
                     out.total_hits_topic = ciks.length;
-                    console.log(es_response.aggregations.cik_filter.trending_names.buckets);
                     out.names = es_response.aggregations.cik_filter.trending_names.buckets;
                     res.send(out);
                 });
@@ -243,7 +237,6 @@ module.exports = function(app, config, client) {
             tmp = _.sortBy(tmp, function(x) {return x.cnt_total});
             tmp.reverse();
             
-            
             res.send(tmp);
         }, function(error) {
             res.send([undefined]);
@@ -260,17 +253,12 @@ module.exports = function(app, config, client) {
             
             _.map(orig._source.adjacencies, function(orig_adj) {
                 var update = _.where(d.updates, {"nodeTo" : orig_adj.nodeTo})[0];
-                console.log('update', update);
-// I don't know exactly why this error would get thrown...
                 if(update != undefined) {
-                    console.log('update.hidden', update.hidden);
                     orig_adj.data.hidden = update.hidden;
                 } else {
                     orig_adj.data.hidden = true;
                 }
             });
-
-            console.log('orig_adj', orig._source.adjacencies);
             
             client.index({
               index : config.NETWORK_INDEX,
@@ -278,7 +266,6 @@ module.exports = function(app, config, client) {
               id    : d.cik,
               body  : orig._source
             }).then(function(resp) {
-                console.log(resp);
                 res.send(resp);
             });
         });
@@ -291,23 +278,20 @@ module.exports = function(app, config, client) {
        
         function calculate_rf_individual(cik, callback) {
             // Get companies that individual is connected to
-            console.log('>>> cik', cik);
             var rf_total, rf_possible, n_ass, rf_score;
             client.search({
               index : config.NETWORK_INDEX,
-              body  : qp.parse('networkQuery_center', {"cik" : cik}, d.rf),
+              body  : qp.networkQuery_center({"cik" : cik}, d.rf),
               from  : 0,
             }).then(function(data) {
-                var adj = data.hits.hits[0]._source.adjacencies;
-
+                var adj     = data.hits.hits[0]._source.adjacencies;
                 var nodeTos = _.pluck(adj, 'nodeTo');
-                console.log('nodeTos', nodeTos);
+                
                 client.search({
                     index : config.COMPANY_INDEX,
-                    body  : qp.parse('multiCIKQuery', {"ciks": nodeTos}, d.rf),
+                    body  : qp.multiCIKQuery("ciks": nodeTos}, d.rf),
                     from  : 0
                 }).then(function(company_data) {
-                    console.log('got company data', company_data);
                     var company_data = company_data.hits.hits;
                     rf_total    = 0;
                     rf_possible = 0;
@@ -329,7 +313,6 @@ module.exports = function(app, config, client) {
         };
        
         async.map(all_ciks, calculate_rf_individual, function(err, results) {
-            console.log(results);
             res.send(results);
         });
     });
@@ -356,7 +339,6 @@ module.exports = function(app, config, client) {
                 "size" : 100
             }
         }).then(function(response) {
-            console.log('response', response);
             res.send(
                 _.map(response.hits.hits, function(hit) {
                     var src = hit._source;
