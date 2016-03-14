@@ -28,7 +28,6 @@ function run_server() {
 
 	// Import scripts
 	var qp = require('./qp.js');
-	var sg = require('./sar_generator.js');
 
 	// Basic Setup
 	app.all('*', function(req, res, next) {
@@ -344,27 +343,6 @@ function run_server() {
             }).then(function(resp) {
                 console.log(resp);
                 res.send(resp);
-            });
-        });
-    });
-
-
-    // Sar Generator
-    app.post('/sar_generator', function(req, res) {
-        var d = req.body;
-        var company_body = qp.parse('cikQuery', {"cik" : d.cik}, d.rf)
-        client.search({
-            index : config.COMPANY_INDEX,
-            body  : company_body,
-            from  : 0
-        }).then(function(comp) {
-            var network_body = qp.parse('networkQuery_center', {"cik" : d.cik}, d.rf);
-            client.search({
-              index : config.NETWORK_INDEX,
-              body  : network_body,
-              from  : 0,
-            }).then(function (net) {
-                res.send(sg.writeReport(comp, net));
             });
         });
     });
