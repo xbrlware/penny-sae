@@ -157,7 +157,7 @@ module.exports = function(app, config, client) {
        
         var index = (d.index != config.NETWORK_INDEX && d.index != 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX];
         
-        console.log('fetch_companies :: ', qp[d.query_type](d.query_args, d.rf));
+        console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)));
         
         client.search({
             "index" : index,
