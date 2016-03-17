@@ -1,0 +1,6 @@
+{{#if view.have}}
+    <div {{bind-attr id=view.mid class="view.flagged:flagged:not-flagged view.first_column:first_column:second_column"}}>
+        <div style="float:left;"> {{view.text}} </div>
+        <div style="float:right;"> {{view.value}} </div>
+    </div>
+{{/if}}

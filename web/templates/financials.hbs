@@ -1,0 +1,30 @@
+    <!-- Financials -->
+        <center>
+            {{#if model}}
+                <h3>Financials</h3>
+                <table class="table table-hover" style="width:60%;">
+                    <tr>
+                        <th>Balance Sheet Date</th>
+                        <th>Filing</th>
+                        <th>Fiscal Year End</th>
+                        <th>Revenues</th>
+                        <th>Net Income</th>
+                        <th>Assets</th>
+                    </tr>
+                    {{#each f in model}}
+                        <tr>
+                            <td>{{f.bsd}}</td>
+                            <td>{{f.type}}</td>
+                            <td>{{f.fy}}</td>
+                            <td>{{f.revenues_pretty}}</td>
+                            <td>{{f.netincome_pretty}}</td>
+                            <td>{{f.assets_pretty}}</td>
+                        </tr>
+                    {{/each}}
+                </table>
+            {{else}}
+                <center>
+                    <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
+                </center>
+            {{/if}}
+        </center>

@@ -1,0 +1,30 @@
+    <!-- Late Filing History -->
+        <center>
+            {{#if model}}
+                <h3>Late Filings</h3>
+                <table class="table table-hover" style="width:60%;">
+                    <tr>
+                        <th>Date of Filing</th>
+                        <th>Due Date</th>
+                        <th>Form</th>
+                        <th>Late</th>
+                    </tr>
+                    {{#each f in model}}
+                        <tr {{bind-attr class="f.std_late:late-row:timely-row"}}>
+                            <td>{{f.dof}}</td>
+                            <td>{{f.dd}}</td>
+                            <td>{{f.form}}</td>
+                            <td>
+                                {{#if f.std_late}}
+                                    Late Filing
+                                {{else}}
+                                    On Time
+                                {{/if}}
+                            </td>
+                        </tr>
+                    {{/each}}
+                </table>
+            {{else}}
+                <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
+            {{/if}}
+        </center>

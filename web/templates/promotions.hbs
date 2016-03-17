@@ -1,0 +1,42 @@
+        <center>
+            <h3> History of Stock Promotions </h3>
+            {{#if model}}
+                <p>
+                    The following chart shows the number of times that this company
+                    has meen featured in our collection of stock promotion emails.
+                </p>
+                <div class="col-sm-12" style="overflow:auto;">
+                    <div id="cal-heatmap"></div>
+                </div>
+                
+                <div class="accordion" id="promotion_accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#promotion_accordion" href="#promo_acc">
+                                <h3><center> Show List of Promotions </center></h3>
+                            </a>
+                        </div>
+                        <div id="promo_acc" class="accordion-body collapse in">
+                            <div class="accordion-inner">
+                                <center>
+                                    <table id="table-promotions">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Count</th>
+                                        </tr>
+                                        {{#each d in model}}
+                                            <tr>
+                                                <td>{{d.date}}</td>
+                                                <td>{{d.cnt}}</td>
+                                            </tr>
+                                        {{/each}}
+                                    </table>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                <h4> No record of stock promotions for this company. </h4>
+            {{/if}}
+        </center>

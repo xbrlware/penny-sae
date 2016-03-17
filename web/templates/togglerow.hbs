@@ -1,0 +1,17 @@
+<td>
+    {{#if view.value}}
+        <i class="fa fa-check-square-o fa-1x" style="color:red"></i>
+    {{else}}
+        <i class="fa fa-square-o fa-1x" style="color:grey"></i>
+    {{/if}}
+</td>
+
+<td>
+    {{view.text}}
+</td>
+    
+{{#if view.showParameters}}
+    <td class="dropdown-button" {{action "showParameters" view.showParameters}}>
+        Customize
+    </td>
+{{/if}}

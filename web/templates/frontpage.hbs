@@ -1,0 +1,104 @@
+<div style="margin-top:-65px;">
+    <center>
+        <font color="red">
+            <h1 style="margin-top:-10px;"> Phronesis </h1>
+            <h2 style="margin-top:-5px;"> Suspicious Activity Explorer </h2>
+            <h2 style="margin-top:-10px;"> Penny Stocks </h2>
+        </font>
+            
+        <div style="width:50%;">
+            <h3 class="h3-small" style="padding-top:10px;"> - Search By Company Name or Ticker - </h3>
+            {{focus-input class="input-fat" value=searchTerm style="text-align:center;" insert-newline="companySearch"}}
+        </div>
+
+        {{#unless isLoading}}
+            
+        <div style="background-color:white; border: 1px solid black; width:50%; margin-top:30px;">
+            <h3 class="h3-small"> - Search By Red Flags - </h3>
+            <table class="table hoverTable front-page">
+                <tr class="no-hover">
+                    <th> </th>
+                    <th>
+                        <h3><font color="red"> Red Flags </font></h3>
+                    </th>
+                </tr>
+
+                {{
+                    view App.ToggleRowView
+                    text = "Company has no business, no revenues and no product."
+                    valueBinding = toggles.financials
+                }}
+
+                {{
+                    view App.ToggleRowView
+                    text = "Company undergoes frequent material changes in business strategy or its line of business."
+                    valueBinding = toggles.delta
+                }}
+
+                {{
+                    view App.ToggleRowView
+                    text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
+                    valueBinding = toggles.network
+                }}
+
+                {{
+                    view App.ToggleRowView
+                    text = "Company has been the subject of a prior trading suspension."
+                    valueBinding = toggles.trading_halts
+                }}
+
+                {{
+                    view App.ToggleRowView
+                    text = "Company has not made disclosures in SEC or other regulatory filings."
+                    valueBinding = toggles.delinquency
+                }}
+
+        {{!--
+                        <tr class="no-hover">
+                            <td colspan="3">
+                                <div class="under-construction">Currently Under Development</div>
+                            </td>
+                        </tr>
+                        
+                        {{
+                            view App.DisabledToggleRowView
+                            text = "Company has experienced frequent or continuous changes in its business structure."
+                        }}
+         
+                        {{
+                            view App.DisabledToggleRowView
+                            text = "Officers or insiders of the issuer have a history of securities violations."
+                        }}
+        --}}
+
+                <tr class="no-hover" style="border-bottom: 1px dashed grey;"><td></td><td></td></tr>
+                <tr class="no-hover">
+                    <td></td>
+                    <td><h3><font color="red"> Additional Red Flags </font></h3></td>
+                </tr>
+                        
+                {{
+                    view App.ToggleRowView
+                    text = "Company stock has experienced recent price and/or volume anomalies."
+                    valueBinding = toggles.pv
+                }}
+                
+                {{
+                    view App.ToggleRowView
+                    text = "Investors have made allegations about malfeasance of the company on social media."
+                    valueBinding = toggles.crowdsar
+                }}
+
+                <tr class="no-hover">
+                    <td colspan="2">
+                        <button class="btn btn-success btn-submit-frontpage" {{action "goToSidebar"}}>
+                            Find
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {{/unless}}
+</center>
+</div>
+
