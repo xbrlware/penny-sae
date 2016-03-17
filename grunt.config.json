@@ -9,8 +9,6 @@
     "tmp"        : "web/templates/",
     
     "css_files"  : [
-         "web/css/bootstrap.min.css",
-         "web/css/base.css",
          "web/css/normalize.css",
          "web/css/bootstrap.min.css",
          "web/css/yamm.css",

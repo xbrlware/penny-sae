@@ -30,12 +30,15 @@ module.exports = function(grunt) {
             appsJS : {
                 src  : "<%= cfg.app_files %>",
                 dest : "<%= cfg.jdt %>apps.concat.js"
-            },                                                                                                                                       
-            allJS :  {
+            },
+            prodJS :  {
                 src  : ["<%= cfg.jdt %>libs.min.js","<%= cfg.jdt %>apps.min.js"],
                 dest : "<%= cfg.jdt %>nodesec.js"
+            },
+            devJS : {
+                src  : ["<%= cfg.jdt %>libs.concat.js", "<%= cfg.jdt %>apps.concat.js"],
+                dest : "<%= cfg.jdt %>nodesec.js"
             }
- 
        },  
                 
         cssmin : {
@@ -125,9 +128,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-ember-templates');
     
-    grunt.registerTask('app', ['concat:appsJS', 'uglify:apps', 'concat:allJS']);
+    grunt.registerTask('prodApp', ['concat:appsJS', 'uglify:apps', 'concat:prodJS']);
+    grunt.registerTask('prodLib', ['concat:libsJS', 'uglify:libs', 'concat:prodJS']);
+    grunt.registerTask('devApp', ['concat:appsJS', 'concat:devJS']); 
+    grunt.registerTask('devLib', ['concat:libsJS', 'concat:devJS']); 
     grunt.registerTask('css', ['less:dev','concat:devCSS','cssmin', 'bless']);
-    grunt.registerTask('lib', ['concat:libsJS', 'uglify:libs', 'concat:allJS']);
     grunt.registerTask('cmp', ['emberTemplates',]);
     grunt.registerTask('wth', ['watch',]);
 
