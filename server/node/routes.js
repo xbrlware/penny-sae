@@ -154,20 +154,16 @@ module.exports = function(app, config, client) {
 
     app.post('/fetch_companies', function(req, res) {
         var d = req.body;
-        var search_params = {
-            body : qp[d.query_type](d.query_args, d.rf),
-            from : d.from == undefined ? 0 : d.from
-        }
        
-        if(d.index != config.NETWORK_INDEX && d.index != 'network') {
-            search_params['index'] = d.index;
-        } else {
-            search_params['index'] = [config.NETWORK_INDEX, config.COMPANY_INDEX];
-        }
-
-        client.search(
-            search_params
-        ).then(function (es_response) {
+        var index = (d.index != config.NETWORK_INDEX && d.index != 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX];
+        
+        console.log('fetch_companies :: ', qp[d.query_type](d.query_args, d.rf));
+        
+        client.search({
+            "index" : index,
+            "body"  : qp[d.query_type](d.query_args, d.rf),
+            "from"  : d.from == undefined ? 0 : d.from,
+        }).then(function (es_response) {
             res.send(es_response);
         });
     });
@@ -289,7 +285,7 @@ module.exports = function(app, config, client) {
                 
                 client.search({
                     index : config.COMPANY_INDEX,
-                    body  : qp.multiCIKQuery("ciks": nodeTos}, d.rf),
+                    body  : qp.multiCIKQuery({"ciks": nodeTos}, d.rf),
                     from  : 0
                 }).then(function(company_data) {
                     var company_data = company_data.hits.hits;

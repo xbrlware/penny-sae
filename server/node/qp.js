@@ -1,6 +1,6 @@
 // Query Parser -- write Elasticsearch queries
 
-var _  = require('underscore')._;
+var _ = require('underscore')._;
 
 const CONSTANT_BOOST = 1000;
 const SIZE = 15;
@@ -28,8 +28,6 @@ const NULL_QUERY = {
     },
     "size": SIZE
 };
-
-
 
 /* --------------------- Functions for Filtering + Scoring  ---------------------- */
 function setFunctions(rf){
@@ -157,25 +155,22 @@ function setFunctions(rf){
 /* Functions for Script Return */
 function setScriptFields(rf, include_generic){
 
-    include_generic = include_generic == undefined ? true : include_generic;
-
     var sf = {};
-    if(include_generic) {
+    
+    if(include_generic != undefined) {
         sf.n_records   = LENGTH_QUERY;
         sf.currentName = CURRENT_NAME_QUERY;
     }
     
-    if(rf == undefined) {
-        return sf;
-    }
+    if(!rf) { return sf; }
     
     // Number of changes in business metadata
     if(rf.toggles.delta) {
-        if(delta.type != undefined){
+        if(rf.delta.type != undefined){
             sf.delta = {
-                "lang" : "js",
-                "script": "delta",
-                "params": {
+                "lang"   : "js",
+                "script" : "delta",
+                "params" : {
                     "type" : rf.delta.type
                 }
             }
@@ -185,7 +180,7 @@ function setScriptFields(rf, include_generic){
     // Number of trading halts
     if(rf.toggles.trading_halts) {
         sf.trading_halts = {
-            "lang" : "js",
+            "lang"   : "js",
             "script" : "trading_halt_scriptfield"
         }
     };
@@ -193,7 +188,7 @@ function setScriptFields(rf, include_generic){
     // Number of filings with revenues below threshold
     if(rf.toggles.financials){
         sf.financials_scriptfield = {
-            "lang" : "js",
+            "lang"   : "js",
             "script" : "financials_scriptfield",
             "params" : {
                 "type"         : rf.financials.type,
@@ -280,11 +275,11 @@ function rfFilterQuery(rf) {
         ),
         "query"     : {
             "function_score" : {
-                "query"      : {"match_all" : {}}
-                "score_mode" : "sum"
-                "functions"  : setFunctions(rf)
+                "query"      : {"match_all" : {}},
+                "score_mode" : "sum",
+                "functions"  : setFunctions(rf),
             }
-        }
+        },
         "fields"        : ["_source"],
         "script_fields" : setScriptFields(rf),
         "size"          : SIZE,
@@ -297,11 +292,11 @@ function detailQuery(cik, rf) {
         "query" : {
             "multi_match" : {
                 "query"  : cik,
-                "fields" : ["_id", "cik"]
+                "fields" : ["_id", "cik"],
             }
         },
         "fields"        : ["_source"],
-        "script_fields" : setScriptFields(rf)
+        "script_fields" : setScriptFields(rf),
     }
 }
 
@@ -309,18 +304,14 @@ function detailQuery(cik, rf) {
 
 function companyQuery(name, rf) {
     var parsed       = new Object;
+    console.log('name :: ', name);
     parsed.min_score = .001         // Relevance to search term
     if(name != undefined){
         parsed.query = {
             "multi_match" : {
                 "query"    : name,
                 "operator" : "and",
-                "fields"   : ["company_name",
-                                "cik",
-                                "irs",
-                                "sic",
-                                "_id",
-                                "ticker"]
+                "fields"   : ["company_name", "cik", "irs", "sic", "_id", "ticker"],
             }
         }
     } else {
@@ -434,17 +425,17 @@ function networkQuery_adjacencies(ids, rf){
         "fields" : ["_source"],
         "query"  : { "ids": { "values" : ids } },
         "script_fields" : setScriptFields(rf, false),
-        "size"          : 9999
+        "size"          : 9999,
     }
 }
 
 function multiCIKQuery(ciks, rf){
     return {
         "query" : {
-            "ids"           : { "values" : _.map(ciks, smart_parseInt); },
+            "ids"           : { "values" : _.map(ciks, smart_parseInt) },
             "fields"        : ["_source"],
             "script_fields" : setScriptFields(rf),
-            "size"          : 9999
+            "size"          : 9999,
         }
     }
 }
@@ -455,11 +446,11 @@ function ttsQuery(searchTerm) {
         "aggs" : {
             "searchTerm_filt" : {   // This gives number of documents, so it's driven by CROWDSAR
                 "filter" : { "term" : {"body" : searchTerm} },
-                "aggs" : {
+                "aggs"   : {
                     "searchTerm_dh" : {
                         "date_histogram" : {
                             "field"    : "time",
-                            "interval" : "week"
+                            "interval" : "week",
                         }
                     }
                 }
@@ -470,16 +461,16 @@ function ttsQuery(searchTerm) {
 
 /* Server Interface */
 module.exports = {
-    companyQuery             : function(type, args, rf) { return companyQuery(args.searchTerm, rf) },
-    topicQuery               : function(type, args, rf) { return topicQuery(args.searchTerm, rf) },
-    rfFilterQuery            : function(type, args, rf) { return rfFilterQuery(rf) },
-    detailQuery              : function(type, args, rf) { return detailQuery(args.cik, rf) },
-    multiCIKQuery            : function(type, args, rf) { return multiCIKQuery(args.ciks, rf) },
-    cikQuery                 : function(type, args, rf) { return cikQuery(args.cik) },
-    resultsQuery             : function(type, args, rf) { return resultsQuery(args.q) },
-    currentQuery             : function(type, args, rf) { return currentQuery(args.id, rf) },
-    networkQuery_center      : function(type, args, rf) { return networkQuery_center(args.cik, rf) },
-    networkQuery_neighbors   : function(type, args, rf) { return networkQuery_neighbors(args.adj, rf) },
-    networkQuery_adjacencies : function(type, args, rf) { return networkQuery_adjacencies(args.all_ciks, rf) },
-    ttsQuery                 : function(type, args, rf) { return ttsQuery(args.searchTerm) },
+    companyQuery             : function(args, rf) { return companyQuery(args.searchTerm, rf) },
+    topicQuery               : function(args, rf) { return topicQuery(args.searchTerm, rf) },
+    rfFilterQuery            : function(args, rf) { return rfFilterQuery(rf) },
+    detailQuery              : function(args, rf) { return detailQuery(args.cik, rf) },
+    multiCIKQuery            : function(args, rf) { return multiCIKQuery(args.ciks, rf) },
+    cikQuery                 : function(args, rf) { return cikQuery(args.cik) },
+    resultsQuery             : function(args, rf) { return resultsQuery(args.q) },
+    currentQuery             : function(args, rf) { return currentQuery(args.id, rf) },
+    networkQuery_center      : function(args, rf) { return networkQuery_center(args.cik, rf) },
+    networkQuery_neighbors   : function(args, rf) { return networkQuery_neighbors(args.adj, rf) },
+    networkQuery_adjacencies : function(args, rf) { return networkQuery_adjacencies(args.all_ciks, rf) },
+    ttsQuery                 : function(args, rf) { return ttsQuery(args.searchTerm) },
 }

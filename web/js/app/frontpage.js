@@ -5,6 +5,7 @@ App.FrontpageRoute = Ember.Route.extend({
     },
     actions : {
         companySearch: function() {
+            console.log('companySearch -- frontpage')
             var st = this.get('controller').get('searchTerm');
             if(st != '' & st != undefined){
                 this.controllerFor('application').set('showNav', true);

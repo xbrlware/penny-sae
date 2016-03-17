@@ -2,7 +2,6 @@
     "COMPANY_INDEX" : "companies_restore",
     "NETWORK_INDEX" : "petwork",
     "TTS_TYPE"      : "js",
-
     "ES" : {
         "HOST" : "localhost:9205"
     },

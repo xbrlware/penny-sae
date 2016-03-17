@@ -1,32 +1,13 @@
 // Client
 
-function fetch_companies(args){
+function fetch(args){
+    console.log('fetch');
     Ember.$.ajax({
         type        : 'POST',
         contentType : 'application/json',
         dataType    : "json",
-        url     : 'fetch_companies',
-        data    : JSON.stringify({
-                    "index"      : args.index,
-                    "query_type" : args.query_type,
-                    "query_args" : args.query_args,
-                    "from"       : args.from,
-                    "rf"         : args.rf
-                  }),
-        success : args.callback,
-        error   : function (xhr, status, error) {
-                    console.log('Error: ' + error.message);
-                  }
-    });
-};
-
-function fetch_topic(args) {
-   Ember.$.ajax({
-        type        : 'POST',
-        contentType : 'application/json',
-        dataType    : "json",
-        url     : 'fetch_topic',
-        data    : JSON.stringify({
+        url         : args.endpoint,
+        data : JSON.stringify({
             "index"      : args.index,
             "query_type" : args.query_type,
             "query_args" : args.query_args,
@@ -34,22 +15,7 @@ function fetch_topic(args) {
             "rf"         : args.rf
         }),
         success : args.callback,
-        error   : function (xhr, status, error) {
-            console.log('Error: ' + error.message);
-        }
-    });
-}
-
-function generate_sar(args){
-    var cik = args.source.company_data.cik[0];
-    Ember.$.ajax({
-        type        : 'POST',
-        contentType : 'application/json',
-        dataType    : "json",
-        url     : 'sar_generator',
-        data    : JSON.stringify({ "cik" : cik }),
-        success : args.callback,
-        error   : function (xhr, status, error) {
+        error : function (xhr, status, error) {
             console.log('Error: ' + error.message);
         }
     });
@@ -57,7 +23,8 @@ function generate_sar(args){
 
 function get_detail(cik, rf_clean) {
     return new Ember.RSVP.Promise(function(resolve, reject) {
-        fetch_companies({
+        fetch({
+            endpoint   : "fetch_companies",
             index      : config.COMPANY_INDEX,
             query_type : "detailQuery",
             query_args : {"cik" : cik},
@@ -98,10 +65,14 @@ App.Search = Ember.Object.extend({});
 App.Search.reopenClass({
 
     search_company : function(searchTerm, rf_clean) {
+        console.log('search_company', searchTerm);
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 query_type : "companyQuery",
-                query_args : {"searchTerm" : searchTerm},
+                query_args : {
+                    "searchTerm" : searchTerm
+                },
                 index      : 'companies',
                 rf         : rf_clean,
                 from       : 0,
@@ -113,30 +84,33 @@ App.Search.reopenClass({
         });
     },
     
-    search_topic : function(searchTerm, rf_clean) {
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            fetch_topic({
-                query_type : "topicQuery",
-                query_args : {"searchTerm" : searchTerm},
-                index      : 'crowdsar_posts',
-                rf         : rf_clean,
-                from       : 0,
-                callback   : function(data) {
-                    s = App.Search.process_query_results(data, rf_clean, true)
-                    s.set('unknown_names', data.names);
-                    s.set('total_hits', data.total_hits_topic);
-                    s.set('tss', data.tss);
-                    resolve(s)
-                 }
-            });
-        });
-    },
+//    search_topic : function(searchTerm, rf_clean) {
+//        return new Ember.RSVP.Promise(function(resolve, reject) {
+//            fetch_topic({
+//                endpoint   : "fetch_topic",
+//                query_type : "topicQuery",
+//                query_args : {"searchTerm" : searchTerm},
+//                index      : 'crowdsar_posts',
+//                rf         : rf_clean,
+//                from       : 0,
+//                callback   : function(data) {
+//                    s = App.Search.process_query_results(data, rf_clean, true)
+//                    s.set('unknown_names', data.names);
+//                    s.set('total_hits', data.total_hits_topic);
+//                    s.set('tss', data.tss);
+//                    resolve(s)
+//                 }
+//            });
+//        });
+//    },
         
     search_filters : function(rf_clean, from, s) {
+        console.log('search_filters');
         var from  = from == undefined ? 0 : from;
         var s     = s == undefined ? App.SearchResults.create() : s;
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 query_type : "rfFilterQuery",
                 query_args : {},
                 index      : 'companies',
@@ -152,8 +126,8 @@ App.Search.reopenClass({
     },
     
     process_query_results : function(data, rf_clean, can_break) {
-        console.log('about to process', data)
-
+        console.log('process_query_results');
+        
         var s          = App.SearchResults.create();
         var arr        = [];
         var last_score = -1;
