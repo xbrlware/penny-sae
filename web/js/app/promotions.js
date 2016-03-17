@@ -30,16 +30,19 @@ App.PromotionsView = Ember.View.extend({
         });
 
         var cal = new CalHeatMap();
-        cal.init({
-            data         : data,
-            start        : new Date(start * 1000),
-            range        : 12 * (new Date().getYear() - new Date(start * 1000).getYear()),
-            domain       : "month",
-            subDomain    : "day",
-            scale        : [1,2,4,8],
-            itemName     : ["promotion", "promotions"],
-            displayScale : false
-        });
+        console.log('CalHeatMap ---> [data] :: ', data);
+        if (data.length > 0) {
+            cal.init({
+                data         : data,
+                start        : new Date(start * 1000),
+                range        : 12 * (new Date().getYear() - new Date(start * 1000).getYear()),
+                domain       : "month",
+                subDomain    : "day",
+                scale        : [1,2,4,8],
+                itemName     : ["promotion", "promotions"],
+                displayScale : false
+            });
+        }
     
     }
 });

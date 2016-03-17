@@ -1,2 +1,5 @@
 nodesec.xcworkspace/
 server/node/node_modules/
+web/js/dist/
+web/css/dist/
+node_modules/
