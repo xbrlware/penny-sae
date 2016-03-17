@@ -5,28 +5,29 @@ App.SidebarRoute = Ember.Route.extend({
 
     setupController: function(controller, model) {
         this.controllerFor('application').set('showNav', true);
-        var rf      = this.controllerFor('application').get('rf');
-        var toggles = this.controllerFor('application').get('toggles');
         controller.set('isLoading', true);
         
-        // If we're coming here because of a query, act appropriately
-        var searchTerm_onload       = this.controllerFor('application').get('searchTerm');
-        var searchTerm_topic_onload = this.controllerFor('application').get('searchTerm_topic');
+        var rf      = this.controllerFor('application').get('rf'),
+            toggles = this.controllerFor('application').get('toggles'),
+            searchTerm_onload       = this.controllerFor('application').get('searchTerm'),
+            searchTerm_topic_onload = this.controllerFor('application').get('searchTerm_topic');
         
-        controller.set('isLoading', true);
-        var promise;
-        if(searchTerm_onload != undefined && searchTerm_onload != '') {
-            promise = App.Search.search_company(searchTerm_onload, rf_clean_func(rf, undefined));
-        } else if(searchTerm_topic_onload != undefined && searchTerm_topic_onload != '') {
-            promise = App.Search.search_topic(searchTerm_topic_onload, rf_clean_func(rf, undefined));
-            controller.transitionToRoute('topic');
+        if(searchTerm_onload) {
+            App.Search.search_company(searchTerm_onload, rf_clean_func(rf, undefined)).then(function(response) {
+                controller.set('model', response);
+                controller.set('isLoading', false);
+            });
+//        } else if(searchTerm_topic_onload) {
+//            promise = App.Search.search_topic(searchTerm_topic_onload, rf_clean_func(rf, undefined));
+//            promise.then(function(response) {
+//                controller.set('model', response);
+//                controller.set('isLoading', false);
+//            });
+//            controller.transitionToRoute('topic');
         } else {
-            promise = App.Search.search_filters(rf_clean_func(rf, toggles), 0, undefined)
-        }
-        promise.then(function(response) {
-            controller.set('model', response);
+            controller.transitionToRoute('application');
             controller.set('isLoading', false);
-        });
+        }
     },
     
     actions : {
@@ -34,7 +35,7 @@ App.SidebarRoute = Ember.Route.extend({
             var toggles = this.get('controller').get('toggles')
             toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
         },
-        run_search_filters : function() {
+        search_filters : function() {
             var con = this.get('controller');
 
             var rf       = con.get('rf');
@@ -42,8 +43,7 @@ App.SidebarRoute = Ember.Route.extend({
             var rf_clean = rf_clean_func(rf, toggles);
             
             con.set('isLoading', true);
-            var promise = App.Search.search_filters(rf_clean, undefined, undefined);
-            promise.then(function(response) {
+            App.Search.search_filters(rf_clean, undefined, undefined).then(function(response) {
                 con.transitionToRoute('sidebar');
                 con.set('model', response);
                 con.set('isLoading', false);
@@ -71,10 +71,9 @@ App.SidebarController = Ember.ObjectController.extend({
             var toggles  = this.get('toggles');
             var rf_clean = rf_clean_func(rf, toggles);
 
-            var self    = this;
-            var promise = App.Search.search_filters(rf_clean, this.get('from'), this.get('model'))
+            var self = this;
             self.set('isLoading', true);
-            promise.then(function(response) {
+            App.Search.search_filters(rf_clean, this.get('from'), this.get('model')).then(function(response) {
                 self.set('model', response);
                 self.set('isLoading', false);
             });

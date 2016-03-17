@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
     Index.html for SEC Tool (2014-06-30)
     BKJ for Phronesis
@@ -9,15 +10,16 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" charset="utf-8" />
     <link rel="shortcut icon" href="img/p.ico" >
-    <title> Suspicious Activity Explorer: Penny Stocks </title>
+    <title> SAE </title>
 
 	<script src="config/global_config.js"></script>    
     <script src="config/local_config.js"></script>    
 
     <link rel="stylesheet" href="css/dist/nodesec-blessed.min.css">
-    </head>
+</head>
 
 <body>
+    
     <script type="text/x-handlebars">
         <div class="container-fluid">
             {{partial "mainnavbar"}}
@@ -61,106 +63,108 @@
 
 
     <script type="text/x-handlebars" data-template-name="frontpage">
-    <div style="margin-top:-65px;">
-        <center>
-        <font color="red">
-            <h1 style="margin-top:-10px;"> Phrōnesis </h1>
-            <h2 style="margin-top:-5px;"> Suspicious Activity Explorer </h2>
-            <h2 style="margin-top:-10px;"> Penny Stocks </h2>
-        </font>
-        
-        <div style="width:50%;">
-            <h3 class="h3-small" style="padding-top:10px;"> - Search By Company Name or Ticker - </h3>
-            {{focus-input class="input-fat" value=searchTerm
-                        style="text-align:center;" insert-newline="companySearch"}}
+        <div style="margin-top:-65px;">
+            <center>
+            <font color="red">
+                <h1 style="margin-top:-10px;"> Phronesis </h1>
+                <h2 style="margin-top:-5px;"> Suspicious Activity Explorer </h2>
+                <h2 style="margin-top:-10px;"> Penny Stocks </h2>
+            </font>
+            
+            <div style="width:50%;">
+                <h3 class="h3-small" style="padding-top:10px;"> - Search By Company Name or Ticker - </h3>
+                {{focus-input class="input-fat" value=searchTerm
+                            style="text-align:center;" insert-newline="companySearch"}}
+            </div>
+
+            {{#unless isLoading}}
+                <div style="background-color:white; border: 1px solid black; width:50%; margin-top:30px;">
+                    <h3 class="h3-small"> - Search By Red Flags - </h3>
+                    <table class="table hoverTable front-page">
+                        <tr class="no-hover">
+                            <th> </th>
+                            <th>
+                                <h3><font color="red"> Red Flags </font></h3>
+                            </th>
+                        </tr>
+
+                        {{
+                            view App.ToggleRowView
+                            text = "Company has no business, no revenues and no product."
+                            valueBinding = toggles.financials
+                        }}
+
+                        {{
+                            view App.ToggleRowView
+                            text = "Company undergoes frequent material changes in business strategy or its line of business."
+                            valueBinding = toggles.delta
+                        }}
+
+                        {{
+                            view App.ToggleRowView
+                            text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
+                            valueBinding = toggles.network
+                        }}
+
+                        {{
+                            view App.ToggleRowView
+                            text = "Company has been the subject of a prior trading suspension."
+                            valueBinding = toggles.trading_halts
+                        }}
+
+                        {{
+                            view App.ToggleRowView
+                            text = "Company has not made disclosures in SEC or other regulatory filings."
+                            valueBinding = toggles.delinquency
+                        }}
+
+        {{!--
+                        <tr class="no-hover">
+                            <td colspan="3">
+                                <div class="under-construction">Currently Under Development</div>
+                            </td>
+                        </tr>
+                        
+                        {{
+                            view App.DisabledToggleRowView
+                            text = "Company has experienced frequent or continuous changes in its business structure."
+                        }}
+         
+                        {{
+                            view App.DisabledToggleRowView
+                            text = "Officers or insiders of the issuer have a history of securities violations."
+                        }}
+        --}}
+
+                        <tr class="no-hover" style="border-bottom: 1px dashed grey;"><td></td><td></td></tr>
+                        <tr class="no-hover">
+                            <td></td>
+                            <td><h3><font color="red"> Additional Red Flags </font></h3></td>
+                        </tr>
+                        
+                        {{
+                            view App.ToggleRowView
+                            text = "Company stock has experienced recent price and/or volume anomalies."
+                            valueBinding = toggles.pv
+                        }}
+                        {{
+                            view App.ToggleRowView
+                            text = "Investors have made allegations about malfeasance of the company on social media."
+                            valueBinding = toggles.crowdsar
+                        }}
+
+                        <tr class="no-hover">
+                            <td colspan="2">
+                                <button class="btn btn-success btn-submit-frontpage" {{action "goToSidebar"}}>
+                                    Find
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {{/unless}}
+            </center>
         </div>
-
-        {{#unless isLoading}}
-        <div style="background-color:white; border: 1px solid black; width:50%; margin-top:30px;">
-            <h3 class="h3-small"> - Search By Red Flags - </h3>
-            <table class="table hoverTable front-page">
-                <tr class="no-hover">
-                    <th></th>
-                    <th>
-                        <h3><font color="red"> FINRA Red Flags </font></h3>
-                    </th>
-                </tr>
-
-                {{
-                    view App.ToggleRowView
-                    text = "Company has no business, no revenues and no product."
-                    valueBinding = toggles.financials
-                }}
-
-                {{
-                    view App.ToggleRowView
-                    text = "Company undergoes frequent material changes in business strategy or its line of business."
-                    valueBinding = toggles.delta
-                }}
-
-                {{
-                    view App.ToggleRowView
-                    text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
-                    valueBinding = toggles.network
-                }}
-
-                {{
-                    view App.ToggleRowView
-                    text = "Company has been the subject of a prior trading suspension."
-                    valueBinding = toggles.trading_halts
-                }}
-
-                {{
-                    view App.ToggleRowView
-                    text = "Company has not made disclosures in SEC or other regulatory filings."
-                    valueBinding = toggles.delinquency
-                }}
-    
-                <tr class="no-hover">
-                    <td colspan="3">
-                        <div class="under-construction">Currently Under Development</div>
-                    </td>
-                </tr>
-                
-                {{
-                    view App.DisabledToggleRowView
-                    text = "Company has experienced frequent or continuous changes in its business structure."
-                }}
- 
-                {{
-                    view App.DisabledToggleRowView
-                    text = "Officers or insiders of the issuer have a history of securities violations."
-                }}
-
-                <tr class="no-hover" style="border-bottom: 1px dashed grey;"><td></td><td></td></tr>
-                <tr class="no-hover">
-                    <td></td>
-                    <td><h3><font color="red"> Additional Red Flags </font></h3></td>
-                </tr>
-                
-                {{
-                    view App.ToggleRowView
-                    text = "Company stock has experienced recent price and/or volume anomalies."
-                    valueBinding = toggles.pv
-                }}
-                {{
-                    view App.ToggleRowView
-                    text = "Investors have made allegations about malfeasance of the company on social media."
-                    valueBinding = toggles.crowdsar
-                }}
-
-                <tr class="no-hover">
-                    <td colspan="2">
-                        <button class="btn btn-success btn-submit-frontpage" {{action "goToSidebar"}}>
-                            Find
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        {{/unless}}
-        </center>
-    </div>
     </script>
 
     <script type="text/x-handlebars" data-template-name="_mainnavbar">
@@ -169,7 +173,7 @@
                 <div class="container-fluid" style="background-color:rgb(244, 244, 244);">
                     <div class="navbar-header">
                         <a class="navbar-brand">
-                            <font color="red">Phrōnesis: Suspicious Activity Explorer</font>
+                            <font color="red"> SAE </font>
                         </a>
                     </div>
                     
@@ -184,7 +188,7 @@
                         <ul class="nav navbar-nav navbar-right">
 
                             <li class="dropdown yamm" id="big-dropdown">
-                                <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button" data-toggle="dropdown"> Manage Red Flag Filters </b></a>
+                                <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button" data-toggle="dropdown"> Red Flag Filters </b></a>
                                     <ul class="dropdown-menu dropdown-menu-animated" style="width:65%;">
                                         <li>
                                             <div class="yamm-content">
@@ -196,6 +200,7 @@
                             </li>
 
 
+{{!--
                             <li class="dropdown yamm" id="big-dropdown-topic">
                                 <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button-topic" data-toggle="dropdown"> Search Topic of Interest </b></a>
                                     <ul class="dropdown-menu dropdown-menu-animated" style="width:30%; height:100px;">
@@ -213,7 +218,7 @@
                                     </ul>
                                 </a>
                             </li>
-
+--}}
 {{!--
                             <li>
                                 <a class="btn btn-default navbar-btn" id="big-button-promotions" {{action "allPromotions"}}>
@@ -229,7 +234,7 @@
     </script>
     
     <script type="text/x-handlebars" data-template-name="all_promotions">
-      <h1>  Promotion stuff goes here </h1>
+      <h1>  Promotion placeholder </h1>
     </script>
 
     <script type="text/x-handlebars" data-template-name="dropdown">
@@ -533,7 +538,7 @@
             <tr class="no-hover">
                 <th></th>
                 <th>
-                    <h3 class="h3-small" style="margin-top:0px; margin-bottom:0px;"><font color="red"> FINRA Red Flags </font></h3>
+                    <h3 class="h3-small" style="margin-top:0px; margin-bottom:0px;"><font color="red"> Red Flags </font></h3>
                 </th>
             </tr>
 
@@ -568,7 +573,7 @@
                 showParameters = "delinquency"
             }}
 
-
+{{!--
             <tr class="no-hover">
                 <td colspan="3">
                     <div class="under-construction">Currently Under Development</div>
@@ -584,7 +589,8 @@
                 text = "Officers or insiders of the issuer have a history of securities violations."
                 showParameters=true
             }}
-    
+--}}
+
             <tr class="no-hover" style="border-bottom: 1px dashed grey;"><td colspan="3"></tr>
             <tr class="no-hover">
                 <td></td>
@@ -605,13 +611,14 @@
             }}
 
             <tr class="no-hover"><td colspan="3">
-                <button class="btn btn-success" {{action "run_search_filters_from_application"}} style="width:100%;">
+                <button class="btn btn-success" {{action "search_filters"}} style="width:100%;">
                     Find
                 </button>
             </td></tr>
         </table>
     </script>
 
+<!--{{!--
     <script type="text/x-handlebars" data-template-name="topic">
         <center>
             <h2> Summary Statistics: <i>{{searchTerm_topic}}</i> </h2>
@@ -686,13 +693,15 @@
             
         </center>
     </script>
+--}}-->
 
+<!--{{!--
     <script type="text/x-handlebars" data-template-name="topic-time-series">
         <div>
             <div id="container-ttschart" style="height:500px; min-width: 200px;"></div>
         </div>
     </script>
-
+--}}-->
 
     <script type="text/x-handlebars" data-template-name="sidebar">
         <div class="col-sm-4" style="padding-left:0px; padding-right:0px;">
@@ -855,7 +864,6 @@
 
     <script type="text/x-handlebars" data-template-name="detail">
 
-        {{partial "sarModal"}}
         <div class="container" style="width:100%">
 
             <div class="row-fluid">
@@ -873,23 +881,23 @@
                             <h4 style="color:grey;">  CIK: {{cik}} </h4>
                         </center>
                     </div>
-                    <div class="col-sm-2">
 {{!--
+                    <div class="col-sm-2">
                         <button id="button-generate-sar" class="btn navbar-btn" data-toggle="modal" data-target="#sarModal">
                             Generate SAR
                         </button>
---}}
                     </div>
+--}}
                     <br>
                     <ul class="nav navbar-nav" id="view-selector">
-                        <li>{{#link-to 'pvChart' }} Price / Volume Anomalies + <br> CROWDSAR {{/link-to}}</li>
-                        <li>{{#link-to 'googleNews' }} News {{/link-to}}</li>
-                        <li>{{#link-to 'financials' }} Financials {{/link-to}}</li>
-                        <li>{{#link-to 'delinquency' }} Late <br> Filings {{/link-to}}</li>
-                        <li>{{#link-to 'previousReg' }} Regulatory <br> Actions {{/link-to}}</li>
-                        <li>{{#link-to 'associates' }} Network <br> Analysis {{/link-to}}</li>
-                        <li>{{#link-to 'promotions' }} Stock Promotions {{/link-to}}</li>
-                        <li>{{#link-to 'leadership' }} Leadership {{/link-to}}</li> 
+                        <li>{{#link-to 'pvChart'     }} Price / Volume Anomalies + <br> CROWDSAR {{/link-to}}</li>
+                        <li>{{#link-to 'googleNews'  }} News                                     {{/link-to}}</li>
+                        <li>{{#link-to 'financials'  }} Financials                               {{/link-to}}</li>
+                        <li>{{#link-to 'delinquency' }} Late <br> Filings                        {{/link-to}}</li>
+                        <li>{{#link-to 'previousReg' }} Regulatory <br> Actions                  {{/link-to}}</li>
+                        <li>{{#link-to 'associates'  }} Network <br> Analysis                    {{/link-to}}</li>
+                        <li>{{#link-to 'promotions'  }} Stock Promotions                         {{/link-to}}</li>
+                        <li>{{#link-to 'leadership'  }} Leadership                               {{/link-to}}</li>
                     </ul>
                 </nav>
             </div>
@@ -904,7 +912,9 @@
     <script type="text/x-handlebars" data-template-name="detail/index">
         {{!-- Detail Stuff goes here --}}
     </script>
-    
+
+
+<!--{{!--
     <script type="text/x-handlebars" data-template-name="_sarModal">
         <div class="modal fade" id="sarModal" tabindex="-1" role="dialog" aria-labelledby="sarModelLabel" aria-hidden="true" style="z-index:-1;">
           <div class="modal-dialog">
@@ -927,6 +937,7 @@
           </div>
         </div>
     </script>
+--}}-->
 
     <!-- Google News Plugin -->
     <script type="text/x-handlebars" data-template-name="googleNews">

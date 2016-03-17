@@ -50,7 +50,8 @@ function create_network_associates(network_center, network_associates) {
 }
 
 function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
-    return fetch_companies({
+    return fetch({
+        endpoint   : "fetch_companies",
         index      : config.NETWORK_INDEX,
         query_type : 'networkQuery_center',
         query_args : {"cik" : cik},
@@ -67,7 +68,8 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                     
                     network_center.companies = center.hits.hits.findBy('_index', config.COMPANY_INDEX);
 
-                    fetch_companies({
+                    fetch({
+                        endpoint   : "fetch_companies",
                         index : config.NETWORK_INDEX,
                         query_type : 'networkQuery_neighbors',
                         query_args : {"adj" : network_center._source.adjacencies},
@@ -213,7 +215,8 @@ function networkInfo(node) {
 
         var adj = node.adjacencies;
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 query_type : 'currentQuery',
                 query_args : {"id" : Object.keys(adj)},
                 rf         : undefined,
@@ -257,7 +260,8 @@ function networkInfo(node) {
     } else {
         var id = node.id;
         return new Ember.RSVP.Promise(function(resolve, reject) {
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 data       : 'currentQuery',
                 query_args : {"id" : id},
                 rf         : undefined,
@@ -436,7 +440,8 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
         query_args : {"all_ciks" : all_ciks},
         rf         : rf_clean,
         callback   : function(company_data) {
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 index      : config.NETWORK_INDEX,
                 query_type : 'networkQuery_adjacencies',
                 query_args : {"all_ciks" : all_ciks},
@@ -520,7 +525,8 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
         rf         : rf_clean,
         callback   : function(company_data) {
             console.log('did red flag individuals')
-            fetch_companies({
+            fetch({
+                endpoint   : "fetch_companies",
                 index      : config.NETWORK_INDEX,
                 query_type : 'networkQuery_adjacencies',
                 query_args : {"all_ciks" : all_ciks},
