@@ -1,7 +1,6 @@
 // Client
 
 function fetch(args){
-    console.log('fetch');
     Ember.$.ajax({
         type        : 'POST',
         contentType : 'application/json',
@@ -49,7 +48,7 @@ App.SearchResults = Ember.Object.extend({
     tss           : undefined,
     unknown_names : undefined,
     broke         : false,
-
+    
     page          : function() {
 		return this.get('from') / gconfig.SIZE + 1
 	}.property('from'),
@@ -65,7 +64,6 @@ App.Search = Ember.Object.extend({});
 App.Search.reopenClass({
 
     search_company : function(searchTerm, rf_clean) {
-        console.log('search_company', searchTerm);
         return new Ember.RSVP.Promise(function(resolve, reject) {
             fetch({
                 endpoint   : "fetch_companies",
@@ -77,32 +75,11 @@ App.Search.reopenClass({
                 rf         : rf_clean,
                 from       : 0,
                 callback   : function(data) {
-                    s = App.Search.process_query_results(data, rf_clean, true);
-                    resolve(s)
-                 }
+                    resolve(App.Search.process_query_results(data, rf_clean, true));
+                }
             });
         });
     },
-    
-//    search_topic : function(searchTerm, rf_clean) {
-//        return new Ember.RSVP.Promise(function(resolve, reject) {
-//            fetch_topic({
-//                endpoint   : "fetch_topic",
-//                query_type : "topicQuery",
-//                query_args : {"searchTerm" : searchTerm},
-//                index      : 'crowdsar_posts',
-//                rf         : rf_clean,
-//                from       : 0,
-//                callback   : function(data) {
-//                    s = App.Search.process_query_results(data, rf_clean, true)
-//                    s.set('unknown_names', data.names);
-//                    s.set('total_hits', data.total_hits_topic);
-//                    s.set('tss', data.tss);
-//                    resolve(s)
-//                 }
-//            });
-//        });
-//    },
         
     search_filters : function(rf_clean, from, s) {
         console.log('search_filters');
@@ -162,40 +139,40 @@ App.Search.reopenClass({
         return(s)
     },
     
-    search_omx : function(cik) {
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-           Ember.$.ajax({
-                type        : 'POST',
-                contentType : 'application/json',
-                dataType    : "json",
-                url     :  'search_omx',
-                data    : JSON.stringify({"cik" : cik}),
-                success : function(response) {
-                    console.log('response', response);
-                    resolve(response);
-                },
-                error   : function (xhr, status, error) {
-                    console.log('Error: ' + error.message);
-                }
-            });
-        });
-    },
-    fetch_omx : function(omx_id) {
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-           Ember.$.ajax({
-                type        : 'POST',
-                contentType : 'application/json',
-                dataType    : "json",
-                url     :  'fetch_omx',
-                data    : JSON.stringify({"omx_id" : omx_id}),
-                success : function(response) {
-                    console.log('response', response);
-                    resolve(response);
-                },
-                error   : function (xhr, status, error) {
-                    console.log('Error: ' + error.message);
-            }
-            });
-        });
-    }
+//    search_omx : function(cik) {
+//        return new Ember.RSVP.Promise(function(resolve, reject) {
+//           Ember.$.ajax({
+//                type        : 'POST',
+//                contentType : 'application/json',
+//                dataType    : "json",
+//                url     :  'search_omx',
+//                data    : JSON.stringify({"cik" : cik}),
+//                success : function(response) {
+//                    console.log('response', response);
+//                    resolve(response);
+//                },
+//                error   : function (xhr, status, error) {
+//                    console.log('Error: ' + error.message);
+//                }
+//            });
+//        });
+//    },
+//    fetch_omx : function(omx_id) {
+//        return new Ember.RSVP.Promise(function(resolve, reject) {
+//           Ember.$.ajax({
+//                type        : 'POST',
+//                contentType : 'application/json',
+//                dataType    : "json",
+//                url     :  'fetch_omx',
+//                data    : JSON.stringify({"omx_id" : omx_id}),
+//                success : function(response) {
+//                    console.log('response', response);
+//                    resolve(response);
+//                },
+//                error   : function (xhr, status, error) {
+//                    console.log('Error: ' + error.message);
+//            }
+//            });
+//        });
+//    }
 });

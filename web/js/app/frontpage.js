@@ -6,27 +6,22 @@ App.FrontpageRoute = Ember.Route.extend({
     actions : {
         companySearch: function() {
             var st = this.get('controller').get('searchTerm');
-            if(st){
-                this.controllerFor('application').set('showNav', true);
-                this.transitionTo('sidebar', st);
-            }
+            if(st){ this.transitionTo('sidebar', st); }
+        },
+        filterSearch : function() {
+            this.transitionTo('sidebar', '-');
         },
         toggleFlag : function(flag) {
             this.get('controller').get('toggles').toggleProperty(flag);
-        },
-        goToSidebar : function() {
-            this.controllerFor('application').set('showNav', true);
-            this.transitionTo('sidebar', undefined);
-            this.get('controller').set('isLoading', false);
         }
     }
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
-    needs            : ['application'],
-    rf               : Ember.computed.alias('controllers.application.rf'),
-    toggles          : Ember.computed.alias('controllers.application.toggles'),
-    searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
+    needs      : ['application'],
+    rf         : Ember.computed.alias('controllers.application.rf'),
+    toggles    : Ember.computed.alias('controllers.application.toggles'),
+    searchTerm : Ember.computed.alias('controllers.application.searchTerm'),
 
     isLoading : false
 });

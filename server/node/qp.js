@@ -303,7 +303,7 @@ function detailQuery(cik, rf) {
 /* Query for Search Function */
 
 function companyQuery(name, rf) {
-    var parsed       = new Object;
+    var parsed = new Object;
     console.log('name :: ', name);
     parsed.min_score = .001         // Relevance to search term
     if(name != undefined){

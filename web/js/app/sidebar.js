@@ -4,24 +4,24 @@
 App.SidebarRoute = Ember.Route.extend({
 
     model : function(params) {
-        return {'st' : params.st};
+        return params
     },
 
     setupController: function(controller, model) {
-        this.controllerFor('application').set('showNav', true);
+        var app_con = this.controllerFor('application');
+
         controller.set('isLoading', true);
+        app_con.set('showNav', true);
         
-        this.controllerFor('application').set('searchTerm', model.st);
-        
-        var rf      = this.controllerFor('application').get('rf'),
-            toggles = this.controllerFor('application').get('toggles'),
-            searchTerm_onload       = this.controllerFor('application').get('searchTerm'),
-            searchTerm_topic_onload = this.controllerFor('application').get('searchTerm_topic');
-        
-        console.log('st', searchTerm_onload);
-        
-        if(model.st) {
-            App.Search.search_company(model.st, rf_clean_func(rf, undefined)).then(function(response) {
+        if(model.st != '-') {
+            app_con.set('searchTerm', model.st);
+            app_con.search_company(function(response) {
+                controller.set('model', response);
+                controller.set('isLoading', false);
+            });
+        } else {
+            app_con.set('searchTerm', undefined);
+            app_con.search_filter(function(response) {
                 controller.set('model', response);
                 controller.set('isLoading', false);
             });
