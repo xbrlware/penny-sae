@@ -4,7 +4,7 @@
     "lib"        : "web/js/libs/",
     "cdt"        : "web/css/dist/",
     "jdt"        : "web/js/dist/",
-    "lss"        : "web/less/",  
+    "lss"        : "web/css/",  
     "tdt"        : "web/templates/dist/",     
     "tmp"        : "web/templates/",
     
@@ -18,7 +18,8 @@
          "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
-         "web/css/style.css"
+         "web/css/style.css",
+         "web/css/morgan.less.css"
      ],
 
     "lib_files"  : [

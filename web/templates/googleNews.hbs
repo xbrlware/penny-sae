@@ -1,33 +1,35 @@
-    <!-- Google News Plugin -->
-		<div id="google-news"></div>
-        <div class="row">
-            <div class="col-sm-2">
-                {{#if model}}
-                    <div class="btn-group-vertical">
-                        <button type="button" class="btn btn-default">
-                            {{#link-to "subNews"}}
-                                Google Search
-                            {{/link-to}}
-                        </button>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                Globe NewsWire
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
-                                {{#each release in model}}
-                                    <li class="li-omx">
-                                        {{#link-to "omxNews" release._id}}
-                                            {{release.head}}
-                                        {{/link-to}}
-                                    </li>
-                                {{/each}}
-                            </ul>
-                        </div>
-                    </div>
-                {{/if}}
-            </div>
+{{!-- web/templates/googleNews --}}
 
-            <div class="col-sm-10">
-                {{outlet}}
+{{!-- Google News Plugin --}}
+
+<div id="google-news"></div>
+
+<div class="row">
+    <div class="col-sm-2">
+        {{#if model}}
+            <div class="btn-group-vertical">
+                
+                <button type="button" class="btn btn-default">
+                    {{#link-to "subNews"}}Google Search{{/link-to}}
+                </button>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Globe NewsWire
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
+                        {{#each release in model}}
+                            <li class="li-omx">
+                                {{#link-to "omxNews" release._id}} {{release.head}} {{/link-to}}
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
             </div>
-        </div>
+        {{/if}}
+    </div>
+
+    <div class="col-sm-10">
+        {{outlet}}
+    </div>
+</div>

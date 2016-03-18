@@ -1,45 +1,48 @@
-        <div class="col-sm-4" style="padding-left:0px; padding-right:0px;">
-                {{#unless isLoading}}
-                    {{#if from}}
-                        Results: Page {{page}} <br>
-                    {{/if}}
-                    {{#unless total_hits}}
-                        No companies in our database match your search criteria.
-                    {{else}}
-                        {{total_hits}} &nbsp; companies in our database
-						  match your search criteria.
-                        <div class="list-group square">
-                            {{#each h in hits}}
-                                {{#if h.currentName}}
-                                    {{view App.HitView h=h}}
-                                {{/if}}
-                            {{/each}}
-                            <center>
-                                <ul class="pagination pagination-lg" style="text-align:center">
-                                    {{#if canGoBack}}
-                                        <li class="iterator"><a {{action "iterateSidebar" -1}}>&laquo;</a></li>
-                                    {{else}}
-                                        <li class="iterator disabled"><a>&laquo;</a></li>
-                                    {{/if}}
-                                    {{#if canGoForward}}
-                                        <li class="iterator"><a {{action "iterateSidebar" 1}}>&raquo;</a></li>
-                                    {{else}}
-                                        <li class="iterator disabled"><a>&raquo;</a></li>
-                                    {{/if}}
-                                </ul>
-                            </center>
-                        </div>
-                    {{/unless}}
-                {{else}}
-                    <center>
-                        <img id="spinner" src="css/ajax-loader.gif">
-                        <div style="padding-top: 50%;">
-                            Calculating...
-                        </div>
-                    </center>
-                {{/unless}}
-        </div>
-        <div class="col-md-8" style="min-width: 275px">
-            {{outlet}}
-        </div>
+{{!-- web/templates/sidebar.hbs --}}
 
+<div class="col-sm-4 no-padding-leftright">
+    {{#unless isLoading}}
+        {{#if from}}
+            Results: Page {{page}} 
+            <br />
+        {{/if}}
+        {{#unless total_hits}}
+            No companies in our database match your search criteria.
+        {{else}}
+            {{total_hits}} &nbsp; companies in our database
+			match your search criteria.
+            <div class="list-group square">
+                {{#each h in hits}}
+                    {{#if h.currentName}}
+                        {{view App.HitView h=h}}
+                    {{/if}}
+                {{/each}}
+                <span class="centered">
+                    <ul class="pagination pagination-lg centered">
+                        {{#if canGoBack}}
+                            <li class="iterator"><a {{action "iterateSidebar" -1}}>&laquo;</a></li>
+                        {{else}}
+                            <li class="iterator disabled"><a>&laquo;</a></li>
+                        {{/if}}
+                        {{#if canGoForward}}
+                            <li class="iterator"><a {{action "iterateSidebar" 1}}>&raquo;</a></li>
+                        {{else}}
+                            <li class="iterator disabled"><a>&raquo;</a></li>
+                        {{/if}}
+                    </ul>
+                </span>
+            </div>
+        {{/unless}}
+        {{else}}
+            <span class="centered">
+                <img id="spinner" src="css/ajax-loader.gif">
+                <div class="calculating-top-padding">
+                    Calculating...
+                </div>
+            </span>
+    {{/unless}}
+</div>
+
+<div class="col-md-8 outlet-min-width">
+    {{outlet}}
+</div>

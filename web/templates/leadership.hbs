@@ -1,15 +1,18 @@
-        <center>
-            {{#unless no_data}}
-                {{#if view.e}}
-                    {{view.e.pos}} <br>
-                    ({{view.e.value.start}} to {{view.e.value.stop}})
-                {{/if}}
-                <div id="chart">
-                    <label><input id="d3inp" type="checkbox"> Sort values</label>
-                    <br>
-                    This can be swapped for sorting by name, date, length of tenure, etc...
-                </div>
-            {{else}}
-                Form 4 filing data for this company is unavailable.
-            {{/unless}}
-        </center>
+{{!-- web/templates/leadership.hbs --}}
+
+<span class="centered">
+    {{#unless no_data}}
+        {{#if view.e}}
+            {{view.e.pos}} 
+            <br />
+            ({{view.e.value.start}} to {{view.e.value.stop}})
+        {{/if}}
+        <div id="chart">
+            <label><input id="d3inp" type="checkbox"> Sort values</label>
+            <br />
+            This can be swapped for sorting by name, date, length of tenure, etc...
+        </div>
+        {{else}}
+            Form 4 filing data for this company is unavailable.
+    {{/unless}}
+</span>
