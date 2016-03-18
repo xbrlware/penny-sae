@@ -4,24 +4,23 @@ App.Router.map(function() {
     this.resource('frontpage', {path: '/'}, function () {})
     this.resource('sidebar', {path: '/o'}, function() {
         this.resource('detail', {path: 'detail/:cik'}, function() {
-//            this.resource('pvChart',     function() {})
-//            this.resource('googleNews',  function() {
-//                this.resource('subNews', function() {})
-//                this.resource('omxNews', {path: "omxNews/:omx"}, function() {})
-//            })
-//            this.resource('previousReg', function() {})
-//            this.resource('financials',  function() {})
-//            this.resource('delinquency', function() {})
-//            this.resource('associates',  function() {
-//                this.resource('ner', function() {})
-//            })
-//            this.resource('promotions',  function() {})
-//            this.resource('leadership',  function() {})
-//        });
-//        this.resource('topic', {path: 'topic'}, function() {});
+            this.resource('pvChart',     function() {})
+            this.resource('googleNews',  function() {
+                this.resource('subNews', function() {})
+                this.resource('omxNews', {path: "omxNews/:omx"}, function() {})
+            })
+            this.resource('previousReg', function() {})
+            this.resource('financials',  function() {})
+            this.resource('delinquency', function() {})
+            this.resource('associates',  function() {
+                this.resource('ner', function() {})
+            })
+            this.resource('promotions',  function() {})
+            this.resource('leadership',  function() {})
+        });
+        this.resource('topic', {path: 'topic'}, function() {});
         });
     });
-});
 
 App.ApplicationRoute = Ember.Route.extend({
     model : function() {

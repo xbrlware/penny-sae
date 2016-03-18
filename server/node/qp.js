@@ -157,7 +157,7 @@ function setScriptFields(rf, include_generic){
 
     var sf = {};
     
-    if(include_generic != undefined) {
+    if(include_generic == undefined ? true : include_generic) {
         sf.n_records   = LENGTH_QUERY;
         sf.currentName = CURRENT_NAME_QUERY;
     }
