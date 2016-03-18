@@ -5,11 +5,10 @@ App.FrontpageRoute = Ember.Route.extend({
     },
     actions : {
         companySearch: function() {
-            console.log('companySearch -- frontpage')
             var st = this.get('controller').get('searchTerm');
-            if(st != '' & st != undefined){
+            if(st){
                 this.controllerFor('application').set('showNav', true);
-                this.transitionTo('sidebar');
+                this.transitionTo('sidebar', st);
             }
         },
         toggleFlag : function(flag) {
@@ -17,7 +16,7 @@ App.FrontpageRoute = Ember.Route.extend({
         },
         goToSidebar : function() {
             this.controllerFor('application').set('showNav', true);
-            this.transitionTo('sidebar');
+            this.transitionTo('sidebar', undefined);
             this.get('controller').set('isLoading', false);
         }
     }
@@ -28,7 +27,6 @@ App.FrontpageController = Ember.ObjectController.extend({
     rf               : Ember.computed.alias('controllers.application.rf'),
     toggles          : Ember.computed.alias('controllers.application.toggles'),
     searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
-    searchTerm_topic : Ember.computed.alias('controllers.application.searchTerm_topic'),
 
     isLoading : false
 });
@@ -46,6 +44,8 @@ App.FrontpageView = Ember.View.extend({
         );
     }
 });
+
+// --
 
 App.ToggleRowView = Ember.View.extend({
     templateName : "togglerow",

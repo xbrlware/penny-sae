@@ -2,7 +2,7 @@ App = Ember.Application.create();
 
 App.Router.map(function() {
     this.resource('frontpage', {path: '/'}, function () {})
-    this.resource('sidebar', {path: '/o'}, function() {
+    this.resource('sidebar', {path: '/sidebar/:st'}, function() {
         this.resource('detail', {path: 'detail/:cik'}, function() {
             this.resource('pvChart',     function() {})
             this.resource('googleNews',  function() {
@@ -45,20 +45,6 @@ App.ApplicationRoute = Ember.Route.extend({
                 });
             }
         },
-//        topicSearch: function() {
-//            var con         = this.get('controller');
-//            var sidebar_con = this.controllerFor('sidebar');
-//            var searchTerm_topic = this.get('controller').get('searchTerm_topic');
-//            if(searchTerm_topic != '' & searchTerm_topic != undefined) {
-//                sidebar_con.set('isLoading', true);
-//                var promise = App.Search.search_topic(searchTerm_topic, rf_clean_func(con.get('rf'), undefined));
-//                promise.then(function(response) {
-//                    con.transitionToRoute('topic');
-//                    sidebar_con.set('model', response);
-//                    sidebar_con.set('isLoading', false);
-//                });
-//            }
-//        },
 //        search_filters: function () {
 //            this.controllerFor('sidebar').send('search_filters');
 //        }
