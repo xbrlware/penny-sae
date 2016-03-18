@@ -29,8 +29,7 @@
     "grunt-bless": "~0.2.0",
     "handlebars": "~1.3.0",
     "ember-template-compiler": "~1.4.0",
-    "grunt-ember-templates": "~0.4.23",
-    "grunt-cli": "~0.1.13"
+    "grunt-ember-templates": "~0.4.23"
   },
   "dependencies": {
     "grunt": "^0.4.5",

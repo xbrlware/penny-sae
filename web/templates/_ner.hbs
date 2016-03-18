@@ -1,0 +1,27 @@
+        <center>
+            <table class="table table-hover" id="ner-table">
+                <tr><th>CIK</th><th>Name</th><th>Source</th><th>Relationship</th><th></th></tr>
+                {{#each s in network_associates}}
+                    <tr {{bind-attr class="s.hidden:ner-hidden"}}>
+                        <td>{{s.id}}</td>
+                        <td>{{s.name}}</td>
+                        <td>{{s.data.source}}</td>
+                        <td>{{s.data.relationship}}</td>
+                        <td>
+                            <button {{bind-attr class="s.hidden:btn-show-ner:btn-hide-ner"}} {{action "toggle_ner" s}}>
+                                {{#if s.hidden}}
+                                    Show
+                                {{else}}
+                                    Hide
+                                {{/if}}
+                            </button>
+                            <button class="btn-link-ner" {{action "show_links_ner" s}} data-toggle="modal" data-target="#linkModal">
+                                Links
+                            </button>
+                        </td>
+                    </tr>
+                {{/each}}
+            </table>
+        </center>
+        
+        {{partial "linkModal"}}

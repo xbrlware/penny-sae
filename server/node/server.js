@@ -41,9 +41,9 @@ function run_server() {
 if(cluster.isMaster) {
     var cpuCount = Math.floor(require('os').cpus().length / 2) || 1;
     
-    _.map(_.range(cpuCount), (i) => { cluster.fork(); });
+    _.map(_.range(cpuCount), function(i) { cluster.fork(); });
 
-    cluster.on('exit', (worker) => {
+    cluster.on('exit', function(worker) {
         console.log('Worker ' + worker.id + ' died');
         cluster.fork();
     });

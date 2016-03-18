@@ -55,7 +55,7 @@ module.exports = function(grunt) {
                     templateBasePath: "<%= cfg.tmp %>",
                 },
                 files : {
-                    "<%= cfg.tdt %>templates.js" : ["<%= cfg.tmp %>*.handlebars", "<%= cfg.tmp %>table_cells/*.handlebars"]
+                    "<%= cfg.tdt %>templates.js" : ["<%= cfg.tmp %>*.hbs", "<%= cfg.tmp %>detail/*.hbs"]
                 }
             }       
         },      
@@ -110,7 +110,7 @@ module.exports = function(grunt) {
             },
             scripts : {
                 files : ['<%= cfg.app %>*.js',],
-                tasks : ['jshint', 'app']
+                tasks : ['devApp']
             },
             less : {
                 files : ['<%= cfg.lss %>*.less'],
@@ -131,10 +131,9 @@ module.exports = function(grunt) {
     grunt.registerTask('prodApp', ['concat:appsJS', 'uglify:apps', 'concat:prodJS']);
     grunt.registerTask('prodLib', ['concat:libsJS', 'uglify:libs', 'concat:prodJS']);
     grunt.registerTask('devApp', ['concat:appsJS', 'concat:devJS']); 
-    grunt.registerTask('devLib', ['concat:libsJS', 'concat:devJS']); 
+    grunt.registerTask('devLib', ['emberTemplates', 'concat:libsJS', 'concat:devJS']); 
     grunt.registerTask('css', ['less:dev','concat:devCSS','cssmin', 'bless']);
-    grunt.registerTask('cmp', ['emberTemplates',]);
     grunt.registerTask('wth', ['watch',]);
-
+    grunt.registerTask('cmp', ['emberTemplates',]);
     grunt.registerTask('default',['css', 'concat:libsJS', 'uglify:libs','concat:appsJS', 'uglify:apps', 'concat:allJS']);
 }; 

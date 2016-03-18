@@ -1,0 +1,41 @@
+        <div class="container" style="width:100%">
+
+            <div class="row-fluid">
+                <nav class="navbar" style="border: 1px solid grey;">
+                    <div class="col-sm-6">
+                        <h1 style="margin-top:0px;"> {{currentName}} </h1>
+                    </div>
+                    <div class="col-sm-2">
+                        <center>
+                            <h4 style="color:greyl"> {{#each source.tickers.ticker}} {{this}} {{/each}} </h4>
+                        </center>
+                    </div>
+                    <div class="col-sm-2">
+                        <center>
+                            <h4 style="color:grey;">  CIK: {{cik}} </h4>
+                        </center>
+                    </div>
+{{!--
+                    <div class="col-sm-2">
+                        <button id="button-generate-sar" class="btn navbar-btn" data-toggle="modal" data-target="#sarModal">
+                            Generate SAR
+                        </button>
+                    </div>
+--}}
+                    <br>
+                    <ul class="nav navbar-nav" id="view-selector">
+                        <li>{{#link-to 'pvChart'     }} Price / Volume Anomalies + <br> CROWDSAR {{/link-to}}</li>
+                        <li>{{#link-to 'googleNews'  }} News                                     {{/link-to}}</li>
+                        <li>{{#link-to 'financials'  }} Financials                               {{/link-to}}</li>
+                        <li>{{#link-to 'delinquency' }} Late <br> Filings                        {{/link-to}}</li>
+                        <li>{{#link-to 'previousReg' }} Regulatory <br> Actions                  {{/link-to}}</li>
+                        <li>{{#link-to 'associates'  }} Network <br> Analysis                    {{/link-to}}</li>
+                        <li>{{#link-to 'promotions'  }} Stock Promotions                         {{/link-to}}</li>
+                        <li>{{#link-to 'leadership'  }} Leadership                               {{/link-to}}</li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-sm-12">
+                {{outlet}}
+            </div>
+        </div>

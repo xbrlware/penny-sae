@@ -1,0 +1,11 @@
+        <table class="table" id="uniqueRecordsTable">
+            <tr><th> Date </th><th> Name </th><th> SIC </th><th> State </th></tr>
+            {{#each r in h.companyTable}}
+                <tr>
+                    <td>{{r.date}}</td>
+                    <td>{{r.name}}</td>
+                    <td>{{r.sic}}</td>
+                    <td>{{r.state}}</td>
+                </tr>
+            {{/each}}
+        </table>
