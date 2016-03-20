@@ -9,8 +9,6 @@
         <h3 class="h3-small header-top-padding"> - Search By Company Name or Ticker - </h3>
         {{focus-input class="input-fat centered" value=searchTerm insert-newline="companySearch"}}
     </div>
-
-    {{#unless isLoading}}
             
     <div class="frontpage-table">
         <h3 class="h3-small"> - Search By Red Flags - </h3>
@@ -25,31 +23,31 @@
             {{
                 view App.ToggleRowView
                 text = "Company has no business, no revenues and no product."
-                valueBinding = toggles.financials
+                valueBinding = "toggles.financials"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company undergoes frequent material changes in business strategy or its line of business."
-                valueBinding = toggles.delta
+                valueBinding = "toggles.delta"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
-                valueBinding = toggles.network
+                valueBinding = "toggles.network"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company has been the subject of a prior trading suspension."
-                valueBinding = toggles.trading_halts
+                valueBinding = "toggles.trading_halts"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company has not made disclosures in SEC or other regulatory filings."
-                valueBinding = toggles.delinquency
+                valueBinding = "toggles.delinquency"
             }}
 
             {{!--
@@ -79,13 +77,13 @@
             {{
                 view App.ToggleRowView
                 text = "Company stock has experienced recent price and/or volume anomalies."
-                valueBinding = toggles.pv
+                valueBinding = "toggles.pv"
             }}
                 
             {{
                 view App.ToggleRowView
                 text = "Investors have made allegations about malfeasance of the company on social media."
-                valueBinding = toggles.crowdsar
+                valueBinding = "toggles.crowdsar"
             }}
                 <tr class="no-hover">
                     <td colspan="2">
@@ -96,5 +94,4 @@
                 </tr>
             </table>
         </div>
-    {{/unless}}
 </div>

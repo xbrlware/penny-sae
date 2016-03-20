@@ -3,7 +3,6 @@ App = Ember.Application.create();
 App.Router.map(function() {
     this.resource('frontpage', {path: '/'}, function () {})
     this.resource('sidebar', {path: '/sidebar/:st'}, function() {
-        
         this.resource('detail', {path: 'detail/:cik'}, function() {
             this.resource('pvChart',     function() {})
             this.resource('googleNews',  function() {
@@ -40,7 +39,6 @@ App.ApplicationRoute = Ember.Route.extend({
         companySearch: function() {
             var _this      = this;
             var searchTerm = this.get('controller.searchTerm');
-            
             if(searchTerm) {
                 _this.transitionTo('sidebar', searchTerm);
             }

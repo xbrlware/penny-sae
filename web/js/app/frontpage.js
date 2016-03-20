@@ -18,12 +18,7 @@ App.FrontpageRoute = Ember.Route.extend({
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
-    needs      : ['application'],
-    rf         : Ember.computed.alias('controllers.application.rf'),
-    toggles    : Ember.computed.alias('controllers.application.toggles'),
-    searchTerm : Ember.computed.alias('controllers.application.searchTerm'),
-
-    isLoading : false
+    searchTerm : ''
 });
 
 App.FrontpageView = Ember.View.extend({
