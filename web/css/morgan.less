@@ -1,0 +1,180 @@
+// variables ----------------
+@hundred-pct: 100%;
+@sixty-pct  : 60%;
+@fifty-pct  : 50%;
+
+@light-grey : rgb(244, 244, 244);
+@dashed-grey: 1px dashed grey;
+@solid-grey : 1px solid grey;
+
+// mixins -------------------
+.auto-overflow {
+    overflow: auto;
+}
+
+.bold-font {
+    font: bold;
+}
+
+.calculating-top-padding {
+    padding-top: 50%;
+}
+
+.centered {
+    text-align: center;
+}
+
+.cursor-inital {
+    cursor:initial;
+}
+
+.greyed {
+    color: grey;
+}
+
+.fifty-width {
+    width: @fifty-pct;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.hundred-width {
+    width: @hundred-pct;
+}
+
+.no-padding-leftright {
+    padding-left : 0px;
+    padding-right: 0px;
+}
+
+.outlet-min-width {
+    min-width: 275px;
+}
+
+.red-text {
+    color: red;
+}
+
+.switch {
+    width: 60px;
+}
+
+.topic-table {
+    width:75%;
+    margin-top:10px;
+}
+
+.zero-top-margin {
+    margin-top: 0px;
+}
+
+// classes ------------------
+.application-style {
+    position: absolute;
+    top     : 75px;
+    width   : @hundred-pct;
+}
+
+.assc-center {
+    .centered;
+}
+
+.frontpage-align {
+    .centered;
+    margin-top: -65px;
+}
+
+.frontpage-table {
+    background-color: white;
+    border          : 1px solid black;
+    width           : @fifty-pct;
+    margin          : 0 auto;
+    margin-top      : 30px;
+}
+
+.header-top-padding {
+   padding-top: 10px;
+}
+
+.lg-text {
+    color: @light-grey;
+}
+
+.navbar-border {
+    border-bottom: @solid-grey;
+}
+
+.ner-size {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.phronesis-head {
+    .red-text;
+    margin-top:-10px;
+}
+
+.sae-head {
+    .red-text;
+    margin-top:-5px;
+}
+
+.table-width {
+    width: @sixty-pct; 
+}
+
+.ttschart-hw {
+    height:500px;
+    min-width: 200px;
+ }
+
+// ids ----------------------
+#add-red-flags {
+    .zero-top-margin;
+    .red-text;
+    margin-bottom: 0px;
+}
+
+#container-pvchart {
+    height:500px;
+    min-width:310px;
+}
+
+#filter-list {
+    width: 65%;
+}
+
+#find-button {
+    width: @hundred-pct;
+}
+
+#hovertable-bottom-border {
+    border-bottom: @dashed-grey;
+}
+
+#link-padding {
+    padding-bottom: 30px;
+ }
+
+ #navbar-bgcolor {
+    background-color: @light-grey;
+}
+
+#sarModal-zindex {
+    z-index: -1;
+}
+
+#search-padding {
+    padding-left: 10px;
+}
+
+#search-text {
+    .centered;
+}
+

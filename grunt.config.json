@@ -4,7 +4,7 @@
     "lib"        : "web/js/libs/",
     "cdt"        : "web/css/dist/",
     "jdt"        : "web/js/dist/",
-    "lss"        : "web/less/",  
+    "lss"        : "web/css/",  
     "tdt"        : "web/templates/dist/",     
     "tmp"        : "web/templates/",
     
@@ -18,15 +18,16 @@
          "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
-         "web/css/style.css"
+         "web/css/style.css",
+         "web/css/morgan.less.css"
      ],
 
     "lib_files"  : [
-         "web/js/libs/jquery-1.10.2.js",
+         "web/js/libs/jquery-1.12.2.min.js",
          "web/js/libs/jquery-ui/jquery-ui.min.js",
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",
-         "web/js/libs/ember-1.4.0.js",
+         "web/js/libs/ember.min.js",
          "web/templates/dist/templates.js",
          "web/js/libs/bootstrap.min.js",
          "web/js/libs/moment.min.js",

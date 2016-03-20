@@ -1,10 +1,12 @@
-        <center>
-            <h3>Previous Regulatory Actions</h3>
-            {{#if model}}
-                {{#each model}}
-                    <h4> Trading in this security was suspended on <a {{bind-attr href="url"}}>{{date}}</a></h4>
-                {{/each}}
-            {{else}}
-                <h4> This company has never been the subject of an SEC trading suspension. </h4>
-            {{/if}}
-        </center>
+{{!-- web/templates/previousReg.hbs --}}
+
+<span class="centered">
+    <h3>Previous Regulatory Actions</h3>
+    {{#if model}}
+        {{#each model}}
+            <h4> Trading in this security was suspended on <a {{bind-attr href="url"}}>{{date}}</a></h4>
+        {{/each}}
+    {{else}}
+        <h4> This company has never been the subject of an SEC trading suspension. </h4>
+    {{/if}}
+</span>

@@ -1,6 +1,8 @@
-        <div class="container-fluid">
-            {{partial "mainnavbar"}}
-            <div style="position:absolute; top:75px; width:100%;">
-                {{outlet}}
-            </div>
-        </div>
+{{!-- web/templates/application.hbs --}}
+
+<div class="container-fluid">
+    {{partial "mainnavbar"}}
+    <div class="application-style">
+        {{outlet}}
+    </div>
+</div>

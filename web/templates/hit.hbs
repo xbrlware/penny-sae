@@ -1,82 +1,84 @@
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                {{#link-to 'detail' h.cik classNames="accordion-toggle" data-toggle="collapse-next"}}
-                        <div class="list-group-item seventy square">
-                            <div class="hit-text-wrapper">
-                                <h5 class="list-group-item-heading">
-                                    {{h.currentName}}
-                                </h5>
-                            </div>
-                            <div class="row-fluid hit-badge-wrapper">
-                            
-                                <div id="badge-header">
-                                    {{#unless h.redFlags.possible}}
-                                        <font color="lightgrey">
-                                    {{/unless}}
-                                        FINRA Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
-                                    {{#unless h.redFlags.possible}}
-                                        </font>
-                                    {{/unless}}
-                                </div>
-                                <br>
-                                
-                                {{
-                                    view App.HitTextView
-                                    text     = "No Revenues"
-                                    type     = "financials"
-                                    redFlags = h.redFlags
-                                    first_column = true
-                                }}
-                                {{
-                                    view App.HitTextView
-                                    text     = "Change in Business"
-                                    type     = "delta"
-                                    redFlags = h.redFlags
-                                    first_column = true
-                                }}
-                                {{
-                                    view App.HitTextView
-                                    text     = "Trading Suspensions"
-                                    type     = "trading_halts"
-                                    redFlags = h.redFlags
-                                    first_column = true
-                                }}
-                                {{
-                                    view App.HitTextView
-                                    text     = "Late Filings"
-                                    type     = "delinquency"
-                                    redFlags = h.redFlags
-                                    first_column = true
-                                }}
-                                {{
-                                    view App.HitTextView
-                                    text     = "OTC Associates"
-                                    type     = "network"
-                                    redFlags = h.redFlags
-                                    first_column = true
-                                }}
+{{!-- web/templates/hit.hbs --}}
 
-                                {{
-                                    view App.HitTextView
-                                    text     = "PV Anomalies"
-                                    type     = "pv"
-                                    redFlags = h.redFlags
-                                    first_column = false
-                                }}
-                                {{
-                                    view App.HitTextView
-                                    text     = "CROWDSAR"
-                                    type     = "crowdsar"
-                                    redFlags = h.redFlags
-                                    first_column = false
-                                }}
-                            </div>
-                        </div>
-                {{/link-to}}
+<div class="accordion-group">
+    <div class="accordion-heading">
+        {{#link-to 'detail' h.cik classNames="accordion-toggle" data-toggle="collapse-next"}}
+            <div class="list-group-item seventy square">
+                <div class="hit-text-wrapper">
+                    <h5 class="list-group-item-heading">
+                        {{h.currentName}}
+                    </h5>
+                </div>
+                
+                <div class="row-fluid hit-badge-wrapper">
+                    <div id="badge-header">
+                        {{#unless h.redFlags.possible}}
+                            <p class="lg-text">
+                        {{/unless}}
+                            FINRA Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
+                        {{#unless h.redFlags.possible}}
+                            </p>
+                        {{/unless}}
+                    </div>
+                    <br />
+                                
+                    {{
+                        view App.HitTextView
+                        text     = "No Revenues"
+                        type     = "financials"
+                        redFlags = h.redFlags
+                        first_column = true
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "Change in Business"
+                        type     = "delta"
+                        redFlags = h.redFlags
+                        first_column = true
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "Trading Suspensions"
+                        type     = "trading_halts"
+                        redFlags = h.redFlags
+                        first_column = true
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "Late Filings"
+                        type     = "delinquency"
+                        redFlags = h.redFlags
+                        first_column = true
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "OTC Associates"
+                        type     = "network"
+                        redFlags = h.redFlags
+                        first_column = true
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "PV Anomalies"
+                        type     = "pv"
+                        redFlags = h.redFlags
+                        first_column = false
+                    }}
+                    {{
+                        view App.HitTextView
+                        text     = "CROWDSAR"
+                        type     = "crowdsar"
+                        redFlags = h.redFlags
+                        first_column = false
+                    }}
+                </div>
             </div>
-            <div class="accordion-body collapse out ab-sidebar">
-              <div class="accordion-inner">
-                {{partial "uniqueRecords"}}
-              </div>
-            </div>
+        {{/link-to}}
+    </div>
+    
+    <div class="accordion-body collapse out ab-sidebar">
+        <div class="accordion-inner">
+            {{partial "uniqueRecords"}}
         </div>
+    </div>
+</div>
