@@ -4,9 +4,8 @@ App.FrontpageRoute = Ember.Route.extend({
         this.controllerFor('application').set('showNav', false);
     },
     actions : {
-        companySearch: function() {
-            var st = this.get('controller').get('searchTerm');
-            if(st){ this.transitionTo('sidebar', st); }
+        companySearch: function(searchTerm) {
+            if(searchTerm){ this.transitionTo('sidebar', searchTerm); }
         },
         filterSearch : function() {
             this.transitionTo('sidebar', '-');
@@ -18,7 +17,7 @@ App.FrontpageRoute = Ember.Route.extend({
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
-    searchTerm : ''
+    toggles : Ember.computed.alias('controllers.application.toggles'),
 });
 
 App.FrontpageView = Ember.View.extend({

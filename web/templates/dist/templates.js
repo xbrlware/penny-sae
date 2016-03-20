@@ -95,10 +95,9 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("form-control"),
     'placeholder': ("- Search Company -"),
-    'value': ("searchTerm"),
     'id': ("search-text"),
     'insert-newline': ("companySearch")
-  },hashTypes:{'class': "STRING",'placeholder': "STRING",'value': "ID",'id': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'placeholder': depth0,'value': depth0,'id': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
+  },hashTypes:{'class': "STRING",'placeholder': "STRING",'id': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'placeholder': depth0,'id': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
   data.buffer.push("\n                    </div>\n                </div>\n                <ul class=\"nav navbar-nav navbar-right\">\n                    <li class=\"dropdown yamm\" id=\"big-dropdown\">\n                        <a class=\"btn btn-default navbar-btn dropdown-toggle\" id=\"big-dropdown-button\" data-toggle=\"dropdown\"> Red Flag Filters </a>\n                        <ul class=\"dropdown-menu dropdown-menu-animated\" id=\"filter-list\">\n                            <li>\n                                <div class=\"yamm-content\">\n                                    ");
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "dropdown", options) : helperMissing.call(depth0, "render", "dropdown", options))));
   data.buffer.push("\n                                </div>\n                            </li>\n                        </ul>\n                    </li>\n\n                \n                \n                </ul>\n            </div>\n        </div>\n    </nav>\n");
@@ -882,9 +881,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push("\n\n<div class=\"frontpage-align\">\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("input-fat centered"),
-    'value': ("searchTerm"),
     'insert-newline': ("companySearch")
-  },hashTypes:{'class': "STRING",'value': "ID",'insert-newline': "STRING"},hashContexts:{'class': depth0,'value': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
+  },hashTypes:{'class': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
   data.buffer.push("\n    </div>\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n            <tr class=\"no-hover\">\n                <th> </th>\n                <th>\n                    <h3 class=\"red-text\"> Red Flags </h3>\n                </th>\n            </tr>\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has no business, no revenues and no product."),

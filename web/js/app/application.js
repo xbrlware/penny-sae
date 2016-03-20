@@ -22,26 +22,22 @@ App.Router.map(function() {
     });
 });
 
+// --
+
 App.Toggles = Ember.Object.extend({
     financials    : gconfig.DEFAULT_TOGGLES.financials,
     delta         : gconfig.DEFAULT_TOGGLES.delta,
     trading_halts : gconfig.DEFAULT_TOGGLES.trading_halts,
     delinquency   : gconfig.DEFAULT_TOGGLES.delinquency,
     network       : gconfig.DEFAULT_TOGGLES.network,
-
     pv            : gconfig.DEFAULT_TOGGLES.pv,
     crowdsar      : gconfig.DEFAULT_TOGGLES.crowdsar
 });
 
 App.ApplicationRoute = Ember.Route.extend({
     actions : {
-        // Running company search from the top bar
-        companySearch: function() {
-            var _this      = this;
-            var searchTerm = this.get('controller.searchTerm');
-            if(searchTerm) {
-                _this.transitionTo('sidebar', searchTerm);
-            }
+        companySearch: function(searchTerm) {
+            if(searchTerm) { this.transitionTo('sidebar', searchTerm); }
         }
     }
 });
