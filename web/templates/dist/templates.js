@@ -88,7 +88,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', helper, options;
-  data.buffer.push("\n    <nav class=\"navbar yamm navbar-fixed-top\" role=\"navigation\">\n        <div class=\"container-fluid\" id=\"navbar-color\">\n            <div class=\"navbar-header\">\n                <a class=\"navbar-brand red-text\">  SAE </a>\n            </div>\n                    \n            <div class=\"collapse navbar-collapse\">\n                <div class=\"navbar-form navbar-left\" id=\"search-padding\">\n                    <div class=\"form-group\">\n                        ");
+  data.buffer.push("\n    <nav class=\"navbar yamm navbar-fixed-top\" id=\"navbar-bgcolor\" role=\"navigation\">\n        <div class=\"container-fluid\">\n            <div class=\"navbar-header\">\n                <a class=\"navbar-brand red-text\">  SAE </a>\n            </div>\n                    \n            <div class=\"collapse navbar-collapse\">\n                <div class=\"navbar-form navbar-left\" id=\"search-padding\">\n                    <div class=\"form-group\">\n                        ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("form-control"),
     'placeholder': ("- Search Company -"),
@@ -1337,7 +1337,7 @@ function program6(depth0,data) {
   data.buffer.push(" &nbsp; companies in our database\n			match your search criteria.\n            <div class=\"list-group square\">\n                ");
   stack1 = helpers.each.call(depth0, "h", "in", "hits", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                <span class=\"centered\">\n                    <ul class=\"pagination pagination-lg centered\">\n                        ");
+  data.buffer.push("\n                <span class=\"centered\">\n                    <ul class=\"pagination pagination-lg\">\n                        ");
   stack1 = helpers['if'].call(depth0, "canGoBack", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n                        ");
