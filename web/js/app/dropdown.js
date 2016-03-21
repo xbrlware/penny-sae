@@ -74,25 +74,5 @@ App.DropdownView = Ember.View.extend({
         $('#input-topic').click(function(e) {
             return false;
         });
-        $('table.hoverTable tr').not('tr.no-hover').hover(
-            function () {
-                $(this).not('td.dropdown-button').css('background-color', 'whiteSmoke');
-            },
-            function () {
-                $(this).css('background-color', 'white');
-                $(this).find('td.dropdown-button').css('background-color', 'red');
-            }
-        );
-
-        $('td.dropdown-button').hover(
-            function () {
-                $(this).css('background-color', "rgb(208, 43, 43)");
-                $(this).css('color', 'whiteSmoke');
-            },
-            function () {
-                $(this).css('background-color', 'red');
-                $(this).css('color', 'whiteSmoke');
-            }
-        );
     }
 });

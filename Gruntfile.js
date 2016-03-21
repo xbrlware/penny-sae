@@ -71,7 +71,7 @@ module.exports = function(grunt) {
                     ieCompat : true,
                 },
                 files : {
-                    "<%= cfg.css %>morgan.less.css"       : "<%= cfg.lss %>morgan.less",
+                    "<%= cfg.css %>style.less.css"       : "<%= cfg.lss %>style.less",
 
                 }
             }

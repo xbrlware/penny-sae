@@ -21,23 +21,10 @@ App.FrontpageController = Ember.ObjectController.extend({
     toggles : Ember.computed.alias('controllers.application.toggles'),
 });
 
-App.FrontpageView = Ember.View.extend({
-    didInsertElement : function() {
-        $('body').css('background-color', 'whiteSmoke');
-        $('table.hoverTable').find('tr').not('tr.no-hover').hover(
-            function () {
-                $(this).css('background-color', 'whiteSmoke');
-            },
-            function () {
-                $(this).css('background-color', 'white');
-            }
-        );
-    }
-});
-
 // --
 
 App.ToggleRowView = Ember.View.extend({
+    classNames: ["toggle-row-bg"],
     templateName : "togglerow",
     tagName : "tr",
     click : function(e) {
