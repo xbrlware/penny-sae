@@ -1,4 +1,4 @@
-// Client
+// web/js/app/client.js
 
 function fetch(args){
     Ember.$.ajax({
@@ -68,9 +68,7 @@ App.Search.reopenClass({
             fetch({
                 endpoint   : "fetch_companies",
                 query_type : "companyQuery",
-                query_args : {
-                    "searchTerm" : searchTerm
-                },
+                query_args : {"searchTerm" : searchTerm},
                 index      : 'companies',
                 rf         : rf_clean,
                 from       : 0,
@@ -83,8 +81,8 @@ App.Search.reopenClass({
         
     search_filters : function(rf_clean, from, s) {
         console.log('search_filters');
-        var from  = from == undefined ? 0 : from;
-        var s     = s == undefined ? App.SearchResults.create() : s;
+        var from  = from === undefined ? 0 : from;
+        var s     = s === undefined ? App.SearchResults.create() : s;
         return new Ember.RSVP.Promise(function(resolve, reject) {
             fetch({
                 endpoint   : "fetch_companies",
@@ -124,7 +122,7 @@ App.Search.reopenClass({
                     "redFlags"     : set_red_flags(rf_clean, x.fields),
                     "score"        : x._score
                 }
-                if(x.fields.currentName[0] != null) {
+                if(x.fields.currentName[0] !== null) {
                     arr.push(ret);
                 } else {
                     console.log('missing info for', x);

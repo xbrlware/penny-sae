@@ -1,4 +1,4 @@
-// Network View
+// web/js/app/associates.js
 
 App.AssociatesRoute = Ember.Route.extend({
     model : function() {
@@ -82,7 +82,7 @@ App.AssociatesController = Ember.ObjectController.extend({
             var searchTerm_er      = this.get('searchTerm_er');
             console.log('did search', searchTerm_er);
             var orig_network_associates = this.get('orig_network_associates');
-            if(searchTerm_er == '') {
+            if(searchTerm_er === '') {
                 this.set('network_associates', orig_network_associates);
             } else {
                 this.set('network_associates', _.filter(orig_network_associates, function(associate) {
@@ -93,16 +93,11 @@ App.AssociatesController = Ember.ObjectController.extend({
         },
         
         show_links_ner : function(ner) {
-            console.log('ner -------> ', ner);
             var orig_adj = this.get('orig_adj');
             var cik      = this.get('model.cik');
-            console.log('orig_adj --> ', orig_adj);
-            console.log('cik -------> ', cik);
             var edge     = _.where(orig_adj, {"nodeTo" : ner.id})[0];
-            console.log('edge ------> ', edge);
             this.set('links', _.map(edge.data.an, function(x) {
                 var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm'
-                console.log('link ------> ', link);
                 return {link : link}
             }));
         }

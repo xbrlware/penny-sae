@@ -951,7 +951,7 @@ function program5(depth0,data) {
   return buffer;
   }
 
-  data.buffer.push("\n\n\n\n<div id=\"google-news\"></div>\n\n<div class=\"row\">\n    <div class=\"col-sm-2\">\n        ");
+  data.buffer.push("\n\n\n\n<div id=\"google-news\"></div>\n<div class=\"row\">\n    <div class=\"col-sm-2\">\n        ");
   stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n    </div>\n\n    <div class=\"col-sm-10\">\n        ");
@@ -1417,13 +1417,13 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["toggle_switch"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["toggle-switch"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<label for=\"");
+  data.buffer.push("\n\n<label for=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "view.checkBoxId", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\">\n    ");
   stack1 = helpers._triageMustache.call(depth0, "view.label", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});

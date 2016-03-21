@@ -1,3 +1,4 @@
+// web/js/app/slider.js
 
 JQ = Ember.Namespace.create();
 JQ.Widget = Em.Mixin.create({

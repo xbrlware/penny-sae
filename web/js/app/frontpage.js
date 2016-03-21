@@ -1,3 +1,5 @@
+// web/js/app/frontpage.js
+
 // Front Page
 App.FrontpageRoute = Ember.Route.extend({
     setupController : function(controller, model) {

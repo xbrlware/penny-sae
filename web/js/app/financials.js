@@ -1,3 +1,5 @@
+// web/js/app/financials.js
+
 // Financials
 
 App.FinancialsRoute = Ember.Route.extend({

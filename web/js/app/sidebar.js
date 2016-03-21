@@ -1,5 +1,4 @@
-// Sidebar
-
+// web/js/app/sidebar.js 
 
 App.SidebarRoute = Ember.Route.extend({
 

@@ -1,3 +1,5 @@
+// web/js/app/topic.js
+
 // Topic View
 
 App.Topic = Ember.Object.extend({

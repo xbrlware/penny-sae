@@ -1,14 +1,15 @@
+// web/js/app/leadership.js
 
 function fetch_leadership(args) {
     return new Ember.RSVP.Promise(function(resolve, reject) {
         Ember.$.ajax({
             type        : 'POST',
-			contentType : 'application/json',
-			dataType    : "json",            
-            url     : 'fetch_leadership',
-            data    : JSON.stringify({"cik" : args.cik}),
-            success : function(response) {resolve(response)},
-            error   : function (xhr, status, error) {console.log('Error: ' + error.message)}
+			      contentType : 'application/json',
+			      dataType    : "json",            
+            url         : 'fetch_leadership',
+            data        : JSON.stringify({"cik" : args.cik}),
+            success     : function(response) {resolve(response)},
+            error       : function (xhr, status, error) {console.log('Error: ' + error.message)}
         });
     });
 };
@@ -135,7 +136,7 @@ App.LeadershipView = Ember.View.extend({
 
                 .attr("y", function(d) { return x1(d.pos); })
                 .attr("x", function(d) { return y(d.value.start); })
-                .attr("width", function(d) {var h = y(d.value.stop) - y(d.value.start); if(isNaN(h)) {h = 0} else if(h == 0) {h = 5};  return h;})
+                .attr("width", function(d) {var h = y(d.value.stop) - y(d.value.start); if(isNaN(h)) {h = 0} else if(h === 0) {h = 5};  return h;})
                 .attr("height", x1.rangeBand())
 
                 .style("fill", function(d) { return color(d.pos); })

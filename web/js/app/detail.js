@@ -1,3 +1,5 @@
+// web/js/app/detail.js
+
 App.DetailModel = Ember.Object.extend({
     cik         : '',
     source      : null,
@@ -31,7 +33,7 @@ App.DetailModel = Ember.Object.extend({
     // PVA information for table
     spikesTable: function() {
         var s = this.get('fields.pv_scriptfield');
-        if(s != undefined){
+        if(s !== undefined){
             s   = s[0];
             tab = [];
             for(i=0; i < s.spike_size.length; i++){
@@ -54,21 +56,21 @@ App.DetailModel = Ember.Object.extend({
     // Financials table
     financialsTable: function(){
         var d = this.get('source.fin')
-        if(d != undefined && Object.keys(d).length > 1){
+        if(d !== undefined && Object.keys(d).length > 1){
             tab = [];
             for(i=0; i < d.balance_sheet_date.length; i++){
                 var obj        = new Object;
-                obj.bsd        = d.balance_sheet_date == undefined ? undefined : d.balance_sheet_date[i],
-                obj.type       = d.type == undefined ? undefined : d.type[i],
-                obj.fy         = d.fiscal_year == undefined ? undefined : d.fiscal_year[i],
+                obj.bsd        = d.balance_sheet_date === undefined ? undefined : d.balance_sheet_date[i],
+                obj.type       = d.type === undefined ? undefined : d.type[i],
+                obj.fy         = d.fiscal_year === undefined ? undefined : d.fiscal_year[i],
                 
-                obj.revenues   = d.revenues == undefined ? undefined : d.revenues[i]
-                obj.netincome  = d.netincomeloss == undefined ? undefined : d.netincomeloss[i]
-                obj.assets     = d.assets == undefined ? undefined : d.assets[i]
+                obj.revenues   = d.revenues === undefined ? undefined : d.revenues[i]
+                obj.netincome  = d.netincomeloss === undefined ? undefined : d.netincomeloss[i]
+                obj.assets     = d.assets === undefined ? undefined : d.assets[i]
                 
-                obj.revenues_pretty   = d.revenues == undefined ? undefined : numeral(d.revenues[i]).format('0,0');
-                obj.netincome_pretty  = d.netincomeloss == undefined ? undefined : numeral(d.netincomeloss[i]).format('0,0');
-                obj.assets_pretty     = d.assets == undefined ? undefined : numeral(d.assets[i]).format('0,0');
+                obj.revenues_pretty   = d.revenues === undefined ? undefined : numeral(d.revenues[i]).format('0,0');
+                obj.netincome_pretty  = d.netincomeloss === undefined ? undefined : numeral(d.netincomeloss[i]).format('0,0');
+                obj.assets_pretty     = d.assets === undefined ? undefined : numeral(d.assets[i]).format('0,0');
                 
                 tab.push(obj)
             }
@@ -82,7 +84,7 @@ App.DetailModel = Ember.Object.extend({
     // Delinquency table
     delinquencyTable: function(){
         var d = this.get('source.del_proc')
-        if(d != undefined && Object.keys(d).length > 1){
+        if(d !== undefined && Object.keys(d).length > 1){
             tab = [];
             
             // Should be fixed on next data load
@@ -93,10 +95,10 @@ App.DetailModel = Ember.Object.extend({
 
             for(i=0; i < d.date_of_filing.length; i++){
                 var obj        = new Object;
-                obj.dof        = d.date_of_filing == undefined ? undefined : d.date_of_filing[i],
-                obj.dd         = d.due_date == undefined ? undefined : d.due_date[i],
-                obj.form       = d.form == undefined ? undefined : d.form[i],
-                obj.std_late   = d.standard_late == undefined ? undefined : d.standard_late[i]
+                obj.dof        = d.date_of_filing === undefined ? undefined : d.date_of_filing[i],
+                obj.dd         = d.due_date === undefined ? undefined : d.due_date[i],
+                obj.form       = d.form === undefined ? undefined : d.form[i],
+                obj.std_late   = d.standard_late === undefined ? undefined : d.standard_late[i]
                 tab.push(obj)
             }
             return(tab)

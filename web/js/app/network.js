@@ -1,3 +1,5 @@
+// web/js/app/network.js
+
 // Ownership Network Visualization 
 // Aesthetics for network visualization
 
@@ -10,7 +12,7 @@ function create_network_associates(network_center, network_associates) {
                 x.data.type         = 'entity';
                 x.data.relationship = '';
                 
-                if(adj == undefined || adj.data == undefined || adj.data.hidden == undefined) {
+                if(adj === undefined || adj.data === undefined || adj.data.hidden === undefined) {
                     // Defaults to hidden
                     x.hidden = true;
                 } else {
@@ -18,7 +20,7 @@ function create_network_associates(network_center, network_associates) {
                 }
             } else {
                 x.data.relationship = adj.data.relationship;
-                if(adj.data.hidden == undefined) {
+                if(adj.data.hidden === undefined) {
                     // Defaults to shown
                     x.hidden = false;
                 } else {
@@ -26,7 +28,7 @@ function create_network_associates(network_center, network_associates) {
                 }
             }
             
-            if(adj.data.aug == true) {
+            if(adj.data.aug === true) {
                 x.augmented   = true;
                 x.data.source = "augmented";
             } else {
@@ -38,7 +40,7 @@ function create_network_associates(network_center, network_associates) {
                 }
             }
             
-            if(x.data.enhanced != undefined) {
+            if(x.data.enhanced !== undefined) {
                 x.data.enhanced = x.data.enhanced;
             }
             
@@ -61,8 +63,8 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                            
                 var network_center = center.hits.hits.findBy('_index', config.NETWORK_INDEX);
                 var orig_adj = network_center._source.adjacencies;
-                if(network_center != undefined) {
-                    if(action == 'initial') {
+                if(network_center !== undefined) {
+                    if(action === 'initial') {
                         con.set('isLoading', true) //*
                     }
                     
@@ -80,7 +82,7 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                 _.sortBy(
                                     _.pluck(
                                         _.filter(neighbors.hits.hits, function(hit) {
-                                            return hit._index != config.COMPANY_INDEX
+                                            return hit._index !== config.COMPANY_INDEX
                                         }),
                                         '_source'
                                     ),
@@ -88,16 +90,16 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                 )
                             );
                             
-                            if(action == 'initial') {
+                            if(action === 'initial') {
                                 con.set('orig_network_associates', network_associates);
                                 con.set('network_associates', network_associates);
                             };
                             
                             companies = _.filter(neighbors.hits.hits, function(hit) {
-                                return hit._index == config.COMPANY_INDEX
+                                return hit._index === config.COMPANY_INDEX
                             });
                             network_neighbors = _.filter(neighbors.hits.hits, function(hit) {
-                                return hit._index == config.NETWORK_INDEX
+                                return hit._index === config.NETWORK_INDEX
                             });
                             _.map(network_neighbors, function(neighbor) {
                                 neighbor.companies = companies.findBy('_id', neighbor._id);
@@ -107,19 +109,19 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                             var sub_network_neighbors = _.filter(network_neighbors, function(neighbor) {
                                 // Get node data from edge...
                                 var equiv = _.filter(network_associates, function(x){
-                                    return x.id == neighbor._id || smart_parseInt(x.id) == neighbor._id
+                                    return x.id === neighbor._id || smart_parseInt(x.id) === neighbor._id
                                 })[0];
                                 
-                                if(equiv.name == undefined) {
+                                if(equiv.name === undefined) {
                                     return false;
-                                } else if(equiv == undefined) {
+                                } else if(equiv === undefined) {
                                     return false;
                                 } else {
                                     return !equiv.hidden || false;
                                 }
                             });
 
-                            if(action == 'update') {
+                            if(action === 'update') {
                                 updateElastic(
                                     sub_network_neighbors,
                                     network_center,
@@ -131,14 +133,14 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                         con.set('rgraph_json', rgraph.toJSON('graph'));
                                     }
                                 );
-                            } else if(action == 'initial') {
+                            } else if(action === 'initial') {
                                 if(sub_network_neighbors.length > 0) {
                                     initElasticBig(
                                         network_center,
                                         sub_network_neighbors,
                                         rf_clean,
                                         function(json) {
-                                            var rgraph = is_new == true ? makeRGraph(con, 'main-infovis', rf_clean) : con.get('rgraph_object');
+                                            var rgraph = is_new === true ? makeRGraph(con, 'main-infovis', rf_clean) : con.get('rgraph_object');
                                             rgraph.loadJSON(json);
                                             rgraph.refresh();
                                         
@@ -206,7 +208,7 @@ function red_flag_individuals(args) {
 
 function networkInfo(node) {
     str = ''
-    if(node.data.type != 'issuer'){
+    if(node.data.type !== 'issuer'){
         str     +='<center><div class="container"><div class="row">'
         content  = '<h4>' + node.name + '</h4>'
         content += '<b>SEC ID (CIK): ' + node.id + '</b>'
@@ -275,14 +277,14 @@ function networkInfo(node) {
                         content = '<h4>' + node.name + '</h4>'
                         content += '<b> SEC ID (CIK): ' + node.id + ', Security</b>'
                         content += '<p>'
-                        if(sic != undefined)
+                        if(sic !== undefined)
                             content += sic + '<br>'
-                        if(state != undefined)
+                        if(state !== undefined)
                             content += state
                         content += '</p>'
                         
                         var cik = parseInt(node.id);
-                        if(content != '') {
+                        if(content !== '') {
                             str +='<div class="container"> \
                                         <div class="row"> \
                                             <div class="col-sm-9"> \
@@ -328,14 +330,14 @@ App.NetView = Ember.View.extend({
         con.set('noData', false);
 
         /* rf_clean isn't working for some reason... swap this later */
-        if(rf != undefined){
+        if(rf !== undefined){
             exists = new Object;
             Object.keys(rf).map(function(key) {
-                if(key != "exists" && key != "toggles"){
+                if(key !== "exists" && key !== "toggles"){
                     exists[key] = false;
-                    if(rf[key] != undefined){
+                    if(rf[key] !== undefined){
                         Object.keys(rf[key]).map(function(inner_key) {
-                            if(rf[key][inner_key] != undefined)
+                            if(rf[key][inner_key] !== undefined)
                                 exists[key] = true;
                         });
                     }
@@ -423,7 +425,7 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
     var network = [];
     var ths     = network_center._source;
     
-    if(network_center.companies != undefined) {
+    if(network_center.companies !== undefined) {
         var crf = set_red_flags(rf_clean, network_center.companies.fields);
         ths.data.totalRedFlags = crf.total;
     }
@@ -449,7 +451,7 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
                 callback: function(adj_response) {
                 
                     var adjs = _.filter(adj_response.hits.hits, function(x) {
-                        return x._index == config.NETWORK_INDEX;
+                        return x._index === config.NETWORK_INDEX;
                     });
                     _.map(neibs, function(neib) {
                         var adj_match = adjs.findBy('_id', neib._id);
@@ -463,7 +465,7 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
                         
                         // Fix relationship of neighbor
                         relationship = edge.data.relationship;
-                        if(relationship != undefined) {
+                        if(relationship !== undefined) {
                             src.data['relationship'] = relationship;
                         } else {
                             src.data['relationship'] = 'Unknown'
@@ -473,8 +475,8 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
                         var new_adjacencies = [];
                         var unconn = 0;
                         src.adjacencies.forEach(function(a){
-                            var found_new = neibs.findBy('_source.id', a.nodeTo) == undefined ? false : true;
-                            var found_old = network.findBy('id', a.nodeTo) == undefined ? false : true;
+                            var found_new = neibs.findBy('_source.id', a.nodeTo) === undefined ? false : true;
+                            var found_old = network.findBy('id', a.nodeTo) === undefined ? false : true;
                             if(found_new || found_old){
                                 new_adjacencies.push(a);
                             } else {
@@ -487,13 +489,13 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
                         src.data['invisible'] = unconn;
 
                         // If node has other neighbors, compute risk score
-                        if(n.companies != undefined){
+                        if(n.companies !== undefined){
                             var crf = set_red_flags(rf_clean, n.companies.fields);
                             src.data['totalRedFlags'] = crf.total;
                         } else {
                             company_data.map(function(x) {
-                                if(x.cik == n._id) {
-                                    if(src.id == undefined) {
+                                if(x.cik === n._id) {
+                                    if(src.id === undefined) {
                                         src.id = x.cik;
                                     }
                                     src.data['totalRedFlags'] = x.avg;
@@ -501,7 +503,7 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
                             });
                         }
                         network.push(src);
-                        if(network.length == (neibs.length + 1)){
+                        if(network.length === (neibs.length + 1)){
                             callback(network);
                         }
                     });
@@ -535,7 +537,7 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
                     console.log('did fetch companies')
                 
                     var adjs = _.filter(adj_response.hits.hits, function(x) {
-                        return x._index == config.NETWORK_INDEX;
+                        return x._index === config.NETWORK_INDEX;
                     });
                     _.map(neibs, function(neib) {
                         var adj_match    = adjs.findBy('_id', neib._id);
@@ -547,19 +549,19 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
                         var src = nn._source;
                         
                         var n = rgraph.graph.getNode(src.id);
-                        if(n == undefined) {
+                        if(n === undefined) {
                             rgraph.graph.addNode(src);
                             n = rgraph.graph.getNode(src.id);
                             n.data['depth'] = 999;
                         
-                            if(nn.companies != undefined){
+                            if(nn.companies !== undefined){
                                 counter++
                                 var crf = set_red_flags(rf_clean, nn.companies.fields);
                                 n.data['totalRedFlags'] = crf.total;
                             } else {
                                 counter++
                                 company_data.map(function(x) {
-                                    if(x.cik == nn._id) {
+                                    if(x.cik === nn._id) {
                                         n.data['totalRedFlags'] = x.avg;
                                     }
                                 });
@@ -571,7 +573,7 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
                         var unconn = 0;
                         src.adjacencies.forEach(function(a){
                             var to = rgraph.graph.getNode(a.nodeTo)
-                            if(to != undefined) {
+                            if(to !== undefined) {
                                 n.data['depth'] = to.data['depth'] < n.data['depth'] ? to.data['depth'] + 1 : n.data['depth'];
                                 rgraph.graph.addAdjacence(n, to, data = a.data);
                             } else {
@@ -580,7 +582,7 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
                         });
                         n.data['invisible'] = unconn;
                         
-                        if(counter == neibs.length) {
+                        if(counter === neibs.length) {
                             callback(rgraph);
                         }
                     });
@@ -676,7 +678,7 @@ function makeRGraph(con, into, rf_clean) {
                 style.fontSize   = "0.9em";
                 style.color      = "#FFFFFF";
                 style.textShadow = "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black";
-            } else if(node._depth == 2 || node._depth == 3){
+            } else if(node._depth === 2 || node._depth === 3){
                 style.fontSize = "0.7em";
                 style.color    = "#FFFFFF";
             } else {
@@ -692,7 +694,7 @@ function makeRGraph(con, into, rf_clean) {
         onBeforePlotNode: function(node) {
             
             // Resize node
-            if(node.data["$dim"] != gconfig.DRAG_NODE_SIZE)
+            if(node.data["$dim"] !== gconfig.DRAG_NODE_SIZE)
                 node.data["$dim"] = gconfig.STANDARD_NODE_SIZE;
             
             // Hide terminal nodes
@@ -706,7 +708,7 @@ function makeRGraph(con, into, rf_clean) {
             }
                         
             // Hackily override red flags given information about incarceration
-            if(node.data.enhanced != undefined) {
+            if(node.data.enhanced !== undefined) {
                 if(node.data.enhanced.incarcerated || node.data.enhanced.confirmed_bad) {
                     if(!con.get('hide_ner')) {
                         node.data["overrideRedFlags"] = true;
@@ -718,7 +720,7 @@ function makeRGraph(con, into, rf_clean) {
 
             var totalRedFlags = node.data["totalRedFlags"];
             if(!node.data['overrideRedFlags']) {
-                if(totalRedFlags == undefined) {
+                if(totalRedFlags === undefined) {
                     node.data["$color"] = "grey"
                 } if(totalRedFlags < 1) {
                     node.data["$color"] = "green"

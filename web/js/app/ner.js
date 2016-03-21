@@ -1,3 +1,5 @@
+// web/js/app/ner.js
+
 // Named Entity Recognition View
 
 function fetch_ner(args){

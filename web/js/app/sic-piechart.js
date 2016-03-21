@@ -1,3 +1,4 @@
+// web/js/app/sic-piechart.js
 
 App.TopicPieChartController = Ember.ObjectController.extend({});
 

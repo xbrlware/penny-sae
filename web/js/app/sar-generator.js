@@ -1,4 +1,4 @@
-// SAR Generator
+// web/js/app/sar-generator.js
 
 App.SargeneratorController = Ember.Controller.extend({
     report : " ------------ "

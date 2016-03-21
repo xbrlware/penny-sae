@@ -1,3 +1,5 @@
+// web/js/app/company-data.js
+
 // Company Data Model
 // Checked 2014-10-28 to make sure everything computed here is used
 // May want to move the computation of these things to the models where
@@ -65,17 +67,17 @@ App.DetailModel = Ember.Object.extend({
             tab = [];
             for(i=0; i < d.balance_sheet_date.length; i++){
                 var obj        = new Object;
-                obj.bsd        = d.balance_sheet_date == undefined ? undefined : d.balance_sheet_date[i],
-                obj.type       = d.type == undefined ? undefined : d.type[i],
-                obj.fy         = d.fiscal_year == undefined ? undefined : d.fiscal_year[i],
+                obj.bsd        = d.balance_sheet_date === undefined ? undefined : d.balance_sheet_date[i],
+                obj.type       = d.type === undefined ? undefined : d.type[i],
+                obj.fy         = d.fiscal_year === undefined ? undefined : d.fiscal_year[i],
                 
-                obj.revenues   = d.revenues == undefined ? undefined : d.revenues[i]
-                obj.netincome  = d.netincomeloss == undefined ? undefined : d.netincomeloss[i]
-                obj.assets     = d.assets == undefined ? undefined : d.assets[i]
+                obj.revenues   = d.revenues === undefined ? undefined : d.revenues[i]
+                obj.netincome  = d.netincomeloss === undefined ? undefined : d.netincomeloss[i]
+                obj.assets     = d.assets === undefined ? undefined : d.assets[i]
                 
-                obj.revenues_pretty   = d.revenues == undefined ? undefined : numeral(d.revenues[i]).format('0,0');
-                obj.netincome_pretty  = d.netincomeloss == undefined ? undefined : numeral(d.netincomeloss[i]).format('0,0');
-                obj.assets_pretty     = d.assets == undefined ? undefined : numeral(d.assets[i]).format('0,0');
+                obj.revenues_pretty   = d.revenues === undefined ? undefined : numeral(d.revenues[i]).format('0,0');
+                obj.netincome_pretty  = d.netincomeloss === undefined ? undefined : numeral(d.netincomeloss[i]).format('0,0');
+                obj.assets_pretty     = d.assets === undefined ? undefined : numeral(d.assets[i]).format('0,0');
                 
                 tab.push(obj)
             }
@@ -101,10 +103,10 @@ App.DetailModel = Ember.Object.extend({
 
                 for(i=0; i < d.date_of_filing.length; i++){
                     var obj        = new Object;
-                    obj.dof        = d.date_of_filing == undefined ? undefined : d.date_of_filing[i],
-                    obj.dd         = d.due_date == undefined ? undefined : d.due_date[i],
-                    obj.form       = d.form == undefined ? undefined : d.form[i],
-                    obj.std_late   = d.standard_late == undefined ? undefined : d.standard_late[i]
+                    obj.dof        = d.date_of_filing === undefined ? undefined : d.date_of_filing[i],
+                    obj.dd         = d.due_date === undefined ? undefined : d.due_date[i],
+                    obj.form       = d.form === undefined ? undefined : d.form[i],
+                    obj.std_late   = d.standard_late === undefined ? undefined : d.standard_late[i]
                     tab.push(obj)
                 }
                 return(tab)

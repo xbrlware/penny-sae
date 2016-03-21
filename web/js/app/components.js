@@ -1,3 +1,5 @@
+// web/js/app/components.js
+
 // Components
 
 App.InputComponent = Ember.TextField.extend({
@@ -28,7 +30,7 @@ Ember.LinkView.reopen({
 
 App.ToggleSwitch = Ember.View.extend({
   classNames: ['toggle-switch'],
-  templateName: 'toggle_switch',
+  templateName: 'toggle-switch',
   
   init: function() {
     this._super.apply(this, arguments);

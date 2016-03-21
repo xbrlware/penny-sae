@@ -1,10 +1,11 @@
+// web/js/app/pva-charts.js
+
 // ---------------------------------------------------------------------------
 // -------------- Price/Volume/Suspicious Activity Charts --------------------
 // ---------------------------------------------------------------------------
 
 App.PvChartRoute = Ember.Route.extend({
     model: function() {
-
         var pv          = this.modelFor('detail').source.pv;
         var cs          = this.modelFor('detail').source.crowdsar_new;
         var tout        = this.modelFor('detail').source.tout;
@@ -18,9 +19,8 @@ App.PvChartRoute = Ember.Route.extend({
 
 App.PvChartView = Ember.View.extend({
     didInsertElement : function(){
-        var mod    = this.get('controller').get('model');
-
-		var close   = [];
+        var mod     = this.get('controller').get('model');
+		    var close   = [];
         var vol     = [];
         var susp_lb = [];
         var p_toutw = [];
@@ -33,7 +33,7 @@ App.PvChartView = Ember.View.extend({
 		};
         
         // CS
-        if(mod.cs != undefined) {
+        if(mod.cs !== undefined) {
             var haveForum = Object.keys(mod.cs).length > 1
             if(haveForum){
                 for (i = 0; i < mod.cs.date.length; i++) {
@@ -44,7 +44,7 @@ App.PvChartView = Ember.View.extend({
         };
 
         // Tout
-        if(mod.tout != undefined) {
+        if(mod.tout !== undefined) {
             var haveTout = Object.keys(mod.tout).length > 1
             if(haveTout){
                 for (i = 0; i < mod.tout.date.length; i++) {
@@ -59,7 +59,6 @@ App.PvChartView = Ember.View.extend({
 		$('#container-pvchart').highcharts('StockChart', pv_opts);
     },
     make_pv_opts : function(close, vol, susp_lb, p_toutw) {
-            
         var opts = {
 		    credits: { enabled: false },
 		    rangeSelector: {

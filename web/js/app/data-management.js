@@ -1,15 +1,16 @@
-// Data manipulation
+// web/js/app/data-management.js
 
+// Data manipulation
 
 function make_company_table(d){
     tab = [];
     if(d.cik != undefined) {
         for(i=0; i < d.cik.length; i++){
             tab.push({
-                "date"  : d.date == undefined ? undefined : d.date[i],
-                "name"  : d.company_name == undefined ? undefined : d.company_name[i],
-                "sic"   : d.sic == undefined ? undefined : d.sic[i],
-                "state" : d.state_of_incorporation == undefined ? undefined : d.state_of_incorporation[i]
+                "date"  : d.date === undefined ? undefined : d.date[i],
+                "name"  : d.company_name === undefined ? undefined : d.company_name[i],
+                "sic"   : d.sic === undefined ? undefined : d.sic[i],
+                "state" : d.state_of_incorporation === undefined ? undefined : d.state_of_incorporation[i]
             });
         }
     }
@@ -78,11 +79,11 @@ function set_red_flags(rf_clean, f) {
 };
 
 function rf_clean_func(rf, toggles) {
-    if(rf == undefined) return undefined;
+    if(rf === undefined) return undefined;
 
     // If toggles is undefined, turn them all on
     var clean_toggles = {}
-    if(toggles == undefined) {
+    if(toggles === undefined) {
         _.map(gconfig.ALL_FEATURES, function(feature) {
             clean_toggles[feature] = true;
         });
@@ -96,9 +97,9 @@ function rf_clean_func(rf, toggles) {
     Object.keys(rf).map(function(key) {
         if(key != "exists" && key != "toggles"){
             exists[key] = false;
-            if(rf[key] != undefined){
+            if(rf[key] !== undefined){
                 Object.keys(rf[key]).map(function(inner_key) {
-                    if(rf[key][inner_key] != undefined)
+                    if(rf[key][inner_key] !== undefined)
                         exists[key] = true;
                 });
             }

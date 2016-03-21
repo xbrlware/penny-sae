@@ -1,3 +1,5 @@
+// web/js/app/previous-reg.js
+
 // Previous Regulatory Actions
 
 App.PreviousRegRoute = Ember.Route.extend({

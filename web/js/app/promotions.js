@@ -1,3 +1,4 @@
+// web/js/app/promotions.js
 
 App.PromotionsRoute = Ember.Route.extend({
     model : function() {
@@ -30,7 +31,6 @@ App.PromotionsView = Ember.View.extend({
         });
 
         var cal = new CalHeatMap();
-        console.log('CalHeatMap ---> [data] :: ', data);
         if (data.length > 0) {
             cal.init({
                 data         : data,

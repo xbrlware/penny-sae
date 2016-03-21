@@ -1,3 +1,5 @@
+// web/js/app/delinquency.js
+
 // Delinquency
 
 App.DelinquencyRoute = Ember.Route.extend({
