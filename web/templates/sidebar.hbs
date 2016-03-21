@@ -6,6 +6,7 @@
             Results: Page {{page}} 
             <br />
         {{/if}}
+        
         {{#unless total_hits}}
             No companies in our database match your search criteria.
         {{else}}
@@ -33,13 +34,13 @@
                 </span>
             </div>
         {{/unless}}
-        {{else}}
-            <span class="centered">
-                <img id="spinner" src="css/ajax-loader.gif">
-                <div class="calculating-top-padding">
-                    Calculating...
-                </div>
-            </span>
+    {{else}}
+        <span class="centered">
+            <img id="spinner" src="css/ajax-loader.gif">
+            <div class="calculating-top-padding">
+                Calculating...
+            </div>
+        </span>
     {{/unless}}
 </div>
 

@@ -2,7 +2,7 @@ App = Ember.Application.create();
 
 App.Router.map(function() {
     this.resource('frontpage', {path: '/'}, function () {})
-    this.resource('sidebar', {path: '/o'}, function() {
+    this.resource('sidebar', {path: '/sidebar/:st'}, function() {
         this.resource('detail', {path: 'detail/:cik'}, function() {
             this.resource('pvChart',     function() {})
             this.resource('googleNews',  function() {
@@ -19,48 +19,39 @@ App.Router.map(function() {
             this.resource('leadership',  function() {})
         });
         this.resource('topic', {path: 'topic'}, function() {});
-        });
     });
+});
+
+// --
+
+App.Toggles = Ember.Object.extend({
+    financials    : gconfig.DEFAULT_TOGGLES.financials,
+    delta         : gconfig.DEFAULT_TOGGLES.delta,
+    trading_halts : gconfig.DEFAULT_TOGGLES.trading_halts,
+    delinquency   : gconfig.DEFAULT_TOGGLES.delinquency,
+    network       : gconfig.DEFAULT_TOGGLES.network,
+    pv            : gconfig.DEFAULT_TOGGLES.pv,
+    crowdsar      : gconfig.DEFAULT_TOGGLES.crowdsar
+});
 
 App.ApplicationRoute = Ember.Route.extend({
-    model : function() {
-        return App.RFQ.create();
-    },
-    setupController : function(controller, model) {
-        controller.set('model', model);
-    },
     actions : {
-        // Running company search from the top bar
-        companySearch: function() {
-            console.log('companySearch -- application');
-            var rf          = this.get('controller.rf'),
-                searchTerm  = this.get('controller.searchTerm'),
-                sidebar_con = this.controllerFor('sidebar');
-            
-            if(searchTerm) {
-                sidebar_con.set('isLoading', true);
-                App.Search.search_company(searchTerm, rf_clean_func(rf, undefined)).then(function(response) {
-                    sidebar_con.set('model', response);
-                    sidebar_con.set('isLoading', false);
-                });
-            }
-        },
-//        topicSearch: function() {
-//            var con         = this.get('controller');
-//            var sidebar_con = this.controllerFor('sidebar');
-//            var searchTerm_topic = this.get('controller').get('searchTerm_topic');
-//            if(searchTerm_topic != '' & searchTerm_topic != undefined) {
-//                sidebar_con.set('isLoading', true);
-//                var promise = App.Search.search_topic(searchTerm_topic, rf_clean_func(con.get('rf'), undefined));
-//                promise.then(function(response) {
-//                    con.transitionToRoute('topic');
-//                    sidebar_con.set('model', response);
-//                    sidebar_con.set('isLoading', false);
-//                });
-//            }
-//        },
-//        search_filters: function () {
-//            this.controllerFor('sidebar').send('search_filters');
-//        }
+        companySearch: function(searchTerm) {
+            if(searchTerm) { this.transitionTo('sidebar', searchTerm); }
+        }
+    }
+});
+
+App.ApplicationController = Ember.Controller.extend({
+    searchTerm       : undefined,
+    showNav          : false,
+    rf               : gconfig.DEFAULT_RF,
+    toggles          : App.Toggles.create(),
+    
+    search_company : function(cb) {
+        App.Search.search_company(this.searchTerm, rf_clean_func(this.rf, undefined)).then(cb);
+    },
+    search_filter : function(cb) {
+        App.Search.search_filters(rf_clean_func(this.rf, this.toggles), undefined, undefined).then(cb);
     }
 });

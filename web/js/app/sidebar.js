@@ -3,30 +3,28 @@
 
 App.SidebarRoute = Ember.Route.extend({
 
+    model : function(params) {
+        return params
+    },
+
     setupController: function(controller, model) {
-        this.controllerFor('application').set('showNav', true);
+        var app_con = this.controllerFor('application');
+
         controller.set('isLoading', true);
+        app_con.set('showNav', true);
         
-        var rf      = this.controllerFor('application').get('rf'),
-            toggles = this.controllerFor('application').get('toggles'),
-            searchTerm_onload       = this.controllerFor('application').get('searchTerm'),
-            searchTerm_topic_onload = this.controllerFor('application').get('searchTerm_topic');
-        
-        if(searchTerm_onload) {
-            App.Search.search_company(searchTerm_onload, rf_clean_func(rf, undefined)).then(function(response) {
+        if(model.st != '-') {
+            app_con.set('searchTerm', model.st);
+            app_con.search_company(function(response) {
                 controller.set('model', response);
                 controller.set('isLoading', false);
             });
-//        } else if(searchTerm_topic_onload) {
-//            promise = App.Search.search_topic(searchTerm_topic_onload, rf_clean_func(rf, undefined));
-//            promise.then(function(response) {
-//                controller.set('model', response);
-//                controller.set('isLoading', false);
-//            });
-//            controller.transitionToRoute('topic');
         } else {
-            controller.transitionToRoute('application');
-            controller.set('isLoading', false);
+            app_con.set('searchTerm', undefined);
+            app_con.search_filter(function(response) {
+                controller.set('model', response);
+                controller.set('isLoading', false);
+            });
         }
     },
     
@@ -59,7 +57,7 @@ App.SidebarController = Ember.ObjectController.extend({
     toggles          : Ember.computed.alias('controllers.application.toggles'),
     searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
     searchTerm_topic : Ember.computed.alias('controllers.application.searchTerm_topic'),
-    isLoading   : false,
+    isLoading        : false,
     actions : {
         iterateSidebar: function(dir) {
             if(dir > 0) {
@@ -101,6 +99,4 @@ App.SidebarView = Ember.View.extend({
 });
 
 App.HitController = Ember.ObjectController.extend({});
-App.HitView = Ember.View.extend({
-    templateName : "hit"
-});
+App.HitView       = Ember.View.extend({ templateName : "hit" });

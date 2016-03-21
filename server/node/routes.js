@@ -1,5 +1,7 @@
 module.exports = function(app, config, client) {
     var qp = require('./qp.js'),
+     async = require('async'),
+        _s = require('underscore.string'),
          _ = require('underscore')._;
     
     function sort_decreasing(a,b){

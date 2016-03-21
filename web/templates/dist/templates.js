@@ -1,4 +1,5 @@
-Ember.TEMPLATES["_dropdown-left"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_dropdown-left"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', escapeExpression=this.escapeExpression;
@@ -53,7 +54,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["_linkModal"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_linkModal"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -80,7 +82,8 @@ function program1(depth0,data) {
   
 });
 
-Ember.TEMPLATES["_mainnavbar"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_mainnavbar"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
@@ -92,10 +95,9 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("form-control"),
     'placeholder': ("- Search Company -"),
-    'value': ("searchTerm"),
     'id': ("search-text"),
     'insert-newline': ("companySearch")
-  },hashTypes:{'class': "STRING",'placeholder': "STRING",'value': "ID",'id': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'placeholder': depth0,'value': depth0,'id': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
+  },hashTypes:{'class': "STRING",'placeholder': "STRING",'id': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'placeholder': depth0,'id': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
   data.buffer.push("\n                    </div>\n                </div>\n                <ul class=\"nav navbar-nav navbar-right\">\n                    <li class=\"dropdown yamm\" id=\"big-dropdown\">\n                        <a class=\"btn btn-default navbar-btn dropdown-toggle\" id=\"big-dropdown-button\" data-toggle=\"dropdown\"> Red Flag Filters </a>\n                        <ul class=\"dropdown-menu dropdown-menu-animated\" id=\"filter-list\">\n                            <li>\n                                <div class=\"yamm-content\">\n                                    ");
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "dropdown", options) : helperMissing.call(depth0, "render", "dropdown", options))));
   data.buffer.push("\n                                </div>\n                            </li>\n                        </ul>\n                    </li>\n\n                \n                \n                </ul>\n            </div>\n        </div>\n    </nav>\n");
@@ -110,7 +112,8 @@ function program1(depth0,data) {
   
 });
 
-Ember.TEMPLATES["_ner"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_ner"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
@@ -170,7 +173,8 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["_sarModal"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_sarModal"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
@@ -189,7 +193,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -221,7 +226,8 @@ function program1(depth0,data) {
   
 });
 
-Ember.TEMPLATES["all_promotions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["all_promotions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '';
@@ -232,7 +238,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["application"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["application"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
@@ -248,7 +255,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["associates"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["associates"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
@@ -311,7 +319,8 @@ function program7(depth0,data) {
   
 });
 
-Ember.TEMPLATES["delinquency"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["delinquency"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -373,7 +382,8 @@ function program7(depth0,data) {
   
 });
 
-Ember.TEMPLATES["details"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["detail"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
@@ -472,12 +482,13 @@ function program17(depth0,data) {
   data.buffer.push("</li>\n            </ul>\n        </nav>\n    </div>\n    <div class=\"col-sm-12\">\n        ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n</div>\n");
+  data.buffer.push("\n    </div>\n</div>");
   return buffer;
   
 });
 
-Ember.TEMPLATES["disabledtogglerow"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["disabledtogglerow"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -499,7 +510,8 @@ function program1(depth0,data) {
   
 });
 
-Ember.TEMPLATES["dropdown-right"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["dropdown-right"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
@@ -789,7 +801,8 @@ function program13(depth0,data) {
   
 });
 
-Ember.TEMPLATES["dropdown"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["dropdown"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
@@ -804,7 +817,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["financials"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["financials"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -857,70 +871,62 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["frontpage"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["frontpage"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing, self=this;
+  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n            <tr class=\"no-hover\">\n                <th> </th>\n                <th>\n                    <h3 class=\"red-text\"> Red Flags </h3>\n                </th>\n            </tr>\n\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Company has no business, no revenues and no product."),
-    'valueBinding': ("toggles.financials")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Company undergoes frequent material changes in business strategy or its line of business."),
-    'valueBinding': ("toggles.delta")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Officers or insiders of the issuer are associated with multiple penny stock issuers."),
-    'valueBinding': ("toggles.network")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Company has been the subject of a prior trading suspension."),
-    'valueBinding': ("toggles.trading_halts")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Company has not made disclosures in SEC or other regulatory filings."),
-    'valueBinding': ("toggles.delinquency")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            \n\n            <tr class=\"no-hover\" id=\"hovertable-bottom-border\"><td></td><td></td></tr>\n            <tr class=\"no-hover\">\n                <td></td>\n                <td><h3><font color=\"red\"> Additional Red Flags </font></h3></td>\n            </tr>\n                        \n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Company stock has experienced recent price and/or volume anomalies."),
-    'valueBinding': ("toggles.pv")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n                \n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
-    'text': ("Investors have made allegations about malfeasance of the company on social media."),
-    'valueBinding': ("toggles.crowdsar")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n            <tr class=\"no-hover\">\n                <td colspan=\"2\">\n                    <button class=\"btn btn-success btn-submit-frontpage\" ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "goToSidebar", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(">\n                        Find\n                    </button>\n                </td>\n            </tr>\n        </table>\n    </div>\n    ");
-  return buffer;
-  }
 
   data.buffer.push("\n\n<div class=\"frontpage-align\">\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("input-fat centered"),
-    'value': ("searchTerm"),
     'insert-newline': ("companySearch")
-  },hashTypes:{'class': "STRING",'value': "ID",'insert-newline': "STRING"},hashContexts:{'class': depth0,'value': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
-  data.buffer.push("\n    </div>\n\n    ");
-  stack1 = helpers.unless.call(depth0, "isLoading", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n</div>\n");
+  },hashTypes:{'class': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
+  data.buffer.push("\n    </div>\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n            <tr class=\"no-hover\">\n                <th> </th>\n                <th>\n                    <h3 class=\"red-text\"> Red Flags </h3>\n                </th>\n            </tr>\n\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Company has no business, no revenues and no product."),
+    'valueBinding': ("toggles.financials")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Company undergoes frequent material changes in business strategy or its line of business."),
+    'valueBinding': ("toggles.delta")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Officers or insiders of the issuer are associated with multiple penny stock issuers."),
+    'valueBinding': ("toggles.network")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Company has been the subject of a prior trading suspension."),
+    'valueBinding': ("toggles.trading_halts")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Company has not made disclosures in SEC or other regulatory filings."),
+    'valueBinding': ("toggles.delinquency")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n            \n\n            <tr class=\"no-hover\" id=\"hovertable-bottom-border\"><td></td><td></td></tr>\n            <tr class=\"no-hover\">\n                <td></td>\n                <td><h3><font color=\"red\"> Additional Red Flags </font></h3></td>\n            </tr>\n                        \n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Company stock has experienced recent price and/or volume anomalies."),
+    'valueBinding': ("toggles.pv")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n                \n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
+    'text': ("Investors have made allegations about malfeasance of the company on social media."),
+    'valueBinding': ("toggles.crowdsar")
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n                <tr class=\"no-hover\">\n                    <td colspan=\"2\">\n                        <button class=\"btn btn-success btn-submit-frontpage\" ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "filterSearch", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+  data.buffer.push(">\n                            Find\n                        </button>\n                    </td>\n                </tr>\n            </table>\n        </div>\n</div>\n");
   return buffer;
   
 });
 
-Ember.TEMPLATES["googleNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["googleNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
@@ -973,7 +979,8 @@ function program5(depth0,data) {
   
 });
 
-Ember.TEMPLATES["hit"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["hit"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, helper, options, self=this, escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
@@ -1073,7 +1080,8 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["hittextview"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["hittextview"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -1104,7 +1112,8 @@ function program1(depth0,data) {
   
 });
 
-Ember.TEMPLATES["leadership"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["leadership"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -1148,7 +1157,8 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["omxNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["omxNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1;
@@ -1168,7 +1178,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["previousReg"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["previousReg"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -1210,7 +1221,8 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["promotions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["promotions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -1251,7 +1263,8 @@ function program4(depth0,data) {
   
 });
 
-Ember.TEMPLATES["pvChart"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["pvChart"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this;
@@ -1295,7 +1308,8 @@ function program2(depth0,data) {
   
 });
 
-Ember.TEMPLATES["sidebar"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["sidebar"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -1306,10 +1320,10 @@ function program1(depth0,data) {
   data.buffer.push("\n        ");
   stack1 = helpers['if'].call(depth0, "from", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        ");
+  data.buffer.push("\n        \n        ");
   stack1 = helpers.unless.call(depth0, "total_hits", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        ");
+  data.buffer.push("\n    ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -1399,7 +1413,7 @@ function program16(depth0,data) {
 function program18(depth0,data) {
   
   
-  data.buffer.push("\n            <span class=\"centered\">\n                <img id=\"spinner\" src=\"css/ajax-loader.gif\">\n                <div class=\"calculating-top-padding\">\n                    Calculating...\n                </div>\n            </span>\n    ");
+  data.buffer.push("\n        <span class=\"centered\">\n            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\n            <div class=\"calculating-top-padding\">\n                Calculating...\n            </div>\n        </span>\n    ");
   }
 
   data.buffer.push("\n\n<div class=\"col-sm-4 no-padding-leftright\">\n    ");
@@ -1413,7 +1427,8 @@ function program18(depth0,data) {
   
 });
 
-Ember.TEMPLATES["subNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["subNews"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', escapeExpression=this.escapeExpression;
@@ -1428,7 +1443,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["toggle_switch"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["toggle_switch"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression;
@@ -1450,7 +1466,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["togglerow"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["togglerow"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
@@ -1490,7 +1507,8 @@ function program5(depth0,data) {
   
 });
 
-Ember.TEMPLATES["topic-time-series"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["topic-time-series"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '';
@@ -1501,7 +1519,8 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["topic"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["topic"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, self=this, escapeExpression=this.escapeExpression;
@@ -1588,7 +1607,8 @@ function program7(depth0,data) {
   
 });
 
-Ember.TEMPLATES["detail/index"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+Ember.TEMPLATES["detail/index"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+/**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '';

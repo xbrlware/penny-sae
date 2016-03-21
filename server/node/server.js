@@ -12,13 +12,6 @@ function run_server() {
 	var express  = require('express'),
          es      = require('elasticsearch'),
          app     = express();
-    
-//         url     = require('url'),
-//         qs      = require('querystring'),
-//         util    = require('util'),
-//         async   = require('async'),
-//         request = require('request'),
-//         _s      = require('underscore.string');
 
     app.use(require('body-parser').json());
 
