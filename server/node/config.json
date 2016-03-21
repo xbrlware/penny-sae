@@ -1,0 +1,18 @@
+{
+    "COMPANY_INDEX" : "companies_restore",
+    "ES" : {
+        "HOST" : "localhost:9205"
+    },
+    "HTTPS":{
+        "ENABLED": false,
+        "CERTIFICATES": {
+            "PEM" : "authentication/nodesec.pem",
+            "CRT": "authentication/nodesec.crt"
+        }
+    },
+    "NETWORK_INDEX" : "petwork",
+    "SERVER" : {
+        "PORT" : 8090
+    },
+    "TTS_TYPE"      : "js"
+}

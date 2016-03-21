@@ -7,12 +7,12 @@ var cluster = require('cluster');
 var _ = require('underscore')._;
 
 function run_server() {
-	var config  = require('../server_config');
+	var config  = require('./config.json');
 
 	var express = require('express'),
-       https  = requiere('https'),
+       https  = require('https'),
           es  = require('elasticsearch'),
-
+          fs  = require('fs'),
          app  = express();
 
     app.use(require('body-parser').json());
@@ -28,9 +28,20 @@ function run_server() {
 
     app.use('/', express.static('../../web'));
     require('./routes')(app, config, client);
+
+    if (config.HTTPS.ENABLED) {
+      console.log(config.HTTPS.CERTIFICATES.PEM);
+      console.log(config.HTTPS.CERTIFICATES.CRT);
+      var privateKey  = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8'),
+          certificate = fs.readFileSync(config.HTTPS.CERTIFICATES.CRT, 'utf8'),
+          credentials = {key: privateKey, cert: certificate};
+
+      https.createServer(credentials, app).listen(config.SERVER.PORT);
+    } else {
+        app.listen(config.SERVER.PORT);
+    }
     
-    app.listen(config.SERVER.PORT);
-    console.log('NODESEC API :: ', config.SERVER.PORT);
+    console.log('Nodesec | protocol = %s | port = %s', config.HTTPS.ENABLED ? 'https' : 'http', config.SERVER.PORT);
 }
 
 if(cluster.isMaster) {
