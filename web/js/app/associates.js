@@ -91,12 +91,18 @@ App.AssociatesController = Ember.ObjectController.extend({
                 }));
             }
         },
+        
         show_links_ner : function(ner) {
+            console.log('ner -------> ', ner);
             var orig_adj = this.get('orig_adj');
             var cik      = this.get('model.cik');
+            console.log('orig_adj --> ', orig_adj);
+            console.log('cik -------> ', cik);
             var edge     = _.where(orig_adj, {"nodeTo" : ner.id})[0];
+            console.log('edge ------> ', edge);
             this.set('links', _.map(edge.data.an, function(x) {
                 var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm'
+                console.log('link ------> ', link);
                 return {link : link}
             }));
         }

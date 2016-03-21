@@ -7,11 +7,13 @@ var cluster = require('cluster');
 var _ = require('underscore')._;
 
 function run_server() {
-	var config = require('../server_config');
+	var config  = require('../server_config');
 
-	var express  = require('express'),
-         es      = require('elasticsearch'),
-         app     = express();
+	var express = require('express'),
+       https  = requiere('https'),
+          es  = require('elasticsearch'),
+
+         app  = express();
 
     app.use(require('body-parser').json());
 
