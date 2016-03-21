@@ -41,7 +41,7 @@ App.ToggleRowView = Ember.View.extend({
     templateName : "togglerow",
     tagName : "tr",
     click : function(e) {
-        if($(e.target).attr('class') != "dropdown-button") {
+        if($(e.target).attr('class') !== "dropdown-button") {
             var value = this.get('value');
             this.toggleProperty('value');
         }

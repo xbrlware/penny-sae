@@ -21,14 +21,14 @@
                 <span class="centered">
                     <ul class="pagination pagination-lg">
                         {{#if canGoBack}}
-                            <li class="iterator"><a {{action "iterateSidebar" -1}}>&laquo;</a></li>
+                            <li class="iterator"><a class="left-round" {{action "iterateSidebar" -1}}>&laquo;</a></li>
                         {{else}}
-                            <li class="iterator disabled"><a>&laquo;</a></li>
+                            <li class="iterator disabled"><a class="left-round">&laquo;</a></li>
                         {{/if}}
                         {{#if canGoForward}}
-                            <li class="iterator"><a {{action "iterateSidebar" 1}}>&raquo;</a></li>
+                            <li class="iterator"><a class="right-round" {{action "iterateSidebar" 1}}>&raquo;</a></li>
                         {{else}}
-                            <li class="iterator disabled"><a>&raquo;</a></li>
+                            <li class="iterator disabled"><a class="right-round">&raquo;</a></li>
                         {{/if}}
                     </ul>
                 </span>
