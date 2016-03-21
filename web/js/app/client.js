@@ -49,13 +49,13 @@ App.SearchResults = Ember.Object.extend({
     unknown_names : undefined,
     broke         : false,
     
-    page          : function() {
+    page : function() {
 		return this.get('from') / gconfig.SIZE + 1
 	}.property('from'),
-    canGoBack     : function() { 
+    canGoBack : function() {
 		return this.get('from') > 0;
 	}.property('from'),
-    canGoForward  : function() { 
+    canGoForward : function() {
 		return this.get('from') + gconfig.SIZE < this.get('total_hits'); 
 	}.property('from', 'total_hits')
 });
@@ -139,40 +139,40 @@ App.Search.reopenClass({
         return(s)
     },
     
-//    search_omx : function(cik) {
-//        return new Ember.RSVP.Promise(function(resolve, reject) {
-//           Ember.$.ajax({
-//                type        : 'POST',
-//                contentType : 'application/json',
-//                dataType    : "json",
-//                url     :  'search_omx',
-//                data    : JSON.stringify({"cik" : cik}),
-//                success : function(response) {
-//                    console.log('response', response);
-//                    resolve(response);
-//                },
-//                error   : function (xhr, status, error) {
-//                    console.log('Error: ' + error.message);
-//                }
-//            });
-//        });
-//    },
-//    fetch_omx : function(omx_id) {
-//        return new Ember.RSVP.Promise(function(resolve, reject) {
-//           Ember.$.ajax({
-//                type        : 'POST',
-//                contentType : 'application/json',
-//                dataType    : "json",
-//                url     :  'fetch_omx',
-//                data    : JSON.stringify({"omx_id" : omx_id}),
-//                success : function(response) {
-//                    console.log('response', response);
-//                    resolve(response);
-//                },
-//                error   : function (xhr, status, error) {
-//                    console.log('Error: ' + error.message);
-//            }
-//            });
-//        });
-//    }
+    search_omx : function(cik) {
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+           Ember.$.ajax({
+                type        : 'POST',
+                contentType : 'application/json',
+                dataType    : "json",
+                url     :  'search_omx',
+                data    : JSON.stringify({"cik" : cik}),
+                success : function(response) {
+                    console.log('response', response);
+                    resolve(response);
+                },
+                error   : function (xhr, status, error) {
+                    console.log('Error: ' + error.message);
+                }
+            });
+        });
+    },
+    fetch_omx : function(omx_id) {
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+           Ember.$.ajax({
+                type        : 'POST',
+                contentType : 'application/json',
+                dataType    : "json",
+                url     :  'fetch_omx',
+                data    : JSON.stringify({"omx_id" : omx_id}),
+                success : function(response) {
+                    console.log('response', response);
+                    resolve(response);
+                },
+                error   : function (xhr, status, error) {
+                    console.log('Error: ' + error.message);
+            }
+            });
+        });
+    }
 });

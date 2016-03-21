@@ -382,7 +382,7 @@ function program7(depth0,data) {
   
 });
 
-Ember.TEMPLATES["details"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
+Ember.TEMPLATES["detail"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
 /**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
@@ -482,7 +482,7 @@ function program17(depth0,data) {
   data.buffer.push("</li>\n            </ul>\n        </nav>\n    </div>\n    <div class=\"col-sm-12\">\n        ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n</div>\n");
+  data.buffer.push("\n    </div>\n</div>");
   return buffer;
   
 });
@@ -1320,10 +1320,10 @@ function program1(depth0,data) {
   data.buffer.push("\n        ");
   stack1 = helpers['if'].call(depth0, "from", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        ");
+  data.buffer.push("\n        \n        ");
   stack1 = helpers.unless.call(depth0, "total_hits", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        ");
+  data.buffer.push("\n    ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -1413,7 +1413,7 @@ function program16(depth0,data) {
 function program18(depth0,data) {
   
   
-  data.buffer.push("\n            <span class=\"centered\">\n                <img id=\"spinner\" src=\"css/ajax-loader.gif\">\n                <div class=\"calculating-top-padding\">\n                    Calculating...\n                </div>\n            </span>\n    ");
+  data.buffer.push("\n        <span class=\"centered\">\n            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\n            <div class=\"calculating-top-padding\">\n                Calculating...\n            </div>\n        </span>\n    ");
   }
 
   data.buffer.push("\n\n<div class=\"col-sm-4 no-padding-leftright\">\n    ");

@@ -17,6 +17,7 @@ App.FrontpageRoute = Ember.Route.extend({
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
+    needs   : ['application'],
     toggles : Ember.computed.alias('controllers.application.toggles'),
 });
 
