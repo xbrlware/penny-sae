@@ -1,7 +1,7 @@
 // web/js/app/frontpage.js
 
 // Front Page
-App.FrontpageRoute = Ember.Route.extend({
+App.FrontpageRoute = App.GRoute.extend({
     setupController : function(controller, model) {
         this.controllerFor('application').set('showNav', false);
     },
@@ -21,6 +21,7 @@ App.FrontpageRoute = Ember.Route.extend({
 App.FrontpageController = Ember.ObjectController.extend({
     needs   : ['application'],
     toggles : Ember.computed.alias('controllers.application.toggles'),
+    isAdmin : function() {return App.isAdmin();}.property(),
 });
 
 // --

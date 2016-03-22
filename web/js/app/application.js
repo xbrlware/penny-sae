@@ -1,29 +1,87 @@
 // web/js/app/application.js
 
-App = Ember.Application.create();
+/* Setup Authorization */
 
-App.Router.map(function() {
-    this.resource('frontpage', {path: '/'}, function () {})
-    this.resource('sidebar', {path: '/sidebar/:st'}, function() {
-        this.resource('detail', {path: 'detail/:cik'}, function() {
-            this.resource('pvChart',     function() {})
-            this.resource('googleNews',  function() {
-                this.resource('subNews', function() {})
-                this.resource('omxNews', {path: "omxNews/:omx"}, function() {})
-            })
-            this.resource('previousReg', function() {})
-            this.resource('financials',  function() {})
-            this.resource('delinquency', function() {})
-            this.resource('associates',  function() {
-                this.resource('ner', function() {})
-            })
-            this.resource('promotions',  function() {})
-            this.resource('leadership',  function() {})
-        });
-        this.resource('topic', {path: 'topic'}, function() {});
-    });
+window.ENV = window.ENV || {};
+console.log('setting up authentication...');
+window.ENV['simple-auth'] = {
+  authorizer                  : 'authorizer:custom',
+  routeAfterAuthentication    : 'wrapper',
+  routeIfAlreadyAuthenticated : 'wrapper',
+  applicationRootUrl          : 'login'
+};
+
+Ember.Application.initializer({
+  name   : 'authentication',
+  before : 'simple-auth',
+  initialize: function(container, application) {
+    container.register('authenticator:custom', App.NodesecAuthenticator);
+    container.register('authorizer:custom', App.NodesecAuthorizer);
+  }
 });
 
+App = Ember.Application.create({
+    // Global getters for localstorage
+  isAdmin : function() {
+    return window.localStorage.getItem('isAdmin') === 'true';
+  },
+  username : function() {
+    return window.localStorage.getItem('username');
+  },
+  token : function() {
+    return window.localStorage.getItem('token');
+  },
+  
+  saveToken : function(token, isAdmin, username) {
+    // Save to local storage
+    window.localStorage.setItem('token',    token);
+    window.localStorage.setItem('isAdmin',  isAdmin);
+    window.localStorage.setItem('username', username);
+    // Set headers
+    Ember.$.ajaxSetup({headers : { 'x-access-token': token }});
+  },
+  updateToken : function(token, callback) {
+    // Save to local storage
+    window.localStorage.setItem('token', token);
+
+    // Set headers
+    Ember.$.ajaxSetup({headers : { 'x-access-token': token }});
+    Ember.run(function() {
+        callback();
+    });
+  }
+});
+
+App.GRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);
+
+App.Router.map(function(){
+    this.route('login', {path: '/'});
+});
+
+/*
+App.Router.map(function() {
+  this.route('login');
+  this.resource('frontpage', {path: '/'})
+    this.resource('sidebar', {path: '/sidebar/:st'}, function() {
+      this.resource('detail', {path: 'detail/:cik'}, function() {
+        this.resource('pvChart',     function() {})
+        this.resource('googleNews',  function() {
+          this.resource('subNews', function() {})
+            this.resource('omxNews', {path: "omxNews/:omx"}, function() {})
+        })
+        this.resource('previousReg', function() {})
+        this.resource('financials',  function() {})
+        this.resource('delinquency', function() {})
+        this.resource('associates',  function() {
+          this.resource('ner', function() {})
+        })
+        this.resource('promotions',  function() {})
+        this.resource('leadership',  function() {})
+      });
+      this.resource('topic', {path: 'topic'}, function() {});
+    });
+});
+*/
 // --
 
 App.Toggles = Ember.Object.extend({

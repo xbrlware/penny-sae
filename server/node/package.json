@@ -29,6 +29,16 @@
     "url": "~0.11.0",
     "util": "~0.10.3",
     "https": "~1.0.0",
-    "fs": "0.0.2"
+    "fs": "0.0.2",
+    "passport": "~0.3.2",
+    "morgan": "~1.7.0",
+    "cookie-parser": "~1.4.1",
+    "method-override": "~2.3.5",
+    "express-session": "~1.13.0",
+    "jwt-simple": "~0.5.0",
+    "moment": "~2.12.0",
+    "q": "~1.4.1",
+    "passport-local": "~1.0.0",
+    "passport-ldapauth": "~0.5.0"
   }
 }
