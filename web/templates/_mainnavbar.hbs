@@ -9,11 +9,6 @@
 
             <div class="collapse navbar-collapse">
                 <div class="navbar-form navbar-left" id="search-padding">
-            {{#if session.isAuthenticated}}
-                <button {{action 'invalidateSession'}} id="auth-submit" class="btn btn-small">
-                    logout
-                </button>
-            {{/if}}
                     <div class="form-group">
                        {{
                             focus-input class="form-control"
@@ -60,6 +55,11 @@
                 </li>
                 --}}
                 </ul>
+            {{#if session.isAuthenticated}}
+        <a {{action 'invalidateSession'}} id="btn-logout" class="btn btn-primary navbar-btn navbar-right">
+            <i class="fa fa-times"></i>
+        </a>
+        {{/if}}
             </div>
         </div>
     </nav>
