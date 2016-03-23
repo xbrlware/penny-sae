@@ -30,7 +30,7 @@ module.exports = function(app, config) {
   // Logging in
   function make_token(params) {
     var timeout_date = moment().add(config.TIMEOUT_AMOUNT, config.TIMEOUT_UNITS).valueOf();
-      
+    console.log('timeout_date -->> ', timeout_date);  
     // <>
     // If using `gated` authentication, we set the timeout date to very far away
     if(config.AUTHENTICATION.STRATEGY === 'gated') {
@@ -59,7 +59,6 @@ module.exports = function(app, config) {
   // ***
   // Verifying that user is logged in
   function check_token(req, res, next) {
-    console.log('req --> ', req.user, req.user_id, req.isAdmin);
     req.user    = undefined;
     req.user_id = undefined;
     req.isAdmin = undefined;
@@ -69,6 +68,7 @@ module.exports = function(app, config) {
     if (token) {
       try {
         var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
+        console.warn('decoded.exp --> ', decoded.exp);
 
         if (decoded.exp <= Date.now()) {
           console.log(new Date(decoded.exp), '-- token expires')

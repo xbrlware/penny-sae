@@ -27,10 +27,10 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
           },
           error : function(error) {
             if (error.status === 403) {
-              console.log('$$$ auth: access denied on restore -- the token must be outdated');
+              console.error('$$$ auth: access denied on restore -- ', error.responseText);
               Ember.run(this, reject);
             } else {
-              alert('There was an error reaching the server. (Unrecognized certificate or bad connection most likely.)');
+              console.error('There was an error reaching the server. (Unrecognized certificate or bad connection most likely.)');
             }
           }
         });

@@ -55,6 +55,7 @@
 	       "web/js/app/financials.js",
 	       "web/js/app/frontpage.js",
 	       "web/js/app/google-news.js",
+         "web/js/app/hit.js",
 	       "web/js/app/icons.js",
 	       "web/js/app/leadership.js",
          "web/js/app/login.js",

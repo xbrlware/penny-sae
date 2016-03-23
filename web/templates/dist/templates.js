@@ -83,12 +83,15 @@ function program1(depth0,data) {
 Ember.TEMPLATES["_mainnavbar"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
   
-  var buffer = '', helper, options;
-  data.buffer.push("\n    <nav class=\"navbar yamm navbar-fixed-top\" id=\"navbar-bgcolor\" role=\"navigation\">\n        <div class=\"container-fluid\">\n            <div class=\"navbar-header\">\n                <a class=\"navbar-brand red-text\">  SAE </a>\n            </div>\n                    \n            <div class=\"collapse navbar-collapse\">\n                <div class=\"navbar-form navbar-left\" id=\"search-padding\">\n                    <div class=\"form-group\">\n                        ");
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n    <nav class=\"navbar yamm navbar-fixed-top\" id=\"navbar-bgcolor\" role=\"navigation\">\n        <div class=\"container-fluid\">\n            <div class=\"navbar-header\">\n                <a class=\"navbar-brand red-text\">SAE</a>\n            </div>\n\n            <div class=\"collapse navbar-collapse\">\n                <div class=\"navbar-form navbar-left\" id=\"search-padding\">\n            ");
+  stack1 = helpers['if'].call(depth0, "session.isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n                    <div class=\"form-group\">\n                       ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("form-control"),
     'placeholder': ("- Search Company -"),
@@ -98,6 +101,14 @@ function program1(depth0,data) {
   data.buffer.push("\n                    </div>\n                </div>\n                <ul class=\"nav navbar-nav navbar-right\">\n                    <li class=\"dropdown yamm\" id=\"big-dropdown\">\n                        <a class=\"btn btn-default navbar-btn dropdown-toggle\" id=\"big-dropdown-button\" data-toggle=\"dropdown\"> Red Flag Filters </a>\n                        <ul class=\"dropdown-menu dropdown-menu-animated\" id=\"filter-list\">\n                            <li>\n                                <div class=\"yamm-content\">\n                                    ");
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "dropdown", options) : helperMissing.call(depth0, "render", "dropdown", options))));
   data.buffer.push("\n                                </div>\n                            </li>\n                        </ul>\n                    </li>\n\n                \n                \n                </ul>\n            </div>\n        </div>\n    </nav>\n");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = '';
+  data.buffer.push("\n                <button ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "invalidateSession", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+  data.buffer.push(" id=\"auth-submit\" class=\"btn btn-small\">\n                    logout\n                </button>\n            ");
   return buffer;
   }
 
@@ -234,26 +245,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["application"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing, self=this;
+  var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = '', stack1, helper, options;
-  data.buffer.push("\n     <a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "invalidateSession", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(" id=\"btn-logout\" class=\"btn btn-primary navbar-btn navbar-right\">\n            <i class=\"fa fa-close\"></i>\n        </a>   <div class=\"container-fluid\">\n            ");
+
+  data.buffer.push("\n\n<div class=\"container-fluid\">\n    ");
   data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "mainnavbar", options) : helperMissing.call(depth0, "partial", "mainnavbar", options))));
-  data.buffer.push("\n            <div class=\"application-style\">\n                ");
+  data.buffer.push("\n    <div class=\"application-style\">\n        ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n            </div>\n        </div>\n    ");
-  return buffer;
-  }
-
-  data.buffer.push("\n\n<div id=\"login-wrapper\">\n    ");
-  stack1 = helpers['if'].call(depth0, "session.isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n</div>\n");
+  data.buffer.push("\n    </div>\n</div>\n");
   return buffer;
   
 });

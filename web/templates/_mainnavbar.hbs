@@ -4,14 +4,19 @@
     <nav class="navbar yamm navbar-fixed-top" id="navbar-bgcolor" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand red-text">  SAE </a>
+                <a class="navbar-brand red-text">SAE</a>
             </div>
-                    
+
             <div class="collapse navbar-collapse">
                 <div class="navbar-form navbar-left" id="search-padding">
+            {{#if session.isAuthenticated}}
+                <button {{action 'invalidateSession'}} id="auth-submit" class="btn btn-small">
+                    logout
+                </button>
+            {{/if}}
                     <div class="form-group">
-                        {{  
-                            focus-input class="form-control" 
+                       {{
+                            focus-input class="form-control"
                             placeholder="- Search Company -"
                             id="search-text" insert-newline="companySearch"
                         }}

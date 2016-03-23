@@ -22,5 +22,7 @@
     "SERVER" : {
         "PORT" : 8090
     },
+    "TIMEOUT_AMOUNT": 2,
+    "TIMEOUT_UNITS" : "hours",
     "TTS_TYPE"      : "js"
 }
