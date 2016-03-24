@@ -30,7 +30,6 @@ module.exports = function(app, config) {
   // Logging in
   function make_token(params) {
     var timeout_date = moment().add(config.TIMEOUT_AMOUNT, config.TIMEOUT_UNITS).valueOf();
-    console.log('timeout_date -->> ', timeout_date);  
     // <>
     // If using `gated` authentication, we set the timeout date to very far away
     if(config.AUTHENTICATION.STRATEGY === 'gated') {

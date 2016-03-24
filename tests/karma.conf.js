@@ -11,19 +11,17 @@ module.exports = function(karma) {
     basePath: '.',
     files: [
       // Vendor dependencies (including test version of Ember)
-      "js/vendor/jquery-1.12.2.min.js",
+      "js/vendor/jquery.js",
       "js/vendor/handlebars.min.js",
-      "js/vendor/ember.min.js",
+      "js/vendor/ember.js",
 
       // nodesec
       "../web/config/global_config.js",
       "../web/config/local_config.js",
-      
       // CSS    
       "../web/css/dist/nodesec-blessed.min.css",
                 
-      // Templates
-      "../web/templates/*.hbs",
+      "../web/js/dist/nodesec.js",
       "nodesec-tests.js"
     ],
     
@@ -35,13 +33,14 @@ module.exports = function(karma) {
     reporters  : ['progress', 'coverage'],
     plugins: [
       'karma-qunit',
+      'karma-coverage',
       'karma-ember-preprocessor',
       'karma-phantomjs-launcher'
     ],
     
     preprocessors: {
-      "../web/js/dist/nodesec.js" : "coverage"
-      "../web/templates/*.hbs": "ember",
+      "../web/js/dist/nodesec.js" : "coverage",
+      "../web/templates/*.hbs": "ember"
     },
     coverageReporter: {
       type: "text",

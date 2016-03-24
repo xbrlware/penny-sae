@@ -46,7 +46,8 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
 
     return new Ember.RSVP.Promise(function(resolve, reject) {
       var postdata = JSON.stringify({username: credentials.identification, password: credentials.password});
-        
+      console.log('postdata -->> ', postdata);
+      console.log('tokenEndpoint -->> ', _this.tokenEndpoint);
       Ember.$.ajax({
         url         : _this.tokenEndpoint,
         type        : 'POST',
@@ -66,6 +67,9 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
         });
             
       }, function(xhr, status, error) {
+           console.error('error ---> ', error);
+           console.error('xhr ---->> ', JSON.stringify(xhr));
+           console.error('status >>> ', status);
            console.log('$$$ auth: rejecting...', error, ' ', status, ' ', JSON.stringify(xhr));
            Ember.run(this, reject, xhr.responseText);
          }
