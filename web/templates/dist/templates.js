@@ -10,43 +10,43 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'text': ("Company has no business, no revenues and no product."),
     'valueBinding': ("toggles.financials"),
     'showParameters': ("financials")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company undergoes frequent material changes in business strategy or its line of business."),
     'valueBinding': ("toggles.delta"),
     'showParameters': ("delta")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Officers or insiders of the issuer are associated with multiple penny stock issuers."),
     'valueBinding': ("toggles.network"),
     'showParameters': ("network")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has been the subject of a prior trading suspension."),
     'valueBinding': ("toggles.trading_halts"),
     'showParameters': ("trading_halts")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has not made disclosures in SEC or other regulatory filings."),
     'valueBinding': ("toggles.delinquency"),
     'showParameters': ("delinquency")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n    \n\n    <tr class=\"no-hover\" id=\"hovertable-bottom-border\"><td colspan=\"3\"></tr>\n    <tr class=\"no-hover\">\n        <td></td>\n        <td><h3 class=\"h3-small\" id=\"add-red-flags\">Additional Red Flags</h3></td>\n    </tr>\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company stock has experienced recent price and/or volume anomalies."),
     'valueBinding': ("toggles.pv"),
     'showParameters': ("pv")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Investors have made allegations about malfeasance of the company on social media."),
     'valueBinding': ("toggles.crowdsar"),
     'showParameters': ("crowdsar")
-  },hashTypes:{'text': "STRING",'valueBinding': "ID",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n    <tr class=\"no-hover\">\n        <td colspan=\"3\">\n            <button class=\"btn btn-success\" id=\"find-button\" ");
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "search_filters", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n                Find\n            </button>\n        </td>\n    </tr>\n</table>\n");
@@ -886,10 +886,21 @@ Ember.TEMPLATES["frontpage"] = Ember.Handlebars.template(function anonymous(Hand
 /**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
 
+function program1(depth0,data) {
+  
+  var buffer = '';
+  data.buffer.push("\n                <a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "invalidateSession", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+  data.buffer.push(" id=\"btn-logout\" class=\"btn btn-link navbar-btn navbar-right\">\n                    <i class=\"fa fa-sign-out\"></i>\n                </a>\n            ");
+  return buffer;
+  }
 
-  data.buffer.push("\n\n<div class=\"frontpage-align\">\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
+  data.buffer.push("\n\n<div class=\"frontpage-align\">\n            ");
+  stack1 = helpers['if'].call(depth0, "session.isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("input-fat centered"),
     'insert-newline': ("companySearch")

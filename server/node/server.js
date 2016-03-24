@@ -10,7 +10,6 @@ var _ = require('underscore')._;
 
 function run_server() {
 	var config  = require('./config.json');
-
 	var express = require('express'),
        https  = require('https'),
           es  = require('elasticsearch'),
@@ -45,8 +44,6 @@ function run_server() {
   
 
   if (config.HTTPS.ENABLED) {
-    console.log(config.HTTPS.CERTIFICATES.PEM);
-    console.log(config.HTTPS.CERTIFICATES.CRT);
     var privateKey  = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8'),
         certificate = fs.readFileSync(config.HTTPS.CERTIFICATES.CRT, 'utf8'),
         credentials = {key: privateKey, cert: certificate};

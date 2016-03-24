@@ -1,9 +1,8 @@
 // web/js/app/authentication.js
 
 App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
-  tokenEndpoint  : 'login',
-  verifyEndpoint : 'check_token',
-
+  tokenEndpoint  : (config.TESTING ? config.TESTING_DOMAIN : '') + '/login', // *** TEST ***
+  verifyEndpoint : (config.TESTING ? config.TESTING_DOMAIN : '') + '/check_token',
   restore: function(data) {
     var _this = this;
     if (!Ember.isEmpty(data.token)) {
@@ -46,7 +45,6 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
 
     return new Ember.RSVP.Promise(function(resolve, reject) {
       var postdata = JSON.stringify({username: credentials.identification, password: credentials.password});
-        
       Ember.$.ajax({
         url         : _this.tokenEndpoint,
         type        : 'POST',
