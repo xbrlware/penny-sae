@@ -12,7 +12,7 @@
         }
     },
     "HTTPS":{
-        "ENABLED": true,
+        "ENABLED": false,
         "CERTIFICATES": {
             "PEM" : "authentication/nodesec.pem",
             "CRT": "authentication/nodesec.crt"
