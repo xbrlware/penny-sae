@@ -36,7 +36,7 @@
             "type"         : "revenues",
             "below"        : 1000,
             "below_for"    : 2,
-            "contemporary" : "undefined"
+            "contemporary" : null
         },
         "trading_halts" : {
             "thresh" : 1
@@ -57,9 +57,7 @@
         "trading_halts" : true,
         "delinquency"   : false,
         "network"       : false,
-
         "pv"            : false,
         "crowdsar"      : false
     }
 }
-

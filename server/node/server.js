@@ -9,7 +9,7 @@ var cluster = require('cluster');
 var _ = require('underscore')._;
 
 function run_server() {
-	var config  = require('./config.json');
+	var config  = require('./server-config.js');
 	var express = require('express'),
        https  = require('https'),
           es  = require('elasticsearch'),

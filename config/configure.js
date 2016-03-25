@@ -1,9 +1,4 @@
-// Configuration file for nodesec
-
-// -----------------------------------
-// Helper program for making sure that the configuration across 
-// all of the files is the same
-
+/* config/configure.js */
 
 var fs = require('fs');
 
@@ -13,70 +8,59 @@ try {
         var jsmin = require('../server/node/node_modules/jsmin');
 }
 
-
-function do_parse(x) {
-    return JSON.parse(jsmin.jsmin(x))
+/** points to user written config files
+ * @global
+ */
+var configPath = {
+    "global"  : "global_config.js", 
+    "local"  : "local_config.js",
+    "server"  : "server_config.js"
 }
 
-function combine(x, g) {
-  for(k in g)
-    x[k] = g[k] 
-  return x
-}
-
-function make_server_config(server, cb) {
-    console.log('making server config');
-    out = JSON.parse(JSON.stringify(server));
-    
-    cb(out)
-}
-
-function make_local_config(lconfig, cb) {
-    console.log('making client config');
-    out = JSON.parse(JSON.stringify(lconfig));
-    
-    cb(out);
-}
-
-function make_global_config(gconfig, cb) {
-    console.log('making loading config');
-    out = JSON.parse(JSON.stringify(gconfig));
-
-    cb(out);
-}
-
-// Point to various configuration files in the /config directory
-var config_paths = {
-    "global"  : "global-config.js", 
-    "local"  : "local-config.js",
-    "server"  : "server-config.js"
-}
-
-var filepaths = {
-  "global": "../web/config/",
-  "local": "../web/config/",
+/** directories we write out to 
+ * @global
+ */
+var filePath = {
+  "web": "../web/config/",
   "server": "../server/node/"
 }
 
-// ---
-// Setup local config
-local_client = do_parse(fs.readFileSync(config_paths.local, "utf8"));
-make_local_config(local_client, function(config) {
-    fs.writeFileSync(filepaths.local + "local_config.js", "var config = " + JSON.stringify(config, null, ' '));    
-});
+
+/**
+ * Parses string to object
+ * @function makeConfig
+ * @param {FILE_POINTER} configFile - pointer to raw config
+ * @param {string} logString - console.log message
+ * @param {function} cb
+ */
+function makeConfig(configFile, logString, cb) {
+    console.log(logString);
+    out = JSON.parse(JSON.stringify(configFile));
+    cb(out);
+}
 
 
-// ---
-// Setup server config
-server_client = do_parse(fs.readFileSync(config_paths.server, "utf8"));
-make_server_config(server_client, function(config) {
-    fs.writeFileSync(filepaths.server + "config.js", "module.exports = " + JSON.stringify(config, null, ' '));
-});
+/**
+ * Main function that parses and writes config file
+ * @func setupConfig
+ * @param {FILE_POINTER} readInFile - user config file
+ * @param {string} logString - string used in console.log
+ * @param {string} writeToPath - directory config is written to
+ * @param {string} writeToName - name of file writing out to
+ * @param {string} varType - differs depending on if this is for node
+ */
+function setupConfig(readInFile, logString, writeToPath, writeToName, varType) {
+  client = JSON.parse(jsmin.jsmin(fs.readFileSync(readInFile, "utf8")));
+  makeConfig(client, 'Building ' + logString + ' config', function(config) {
+    fs.writeFileSync(writeToPath + writeToName, varType + JSON.stringify(config, null, ' '));
+  });
+}
 
+/* Setup local config */
+setupConfig(configPath.local, 'local', filePath.web, 'local-config.js', 'var config = ');
 
-// ---
-// Setup global config
-global_client = do_parse(fs.readFileSync(config_paths.global, "utf8"));
-make_global_config(global_client, function(config) {
-    fs.writeFileSync(filepaths.global + "global_config.js", "var gconfig = " + JSON.stringify(config, null, ' '));
-});
+/* Setup global config */
+setupConfig(configPath.global, 'global', filePath.web, 'global-config.js', 'var gconfig = ');
+
+/* Setup server config */
+setupConfig(configPath.server, 'server', filePath.server, 'server-config.js', 'module.exports = ');
