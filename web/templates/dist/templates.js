@@ -208,8 +208,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push("\n\n");
   data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
     'contentBinding': ("tableContent"),
-    'columnsBinding': ("tableColumns")
-  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+    'columnsBinding': ("tableColumns"),
+    'hasFooter': (false)
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID",'hasFooter': "BOOLEAN"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0,'hasFooter': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
   data.buffer.push("\n");
   return buffer;
   
@@ -316,8 +317,9 @@ function program1(depth0,data) {
   data.buffer.push("\n        <h3>Late Filings</h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
     'contentBinding': ("tableContent"),
-    'columnsBinding': ("tableColumns")
-  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+    'columnsBinding': ("tableColumns"),
+    'hasFooter': (false)
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID",'hasFooter': "BOOLEAN"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0,'hasFooter': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
   data.buffer.push("\n        \n    ");
   return buffer;
   }
@@ -778,8 +780,9 @@ function program1(depth0,data) {
   data.buffer.push("\n        <h3>Financials</h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
     'contentBinding': ("tableContent"),
-    'columnsBinding': ("tableColumns")
-  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+    'columnsBinding': ("tableColumns"),
+    'hasFooter': (false)
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID",'hasFooter': "BOOLEAN"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0,'hasFooter': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
   data.buffer.push("\n    ");
   return buffer;
   }
@@ -1008,9 +1011,9 @@ function program4(depth0,data) {
     'data-toggle': ("collapse-next")
   },hashTypes:{'classNames': "STRING",'data-toggle': "STRING"},hashContexts:{'classNames': depth0,'data-toggle': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "detail", "h.cik", options) : helperMissing.call(depth0, "link-to", "detail", "h.cik", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n    \n            ");
+  data.buffer.push("\n    </div>\n    <div class=\"accordion-body out ab-sidebar\">\n        <div class=\"accordion-inner\">\n                ");
   data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "uniqueRecords", options) : helperMissing.call(depth0, "partial", "uniqueRecords", options))));
-  data.buffer.push("\n</div>\n");
+  data.buffer.push("\n        </div>\n    </div>\n</div>\n");
   return buffer;
   
 });

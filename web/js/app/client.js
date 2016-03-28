@@ -102,7 +102,6 @@ App.SearchResults = Ember.Object.extend({
 
   tableContent: Ember.computed(function() {
     var content = [];
-    console.log('hit you in the ears --> ', JSON.stringify(this.get('hits')[0].companyTable));
     _.map(this.get('hits')[0].companyTable, function(n) {
       content.pushObject({
         'date': n.date,
@@ -111,7 +110,6 @@ App.SearchResults = Ember.Object.extend({
         'state': n.state,
       });
     });
-    console.log('client contents --> ', content);
     return content;
   })
 });
