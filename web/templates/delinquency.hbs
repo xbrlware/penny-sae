@@ -4,7 +4,11 @@
 <span class="centered">
     {{#if model}}
         <h3>Late Filings</h3>
-        <table class="table table-hover table-width">
+        {{table-component
+            contentBinding=tableContent
+            columnsBinding=tableColumns
+        }}
+        {{!-- <table class="table table-hover table-width">
             <tr>
                 <th>Date of Filing</th>
                 <th>Due Date</th>
@@ -25,7 +29,7 @@
                     </td>
                 </tr>
             {{/each}}
-        </table>
+        </table>--}}
     {{else}}
         <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
     {{/if}}

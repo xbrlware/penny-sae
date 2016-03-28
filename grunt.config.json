@@ -18,15 +18,20 @@
          "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
+         "web/css/antiscroll.css",
+         "web/css/ember-table.less.css",
          "web/css/style.less.css"
      ],
 
     "lib_files"  : [
          "web/js/libs/jquery.js",
          "web/js/libs/jquery-ui/jquery-ui.min.js",
+         "web/js/libs/jquery-mousewheel.min.js",
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",
          "web/js/libs/ember.min.js",
+         "web/js/libs/antiscroll.js",
+         "web/js/libs/ember-table.js",
          "web/js/libs/ember-simple-auth.js",
          "web/templates/dist/templates.js",
          "web/js/libs/bootstrap.min.js",

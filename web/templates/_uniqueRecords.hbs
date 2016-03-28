@@ -1,7 +1,15 @@
 {{!-- web/templates/_uniqueRecords.hbs --}}
 
-<table class="table" id="uniqueRecordsTable">
-    <tr><th> Date </th><th> Name </th><th> SIC </th><th> State </th></tr>
+{{!-- <table class="table" id="uniqueRecordsTable">
+    <tr><th> Date </th><th> Name </th><th> SIC </th><th> State </th></tr>--}}
+    <div class="table" id="uniqueRecordsTable">
+        {{table-component
+            contentBinding=h.companyTable
+            columnsBinding=tableDef
+        }}
+    </div>
+
+    {{!--
     {{#each r in h.companyTable}}
         <tr>
             <td>{{r.date}}</td>
@@ -10,4 +18,4 @@
             <td>{{r.state}}</td>
         </tr>
     {{/each}}
-</table>
+</table> --}}

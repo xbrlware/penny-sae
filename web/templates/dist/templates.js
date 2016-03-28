@@ -202,31 +202,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, self=this;
+  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = '', stack1;
-  data.buffer.push("\n        <tr>\n            <td>");
-  stack1 = helpers._triageMustache.call(depth0, "r.date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n            <td>");
-  stack1 = helpers._triageMustache.call(depth0, "r.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n            <td>");
-  stack1 = helpers._triageMustache.call(depth0, "r.sic", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n            <td>");
-  stack1 = helpers._triageMustache.call(depth0, "r.state", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n        </tr>\n    ");
-  return buffer;
-  }
 
-  data.buffer.push("\n\n<table class=\"table\" id=\"uniqueRecordsTable\">\n    <tr><th> Date </th><th> Name </th><th> SIC </th><th> State </th></tr>\n    ");
-  stack1 = helpers.each.call(depth0, "r", "in", "h.companyTable", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n</table>\n");
+  data.buffer.push("\n\n\n    <div class=\"table\" id=\"uniqueRecordsTable\">\n        ");
+  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
+    'contentBinding': ("h.companyTable"),
+    'columnsBinding': ("tableDef")
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+  data.buffer.push("\n    </div>\n\n    \n");
   return buffer;
   
 });
@@ -324,59 +308,28 @@ function program7(depth0,data) {
 Ember.TEMPLATES["delinquency"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
+  var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = '', stack1;
-  data.buffer.push("\n        <h3>Late Filings</h3>\n        <table class=\"table table-hover table-width\">\n            <tr>\n                <th>Date of Filing</th>\n                <th>Due Date</th>\n                <th>Form</th>\n                <th>Late</th>\n            </tr>\n            ");
-  stack1 = helpers.each.call(depth0, "f", "in", "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        </table>\n    ");
+  var buffer = '', helper, options;
+  data.buffer.push("\n        <h3>Late Filings</h3>\n        ");
+  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
+    'contentBinding': ("tableContent"),
+    'columnsBinding': ("tableColumns")
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+  data.buffer.push("\n        \n    ");
   return buffer;
   }
-function program2(depth0,data) {
-  
-  var buffer = '', stack1;
-  data.buffer.push("\n                <tr ");
-  data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
-    'class': ("f.std_late:late-row:timely-row")
-  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.dof", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.dd", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.form", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>\n                        ");
-  stack1 = helpers['if'].call(depth0, "f.std_late", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                    </td>\n                </tr>\n            ");
-  return buffer;
-  }
+
 function program3(depth0,data) {
-  
-  
-  data.buffer.push("\n                            Late Filing\n                        ");
-  }
-
-function program5(depth0,data) {
-  
-  
-  data.buffer.push("\n                            On Time\n                        ");
-  }
-
-function program7(depth0,data) {
   
   
   data.buffer.push("\n        <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>\n    ");
   }
 
   data.buffer.push("\n\n\n<span class=\"centered\">\n    ");
-  stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n</span>\n");
   return buffer;
@@ -817,50 +770,28 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["financials"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, self=this;
+  var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = '', stack1;
-  data.buffer.push("\n        <h3>Financials</h3>\n        <table class=\"table table-hover table-width\">\n            <tr>\n                <th>Balance Sheet Date</th>\n                <th>Filing</th>\n                <th>Fiscal Year End</th>\n                <th>Revenues</th>\n                <th>Net Income</th>\n                <th>Assets</th>\n            </tr>\n            ");
-  stack1 = helpers.each.call(depth0, "f", "in", "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        </table>\n    ");
-  return buffer;
-  }
-function program2(depth0,data) {
-  
-  var buffer = '', stack1;
-  data.buffer.push("\n                <tr>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.bsd", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.type", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.fy", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.revenues_pretty", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.netincome_pretty", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                    <td>");
-  stack1 = helpers._triageMustache.call(depth0, "f.assets_pretty", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n                </tr>\n            ");
+  var buffer = '', helper, options;
+  data.buffer.push("\n        <h3>Financials</h3>\n        ");
+  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
+    'contentBinding': ("tableContent"),
+    'columnsBinding': ("tableColumns")
+  },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+  data.buffer.push("\n    ");
   return buffer;
   }
 
-function program4(depth0,data) {
+function program3(depth0,data) {
   
   
   data.buffer.push("\n        <span class=\"centered\">\n            <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>\n        </span>\n    ");
   }
 
   data.buffer.push("\n\n\n<span class=\"centered\">\n    ");
-  stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n</span>\n");
   return buffer;
@@ -1452,8 +1383,9 @@ function program8(depth0,data) {
   var buffer = '';
   data.buffer.push("\n                        ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitView", {hash:{
-    'h': ("h")
-  },hashTypes:{'h': "ID"},hashContexts:{'h': depth0},contexts:[depth0],types:["ID"],data:data})));
+    'h': ("h"),
+    'tableDef': ("tableColumns")
+  },hashTypes:{'h': "ID",'tableDef': "ID"},hashContexts:{'h': depth0,'tableDef': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   return buffer;
   }

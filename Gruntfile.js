@@ -72,6 +72,7 @@ module.exports = function(grunt) {
                 },
                 files : {
                     "<%= cfg.css %>style.less.css"       : "<%= cfg.lss %>style.less",
+                    "<%= cfg.css %>ember-table.less.css" : "<%= cfg.lss %>ember-table.less"
 
                 }
             }

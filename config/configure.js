@@ -8,7 +8,7 @@ try {
         var jsmin = require('../server/node/node_modules/jsmin');
 }
 
-/** points to user written config files
+/** Points to user written config files.
  * @global
  */
 var configPath = {
@@ -17,7 +17,7 @@ var configPath = {
     "server"  : "server_config.js"
 }
 
-/** directories we write out to 
+/** Directories we write out to.
  * @global
  */
 var filePath = {
@@ -28,8 +28,8 @@ var filePath = {
 
 /**
  * Parses string to object
- * @function makeConfig
- * @param {FILE_POINTER} configFile - pointer to raw config
+ * @func makeConfig
+ * @param {FILE_POINTER} configFile - Pointer to raw config
  * @param {string} logString - console.log message
  * @param {function} cb
  */
