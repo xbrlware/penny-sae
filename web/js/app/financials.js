@@ -13,6 +13,7 @@ App.FinancialsController = Ember.Controller.extend({
     tableColumns: Ember.computed(function() {
       var balanceSheet = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Balance Sheet',
         getCellContent: function(row) {
             return row.bsd;
@@ -21,6 +22,7 @@ App.FinancialsController = Ember.Controller.extend({
 
       var filing = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Filing',
         getCellContent: function(row) {
           return row.type;
@@ -29,6 +31,7 @@ App.FinancialsController = Ember.Controller.extend({
 
       var fiscalYearEnd = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Fiscal Year End',
         getCellContent: function(row) {
           return row.fy;
@@ -37,6 +40,7 @@ App.FinancialsController = Ember.Controller.extend({
 
       var revenues = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Revenues',
         getCellContent: function(row) {
           return row.revenues_pretty;
@@ -45,6 +49,7 @@ App.FinancialsController = Ember.Controller.extend({
 
       var netIncome = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Net Income',
         getCellContent: function(row) {
           return row.netincome_pretty;
@@ -53,6 +58,7 @@ App.FinancialsController = Ember.Controller.extend({
 
       var assets = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        columnWidth: 100,
         headerCellName: 'Assets',
         getCellContent: function(row) {
           return row.assets_pretty;
@@ -75,6 +81,7 @@ App.FinancialsController = Ember.Controller.extend({
           'assets_pretty': n.assets_pretty
         });
       });
+      console.log('financial content --> ', content);
       return content;
     })
 });

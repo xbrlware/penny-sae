@@ -15,7 +15,7 @@
             <div class="list-group square">
                 {{#each h in hits}}
                     {{#if h.currentName}}
-                        {{view App.HitView h=h tableDef=tableColumns}}
+                        {{view App.HitView h=h}}
                     {{/if}}
                 {{/each}}
                 <span class="centered">

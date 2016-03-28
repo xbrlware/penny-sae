@@ -58,7 +58,62 @@ App.SearchResults = Ember.Object.extend({
 
   canGoForward: function() {
     return this.get('from') + gconfig.SIZE < this.get('total_hits');
-  }.property('from', 'total_hits')
+  }.property('from', 'total_hits'),
+
+  tableColumns: Ember.computed(function() {
+    var date = Ember.Table.ColumnDefinition.create({
+      textAlign: 'center',
+      columnWidth: 100,
+      headerCellName: 'Date',
+      getCellContent: function(row) {
+        return row.date;
+      }
+    });
+
+    var name = Ember.Table.ColumnDefinition.create({
+      textAlign: 'center',
+      columnWidth: 175,
+      headerCellName: 'Name',
+      getCellContent: function(row) {
+        return row.name;
+      }
+    });
+
+    var sic = Ember.Table.ColumnDefinition.create({
+      textAlign: 'center',
+      columnWidth: 130,
+      headerCellName: 'SIC',
+      getCellContent: function(row) {
+        return row.sic;
+      }
+    });
+
+    var state = Ember.Table.ColumnDefinition.create({
+      textAlign: 'center',
+      columnWidth: 50,
+      headerCellName: 'State',
+      getCellContent: function(row) {
+        return row.state;
+      }
+    });
+    console.log('column definition --> ', [date, name, sic, state]);
+    return [date, name, sic, state];
+  }),
+
+  tableContent: Ember.computed(function() {
+    var content = [];
+    console.log('hit you in the ears --> ', JSON.stringify(this.get('hits')[0].companyTable));
+    _.map(this.get('hits')[0].companyTable, function(n) {
+      content.pushObject({
+        'date': n.date,
+        'name': n.name,
+        'sic': n.sic,
+        'state': n.state,
+      });
+    });
+    console.log('client contents --> ', content);
+    return content;
+  })
 });
 
 App.Search = Ember.Object.extend({});

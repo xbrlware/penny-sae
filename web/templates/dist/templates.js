@@ -205,12 +205,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("\n\n\n    <div class=\"table\" id=\"uniqueRecordsTable\">\n        ");
+  data.buffer.push("\n\n");
   data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
-    'contentBinding': ("h.companyTable"),
-    'columnsBinding': ("tableDef")
+    'contentBinding': ("tableContent"),
+    'columnsBinding': ("tableColumns")
   },hashTypes:{'contentBinding': "ID",'columnsBinding': "ID"},hashContexts:{'contentBinding': depth0,'columnsBinding': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
-  data.buffer.push("\n    </div>\n\n    \n");
+  data.buffer.push("\n");
   return buffer;
   
 });
@@ -1008,9 +1008,9 @@ function program4(depth0,data) {
     'data-toggle': ("collapse-next")
   },hashTypes:{'classNames': "STRING",'data-toggle': "STRING"},hashContexts:{'classNames': depth0,'data-toggle': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "detail", "h.cik", options) : helperMissing.call(depth0, "link-to", "detail", "h.cik", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n    \n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n            ");
+  data.buffer.push("\n    </div>\n    \n            ");
   data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "uniqueRecords", options) : helperMissing.call(depth0, "partial", "uniqueRecords", options))));
-  data.buffer.push("\n        </div>\n    </div>\n</div>\n");
+  data.buffer.push("\n</div>\n");
   return buffer;
   
 });
@@ -1383,9 +1383,8 @@ function program8(depth0,data) {
   var buffer = '';
   data.buffer.push("\n                        ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitView", {hash:{
-    'h': ("h"),
-    'tableDef': ("tableColumns")
-  },hashTypes:{'h': "ID",'tableDef': "ID"},hashContexts:{'h': depth0,'tableDef': depth0},contexts:[depth0],types:["ID"],data:data})));
+    'h': ("h")
+  },hashTypes:{'h': "ID"},hashContexts:{'h': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   return buffer;
   }
