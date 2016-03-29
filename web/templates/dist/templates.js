@@ -805,21 +805,10 @@ function program3(depth0,data) {
 Ember.TEMPLATES["frontpage"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n                <a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "invalidateSession", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(" id=\"btn-logout\" class=\"btn btn-link navbar-btn navbar-right\">\n                    <i class=\"fa fa-sign-out\"></i>\n                </a>\n            ");
-  return buffer;
-  }
 
-  data.buffer.push("\n\n<div class=\"frontpage-align\">\n            ");
-  stack1 = helpers['if'].call(depth0, "session.isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
+  data.buffer.push("\n\n<div class=\"frontpage-align\">\n    <h1 class=\"phronesis-head\"> Phronesis </h1>\n    <h2 class=\"sae-head\"> Suspicious Activity Explorer </h2>\n    <h2 class=\"phronesis-head\"> Penny Stocks </h2>\n            \n    <div>\n        <h3 class=\"h3-small header-top-padding\"> - Search By Company Name or Ticker - </h3>\n        ");
   data.buffer.push(escapeExpression((helper = helpers['focus-input'] || (depth0 && depth0['focus-input']),options={hash:{
     'class': ("input-fat centered"),
     'insert-newline': ("companySearch")
