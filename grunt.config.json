@@ -18,7 +18,6 @@
          "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
-         "web/css/ember-widgets.css",
          "web/css/antiscroll.css",
          "web/css/ember-table.less.css",
          "web/css/style.less.css"
@@ -31,7 +30,6 @@
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",
          "web/js/libs/ember.min.js",
-         "web/js/libs/ember-widgets.js",
          "web/js/libs/antiscroll.js",
          "web/js/libs/ember-table.js",
          "web/js/libs/ember-simple-auth.js",
