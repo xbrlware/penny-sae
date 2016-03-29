@@ -8,13 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/phronesis-mnemosyne/geofin"
+    "url": "https://github.com/bkj/nodesec"
   },
   "keywords": [
     "development"
   ],
-  "author": "Morgan Peterson",
-  "license": "MIT",
+  "author": "Phronesis LLC",
+  "license": "AVL2",
   "bugs": {
     "url": "https://github.com/bkj/nodesec/issues"
   },
