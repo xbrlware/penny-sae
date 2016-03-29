@@ -4,12 +4,8 @@
 <span class="centered">
     {{#if model}}
         <h3>Late Filings</h3>
-        {{table-component
-            content=tableContent
-            columns=tableColumns
-            hasFooter=false
-            forceFillColumns=true
-        }}
+        <table id="delinquency-table" class="display"></table>
+        {{view App.DelinquencyView}}
     {{else}}
         <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
     {{/if}}

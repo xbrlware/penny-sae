@@ -40,6 +40,21 @@ function get_detail(cik, rf_clean) {
   });
 };
 
+App.SearchResultsView = Ember.View.extend({
+  didInsertElement: function() {
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
+  },
+
+  afterRenderEvent: function() {
+    Ember.$('#uniqueRecords').DataTable({
+      data: this.get('ourData'),
+      columns: this.get('ourColumns')
+    });
+  }
+
+});
+
 App.SearchResults = Ember.Object.extend({
   total_hits   : undefined,
   hits         : [],
@@ -60,7 +75,15 @@ App.SearchResults = Ember.Object.extend({
     return this.get('from') + gconfig.SIZE < this.get('total_hits');
   }.property('from', 'total_hits'),
 
-  tableColumns: Ember.computed(function() {
+  tableColumns: [{title:'Date'}, {title:'Name'}, {title:'SIC'}, {title:'State'}],
+  tableContent: Ember.computed(function() {
+    var content = [];
+    _.map(this.get('hits')[0].companyTable, function(n) {
+      content.pushObject([n.date,n.name,n.sic,n.state]);
+    });
+    return content;
+  })
+  /*tableColumns: Ember.computed(function() {
     var date = Ember.Table.ColumnDefinition.create({
       textAlign: 'center',
       columnWidth: 100,
@@ -94,9 +117,9 @@ App.SearchResults = Ember.Object.extend({
       }
     });
     return [date, name, sic, state];
-  }),
+  }),*/
 
-  tableContent: Ember.computed(function() {
+/*  tableContent: Ember.computed(function() {
     var content = [];
     _.map(this.get('hits')[0].companyTable, function(n) {
       content.pushObject({
@@ -107,7 +130,7 @@ App.SearchResults = Ember.Object.extend({
       });
     });
     return content;
-  })
+  })*/
 });
 
 App.Search = Ember.Object.extend({});

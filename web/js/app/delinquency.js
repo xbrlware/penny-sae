@@ -9,66 +9,38 @@ App.DelinquencyRoute = Ember.Route.extend({
     }
 });
 
+App.DelinquencyView = Ember.View.extend({
+  didInsertElement: function() {
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
+  },
+
+  afterRenderEvent: function() {
+    var self = this;
+    var con = self.get('controller');
+    Ember.$('#delinquency-table').DataTable({
+      data: con.tableContent(),
+      columns: con.tableColumns()
+    });
+  }
+});
+
 App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
-  sortProperties: ['DateOfFiling'],
-  sortAscending: true,
+    tableColumns: function() {
+      return [
+        {title: 'Date of Filing'},
+        {title: 'Due Date'},
+        {title: 'Form'},
+        {title: 'Late Filing'}]
+    },
 
-    tableColumns: Ember.computed(function() {
-      var dateOfFiling = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        can_sort: true,
-        headerCellName: 'Date of Filing',
-        getCellContent: function(row) {
-            return row.get('dof');
-        }
-      });
-
-      var dueDate = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        can_sort: true,
-        headerCellName: 'Due Date',
-        getCellContent: function(row) {
-          return row.get('dd');
-        }
-      });
-
-      var form = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        can_sort: true,
-        headerCellName: 'Form',
-        getCellContent: function(row) {
-          return row.get('form');
-        }
-      });
-
-      var late = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        can_sort: true,
-        headerCellName: 'Late',
-        getCellContent: function(row) {
-          if(row.std_late) {
-            return 'Late Filing';
-          } else {
-            return 'On Time';
-          }
-        }
-      });
-
-      return [dateOfFiling, dueDate, form, late];
-    }),
-
-    tableContent: Ember.computed(function() {
+    tableContent: function() {
       var content = [];
       _.map(this.get('model'), function(n) {
-        content.pushObject({
-          'dof': n.dof,
-          'dd': n.dd,
-          'form': n.form,
-          'std_late': n.std_late,
-        });
+        content.pushObject([n.dof,n.dd,n.form, n.std_late]);
       });
       return content;
-    }),
+    },
 
     actions: {
       sortBy: function(property) {

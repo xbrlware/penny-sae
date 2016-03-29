@@ -202,16 +202,10 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  var buffer = '';
 
 
-  data.buffer.push("\n\n");
-  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
-    'content': ("tableContent"),
-    'columns': ("tableColumns"),
-    'hasFooter': (false)
-  },hashTypes:{'content': "ID",'columns': "ID",'hasFooter': "BOOLEAN"},hashContexts:{'content': depth0,'columns': depth0,'hasFooter': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
-  data.buffer.push("\n");
+  data.buffer.push("\n\n\n<table id=\"uniqueRecords\" class=\"display\" width=\"100%\"></table>\n\n\n");
   return buffer;
   
 });
@@ -309,18 +303,13 @@ function program7(depth0,data) {
 Ember.TEMPLATES["delinquency"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = '', helper, options;
-  data.buffer.push("\n        <h3>Late Filings</h3>\n        ");
-  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
-    'content': ("tableContent"),
-    'columns': ("tableColumns"),
-    'hasFooter': (false),
-    'forceFillColumns': (true)
-  },hashTypes:{'content': "ID",'columns': "ID",'hasFooter': "BOOLEAN",'forceFillColumns': "BOOLEAN"},hashContexts:{'content': depth0,'columns': depth0,'hasFooter': depth0,'forceFillColumns': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+  var buffer = '';
+  data.buffer.push("\n        <h3>Late Filings</h3>\n        <table id=\"delinquency-table\" class=\"display\"></table>\n        ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.DelinquencyView", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   return buffer;
   }
@@ -773,17 +762,13 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["financials"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = '', helper, options;
-  data.buffer.push("\n        <h3>Financials</h3>\n        ");
-  data.buffer.push(escapeExpression((helper = helpers['table-component'] || (depth0 && depth0['table-component']),options={hash:{
-    'content': ("tableContent"),
-    'columns': ("tableColumns"),
-    'hasFooter': (false)
-  },hashTypes:{'content': "ID",'columns': "ID",'hasFooter': "BOOLEAN"},hashContexts:{'content': depth0,'columns': depth0,'hasFooter': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "table-component", options))));
+  var buffer = '';
+  data.buffer.push("\n        <h3>Financials</h3>\n        <table id=\"financials-table\" class=\"display\"></table>\n        ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.FinancialsView", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   return buffer;
   }
@@ -1001,9 +986,12 @@ function program4(depth0,data) {
     'data-toggle': ("collapse-next")
   },hashTypes:{'classNames': "STRING",'data-toggle': "STRING"},hashContexts:{'classNames': depth0,'data-toggle': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "detail", "h.cik", options) : helperMissing.call(depth0, "link-to", "detail", "h.cik", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n            ");
-  data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "uniqueRecords", options) : helperMissing.call(depth0, "partial", "uniqueRecords", options))));
-  data.buffer.push("\n        </div>\n    </div>\n</div>\n");
+  data.buffer.push("\n    </div>\n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n            <table id=\"uniqueRecords\" class=\"display\"></table>\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
+    'ourData': ("tableContent"),
+    'ourColumns': ("tableColumns")
+  },hashTypes:{'ourData': "ID",'ourColumns': "ID"},hashContexts:{'ourData': depth0,'ourColumns': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n            </div>\n        </div>\n</div>\n");
   return buffer;
   
 });
