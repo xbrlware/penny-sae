@@ -2,4 +2,6 @@
 
 App.HitController = Ember.ObjectController.extend({});
 
-App.HitView       = Ember.View.extend({ templateName : "hit" });
+App.HitView       = Ember.View.extend({
+  templateName : "hit"
+});

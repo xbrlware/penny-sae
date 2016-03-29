@@ -66,37 +66,33 @@ App.SearchResults = Ember.Object.extend({
       columnWidth: 100,
       headerCellName: 'Date',
       getCellContent: function(row) {
-        return row.date;
+        return row.get('date');
       }
     });
 
     var name = Ember.Table.ColumnDefinition.create({
       textAlign: 'center',
-      columnWidth: 175,
       headerCellName: 'Name',
       getCellContent: function(row) {
-        return row.name;
+        return row.get('name');
       }
     });
 
     var sic = Ember.Table.ColumnDefinition.create({
       textAlign: 'center',
-      columnWidth: 130,
       headerCellName: 'SIC',
       getCellContent: function(row) {
-        return row.sic;
+        return row.get('sic');
       }
     });
 
     var state = Ember.Table.ColumnDefinition.create({
       textAlign: 'center',
-      columnWidth: 50,
       headerCellName: 'State',
       getCellContent: function(row) {
-        return row.state;
+        return row.get('state');
       }
     });
-    console.log('column definition --> ', [date, name, sic, state]);
     return [date, name, sic, state];
   }),
 

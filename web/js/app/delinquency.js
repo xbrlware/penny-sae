@@ -9,34 +9,41 @@ App.DelinquencyRoute = Ember.Route.extend({
     }
 });
 
-App.DelinquencyController = Ember.Controller.extend({
+App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
+  sortProperties: ['DateOfFiling'],
+  sortAscending: true,
+
     tableColumns: Ember.computed(function() {
       var dateOfFiling = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        can_sort: true,
         headerCellName: 'Date of Filing',
         getCellContent: function(row) {
-            return row.dof;
+            return row.get('dof');
         }
       });
 
       var dueDate = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        can_sort: true,
         headerCellName: 'Due Date',
         getCellContent: function(row) {
-          return row.dd;
+          return row.get('dd');
         }
       });
 
       var form = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        can_sort: true,
         headerCellName: 'Form',
         getCellContent: function(row) {
-          return row.form;
+          return row.get('form');
         }
       });
 
       var late = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
+        can_sort: true,
         headerCellName: 'Late',
         getCellContent: function(row) {
           if(row.std_late) {
@@ -61,6 +68,17 @@ App.DelinquencyController = Ember.Controller.extend({
         });
       });
       return content;
-    })
+    }),
+
+    actions: {
+      sortBy: function(property) {
+        if (property === this.get('sortProperties')[0]) {
+          this.toggleProperty('sortAscending');
+        } else {
+          this.set('sortAscending', true);
+        }
+        this.set('sortProperties', [property]);
+      }
+    }
 });
 

@@ -13,55 +13,49 @@ App.FinancialsController = Ember.Controller.extend({
     tableColumns: Ember.computed(function() {
       var balanceSheet = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Balance Sheet',
         getCellContent: function(row) {
-            return row.bsd;
+            return row.get('bsd');
         }
       });
 
       var filing = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Filing',
         getCellContent: function(row) {
-          return row.type;
+          return row.get('type');
         }
       });
 
       var fiscalYearEnd = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Fiscal Year End',
         getCellContent: function(row) {
-          return row.fy;
+          return row.get('fy');
         }
       });
 
       var revenues = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Revenues',
         getCellContent: function(row) {
-          return row.revenues_pretty;
+          return row.get('revenues_pretty');
         }
       });
 
       var netIncome = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Net Income',
         getCellContent: function(row) {
-          return row.netincome_pretty;
+          return row.get('netincome_pretty');
         }
       });
 
       var assets = Ember.Table.ColumnDefinition.create({
         textAlign: 'center',
-        columnWidth: 100,
         headerCellName: 'Assets',
         getCellContent: function(row) {
-          return row.assets_pretty;
+          return row.get('assets_pretty');
         }
       });
  
