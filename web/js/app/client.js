@@ -47,9 +47,16 @@ App.SearchResultsView = Ember.View.extend({
   },
 
   afterRenderEvent: function() {
-    Ember.$('#uniqueRecords').DataTable({
-      data: this.get('ourData'),
-      columns: this.get('ourColumns')
+    // cik is passed into the view via the template
+    var tid = this.get('cik');
+    // tableContent is a function
+    var f   = this.get('controller').get('tableContent');
+    // hits is an array
+    var h   = this.get('controller').get('hits');
+
+    Ember.$('#' + tid).DataTable({
+      data   : f(tid, h),
+      columns: this.get('controller').get('tableColumns')
     });
   }
 
@@ -63,74 +70,22 @@ App.SearchResults = Ember.Object.extend({
   unknown_names: undefined,
   broke        : false,
 
-  page: function() {
-    return this.get('from') / gconfig.SIZE + 1;
-  }.property('from'),
+  tableColumns: [{title:'Date', defaultContent: ""},
+    {title:'Name', defaultContent: ""},
+    {title:'SIC', defaultContent: ""},
+    {title:'State', defaultContent: ""}],
 
-  canGoBack: function() {
-    return this.get('from') > 0;
-  }.property('from'),
-
-  canGoForward: function() {
-    return this.get('from') + gconfig.SIZE < this.get('total_hits');
-  }.property('from', 'total_hits'),
-
-  tableColumns: [{title:'Date'}, {title:'Name'}, {title:'SIC'}, {title:'State'}],
-  tableContent: Ember.computed(function() {
+  tableContent: function(cik, hits) {
     var content = [];
-    _.map(this.get('hits')[0].companyTable, function(n) {
-      content.pushObject([n.date,n.name,n.sic,n.state]);
+    hits.find(function(n) {
+      if (cik === n.cik){
+        _.map(n.companyTable, function(m) {
+            content.pushObject([m.date,m.name,m.sic,m.state]);
+        });
+      }
     });
     return content;
-  })
-  /*tableColumns: Ember.computed(function() {
-    var date = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      columnWidth: 100,
-      headerCellName: 'Date',
-      getCellContent: function(row) {
-        return row.get('date');
-      }
-    });
-
-    var name = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      headerCellName: 'Name',
-      getCellContent: function(row) {
-        return row.get('name');
-      }
-    });
-
-    var sic = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      headerCellName: 'SIC',
-      getCellContent: function(row) {
-        return row.get('sic');
-      }
-    });
-
-    var state = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      headerCellName: 'State',
-      getCellContent: function(row) {
-        return row.get('state');
-      }
-    });
-    return [date, name, sic, state];
-  }),*/
-
-/*  tableContent: Ember.computed(function() {
-    var content = [];
-    _.map(this.get('hits')[0].companyTable, function(n) {
-      content.pushObject({
-        'date': n.date,
-        'name': n.name,
-        'sic': n.sic,
-        'state': n.state,
-      });
-    });
-    return content;
-  })*/
+  }
 });
 
 App.Search = Ember.Object.extend({});

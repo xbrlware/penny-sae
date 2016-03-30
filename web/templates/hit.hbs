@@ -77,10 +77,8 @@
     </div>
     <div class="accordion-body collapse out ab-sidebar">
         <div class="accordion-inner">
-            <table id="uniqueRecords" class="display"></table>
-            {{view App.SearchResultsView
-                ourData=tableContent
-                ourColumns=tableColumns}}
-            </div>
+        <table id="{{unbound h.cik}}" class="display"></table>
+        {{partial "uniqueRecords"}}
         </div>
+    </div>
 </div>

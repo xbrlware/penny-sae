@@ -18,20 +18,6 @@
                         {{view App.HitView h=h}}
                     {{/if}}
                 {{/each}}
-                <span class="centered">
-                    <ul class="pagination pagination-lg">
-                        {{#if canGoBack}}
-                            <li class="iterator"><a class="left-round" {{action "iterateSidebar" -1}}>&laquo;</a></li>
-                        {{else}}
-                            <li class="iterator disabled"><a class="left-round">&laquo;</a></li>
-                        {{/if}}
-                        {{#if canGoForward}}
-                            <li class="iterator"><a class="right-round" {{action "iterateSidebar" 1}}>&raquo;</a></li>
-                        {{else}}
-                            <li class="iterator disabled"><a class="right-round">&raquo;</a></li>
-                        {{/if}}
-                    </ul>
-                </span>
             </div>
         {{/unless}}
     {{else}}

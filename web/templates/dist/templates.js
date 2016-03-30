@@ -202,10 +202,16 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '';
+  var buffer = '', escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("\n\n\n<table id=\"uniqueRecords\" class=\"display\" width=\"100%\"></table>\n\n\n");
+  data.buffer.push("\n\n    ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
+    'cik': ("h.cik"),
+    'ourData': ("tableContent"),
+    'ourColumns': ("tableColumns")
+  },hashTypes:{'cik': "ID",'ourData': "ID",'ourColumns': "ID"},hashContexts:{'cik': depth0,'ourData': depth0,'ourColumns': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n\n");
   return buffer;
   
 });
@@ -986,12 +992,11 @@ function program4(depth0,data) {
     'data-toggle': ("collapse-next")
   },hashTypes:{'classNames': "STRING",'data-toggle': "STRING"},hashContexts:{'classNames': depth0,'data-toggle': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "detail", "h.cik", options) : helperMissing.call(depth0, "link-to", "detail", "h.cik", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n            <table id=\"uniqueRecords\" class=\"display\"></table>\n            ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
-    'ourData': ("tableContent"),
-    'ourColumns': ("tableColumns")
-  },hashTypes:{'ourData': "ID",'ourColumns': "ID"},hashContexts:{'ourData': depth0,'ourColumns': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n            </div>\n        </div>\n</div>\n");
+  data.buffer.push("\n    </div>\n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n        <table id=\"");
+  data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "h.cik", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\" class=\"display\"></table>\n        ");
+  data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "uniqueRecords", options) : helperMissing.call(depth0, "partial", "uniqueRecords", options))));
+  data.buffer.push("\n        </div>\n    </div>\n</div>\n");
   return buffer;
   
 });
@@ -1341,13 +1346,7 @@ function program6(depth0,data) {
   data.buffer.push(" &nbsp; companies in our database\n			match your search criteria.\n            <div class=\"list-group square\">\n                ");
   stack1 = helpers.each.call(depth0, "h", "in", "hits", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                <span class=\"centered\">\n                    <ul class=\"pagination pagination-lg\">\n                        ");
-  stack1 = helpers['if'].call(depth0, "canGoBack", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                        ");
-  stack1 = helpers['if'].call(depth0, "canGoForward", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                    </ul>\n                </span>\n            </div>\n        ");
+  data.buffer.push("\n            </div>\n        ");
   return buffer;
   }
 function program7(depth0,data) {
@@ -1372,42 +1371,12 @@ function program8(depth0,data) {
 
 function program10(depth0,data) {
   
-  var buffer = '';
-  data.buffer.push("\n                            <li class=\"iterator\"><a class=\"left-round\" ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "iterateSidebar", -1, {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data})));
-  data.buffer.push(">&laquo;</a></li>\n                        ");
-  return buffer;
-  }
-
-function program12(depth0,data) {
-  
-  
-  data.buffer.push("\n                            <li class=\"iterator disabled\"><a class=\"left-round\">&laquo;</a></li>\n                        ");
-  }
-
-function program14(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n                            <li class=\"iterator\"><a class=\"right-round\" ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "iterateSidebar", 1, {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data})));
-  data.buffer.push(">&raquo;</a></li>\n                        ");
-  return buffer;
-  }
-
-function program16(depth0,data) {
-  
-  
-  data.buffer.push("\n                            <li class=\"iterator disabled\"><a class=\"right-round\">&raquo;</a></li>\n                        ");
-  }
-
-function program18(depth0,data) {
-  
   
   data.buffer.push("\n        <span class=\"centered\">\n            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\n            <div class=\"calculating-top-padding\">\n                Calculating...\n            </div>\n        </span>\n    ");
   }
 
   data.buffer.push("\n\n<div class=\"col-sm-4 no-padding-leftright\">\n    ");
-  stack1 = helpers.unless.call(depth0, "isLoading", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers.unless.call(depth0, "isLoading", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n</div>\n\n<div class=\"col-md-8 outlet-min-width\">\n    ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});

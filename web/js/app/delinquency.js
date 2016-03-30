@@ -19,6 +19,7 @@ App.DelinquencyView = Ember.View.extend({
     var self = this;
     var con = self.get('controller');
     Ember.$('#delinquency-table').DataTable({
+      retrieve: true,
       data: con.tableContent(),
       columns: con.tableColumns()
     });

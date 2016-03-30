@@ -19,6 +19,7 @@ App.FinancialsView = Ember.View.extend({
     var self = this;
     var con = self.get('controller');
     Ember.$('#financials-table').DataTable({
+      retrieve: true,
       data: con.tableContent(),
       columns: con.tableColumns()
     });
@@ -28,12 +29,12 @@ App.FinancialsView = Ember.View.extend({
 App.FinancialsController = Ember.Controller.extend({
     tableColumns: function() {
       return [
-        {title:'Balance Sheet'},
-        {title:'Filing'},
-        {title:'Fiscal Year End'},
-        {title:'Revenues'},
-        {title:'Net Income'},
-        {title:'Assets'}]
+        {title:'Balance Sheet', defaultContent: ""},
+        {title:'Filing', defaultContent: ""},
+        {title:'Fiscal Year End', defaultContent: ""},
+        {title:'Revenues', defaultContent: ""},
+        {title:'Net Income', defaultContent: ""},
+        {title:'Assets', defaultContent: ""}]
     },
         
     tableContent: function() {

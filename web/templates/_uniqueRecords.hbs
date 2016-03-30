@@ -1,10 +1,5 @@
 {{!-- web/templates/_uniqueRecords.hbs --}}
 
-
-<table id="uniqueRecords" class="display" width="100%"></table>
-
-{{!-- {{table-component
-    content=tableContent
-    columns=tableColumns
-    hasFooter=false
-    }}--}}
+    {{view App.SearchResultsView
+        cik=h.cik
+    }}
