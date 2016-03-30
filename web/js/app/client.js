@@ -40,6 +40,28 @@ function get_detail(cik, rf_clean) {
   });
 };
 
+App.SearchResultsView = Ember.View.extend({
+  didInsertElement: function() {
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
+  },
+
+  afterRenderEvent: function() {
+    // cik is passed into the view via the template
+    var tid = this.get('cik');
+    // tableContent is a function
+    var f   = this.get('controller').get('tableContent');
+    // hits is an array
+    var h   = this.get('controller').get('hits');
+
+    Ember.$('#' + tid).DataTable({
+      data   : f(tid, h),
+      columns: this.get('controller').get('tableColumns')
+    });
+  }
+
+});
+
 App.SearchResults = Ember.Object.extend({
   total_hits   : undefined,
   hits         : [],
@@ -48,70 +70,22 @@ App.SearchResults = Ember.Object.extend({
   unknown_names: undefined,
   broke        : false,
 
-  page: function() {
-    return this.get('from') / gconfig.SIZE + 1;
-  }.property('from'),
+  tableColumns: [{title:'Date', defaultContent: ""},
+    {title:'Name', defaultContent: ""},
+    {title:'SIC', defaultContent: ""},
+    {title:'State', defaultContent: ""}],
 
-  canGoBack: function() {
-    return this.get('from') > 0;
-  }.property('from'),
-
-  canGoForward: function() {
-    return this.get('from') + gconfig.SIZE < this.get('total_hits');
-  }.property('from', 'total_hits'),
-
-  tableColumns: Ember.computed(function() {
-    var date = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      columnWidth: 100,
-      headerCellName: 'Date',
-      getCellContent: function(row) {
-        return row.date;
-      }
-    });
-
-    var name = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      columnWidth: 175,
-      headerCellName: 'Name',
-      getCellContent: function(row) {
-        return row.name;
-      }
-    });
-
-    var sic = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      columnWidth: 130,
-      headerCellName: 'SIC',
-      getCellContent: function(row) {
-        return row.sic;
-      }
-    });
-
-    var state = Ember.Table.ColumnDefinition.create({
-      textAlign: 'center',
-      columnWidth: 50,
-      headerCellName: 'State',
-      getCellContent: function(row) {
-        return row.state;
-      }
-    });
-    console.log('column definition --> ', [date, name, sic, state]);
-    return [date, name, sic, state];
-  }),
-
-  tableContent: Ember.computed(function() {
+  tableContent: function(cik, hits) {
     var content = [];
-    _.map(this.get('hits')[0].companyTable, function(n) {
-      content.pushObject({
-        'date': n.date,
-        'name': n.name,
-        'sic': n.sic,
-        'state': n.state,
-      });
+    hits.find(function(n) {
+      if (cik === n.cik){
+        _.map(n.companyTable, function(m) {
+            content.pushObject([m.date,m.name,m.sic,m.state]);
+        });
+      }
     });
     return content;
-  })
+  }
 });
 
 App.Search = Ember.Object.extend({});

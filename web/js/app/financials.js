@@ -9,79 +9,47 @@ App.FinancialsRoute = Ember.Route.extend({
     }
 });
 
+App.FinancialsView = Ember.View.extend({
+  didInsertElement: function() {
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
+  },
+
+  afterRenderEvent: function() {
+    var self = this;
+    var con = self.get('controller');
+    Ember.$('#financials-table').DataTable({
+      retrieve: true,
+      data: con.tableContent(),
+      columns: con.tableColumns()
+    });
+  }
+});
+  
 App.FinancialsController = Ember.Controller.extend({
-    tableColumns: Ember.computed(function() {
-      var balanceSheet = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Balance Sheet',
-        getCellContent: function(row) {
-            return row.bsd;
-        }
-      });
-
-      var filing = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Filing',
-        getCellContent: function(row) {
-          return row.type;
-        }
-      });
-
-      var fiscalYearEnd = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Fiscal Year End',
-        getCellContent: function(row) {
-          return row.fy;
-        }
-      });
-
-      var revenues = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Revenues',
-        getCellContent: function(row) {
-          return row.revenues_pretty;
-        }
-      });
-
-      var netIncome = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Net Income',
-        getCellContent: function(row) {
-          return row.netincome_pretty;
-        }
-      });
-
-      var assets = Ember.Table.ColumnDefinition.create({
-        textAlign: 'center',
-        columnWidth: 100,
-        headerCellName: 'Assets',
-        getCellContent: function(row) {
-          return row.assets_pretty;
-        }
-      });
- 
-      return [balanceSheet, filing, fiscalYearEnd, revenues, netIncome, assets];
-    }),
-
-    tableContent: Ember.computed(function() {
+    tableColumns: function() {
+      return [
+        {title:'Balance Sheet', defaultContent: ""},
+        {title:'Filing', defaultContent: ""},
+        {title:'Fiscal Year End', defaultContent: ""},
+        {title:'Revenues', defaultContent: ""},
+        {title:'Net Income', defaultContent: ""},
+        {title:'Assets', defaultContent: ""}]
+    },
+        
+    tableContent: function() {
       var m = this.get('model');
       var content = [];
       _.map(m, function(n) {
-        content.pushObject({
-          'bsd': n.bsd,
-          'type': n.type,
-          'fy': n.fy,
-          'revenues_pretty': n.revenues_pretty,
-          'netincome_pretty': n.netincome_pretty,
-          'assets_pretty': n.assets_pretty
-        });
+        content.pushObject([
+          n.bsd,
+          n.type,
+          n.fy,
+          n.revenues_pretty,
+          n.netincome_pretty,
+          n.assets_pretty
+        ]);
       });
-      console.log('financial content --> ', content);
       return content;
-    })
+    }
 });

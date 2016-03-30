@@ -82,6 +82,7 @@ App.SidebarView = Ember.View.extend({
       "transition"       : 'background-color 0.5s ease-in-out',
       "background-color" : 'white'
     });
+      
     Ember.$('body').on('click.collapse-next.data-api', '[data-toggle=collapse-next]', function() {
       var $next   = $(this).parent().next()
       var $others = $('.ab-sidebar')
