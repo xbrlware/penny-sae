@@ -207,11 +207,9 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
   data.buffer.push("\n\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
-    'cik': ("h.cik"),
-    'ourData': ("tableContent"),
-    'ourColumns': ("tableColumns")
-  },hashTypes:{'cik': "ID",'ourData': "ID",'ourColumns': "ID"},hashContexts:{'cik': depth0,'ourData': depth0,'ourColumns': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n\n\n");
+    'cik': ("h.cik")
+  },hashTypes:{'cik': "ID"},hashContexts:{'cik': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n");
   return buffer;
   
 });
