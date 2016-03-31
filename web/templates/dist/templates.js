@@ -199,6 +199,18 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
+Ember.TEMPLATES["_techan"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', escapeExpression=this.escapeExpression;
+
+
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.PvChartView", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n");
+  return buffer;
+  
+});
+
 Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
@@ -1294,7 +1306,7 @@ function program2(depth0,data) {
   return buffer;
   }
 
-  data.buffer.push("\n\n\n<span class=\"centered\">\n    <h3> Price / Volume / CROWDSAR Chart </h3>\n</span>\n\n<div>\n    <div id=\"container-pvchart\"></div>\n</div>\n\n<p>\n    CROWDSAR is a proprietary score that quantifies the prevalence of allegations of fiscal malfeasance for the company on investor message boards and social media.\n</p>\n\n");
+  data.buffer.push("\n\n\n<span class=\"centered\">\n    <h3> Price / Volume / CROWDSAR Chart </h3>\n</span>\n\n<div>\n    <div id=\"container-pvchart\"></div> \n           \n</div>\n\n<p>\n    CROWDSAR is a proprietary score that quantifies the prevalence of allegations of fiscal malfeasance for the company on investor message boards and social media.\n</p>\n\n");
   stack1 = helpers['if'].call(depth0, "spikesTable", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n");
