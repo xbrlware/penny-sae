@@ -17,131 +17,13 @@ App.PvChartRoute = Ember.Route.extend({
     }
 });
 
-
 App.PvChartView = Ember.View.extend({
   didInsertElement: function() {
-    var margin  = {top: 10, right: 20, bottom: 300, left: 50};
-    var margin2 = {top: 330, right: 20, bottom: 110, left: 50};
-    var margin3 = {top: 230, right: 20, bottom: 190, left: 50};
-
-    var width   = Ember.$('#container-pvchart').width() - margin.left - margin.right;
-
-    var height  = 500 - margin.top - margin.bottom;
-    var height2 = 500 - margin2.top - margin2.bottom;
-    var height3 = 500 - margin3.top - margin3.bottom;
-    
-    var x = techan.scale.financetime().range([0, width]);
-    var x2 = techan.scale.financetime().range([0, width]);
-
-    var y = d3.scale.linear().range([height, 0]);
-    var y2 = d3.scale.linear().range([height2, 0]);
-    var y3 = d3.scale.linear().range([height3, 0]);
-
-    var yVolume = d3.scale.linear().range([y(0), y(0.3)]);
-
-
-    var brush = d3.svg.brush().on("brushend", draw);
-
-    var price = techan.plot.close().xScale(x).yScale(y);
-
-    var volume = techan.plot.volume().xScale(x).yScale(yVolume);
-
-    var close = techan.plot.close().xScale(x2).yScale(y2);
-
-    var xAxis = d3.svg.axis().scale(x).orient("bottom");
-    var xAxis2 = d3.svg.axis().scale(x2).orient("bottom");
-
-    var yAxis = d3.svg.axis().scale(y).orient("left");
-    var yAxis2 = d3.svg.axis().scale(y2).ticks(0).orient("left");
-    var yAxis3 = d3.svg.axis().scale(y3).ticks(0).orient("left");
-
-    var ohlcAnnotation = techan.plot.axisannotation()
-            .axis(yAxis)
-            .format(d3.format(',.2fs'));
-
-    var timeAnnotation = techan.plot.axisannotation()
-            .axis(xAxis)
-            .format(d3.time.format('%Y-%m-%d'))
-            .width(65)
-            .translate([0, height]);
-
-    var crosshair = techan.plot.crosshair()
-            .xScale(x)
-            .yScale(y)
-            .xAnnotation(timeAnnotation)
-            .yAnnotation(ohlcAnnotation);
-
-    var svg = d3.select("#container-pvchart").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
-
-    var focus = svg.append("g")
-            .attr("class", "focus")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    focus.append("clipPath")
-            .attr("id", "clip")
-        .append("rect")
-            .attr("x", 0)
-            .attr("y", y(1))
-            .attr("width", width)
-            .attr("height", y(0) - y(1));
-
-    focus.append("g")
-            .attr("class", "volume")
-            .attr("clip-path", "url(#clip)");
-
-    focus.append("g")
-            .attr("class", "price")
-            .attr("clip-path", "url(#clip)");
-
-    focus.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")");
-
-    focus.append("g")
-            .attr("class", "y axis")
-        .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Price ($)");
-
-    focus.append('g')
-            .attr("class", "crosshair")
-            .call(crosshair);
-          
-    var context = svg.append("g")
-            .attr("class", "context")
-            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-    context.append("g")
-            .attr("class", "close");
-
-    context.append("g")
-            .attr("class", "pane");
-
-    context.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height2 + ")");
-
-    context.append("g")
-            .attr("class", "y axis")
-            .call(yAxis2);
-
-
-
-    var crowdsar = svg.append("g")
-            .attr("class", "crowdsar")
-            .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")");
-    
-    crowdsar.append("g").attr("class", "x axis").attr("transform", "translate(0," + height3 + ")");
-    crowdsar.append("g").attr("class", "y axis").call(yAxis3);
-
-
-
-    var zoomable, zoomable2;
+    var priceObj   = {};
+    var brushObj = {};
+    var volumeObj  = {};
+    var data  = [];
+    var fData = [];
 
     var model = this.get('controller').get('model');
     var data = [];
@@ -152,198 +34,241 @@ App.PvChartView = Ember.View.extend({
          open: model.pv.close[i] ,
          high: model.pv.close[i],
          low: model.pv.close[i]});
-     }
+    }
 
-     var accessor = price.accessor();
+    for (var i = 0; i < model.cs.date.length; i++) {
+      fData.push({
+        date: new Date(model.cs.date[i]),
+        n_post   : model.cs.n_post[i],
+        n_susp   : model.cs.n_susp[i],
+        p_susp   : model.cs.p_susp[i] ,
+        p_susp_lb: model.cs.p_susp_lb[i]});
+    }
 
-     x.domain(data.map(accessor.d));
-     x2.domain(x.domain());
-     y.domain(techan.scale.plot.ohlc(data, accessor).domain());
-     y2.domain(y.domain());
-     yVolume.domain(techan.scale.plot.volume(data).domain());
+    console.log('data brother --> ', data);
+    console.log('fdata sister --> ', fData);
 
-     focus.select("g.price").datum(data);
-     focus.select("g.volume").datum(data);
+    var margin  = {top: 10, right: 20, bottom: 300, left: 50};
+    var width   = Ember.$('#container-pvchart').width() - margin.left - margin.right;
+    var x = techan.scale.financetime().range([0, width]);
+    var brush = d3.svg.brush().on("brushend", draw);
+    var height = 500;
+    var svg = d3.select("#container-pvchart").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
 
-     context.select("g.close").datum(data).call(close);
-     context.select("g.x.axis").call(xAxis2);
+    function initSVG(obj) {
+      return svg.append("g").attr("class", obj.class)
+            .attr("transform", "translate(" + obj.margin.left + "," + obj.margin.top + ")");
+    }
 
-     // Associate the brush with the scale and render the brush only AFTER a domain has been applied
-     zoomable = x.zoomable();
-     zoomable2 = x2.zoomable();
-     brush.x(zoomable2);
-     context.select("g.pane").call(brush).selectAll("rect").attr("height", height2);
 
-     draw();
+    function addDays (currentDate, days) {
+      var dat = new Date(currentDate);
+      dat.setDate(dat.getDate() + days);
+      return dat;
+    }
+
+
+    function getDates (dateRange) {
+      var dateArray = [];
+      var currentDate = dateRange[0];
+
+      while (currentDate <= dateRange[1]) {
+        dateArray.push(new Date (currentDate));
+        currentDate = addDays(currentDate, 1);
+      }
+
+      return dateArray;
+    }
     
-    function draw() {
-      var priceSelection = focus.select("g.price");
-      var data = priceSelection.datum();
+    var dateRange = d3.extent(_.flatten([_.pluck(data, 'date'),
+                                 _.pluck(fData, 'date')]));
 
-      zoomable.domain(brush.empty() ? zoomable2.domain() : brush.extent());
-      y.domain(techan.scale.plot.ohlc(data.slice.apply(data, zoomable.domain()), price.accessor()).domain());
-      priceSelection.call(price);
-      focus.select("g.volume").call(volume);
-      // using refresh method is more efficient as it does not perform any data joins
-      // Use this if underlying data is not changing
-      //        svg.select("g.price").call(price.refresh);
-      focus.select("g.x.axis").call(xAxis);
-      focus.select("g.y.axis").call(yAxis);
+    console.log('Range of dates --> ', dateRange);
+
+    var dateSupport = getDates(dateRange);
+
+    console.log('Supporting dates ---> ', dateSupport);
+
+    priceObj.margin  = margin;
+    brushObj.margin = {top: 330, right: 20, bottom: 110, left: 50};
+    volumeObj.margin = {top: 230, right: 20, bottom: 190, left: 50};
+
+    priceObj.method  = "close";
+    brushObj.method  = "close";
+    volumeObj.method = "volume";
+
+    priceObj.width  = width;
+    brushObj.width = width;
+    volumeObj.width = width;
+    
+    priceObj.height  = height - priceObj.margin.top - priceObj.margin.bottom;
+    brushObj.height = height - brushObj.margin.top - brushObj.margin.bottom;
+    volumeObj.height = height - volumeObj.margin.top - volumeObj.margin.bottom;
+    
+    priceObj.x  = techan.scale.financetime().range([0, width]);
+    brushObj.x = techan.scale.financetime().range([0, width]);
+    volumeObj.x = techan.scale.financetime().range([0, width]);
+
+    priceObj.x.domain(dateSupport);
+    brushObj.x.domain(dateSupport);
+    volumeObj.x.domain(dateSupport);
+    
+    priceObj.y  = d3.scale.linear().range([priceObj.height, 0]);
+    brushObj.y = d3.scale.linear().range([brushObj.height, 0]);
+    volumeObj.y = d3.scale.linear().range([volumeObj.height, 0]);
+    
+    volumeObj.yVolume = d3.scale.linear().range([volumeObj.y(0), volumeObj.y(0.3)]);
+
+    priceObj.plot = techan.plot.close().xScale(priceObj.x).yScale(priceObj.y);
+    brushObj.plot = techan.plot.close().xScale(brushObj.x).yScale(brushObj.y);
+    volumeObj.plot = techan.plot.volume().xScale(volumeObj.x).yScale(volumeObj.yVolume);
+
+
+    priceObj.xAxis = d3.svg.axis().scale(priceObj.x).orient("bottom");
+    brushObj.xAxis = d3.svg.axis().scale(brushObj.x).orient("bottom");
+    volumeObj.xAxis = d3.svg.axis().scale(volumeObj.x).orient("bottom");
+
+    priceObj.yAxis  = d3.svg.axis().scale(priceObj.y).orient("left");
+    brushObj.yAxis = d3.svg.axis().scale(brushObj.y).ticks(0).orient("left");
+    volumeObj.yAxis = d3.svg.axis().scale(volumeObj.y).ticks(0).orient("left");
+
+    priceObj.class  = 'price';
+    brushObj.class = 'brush';
+    volumeObj.class = 'volume';
+
+    var ohlcAnnotation = techan.plot.axisannotation()
+            .axis(priceObj.yAxis)
+            .format(d3.format(',.2fs'));
+
+    var timeAnnotation = techan.plot.axisannotation()
+            .axis(priceObj.xAxis)
+            .format(d3.time.format('%Y-%m-%d'))
+            .width(65)
+            .translate([0, priceObj.height]);
+
+    var crosshair = techan.plot.crosshair()
+            .xScale(priceObj.x)
+            .yScale(priceObj.y)
+            .xAnnotation(timeAnnotation)
+            .yAnnotation(ohlcAnnotation);
+
+    priceObj.svg  = initSVG(priceObj);
+    brushObj.svg  = initSVG(brushObj);
+    volumeObj.svg = initSVG(volumeObj);
+
+    priceObj.svg.append("clipPath")
+                    .attr("id", "clip");
+    priceObj.svg.append("rect")
+                    .attr("x", 0)
+                    .attr("y", priceObj.y(1))
+                    .attr("width", priceObj.width)
+                    .attr("height", priceObj.y(0) - priceObj.y(1));
+    priceObj.svg.append("g")
+                    .attr("class", priceObj.method)
+                    .attr("clip-path", "url(#clip)");
+    priceObj.svg.append("g")
+                    .attr("class", "y axis");
+    priceObj.svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Price");
+    priceObj.svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + priceObj.height + ")");
+    priceObj.svg.append('g')
+                    .attr("class", "crosshair")
+                    .call(crosshair);
+          
+    volumeObj.svg.append("clipPath")
+                    .attr("id", "clip");
+    volumeObj.svg.append("rect")
+                    .attr("x", 0)
+                    .attr("y", volumeObj.y(1))
+                    .attr("width", volumeObj.width)
+                    .attr("height", volumeObj.y(0) - volumeObj.y(1));
+    volumeObj.svg.append("g")
+                    .attr("class", volumeObj.method)
+                    .attr("clip-path", "url(#clip)");
+    volumeObj.svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + volumeObj.height + ")");
+    volumeObj.svg.append("g")
+                    .attr("class", "y axis")
+                    .call(volumeObj.yAxis);
+    volumeObj.svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Vol");
+    
+    brushObj.svg.append("g")
+                .attr("class", brushObj.method);
+    brushObj.svg.append("g")
+                .attr("class", "pane");
+    brushObj.svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + brushObj.height + ")");
+    brushObj.svg.append("g")
+                .attr("class", "y axis")
+                .call(brushObj.yAxis);
+
+    var zoomable, zoomable2;
+
+    priceObj.y.domain(techan.scale.plot.ohlc(data).domain());
+    brushObj.y.domain(brushObj.y.domain());
+    volumeObj.y.domain(techan.scale.plot.volume(data).domain());
+
+    volumeObj.yVolume.domain(techan.scale.plot.volume(data).domain());
+
+    priceObj.svg.select("g.price").datum(data);
+
+    volumeObj.svg.select("g.volume").datum(data);
+     
+    brushObj.svg.select("g.close").datum(data).call(brushObj.plot);
+    brushObj.svg.select("g.x.axis") // .call(brushObj.xAxis);
+
+    // Associate the brush with the scale and render the brush only AFTER a domain has been applied
+    zoomable = priceObj.x.zoomable();
+    zoomable2 = brushObj.x.zoomable();
+
+    brush.x(zoomable2);
+
+    brushObj.svg.select("g.pane").call(brush).selectAll("rect").attr("height", brushObj.height);
+
+    draw();
+    
+    function _draw(obj, date_filter) {
+      var data = obj.svg.select('g.' + obj.class).datum(data);
+
+      var _data = _.filter(data, function(d) {
+        return d.date > date_filter[0] & d.date < date_filter[1];
+      });
+
+      if(_data.length > 0) {
+        obj.y.domain(techan.scale.plot[obj.method](_data).domain());
+      } else {
+        obj.y.domain([0, 1]);
+      }
+
+      // plot the data
+      obj.svg.select("g." + obj.class).call(obj.plot);
+      // draw the x / y axis for c2
+      obj.svg.select("g.x.axis").call(obj.xAxis);
+      obj.svg.select("g.y.axis").call(obj.yAxis);
+    }
+
+    function draw() {
+      var brushDomain = brush.empty() ? zoomable2.domain() : brush.extent();
+      var date_filter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
+      zoomable.domain(brushDomain);
+      _draw(priceObj, date_filter);
+      _draw(volumeObj, date_filter);
+
     }   
   }
 });
-
-/*
-App.PvChartView = Ember.View.extend({
-    didInsertElement : function(){
-        var mod     = this.get('controller').get('model');
-		    var close   = [];
-        var vol     = [];
-        var susp_lb = [];
-        var p_toutw = [];
-        
-        // Price + Volume (for first instrument)
-		for (i = 0; i < mod.pv.close.length; i++) {
-			var date = new Date(mod.pv.date[i]).getTime();
-            close.push([ date, mod.pv.close[i] ]);
-            vol.push([ date,  mod.pv.vol[i] ])
-		};
-        
-        // CS
-        if(mod.cs !== undefined) {
-            var haveForum = Object.keys(mod.cs).length > 1
-            if(haveForum){
-                for (i = 0; i < mod.cs.date.length; i++) {
-                    var date = new Date(mod.cs.date[i]).getTime();
-                    susp_lb.push([ date, Math.round(mod.cs.p_susp_lb[i] * 1000) / 10 ]);
-                };
-            };
-        };
-
-        // Tout
-        if(mod.tout !== undefined) {
-            var haveTout = Object.keys(mod.tout).length > 1
-            if(haveTout){
-                for (i = 0; i < mod.tout.date.length; i++) {
-                    var date = new Date(mod.tout.date[i]).getTime();
-                    p_toutw.push([ date, Math.round(mod.tout.p_toutw[i] * 1000) / 10 ]);
-                };
-            };
-        };
-
-        // Plot
-        pv_opts = this.make_pv_opts(close, vol, susp_lb, p_toutw);
-		$('#container-pvchart').highcharts('StockChart', pv_opts);
-    },
-    make_pv_opts : function(close, vol, susp_lb, p_toutw) {
-        var opts = {
-		    credits: { enabled: false },
-		    rangeSelector: {
-				inputEnabled: $('#container-pvchart').width() > 480,
-		        selected: 2
-		    }
-        };
-                
-        opts.yAxis = [];
-        opts.series = [];
-        // Adding price
-        opts.yAxis.push({
-            labels: {
-                align: 'right',
-                x : -3
-            },
-            title: {
-                text: 'Price'
-            },
-            height: '50%',
-            lineWidth: 2
-        })
-        
-        opts.series.push({
-            type: 'line',
-            name: 'Price',
-            data: close,
-            yAxis : 0
-        })
-        
-                
-        if(susp_lb.length > 0){
-            opts.yAxis.push({
-		        labels: {
-		    		align: 'right',
-		    		x: -3
-		    	},
-		        title: {
-		            text: 'CROWDSAR'
-		        },
-                top       : '55%',
-		        height    : '20%',
-                offset    : 0,
-		        lineWidth : 1,
-                max       : 5
-            });
-
-            opts.yAxis.push({
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: 'Volume'
-                },
-                top       : '80%',
-                height    : '20%',
-                offset    : 0,
-                lineWidth : 2
-            });
-            
-            opts.series.push({name: 'CROWDSAR',
-		        data: susp_lb,
-                color: 'red',
-		        type: 'column',
-                yAxis: 1
-		    });
-            
-            opts.series.push({name: 'Volume',
-		        data: vol,
-                type: 'column',
-		        yAxis: 2
-            });
-            
-            band = [];
-            band.push([Date.UTC(1990, 0, 1), 5]);
-            band.push([Date.UTC(2014, 3, 1), 5]);
-            
-            opts.series.push({
-                        type: 'area',
-                        data: band,
-                        color : 'lightgrey',
-                        showInLegend: false,
-                        yAxis: 1,
-                        enableMouseTracking: false
-            })
-        } else {
-            opts.yAxis.push({
-                labels: {
-                        align: 'right',
-                        x: -3
-                    },
-                title: {
-                        text: 'Volume'
-                },
-                top: '55%',
-                height: '45%',
-                offset: 0,
-                lineWidth: 2
-            });
-            
-            opts.series.push({name: 'Volume',
-		        data: vol,
-                type: 'column',
-		        yAxis: 1
-            });
-        }
-    
-        return opts;
-    }
-});*/
