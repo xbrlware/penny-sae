@@ -41,11 +41,11 @@ App.PvChartView = Ember.View.extend({
         low: 0});
     }
 
-    crowdObjMargin = {top: 330, right: 20, bottom: 110, left: 50};
-    volumeObjMargin = {top: 230, right: 20, bottom: 190, left: 50};
-    contextObjMargin = {top: 430, right: 20, bottom: 30, left: 50};
+    crowdObjMargin = {top: 330, right: 20, bottom: 110, left: 20};
+    volumeObjMargin = {top: 230, right: 20, bottom: 190, left: 20};
+    contextObjMargin = {top: 430, right: 20, bottom: 30, left: 20};
 
-    var margin = {top: 10, right: 20, bottom: 300, left: 50};
+    var margin = {top: 10, right: 50, bottom: 300, left: 20};
     var closeHeight = 500 - margin.top - margin.bottom;
     var volHeight = 500 - volumeObjMargin.top - volumeObjMargin.bottom;
     var crowdHeight = 500 - crowdObjMargin.top - crowdObjMargin.bottom;
@@ -95,6 +95,8 @@ App.PvChartView = Ember.View.extend({
 
     var volXAxis = d3.svg.axis()
             .scale(xVolume)
+            .tickFormat(" ")
+            .ticks(2)
             .orient("bottom");
 
     var volFormat = d3.format(".2f");
@@ -142,7 +144,8 @@ App.PvChartView = Ember.View.extend({
 
     var priceAnnotation = techan.plot.axisannotation()
             .axis(closeYAxis)
-            .format(d3.format(',.2fs'));
+            .format(d3.format(',.2fs'))
+            .translate([width, margin.top]);
 
     var dateAnnotation = techan.plot.axisannotation()
             .axis(closeXAxis)
@@ -196,6 +199,7 @@ App.PvChartView = Ember.View.extend({
                    .call(crosshair1);
 
     svg.append("g").attr("class", "y axis")
+                   .attr("transform", "translate(" + width + "," + margin.top + ")")
                    .call(closeYAxis)
                  .append("text")
                    .attr("transform", "rotate(-90)")
@@ -213,7 +217,7 @@ App.PvChartView = Ember.View.extend({
                    .call(volXAxis);
 
     svg.append("g").attr("class", "y axis vol")
-                   .attr("transform", "translate(0 ," + volumeObjMargin.top + ")")
+                   .attr("transform", "translate(" + width + "," + volumeObjMargin.top + ")")
                    .call(volYAxis)
                  .append("text")
                    .attr("transform", "rotate(-90)")
@@ -231,7 +235,7 @@ App.PvChartView = Ember.View.extend({
                    .call(crowdXAxis);
 
     svg.append("g").attr("class", "y axis crowd")
-                   .attr("transform", "translate(0 ," + crowdObjMargin.top + ")")
+                   .attr("transform", "translate(" + width + "," + crowdObjMargin.top + ")")
                    .call(crowdYAxis)
                  .append("text")
                    .attr("transform", "rotate(-90)")
@@ -254,7 +258,7 @@ App.PvChartView = Ember.View.extend({
                    .call(contextXAxis);
 
     svg.append("g").attr("class", "y axis")
-                   .attr("transform", "translate(0 ," + contextObjMargin.top + ")")
+                   .attr("transform", "translate(" + width + " ," + contextObjMargin.top + ")")
                    .call(contextYAxis)
                  .append("text")
                    .attr("transform", "rotate(-90)")
