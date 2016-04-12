@@ -42,7 +42,12 @@ path.volume {
 
 path.line {
     fill: none;
-    stroke: #BF5FFF;
+    stroke: #555555;
+    stroke-width: 1;
+}
+
+.close {
+    color: #555555;
     stroke-width: 1;
 }
 

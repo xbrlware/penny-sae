@@ -40,7 +40,6 @@
          "web/js/libs/flot/jquery.flot.js",
          "web/js/libs/flot/jquery.flot.pie.js",
          "web/js/libs/jit/jit.js",
-         "web/js/libs/highstock/js/highstock.js",
          "web/js/libs/techan.js",
          "web/js/libs/cal-heatmap.min.js",
          "web/js/libs/numeral.js"
