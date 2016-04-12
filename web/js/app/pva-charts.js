@@ -43,41 +43,50 @@ App.PvChartView = Ember.View.extend({
 
     crowdObjMargin = {top: 330, right: 20, bottom: 110, left: 50};
     volumeObjMargin = {top: 230, right: 20, bottom: 190, left: 50};
-  
+    contextObjMargin = {top: 430, right: 20, bottom: 30, left: 50};
+
     var margin = {top: 10, right: 20, bottom: 300, left: 50};
     var closeHeight = 500 - margin.top - margin.bottom;
     var volHeight = 500 - volumeObjMargin.top - volumeObjMargin.bottom;
     var crowdHeight = 500 - crowdObjMargin.top - crowdObjMargin.bottom;
+    var contextHeight = 500 - contextObjMargin.top - contextObjMargin.bottom;
+
     var width   = Ember.$('#container-pvchart').width() - margin.left - margin.right;
 
-    var parseDate = d3.time.format("%d-%b-%y").parse;
+    var parseDate = d3.time.format("%b-%y").parse;
 
-    var x = techan.scale.financetime()
-            .range([0, width])
-            .outerPadding(0);
+    var xClose   = techan.scale.financetime().range([0, width]).outerPadding(0);
+    var xVolume  = techan.scale.financetime().range([0, width]).outerPadding(0);
+    var xCrowd   = techan.scale.financetime().range([0, width]).outerPadding(0);
+    var xContext = techan.scale.financetime().range([0, width]).outerPadding(0);
 
-    var yClose = d3.scale.linear().range([closeHeight, 0]);
-    var yVol   = d3.scale.linear().range([volHeight, 0]);
-    var yCrowd = d3.scale.linear().range([crowdHeight, 0]);
+    var yClose   = d3.scale.linear().range([closeHeight, 0]);
+    var yVol     = d3.scale.linear().range([volHeight, 0]);
+    var yCrowd   = d3.scale.linear().range([crowdHeight, 0]);
+    var yContext = d3.scale.linear().range([contextHeight, 0]);
 
-    var crowd = techan.plot.volume()
-                      .xScale(x)
-                      .yScale(yCrowd);
+    var brush = d3.svg.brush()
+                  .on("brushend", draw)
 
     var close = techan.plot.close()
-            .xScale(x)
+            .xScale(xClose)
             .yScale(yClose);
 
     var volume = techan.plot.volume()
-            .xScale(x)
+            .xScale(xVolume)
             .yScale(yVol);
 
     var crowd = techan.plot.volume()
-                           .xScale(x)
-                           .yScale(yCrowd);
+            .xScale(xCrowd)
+            .yScale(yCrowd);
 
+    var context = techan.plot.close()
+            .xScale(xContext)
+            .yScale(yContext)
+    
     var closeXAxis = d3.svg.axis()
-            .scale(x)
+            .scale(xClose)
+            .tickFormat(d3.time.format('%b-%y'))
             .orient("bottom");
 
     var closeYAxis = d3.svg.axis()
@@ -85,63 +94,90 @@ App.PvChartView = Ember.View.extend({
             .orient("left");
 
     var volXAxis = d3.svg.axis()
-            .scale(x)
+            .scale(xVolume)
             .orient("bottom");
+
+    var volFormat = d3.format(".2f");
 
     var volYAxis = d3.svg.axis()
             .scale(yVol)
+            .ticks(4)
+            .tickFormat(formatVolume)
             .orient("left");
 
     var crowdXAxis = d3.svg.axis()
-                       .scale(x)
-                       .orient("bottom")
+                       .scale(xCrowd)
+                       .orient("bottom");
 
     var crowdYAxis = d3.svg.axis()
                        .scale(yCrowd)
-                       .orient("left")
+                       .ticks(4)
+                       .orient("left");
+
+    var contextXAxis = d3.svg.axis()
+            .scale(xContext)
+            .tickFormat(d3.time.format('%b-%y'))
+            .orient("bottom");
+
+    var contextYAxis = d3.svg.axis()
+            .scale(yContext)
+            .orient("left");
 
     var svg = d3.select("#container-pvchart").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", 500 + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", 500 + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var coordsText = svg.append('text')
-                        .style("text-anchor", "end")
-                        .attr("class", "coords")
-                        .attr("x", width - 5)
-                        .attr("y", 15);
+            .style("text-anchor", "end")
+            .attr("class", "coords")
+            .attr("x", width - 5)
+            .attr("y", 15);
 
     var cAccessor = close.accessor();
     var vAccessor = volume.accessor();
     var sAccessor = volume.accessor();
+    var oAccessor = close.accessor()
 
     var priceAnnotation = techan.plot.axisannotation()
-                                    .axis(closeYAxis)
-                                    .format(d3.format(',.2fs'));
+            .axis(closeYAxis)
+            .format(d3.format(',.2fs'));
 
     var dateAnnotation = techan.plot.axisannotation()
             .axis(closeXAxis)
-            .format(d3.time.format('%Y-%m-%d'))
+            .format(d3.time.format('%y-%m-%d'))
             .width(65)
             .translate([0, closeHeight]);
 
-    var crosshair = techan.plot.crosshair()
-                               .xScale(x)
-                               .yScale(yClose)
-                               .xAnnotation(dateAnnotation)
-                               .yAnnotation(priceAnnotation)
-                               .on("enter", enter)
-                               .on("out", out)
+    var crosshair1 = techan.plot.crosshair()
+            .xScale(xClose)
+            .yScale(yClose)
+            .xAnnotation(dateAnnotation)
+            .yAnnotation(priceAnnotation)
+            .on("enter", enter)
+            .on("out", out);
 
-    x.domain(data.map(cAccessor.d));
+    xClose.domain(data.map(cAccessor.d));
+    xVolume.domain(data.map(vAccessor.d));
+    xCrowd.domain(data.map(sAccessor.d));
+    xContext.domain(data.map(oAccessor.d));
     
     yClose.domain(techan.scale.plot.ohlc(data, cAccessor).domain());
     yVol.domain(techan.scale.plot.volume(data, vAccessor).domain());
     yCrowd.domain(techan.scale.plot.volume(fData, sAccessor).domain());
+    yContext.domain(techan.scale.plot.ohlc(data, oAccessor).domain());
 
+    svg.append("clipPath").attr("id", "closeClip")
+                .append("rect")
+                    .attr("x", 0)
+                    .attr("y", yClose(1))
+                    .attr("width", width)
+                    .attr("height", yClose(0) - yClose(1));
+    
     svg.append("g").datum(data)
                    .attr("class", "close")
+                   .attr("clip-path", "url(#closeClip)")
                    .call(close);
 
     svg.append("g").attr("class", "x axis")
@@ -157,7 +193,7 @@ App.PvChartView = Ember.View.extend({
                    .call(dateAnnotation);
 
     svg.append('g').attr("class", "crosshair")
-                   .call(crosshair);
+                   .call(crosshair1);
 
     svg.append("g").attr("class", "y axis")
                    .call(closeYAxis)
@@ -172,11 +208,11 @@ App.PvChartView = Ember.View.extend({
                    .attr("transform", "translate(0, " + volumeObjMargin.top + ")")
                    .call(volume);
 
-    svg.append("g").attr("class", "x axis")
+    svg.append("g").attr("class", "x axis vol")
                    .attr("transform", "translate(0, "  + (volumeObjMargin.top + volHeight) + ")")
                    .call(volXAxis);
 
-    svg.append("g").attr("class", "y axis")
+    svg.append("g").attr("class", "y axis vol")
                    .attr("transform", "translate(0 ," + volumeObjMargin.top + ")")
                    .call(volYAxis)
                  .append("text")
@@ -186,15 +222,15 @@ App.PvChartView = Ember.View.extend({
                    .style("text-anchor", "end");
 
     svg.append("g").datum(fData)
-                   .attr("class", "volume")
+                   .attr("class", "crowd")
                    .attr("transform", "translate(0, " + crowdObjMargin.top + ")")
                    .call(crowd);
 
-    svg.append("g").attr("class", "x axis")
+    svg.append("g").attr("class", "x axis crowd")
                    .attr("transform", "translate(0, "  + (crowdObjMargin.top + crowdHeight) + ")")
                    .call(crowdXAxis);
 
-    svg.append("g").attr("class", "y axis")
+    svg.append("g").attr("class", "y axis crowd")
                    .attr("transform", "translate(0 ," + crowdObjMargin.top + ")")
                    .call(crowdYAxis)
                  .append("text")
@@ -202,6 +238,38 @@ App.PvChartView = Ember.View.extend({
                    .attr("y", 6)
                    .attr("dy", ".21em")
                    .style("text-anchor", "end");
+
+    svg.append("g").datum(data)
+                   .attr("class", "context")
+                   .attr("transform", "translate(0, " + contextObjMargin.top + ")")
+                   .call(context);
+
+    svg.append("g").attr("class", "close");
+
+    svg.append("g").attr("class", "pane")
+                   .attr("transform", "translate(0, " + contextObjMargin.top + ")");
+
+    svg.append("g").attr("class", "x axis")
+                   .attr("transform", "translate(0, "  + (contextObjMargin.top + contextHeight) + ")")
+                   .call(contextXAxis);
+
+    svg.append("g").attr("class", "y axis")
+                   .attr("transform", "translate(0 ," + contextObjMargin.top + ")")
+                   .call(contextYAxis)
+                 .append("text")
+                   .attr("transform", "rotate(-90)")
+                   .attr("y", 6)
+                   .attr("dy", ".21em")
+                   .style("text-anchor", "end");
+
+    closeZoomable   = xClose.zoomable();
+    volumeZoomable  = xVolume.zoomable();
+    crowdZoomable   = xCrowd.zoomable();
+    contextZoomable = xContext.zoomable();
+
+    brush.x(contextZoomable);
+
+    svg.select("g.pane").call(brush).selectAll("rect").attr("height", contextHeight);
 
     function enter() {
         coordsText.style("display", "inline");
@@ -212,8 +280,33 @@ App.PvChartView = Ember.View.extend({
     }
     
     function draw() {
-      console.log("shit happens here");
-    }
+      var selection = svg.select("g.close");
+      var data = selection.datum();
 
+      closeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
+      volumeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
+      crowdZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
+
+      closeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
+      yClose.domain(techan.scale.plot.ohlc(data.slice.apply(data, closeZoomable.domain()), close.accessor()).domain());
+     
+      selection.call(close);
+      svg.select("g.volume").call(volume);
+      svg.select("g.crowd").call(crowd);
+
+      svg.select("g.x.axis").call(closeXAxis);
+      svg.select("g.y.axis").call(closeYAxis);
+
+      svg.select("g.x.axis.vol").call(volXAxis);
+      svg.select("g.y.axis.vol").call(volYAxis);
+      
+      svg.select("g.x.axis.crowd").call(crowdXAxis);
+      svg.select("g.y.axis.crowd").call(crowdYAxis);
+    
+    }
+    
+    function formatVolume(d) {
+        return volFormat(d / 1e6);
+    }
   }
 });
