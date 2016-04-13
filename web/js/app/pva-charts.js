@@ -41,11 +41,11 @@ App.PvChartView = Ember.View.extend({
         low: 0});
     }
 
-    crowdObjMargin = {top: 330, right: 20, bottom: 110, left: 20};
-    volumeObjMargin = {top: 230, right: 20, bottom: 190, left: 20};
-    contextObjMargin = {top: 430, right: 20, bottom: 30, left: 20};
+    var margin = {top: 0, right: 50, bottom: 280, left: 20};
+    var volumeObjMargin = {top: 250, right: 50, bottom: 190, left: 20};
+    var crowdObjMargin = {top: 340, right: 50, bottom: 120, left: 20};
+    var contextObjMargin = {top: 440, right: 50, bottom: 40, left: 20};
 
-    var margin = {top: 10, right: 50, bottom: 300, left: 20};
     var closeHeight = 500 - margin.top - margin.bottom;
     var volHeight = 500 - volumeObjMargin.top - volumeObjMargin.bottom;
     var crowdHeight = 500 - crowdObjMargin.top - crowdObjMargin.bottom;
@@ -70,7 +70,7 @@ App.PvChartView = Ember.View.extend({
 
     var close = techan.plot.close()
             .xScale(xClose)
-            .yScale(yClose);
+            .yScale(yClose)
 
     var volume = techan.plot.volume()
             .xScale(xVolume)
@@ -82,7 +82,7 @@ App.PvChartView = Ember.View.extend({
 
     var context = techan.plot.close()
             .xScale(xContext)
-            .yScale(yContext)
+            .yScale(yContext);
     
     var closeXAxis = d3.svg.axis()
             .scale(xClose)
@@ -96,7 +96,6 @@ App.PvChartView = Ember.View.extend({
     var volXAxis = d3.svg.axis()
             .scale(xVolume)
             .tickFormat(" ")
-            .ticks(2)
             .orient("bottom");
 
     var volFormat = d3.format(".2f");
@@ -108,13 +107,12 @@ App.PvChartView = Ember.View.extend({
             .orient("left");
 
     var crowdXAxis = d3.svg.axis()
-                       .scale(xCrowd)
-                       .orient("bottom");
+            .scale(xCrowd)
+            .orient("bottom");
 
     var crowdYAxis = d3.svg.axis()
-                       .scale(yCrowd)
-                       .ticks(4)
-                       .orient("left");
+            .scale(yCrowd)
+            .orient("left");
 
     var contextXAxis = d3.svg.axis()
             .scale(xContext)
@@ -139,8 +137,8 @@ App.PvChartView = Ember.View.extend({
 
     var cAccessor = close.accessor();
     var vAccessor = volume.accessor();
-    var sAccessor = volume.accessor();
-    var oAccessor = close.accessor()
+    var sAccessor = crowd.accessor();
+    var oAccessor = context.accessor()
 
     var priceAnnotation = techan.plot.axisannotation()
             .axis(closeYAxis)
@@ -171,8 +169,8 @@ App.PvChartView = Ember.View.extend({
     yCrowd.domain(techan.scale.plot.volume(fData, sAccessor).domain());
     yContext.domain(techan.scale.plot.ohlc(data, oAccessor).domain());
 
-    svg.append("clipPath").attr("id", "closeClip")
-                .append("rect")
+    svg.append("svg:clipPath").attr("id", "closeClip")
+                .append("svg:rect")
                     .attr("x", 0)
                     .attr("y", yClose(1))
                     .attr("width", width)
@@ -209,6 +207,7 @@ App.PvChartView = Ember.View.extend({
 
     svg.append("g").datum(data)
                    .attr("class", "volume")
+                   .attr("clip-path", "url(#closeClip)")
                    .attr("transform", "translate(0, " + volumeObjMargin.top + ")")
                    .call(volume);
 
@@ -227,6 +226,7 @@ App.PvChartView = Ember.View.extend({
 
     svg.append("g").datum(fData)
                    .attr("class", "crowd")
+                   .attr("clip-path", "url(#closeClip)")
                    .attr("transform", "translate(0, " + crowdObjMargin.top + ")")
                    .call(crowd);
 
@@ -247,8 +247,6 @@ App.PvChartView = Ember.View.extend({
                    .attr("class", "context")
                    .attr("transform", "translate(0, " + contextObjMargin.top + ")")
                    .call(context);
-
-    svg.append("g").attr("class", "close");
 
     svg.append("g").attr("class", "pane")
                    .attr("transform", "translate(0, " + contextObjMargin.top + ")");
@@ -286,24 +284,23 @@ App.PvChartView = Ember.View.extend({
     function draw() {
       var selection = svg.select("g.close");
       var data = selection.datum();
-
+      
       closeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
       volumeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
       crowdZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
-
       closeZoomable.domain(brush.empty() ? contextZoomable.domain() : brush.extent());
-      yClose.domain(techan.scale.plot.ohlc(data.slice.apply(data, closeZoomable.domain()), close.accessor()).domain());
-     
-      selection.call(close);
-      svg.select("g.volume").call(volume);
-      svg.select("g.crowd").call(crowd);
 
+      yClose.domain(techan.scale.plot.ohlc(data.slice.apply(data, closeZoomable.domain()), close.accessor()).domain());
+
+      selection.call(close);
       svg.select("g.x.axis").call(closeXAxis);
       svg.select("g.y.axis").call(closeYAxis);
-
+      
+      svg.select("g.volume").call(volume);
       svg.select("g.x.axis.vol").call(volXAxis);
       svg.select("g.y.axis.vol").call(volYAxis);
       
+      svg.select("g.crowd").call(crowd);
       svg.select("g.x.axis.crowd").call(crowdXAxis);
       svg.select("g.y.axis.crowd").call(crowdYAxis);
     

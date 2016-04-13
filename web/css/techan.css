@@ -19,7 +19,8 @@ path.ohlc.down {
 }
 
 path.volume {
-    fill: #EEEEEE;
+    stroke: red;
+    fill: red;
 }
 
 path.line {
@@ -34,7 +35,7 @@ path.line {
 }
 
 .extent {
-    stroke: #fff;
+    stroke: #000000;
     fill-opacity: .125;
     shape-rendering: crispEdges;
 }
@@ -51,3 +52,4 @@ path.line {
 .crosshair .axisannotation path {
     fill: #DDDDDD;
 }
+
