@@ -29,8 +29,8 @@ App.DelinquencyView = Ember.View.extend({
 App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
     tableColumns: function() {
       return [
-        {title: 'Date of Filing'},
-        {title: 'Due Date'},
+        {title: 'Date of Filing', className: "dt-body-right"},
+        {title: 'Due Date', className: "dt-body-right"},
         {title: 'Form'},
         {title: 'Late Filing'}]
     },

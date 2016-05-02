@@ -55,8 +55,10 @@ App.SearchResultsView = Ember.View.extend({
     var h   = this.get('controller').get('hits');
 
     Ember.$('#' + tid).DataTable({
-      data   : f(tid, h),
-      columns: this.get('controller').get('tableColumns')
+      data     : f(tid, h),
+      bFilter  : false,
+      bInfo    : false,
+      columns  : this.get('controller').get('tableColumns')
     });
   }
 
@@ -70,10 +72,12 @@ App.SearchResults = Ember.Object.extend({
   unknown_names: undefined,
   broke        : false,
 
-  tableColumns: [{title:'Date', defaultContent: ""},
+  tableColumns: [
+    {title:'Date', defaultContent: "", className: "dt-body-right"},
     {title:'Name', defaultContent: ""},
     {title:'SIC', defaultContent: ""},
-    {title:'State', defaultContent: ""}],
+    {title:'State', defaultContent: ""}
+  ],
 
   tableContent: function(cik, hits) {
     var content = [];
