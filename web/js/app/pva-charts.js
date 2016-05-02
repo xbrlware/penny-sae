@@ -270,7 +270,9 @@ App.PvChartView = Ember.View.extend({
     contextZoomable = xContext.zoomable();
 
     brush.x(contextZoomable);
-
+//    var startRange = data[data.length - 1].date;
+//    brush.extent([endRange.setDate(-90), data[data.length -1].date]);
+    
     svg.select("g.pane").call(brush).selectAll("rect").attr("height", contextHeight);
 
     function enter() {
