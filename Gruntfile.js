@@ -72,7 +72,6 @@ module.exports = function(grunt) {
                 },
                 files : {
                     "<%= cfg.css %>style.less.css"       : "<%= cfg.lss %>style.less",
-
                 }
             }
         },

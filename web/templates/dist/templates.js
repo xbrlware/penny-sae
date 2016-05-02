@@ -1094,14 +1094,14 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\n            <div class=\"input-group margin-bottom-sm\">\n                <span class=\"input-group-addon\"><i class=\"fa fa-user fa-fw\"></i></span>\n                ");
+  data.buffer.push("\n            <div class=\"input-group margin-bottom-sm\">\n                ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("identification"),
     'placeholder': ("Enter Username"),
     'class': ("form-control"),
     'id': ("input-username")
   },hashTypes:{'value': "ID",'placeholder': "STRING",'class': "STRING",'id': "STRING"},hashContexts:{'value': depth0,'placeholder': depth0,'class': depth0,'id': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n            </div>\n            <div class=\"input-group\">\n                <span class=\"input-group-addon\"><i class=\"fa fa-key fa-fw\"></i></span>\n                ");
+  data.buffer.push("\n            </div>\n            <div class=\"input-group\">\n                ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("password"),
     'placeholder': ("Enter Password"),
