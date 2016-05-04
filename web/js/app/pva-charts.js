@@ -20,7 +20,7 @@ App.PvChartRoute = Ember.Route.extend({
 App.PvChartView = Ember.View.extend({
     didInsertElement : function(){
         var mod     = this.get('controller').get('model');
-		    var close   = [];
+        var close   = [];
         var vol     = [];
         var susp_lb = [];
         var p_toutw = [];

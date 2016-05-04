@@ -204,22 +204,6 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-Ember.TEMPLATES["_uniqueRecords"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
-/**/) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', escapeExpression=this.escapeExpression;
-
-
-  data.buffer.push("\n\n    ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
-    'cik': ("h.cik")
-  },hashTypes:{'cik': "ID"},hashContexts:{'cik': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n");
-  return buffer;
-  
-});
-
 Ember.TEMPLATES["all_promotions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data
 /**/) {
 this.compilerInfo = [4,'>= 1.0.0'];
@@ -350,94 +334,84 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  var buffer = '', stack1;
-  data.buffer.push(" ");
-  stack1 = helpers._triageMustache.call(depth0, "", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push(" ");
-  return buffer;
+  
+  data.buffer.push(" Price / Volume Anomalies + <br> CROWDSAR ");
   }
 
 function program3(depth0,data) {
   
   
-  data.buffer.push(" Price / Volume Anomalies + <br> CROWDSAR ");
+  data.buffer.push(" News                                     ");
   }
 
 function program5(depth0,data) {
   
   
-  data.buffer.push(" News                                     ");
+  data.buffer.push(" Financials                               ");
   }
 
 function program7(depth0,data) {
   
   
-  data.buffer.push(" Financials                               ");
+  data.buffer.push(" Late <br> Filings                        ");
   }
 
 function program9(depth0,data) {
   
   
-  data.buffer.push(" Late <br> Filings                        ");
+  data.buffer.push(" Regulatory <br> Actions                  ");
   }
 
 function program11(depth0,data) {
   
   
-  data.buffer.push(" Regulatory <br> Actions                  ");
+  data.buffer.push(" Network <br> Analysis                    ");
   }
 
 function program13(depth0,data) {
   
   
-  data.buffer.push(" Network <br> Analysis                    ");
-  }
-
-function program15(depth0,data) {
-  
-  
   data.buffer.push(" Stock Promotions                         ");
   }
 
-function program17(depth0,data) {
+function program15(depth0,data) {
   
   
   data.buffer.push(" Leadership                               ");
   }
 
   data.buffer.push("\n\n<div class=\"container hundred-width\">\n    <div class=\"row-fluid\">\n        <nav class=\"navbar navbar-border\">\n            <div class=\"col-sm-6\">\n                <h1 class=\"zero-top-margin\"> ");
-  stack1 = helpers._triageMustache.call(depth0, "currentName", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push(" </h1>\n            </div>\n            <div class=\"col-sm-2\">\n                <span class=\"centered\">\n                    <h4> ");
-  stack1 = helpers.each.call(depth0, "source.tickers.ticker", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers._triageMustache.call(depth0, "ticker", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push(" </h4>\n                </span>\n            </div>\n            <div class=\"col-sm-2\">\n                <span class=\"centered\">\n                    <h4 class=\"greyed\">  CIK: ");
   stack1 = helpers._triageMustache.call(depth0, "cik", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push(" </h4>\n                </span>\n            </div>\n            \n            <br />\n            <ul class=\"nav navbar-nav\" id=\"view-selector\">\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "pvChart", options) : helperMissing.call(depth0, "link-to", "pvChart", options));
+  data.buffer.push(" </h4>\n                </span>\n            </div>\n            <br />\n            <ul class=\"nav navbar-nav\" id=\"view-selector\">\n                <li>");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "pvChart", options) : helperMissing.call(depth0, "link-to", "pvChart", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "googleNews", options) : helperMissing.call(depth0, "link-to", "googleNews", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "googleNews", options) : helperMissing.call(depth0, "link-to", "googleNews", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "financials", options) : helperMissing.call(depth0, "link-to", "financials", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "financials", options) : helperMissing.call(depth0, "link-to", "financials", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "delinquency", options) : helperMissing.call(depth0, "link-to", "delinquency", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "delinquency", options) : helperMissing.call(depth0, "link-to", "delinquency", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "previousReg", options) : helperMissing.call(depth0, "link-to", "previousReg", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "previousReg", options) : helperMissing.call(depth0, "link-to", "previousReg", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "associates", options) : helperMissing.call(depth0, "link-to", "associates", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "associates", options) : helperMissing.call(depth0, "link-to", "associates", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(15, program15, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "promotions", options) : helperMissing.call(depth0, "link-to", "promotions", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "promotions", options) : helperMissing.call(depth0, "link-to", "promotions", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n                <li>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(17, program17, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "leadership", options) : helperMissing.call(depth0, "link-to", "leadership", options));
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(15, program15, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "leadership", options) : helperMissing.call(depth0, "link-to", "leadership", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("</li>\n            </ul>\n        </nav>\n    </div>\n    <div class=\"col-sm-12\">\n        ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
@@ -818,7 +792,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'class': ("input-fat centered"),
     'insert-newline': ("companySearch")
   },hashTypes:{'class': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
-  data.buffer.push("\n    </div>\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n            <tr class=\"no-hover\">\n                <th> </th>\n                <th>\n                    <h3 class=\"red-text\"> Red Flags </h3>\n                </th>\n            </tr>\n\n            ");
+  data.buffer.push("\n    </div>\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has no business, no revenues and no product."),
     'valueBinding': ("toggles.financials")
@@ -924,69 +898,69 @@ function program1(depth0,data) {
   
   var buffer = '', stack1;
   data.buffer.push("\n            <div class=\"list-group-item seventy square\">\n                <div class=\"hit-text-wrapper\">\n                    <h5 class=\"list-group-item-heading\">\n                        ");
-  stack1 = helpers._triageMustache.call(depth0, "h.currentName", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers._triageMustache.call(depth0, "h.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                    </h5>\n                </div>\n                \n                <div class=\"row-fluid hit-badge-wrapper\">\n                    <div id=\"badge-header\">\n                        ");
-  stack1 = helpers.unless.call(depth0, "h.redFlags.possible", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
+  data.buffer.push("\n                    </h5>\n                </div>\n\n                <div class=\"row-fluid hit-badge-wrapper\">\n                    <div id=\"badge-header\">\n                        ");
+  stack1 = helpers.unless.call(depth0, "h.red_flags.possible", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                            FINRA Red Flags : ");
-  stack1 = helpers._triageMustache.call(depth0, "h.redFlags.total", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  data.buffer.push("\n                            Red Flags : ");
+  stack1 = helpers._triageMustache.call(depth0, "h.red_flags.total", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("/");
-  stack1 = helpers._triageMustache.call(depth0, "h.redFlags.possible", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers._triageMustache.call(depth0, "h.red_flags.possible", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n                        ");
-  stack1 = helpers.unless.call(depth0, "h.redFlags.possible", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers.unless.call(depth0, "h.red_flags.possible", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n                    </div>\n                    <br />\n                                \n                    ");
+  data.buffer.push("\n                    </div>\n                    <br />\n\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("No Revenues"),
     'type': ("financials"),
-    'redFlags': ("h.redFlags"),
     'first_column': (true)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
-    'text': ("Change in Business"),
+    'red_flags': ("h.red_flags"),
+    'text': ("Change In Business"),
     'type': ("delta"),
-    'redFlags': ("h.redFlags"),
     'first_column': (true)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("Trading Suspensions"),
     'type': ("trading_halts"),
-    'redFlags': ("h.redFlags"),
     'first_column': (true)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("Late Filings"),
     'type': ("delinquency"),
-    'redFlags': ("h.redFlags"),
     'first_column': (true)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("OTC Associates"),
     'type': ("network"),
-    'redFlags': ("h.redFlags"),
     'first_column': (true)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n                    ");
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("PV Anomalies"),
     'type': ("pv"),
-    'redFlags': ("h.redFlags"),
     'first_column': (false)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.HitTextView", {hash:{
+    'red_flags': ("h.red_flags"),
     'text': ("CROWDSAR"),
     'type': ("crowdsar"),
-    'redFlags': ("h.redFlags"),
     'first_column': (false)
-  },hashTypes:{'text': "STRING",'type': "STRING",'redFlags': "ID",'first_column': "BOOLEAN"},hashContexts:{'text': depth0,'type': depth0,'redFlags': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'red_flags': "ID",'text': "STRING",'type': "STRING",'first_column': "BOOLEAN"},hashContexts:{'red_flags': depth0,'text': depth0,'type': depth0,'first_column': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                </div>\n            </div>\n        ");
   return buffer;
   }
@@ -1010,8 +984,10 @@ function program4(depth0,data) {
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n    </div>\n    <div class=\"accordion-body collapse out ab-sidebar\">\n        <div class=\"accordion-inner\">\n        <table id=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "h.cik", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\" class=\"display\"></table>\n        ");
-  data.buffer.push(escapeExpression((helper = helpers.partial || (depth0 && depth0.partial),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "uniqueRecords", options) : helperMissing.call(depth0, "partial", "uniqueRecords", options))));
+  data.buffer.push("\" class=\"display\"></table>\n            ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SearchResultsView", {hash:{
+    'cik': ("h.cik")
+  },hashTypes:{'cik': "ID"},hashContexts:{'cik': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n        </div>\n    </div>\n</div>\n");
   return buffer;
   
@@ -1031,7 +1007,7 @@ function program1(depth0,data) {
     'id': ("view.mid"),
     'class': ("view.flagged:flagged:not-flagged view.first_column:first_column:second_column")
   },hashTypes:{'id': "ID",'class': "STRING"},hashContexts:{'id': depth0,'class': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">\n        <div class=\"float-left\"> ");
+  data.buffer.push(">\n        <div class=\"float-left\">  ");
   stack1 = helpers._triageMustache.call(depth0, "view.text", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push(" </div>\n        <div class=\"float-right\"> ");
@@ -1044,7 +1020,6 @@ function program1(depth0,data) {
   data.buffer.push("\n\n");
   stack1 = helpers['if'].call(depth0, "view.have", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n");
   return buffer;
   
 });
@@ -1377,7 +1352,7 @@ function program7(depth0,data) {
   
   var buffer = '', stack1;
   data.buffer.push("\n                    ");
-  stack1 = helpers['if'].call(depth0, "h.currentName", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers['if'].call(depth0, "h.name", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n                ");
   return buffer;

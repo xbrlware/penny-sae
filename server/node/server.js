@@ -1,8 +1,7 @@
 // server/node/server.js
 
-// REST service, etc...
-var cluster = require('cluster');
-var _ = require('underscore')._;
+var cluster = require('cluster'),
+          _ = require('underscore')._;
 
 function run_server() {
 	var config  = require('./server-config');
@@ -12,23 +11,18 @@ function run_server() {
           fs  = require('fs'),
          app  = express();
 
-  app.use(require('body-parser').json());
+    app.use(require('body-parser').json());
 
 	// headers
-	app.all('*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-Access-Token, Content-Type');
-    res.header('Access-Control-Allow-Methods', 'POST, GET, DELETE');
-    res.header('X-Content-Type-Options', 'nosniff');
-    next();
-  });
+    app.all('*', function(req, res, next) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-Access-Token, Content-Type');
+        res.header('Access-Control-Allow-Methods', 'POST, GET, DELETE');
+        res.header('X-Content-Type-Options', 'nosniff');
+        next();
+    });
 
-  if (config.CLEAR_USERS_ON_RESTART) {
-    app.set('jwtTokenSecret', 'j89j9sdasdcbbopppaqwr23400' + new Date().toUTCString());
-  } else {
-    console.log('!!! not clearing current users !!!');
-    app.set('jwtTokenSecret', 'noij123000acsn12sdfooncaio091r');
-  } 
+  app.set('jwtTokenSecret', 'noij123000acsn12sdfooncaio091r');
  
   require('./authentication/auth.js')(app, config);
 	
@@ -38,7 +32,6 @@ function run_server() {
   
   app.use('/', express.static('../../web'));
   
-
   if (config.HTTPS.ENABLED) {
     var privateKey  = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8'),
         certificate = fs.readFileSync(config.HTTPS.CERTIFICATES.CRT, 'utf8'),

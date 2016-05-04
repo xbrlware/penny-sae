@@ -4,11 +4,11 @@
     <div class="row-fluid">
         <nav class="navbar navbar-border">
             <div class="col-sm-6">
-                <h1 class="zero-top-margin"> {{currentName}} </h1>
+                <h1 class="zero-top-margin"> {{name}} </h1>
             </div>
             <div class="col-sm-2">
                 <span class="centered">
-                    <h4> {{#each source.tickers.ticker}} {{this}} {{/each}} </h4>
+                    <h4> {{ticker}} </h4>
                 </span>
             </div>
             <div class="col-sm-2">
@@ -16,13 +16,6 @@
                     <h4 class="greyed">  CIK: {{cik}} </h4>
                 </span>
             </div>
-            {{!--
-            <div class="col-sm-2">
-                <button id="button-generate-sar" class="btn navbar-btn" data-toggle="modal" data-target="#sarModal">
-                    Generate SAR
-                </button>
-            </div>
-            --}}
             <br />
             <ul class="nav navbar-nav" id="view-selector">
                 <li>{{#link-to 'pvChart'     }} Price / Volume Anomalies + <br> CROWDSAR {{/link-to}}</li>

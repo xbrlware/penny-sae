@@ -160,59 +160,126 @@ module.exports = function(app, config, client) {
                 "count" : count, "rf_any" : rf_any}
     callback(data);
   }
-
-
-  app.post('/fetch_companies', function(req, res) {
-    var d = req.body;
-    var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX];
-        
-    console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)));
-        
-    client.search({
-      "index" : index,
-      "body"  : qp[d.query_type](d.query_args, d.rf),
-      "from"  : d.from === undefined ? 0 : d.from,
-    }).then(function (es_response) {
-              res.send(es_response);
-            });
-  });
-
-  app.post('/fetch_topic', function(req, res) {
-    var d = req.body;
-    var body = qp[d.query_type](d.query_args, d.rf);
-    client.search({
-      body  : body,
-      from  : 0,
-    }).then(function (es_response) {
-      var buckets = es_response.aggregations.trending.buckets;
-      if(buckets !== undefined) {
-        var ciks = _.pluck(buckets, 'key')
-      };
-            
-      client.search({
-        index : config.COMPANY_INDEX,
-        body  : qp.multiCIKQuery({"ciks" : ciks}, d.rf)
-      }).then(function(es_response2) {
-        var hits = es_response2.hits.hits;
-        var arr2 = [];
-        for(i=0; i < ciks.length; i++) {
-          mtc = hits.filter(function(x) {
-            return x['_id'] === parseInt(ciks[i], 10);
-          });
-          if(mtc.length > 0) {
-            arr2.push(mtc[0]);
-          }
+  
+  // <<
+    queryBuilder = {
+        "search" : function(query, redflag_params) {
+            return {
+                "_source" : ["cik", "current_symbology.name"],
+                "query"   : {
+                    "match_phrase" : { "searchterms" : query }
+                }
+            }
+        },
+        "company_table" : function(cik) {
+            return {
+                "_source" : ["min_date", "max_date", "name", "ticker", "sic"],
+                "query" : {
+                    "term" : { "cik" : cik }
+                }
+            }
+        },
+        "cik2name" : function(cik) {
+            return {
+                "_source" : ["current_symbology.name", "current_symbology.ticker"],
+                "query" : {
+                    "term" : { "cik" : cik }
+                }
+            }
         }
-                
-        topic_summary_statistics(es_response2, d.rf, function(out) {
-          out.hits.hits = arr2.slice(1, 15);
-          out.total_hits_topic = ciks.length;
-          out.names = es_response.aggregations.cik_filter.trending_names.buckets;
-          res.send(out);
+    }
+    
+    app.post('/search', function(req, res) {
+        var d = req.body;
+        client.search({
+            "index" : "ernest_agg",
+            "body"  : queryBuilder.search(d.query, d.redflag_params),
+            "from"  : 0,
+            "size"  : 15,
+        }).then(function(es_response) {
+            var hits = _.pluck(es_response.hits.hits, '_source')
+            
+            // ** Add fake properties **
+            hits = _.map(hits, function(hit) {
+                return {
+                    "cik"  : hit['cik'],
+                    "name" : hit['current_symbology']['name'],
+                    "red_flags" : {
+                        "total"    : 7,
+                        "possible" : 7,
+                        "financials"    : {"have" : true, "value" : 1, "is_flag" : true},
+                        "delta"         : {"have" : true, "value" : 1, "is_flag" : true},
+                        "trading_halts" : {"have" : true, "value" : 1, "is_flag" : true},
+                        "delinquency"   : {"have" : true, "value" : 1, "is_flag" : true},
+                        "network"       : {"have" : true, "value" : 1, "is_flag" : true},
+                        "pv"            : {"have" : true, "value" : 1, "is_flag" : true},
+                        "crowdsar"      : {"have" : true, "value" : 1, "is_flag" : true},
+                    },
+                }
+            });
+            
+            res.send({
+                "total_hits" : es_response.hits.total,
+                "hits"       : hits
+            });
         });
-      });
     });
-  });
+  
+    app.post('/company_table', function(req, res) {
+        var d = req.body;
+        client.search({
+            "index" : "ernest_symbology",
+            "body"  : queryBuilder.company_table(d.cik),
+            "from"  : 0,
+            "size"  : 999,
+        }).then(function(es_response) {
+            res.send({
+                "table" : _.map(es_response.hits.hits, function(hit) {
+                    return [
+                        hit._source.min_date,
+                        hit._source.max_date,
+                        hit._source.name,
+                        hit._source.ticker,
+                        hit._source.sic
+                    ]
+                })
+            })
+        });
+    });
+    
+    app.post('/cik2name', function(req, res) {
+        var d = req.body;
+        client.search({
+            "index" : "ernest_agg",
+            "body"  : queryBuilder.cik2name(d.cik),
+            "from"  : 0,
+            "size"  : 999,
+        }).then(function(es_response) {
+            if(es_response.hits.total) {
+                var hit = es_response.hits.hits[0]._source
+                console.log(hit.current_symbology.ticker);
+                res.send({"cik" : d.cik, "name" : hit.current_symbology.name, "ticker" : hit.current_symbology.ticker});
+            } else {
+                res.send({"cik" : d.cik, "name" : undefined, "ticker" : undefined});
+            }
+        });
+    });
+  // >>
+
+//  app.post('/fetch_companies', function(req, res) {
+//    var d = req.body;
+//    var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX];
+//        
+//    console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)));
+//        
+//    client.search({
+//      "index" : index,
+//      "body"  : qp[d.query_type](d.query_args, d.rf),
+//      "from"  : d.from === undefined ? 0 : d.from,
+//    }).then(function (es_response) {
+//        res.send(es_response);
+//    });
+//  });
 
   // Named Entity Recognition Page
   app.post('/fetch_ner', function(req, res) {
