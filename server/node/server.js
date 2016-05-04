@@ -1,15 +1,11 @@
 // server/node/server.js
 
-// API for SEC Tool (2014-04-30)
-// BKJ for Phronesis
-// Propriety Code, may not be used w/o explicit permission of creators
-
 // REST service, etc...
 var cluster = require('cluster');
 var _ = require('underscore')._;
 
 function run_server() {
-	var config  = require('./server-config.js');
+	var config  = require('./server-config');
 	var express = require('express'),
        https  = require('https'),
           es  = require('elasticsearch'),
