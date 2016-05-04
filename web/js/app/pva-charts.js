@@ -41,6 +41,132 @@ App.PvChartView = Ember.View.extend({
         low: 0});
     }
 
+    var margin = {top: 10, right: 10, bottom: 200, left: 40};
+    var margin2 = {top: 430, right: 10, bottom: 20, left: 40};
+    var margin3 = {top: 430, right: 10, bottom: 120, left: 40};
+
+    var width = 800 - margin.left - margin.right;
+
+    var height = 500 - margin.top - margin.bottom;
+    var height2 = 500 - margin2.top - margin2.bottom;
+    var height3 = 500 - margin3.top - margin3.bottom;
+
+    var formatDate = d3.time.format("%b-%y");
+
+    var x = d3.time.scale().range([0, width]);
+    var x2 = d3.time.scale().range([0, width]);
+    var x3 = d3.time.scale().range([0, width]);
+
+    var y = d3.scale.linear().range([height, 0]);
+    var y2 = d3.scale.linear().range([height2, 0]);
+    var y3 = d3.scale.linear().range([height3, 0]);
+
+    var xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.time.format("%b-%y"));
+    var xAxis2 = d3.svg.axis().scale(x2).orient('bottom').tickFormat(d3.time.format("%b-%y"));
+    var xAxis3 = d3.svg.axis().scale(x3).orient('bottom').tickFormat(d3.time.format("%b-%y"));
+
+    var yAxis = d3.svg.axis().scale(y).orient('right');
+
+    var brush = d3.svg.brush().x(x2).on("brush", brushed);
+
+    var line = d3.svg.line()
+      .x(function(d) { return x(d.date); })
+      .y(function(d) { return y(d.close); });
+
+    var line2 = d3.svg.line()
+      .x(function(d) { return x2(d.date); })
+      .y(function(d) { return y2(d.close); });
+
+    var svg = d3.select('#container-pvchart').append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+
+    svg.append('defs').append('clipPath')
+        .attr('id', 'clip')
+        .append('rect')
+        .attr('width', width)
+        .attr('height', height);
+
+    var focus = svg.append('g')
+        .attr('class', 'focus')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var barGraph = svg.append('g')
+        .attr('class', 'bar')
+        .attr('transform', 'translate(' + margin3.left + ',' + margin3.top + ')');
+
+    var context = svg.append('g')
+        .attr('class', 'context')
+        .attr('transform', 'translate(' + margin2.left + ',' + margin2.top + ')');
+
+    x.domain(d3.extent(data, function(d) { return d.date; }));
+    y.domain(d3.extent(data, function(d) { return d.close; }));
+    
+    x2.domain(x.domain());
+    y2.domain(y.domain());
+
+    x3.domain(x.domain());
+    y3.domain(y.domain());
+
+    // x3.domain(d3.extent(fData, function(d) { return d.date; }));
+    // y3.domain(d3.extent(fData, function(d) { return d.close; }));
+
+
+    focus.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis);
+
+    focus.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate('+ width + ',0)')
+        .call(yAxis);
+    
+    focus.append('path')
+        .datum(data)
+        .attr('class', 'line')
+        .attr('d', line);
+
+    barGraph.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height3 + ')')
+        .call(xAxis3);
+
+    barGraph.selectAll('bar')
+        .data(data)
+      .enter().append('rect')
+        .style('fill', 'steelblue')
+        .attr('x', function(d) { return x3(d.date); })
+        .attr('width', 6)
+        .attr('y', function(d) { return y3(d.volume); })
+        .attr('height', function(d) { return height3 - y3(d.volume); });
+
+    context.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height2 + ')')
+        .call(xAxis2);
+
+    context.append('g')
+        .attr('class', 'x brush')
+        .call(brush)
+        .selectAll('rect')
+        .attr('y', -6)
+        .attr('height', height2 + 7);
+
+    context.append('path')
+        .datum(data)
+        .attr('class', 'line')
+        .attr('d', line2);
+
+    function brushed(){
+      x.domain(brush.empty() ? x2.domain() : brush.extent());
+      svg.select('.line').attr('d', line);
+      svg.select('.x.axis').call(xAxis);
+    }
+
+    }
+});
+/*
     var margin = {top: 0, right: 50, bottom: 280, left: 20};
     var volumeObjMargin = {top: 250, right: 50, bottom: 190, left: 20};
     var crowdObjMargin = {top: 340, right: 50, bottom: 120, left: 20};
@@ -122,10 +248,15 @@ App.PvChartView = Ember.View.extend({
     var contextYAxis = d3.svg.axis()
             .scale(yContext)
             .orient("left");
+   
+    var zoomBehavior = d3.behavior.zoom()
+      .scaleExtent([0.2, 3])
+      .on("zoom", draw);
 
     var svg = d3.select("#container-pvchart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", 500 + margin.top + margin.bottom)
+            .call(zoomBehavior)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -270,8 +401,6 @@ App.PvChartView = Ember.View.extend({
     contextZoomable = xContext.zoomable();
 
     brush.x(contextZoomable);
-//    var startRange = data[data.length - 1].date;
-//    brush.extent([endRange.setDate(-90), data[data.length -1].date]);
     
     svg.select("g.pane").call(brush).selectAll("rect").attr("height", contextHeight);
 
@@ -312,4 +441,4 @@ App.PvChartView = Ember.View.extend({
         return volFormat(d / 1e6);
     }
   }
-});
+});*/
