@@ -166,25 +166,19 @@ module.exports = function(app, config, client) {
         "search" : function(query, redflag_params) {
             return {
                 "_source" : ["cik", "current_symbology.name"],
-                "query"   : {
-                    "match_phrase" : { "searchterms" : query }
-                }
+                "query"   : { "match_phrase" : { "searchterms" : query } }
             }
         },
         "company_table" : function(cik) {
             return {
                 "_source" : ["min_date", "max_date", "name", "ticker", "sic"],
-                "query" : {
-                    "term" : { "cik" : cik }
-                }
+                "query"   : { "term" : { "cik" : cik } }
             }
         },
         "cik2name" : function(cik) {
             return {
                 "_source" : ["current_symbology.name", "current_symbology.ticker"],
-                "query" : {
-                    "term" : { "cik" : cik }
-                }
+                "query"   : { "term" : { "cik" : cik } }
             }
         }
     }
@@ -197,16 +191,14 @@ module.exports = function(app, config, client) {
             "from"  : 0,
             "size"  : 15,
         }).then(function(es_response) {
-            var hits = _.pluck(es_response.hits.hits, '_source')
-            
-            // ** Add fake properties **
-            hits = _.map(hits, function(hit) {
+            var hits = _.chain(es_response.hits.hits).pluck('_source').map(hits, function(hit) {
                 return {
                     "cik"  : hit['cik'],
                     "name" : hit['current_symbology']['name'],
                     "red_flags" : {
                         "total"    : 7,
                         "possible" : 7,
+                        // ** Add fake properties **
                         "financials"    : {"have" : true, "value" : 1, "is_flag" : true},
                         "delta"         : {"have" : true, "value" : 1, "is_flag" : true},
                         "trading_halts" : {"have" : true, "value" : 1, "is_flag" : true},
@@ -216,11 +208,11 @@ module.exports = function(app, config, client) {
                         "crowdsar"      : {"have" : true, "value" : 1, "is_flag" : true},
                     },
                 }
-            });
+            }).value();
             
             res.send({
                 "total_hits" : es_response.hits.total,
-                "hits"       : hits
+                "hits"       : hits,
             });
         });
     });
@@ -234,16 +226,16 @@ module.exports = function(app, config, client) {
             "size"  : 999,
         }).then(function(es_response) {
             res.send({
-                "table" : _.map(es_response.hits.hits, function(hit) {
+                "table" : _.chain(es_response.hits.hits).sortBy(function(hit) {return hit._source.min_date}).map(function(hit) {
                     return [
                         hit._source.min_date,
                         hit._source.max_date,
                         hit._source.name,
                         hit._source.ticker,
-                        hit._source.sic
+                        hit._source.sic,
                     ]
-                })
-            })
+                }).value()
+            });
         });
     });
     
@@ -257,7 +249,6 @@ module.exports = function(app, config, client) {
         }).then(function(es_response) {
             if(es_response.hits.total) {
                 var hit = es_response.hits.hits[0]._source
-                console.log(hit.current_symbology.ticker);
                 res.send({"cik" : d.cik, "name" : hit.current_symbology.name, "ticker" : hit.current_symbology.ticker});
             } else {
                 res.send({"cik" : d.cik, "name" : undefined, "ticker" : undefined});
