@@ -87,7 +87,7 @@ App.Search.reopenClass({
                 contentType: "application/json",
                 dataType   : "json",
                 url        : "search",
-                data       : JSON.stringify({ "query" : query, "redflag_params" : redflag_params}),
+                data       : JSON.stringify({ "query" : query, "redflag_params" : redflag_params.get_toggled_params()}),
                 success    : function(response) {
                     resolve(App.SearchResults.create(response));
                 },

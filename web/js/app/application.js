@@ -82,15 +82,17 @@ App.Router.map(function() {
 
 // --
 
-App.Toggles = Ember.Object.extend({
-  financials    : gconfig.DEFAULT_TOGGLES.financials,
-  delta         : gconfig.DEFAULT_TOGGLES.delta,
-  trading_halts : gconfig.DEFAULT_TOGGLES.trading_halts,
-  delinquency   : gconfig.DEFAULT_TOGGLES.delinquency,
-  network       : gconfig.DEFAULT_TOGGLES.network,
-  pv            : gconfig.DEFAULT_TOGGLES.pv,
-  crowdsar      : gconfig.DEFAULT_TOGGLES.crowdsar
-});
+App.RedFlagParams = Ember.Object.extend({
+    _params    : gconfig.DEFAULT_REDFLAG_PARAMS,
+    _toggles   : gconfig.DEFAULT_TOGGLES,
+    get_params  : function() { return this.get('_params'); },
+    get_toggles : function() { return this.get('_toggles'); },
+    get_toggled_params : function() {
+        var params  = this.get('_params');
+        var toggles = this.get('_toggles');
+        return _.chain(params).pairs().filter(function(x) { return toggles[x[0]] }).object().value();
+    }
+})
 
 App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin,{
   actions : {
@@ -104,15 +106,15 @@ App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin,{
 });
 
 App.ApplicationController = Ember.Controller.extend({
-  searchTerm : undefined,
-  showNav    : false,
-  rf         : gconfig.DEFAULT_RF,
-  toggles    : App.Toggles.create(),
-
+  searchTerm     : undefined,
+  showNav        : false,
+  
+  redflag_params  : App.RedFlagParams.create(),
+  
   search_company : function(cb) {
-    App.Search.search_company(this.searchTerm, rf_clean_func(this.rf, undefined)).then(function(x) {console.log('x', x), cb(x)});
+    App.Search.search_company(this.searchTerm, this.redflag_params).then(cb);
   },
   search_filter : function(cb) {
-    App.Search.search_filters(rf_clean_func(this.rf, this.toggles), undefined, undefined).then(cb);
+    App.Search.search_filters(this.redflag_params, undefined, undefined).then(cb);
   }
 });

@@ -7,9 +7,8 @@ App.AssociatesRoute = Ember.Route.extend({
 });
 
 App.AssociatesController = Ember.ObjectController.extend({
-    needs   : ['application'],
-    rf      : Ember.computed.alias('controllers.application.rf'),
-    toggles : Ember.computed.alias('controllers.application.toggles'),
+    needs          : ['application'],
+    redflag_params : Ember.computed.alias('controllers.application.redflag_params'),
 
     hide_terminal      : gconfig.DEFAULT_HIDE_TERMINAL,
     hide_ner           : gconfig.DEFAULT_HIDE_NER,

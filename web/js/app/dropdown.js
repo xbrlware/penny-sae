@@ -3,11 +3,10 @@
 // Dropdown
 
 App.DropdownController = Ember.ObjectController.extend({
-    needs       : ['application'],
-    rf          : Ember.computed.alias('controllers.application.rf'),
-    toggles     : Ember.computed.alias('controllers.application.toggles'),
+    needs          : ['application'],
+    redflag_params : Ember.computed.alias('controllers.application.redflag_params'),
         
-    delta_select_content: [
+    symbology_select_content: [
         {id: undefined,                name: "Choose Type"},
         {id: "company_name",           name: "Company Name"},
         {id: "sic",                    name: "SIC"},
@@ -42,7 +41,7 @@ App.DropdownController = Ember.ObjectController.extend({
     
     empty        : true,
     pv           : false,
-    delta        : false,
+    symbology    : false,
     network      : false,
     financials   : false,
     crowdsar     : false,

@@ -20,7 +20,7 @@ App.Topic = Ember.Object.extend({
         var key = {
             'pv'            : "Price/Volume",
             'trading_halts' : "Trading Halts",
-            'delta'         : "Change in Business",
+            'symbology'     : "Change in Business",
             'financials'    : "No Revenues",
             'network'       : "OTC Associates",
             'delinquency'   : "Late Filings"

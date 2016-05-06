@@ -8,43 +8,43 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push("\n\n<table class=\"table hoverTable sidebar-index-table\">\n    <tr class=\"no-hover\">\n        <th></th>\n        <th>\n            <h3 class=\"h3-small\" id=\"add-red-flags\">\n                Red Flags\n            </h3>\n        </th>\n    </tr>\n\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has no business, no revenues and no product."),
-    'valueBinding': ("toggles.financials"),
+    'valueBinding': ("redflag_params._toggles.financials"),
     'showParameters': ("financials")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company undergoes frequent material changes in business strategy or its line of business."),
-    'valueBinding': ("toggles.delta"),
+    'valueBinding': ("redflag_params._toggles.delta"),
     'showParameters': ("delta")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Officers or insiders of the issuer are associated with multiple penny stock issuers."),
-    'valueBinding': ("toggles.network"),
+    'valueBinding': ("redflag_params._toggles.network"),
     'showParameters': ("network")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has been the subject of a prior trading suspension."),
-    'valueBinding': ("toggles.trading_halts"),
+    'valueBinding': ("redflag_params._toggles.trading_halts"),
     'showParameters': ("trading_halts")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has not made disclosures in SEC or other regulatory filings."),
-    'valueBinding': ("toggles.delinquency"),
+    'valueBinding': ("redflag_params._toggles.delinquency"),
     'showParameters': ("delinquency")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n    \n\n    <tr class=\"no-hover\" id=\"hovertable-bottom-border\"><td colspan=\"3\"></tr>\n    <tr class=\"no-hover\">\n        <td></td>\n        <td><h3 class=\"h3-small\" id=\"add-red-flags\">Additional Red Flags</h3></td>\n    </tr>\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company stock has experienced recent price and/or volume anomalies."),
-    'valueBinding': ("toggles.pv"),
+    'valueBinding': ("redflag_params._toggles.pv"),
     'showParameters': ("pv")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n    ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Investors have made allegations about malfeasance of the company on social media."),
-    'valueBinding': ("toggles.crowdsar"),
+    'valueBinding': ("redflag_params._toggles.crowdsar"),
     'showParameters': ("crowdsar")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING",'showParameters': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0,'showParameters': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n    <tr class=\"no-hover\">\n        <td colspan=\"3\">\n            <button class=\"btn btn-success\" id=\"find-button\" ");
@@ -795,37 +795,37 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push("\n    </div>\n            \n    <div class=\"frontpage-table\">\n        <h3 class=\"h3-small\"> - Search By Red Flags - </h3>\n        <table class=\"table hoverTable front-page\">\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has no business, no revenues and no product."),
-    'valueBinding': ("toggles.financials")
+    'valueBinding': ("redflag_params._toggles.financials")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company undergoes frequent material changes in business strategy or its line of business."),
-    'valueBinding': ("toggles.delta")
+    'valueBinding': ("redflag_params._toggles.delta")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Officers or insiders of the issuer are associated with multiple penny stock issuers."),
-    'valueBinding': ("toggles.network")
+    'valueBinding': ("redflag_params._toggles.network")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has been the subject of a prior trading suspension."),
-    'valueBinding': ("toggles.trading_halts")
+    'valueBinding': ("redflag_params._toggles.trading_halts")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company has not made disclosures in SEC or other regulatory filings."),
-    'valueBinding': ("toggles.delinquency")
+    'valueBinding': ("redflag_params._toggles.delinquency")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n\n            \n\n            <tr class=\"no-hover\" id=\"hovertable-bottom-border\"><td></td><td></td></tr>\n            <tr class=\"no-hover\">\n                <td></td>\n                <td><h3><font color=\"red\"> Additional Red Flags </font></h3></td>\n            </tr>\n                        \n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Company stock has experienced recent price and/or volume anomalies."),
-    'valueBinding': ("toggles.pv")
+    'valueBinding': ("redflag_params._toggles.pv")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                \n            ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.ToggleRowView", {hash:{
     'text': ("Investors have made allegations about malfeasance of the company on social media."),
-    'valueBinding': ("toggles.crowdsar")
+    'valueBinding': ("redflag_params._toggles.crowdsar")
   },hashTypes:{'text': "STRING",'valueBinding': "STRING"},hashContexts:{'text': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                <tr class=\"no-hover\">\n                    <td colspan=\"2\">\n                        <button class=\"btn btn-success btn-submit-frontpage\" ");
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "filterSearch", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));

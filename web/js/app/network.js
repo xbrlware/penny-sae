@@ -346,7 +346,7 @@ App.NetView = Ember.View.extend({
             
             rf.exists  = exists;
             rf.toggles = {
-                'delta'         : true,
+                'symbology'     : true,
                 'network'       : true,
                 'financials'    : true,
                 'trading_halts' : true,

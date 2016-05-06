@@ -28,16 +28,14 @@ App.SidebarRoute = App.GRoute.extend({
 
   actions : {
     toggleFlag : function(flag) {
-      var toggles = this.get('controller').get('toggles');
+      var toggles = this.get('controller.redflag_params').get_toggles();
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
     },
     search_filters : function() {
-      var con      = this.get('controller');
-      var rf       = con.get('rf');
-      var toggles  = con.get('toggles');
-      var rf_clean = rf_clean_func(rf, toggles);
+      var con            = this.get('controller');
+      var redflag_params = con.get('redflag_params');
       con.set('isLoading', true);
-      App.Search.search_filters(rf_clean, undefined, undefined).then(function(response) {
+      App.Search.search_filters(redflag_params, undefined, undefined).then(function(response) {
         con.transitionToRoute('sidebar');
         con.set('model', response);
         con.set('isLoading', false);
@@ -48,8 +46,7 @@ App.SidebarRoute = App.GRoute.extend({
 
 App.SidebarController = Ember.ObjectController.extend({
   needs            : ['application'],
-  rf               : Ember.computed.alias('controllers.application.rf'),
-  toggles          : Ember.computed.alias('controllers.application.toggles'),
+  redflag_params   : Ember.computed.alias('controllers.application.redflag_params'),
   searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
   searchTerm_topic : Ember.computed.alias('controllers.application.searchTerm_topic'),
   isLoading        : false,
@@ -62,13 +59,11 @@ App.SidebarController = Ember.ObjectController.extend({
         this.set('from', Math.max(this.get('from') - gconfig.SIZE, 0));
       }
 
-      var rf       = this.get('rf');
-      var toggles  = this.get('toggles');
-      var rf_clean = rf_clean_func(rf, toggles);
+      var redflag_params = this.get('redflag_params');
 
       var self = this;
       self.set('isLoading', true);
-      App.Search.search_filters(rf_clean, this.get('from'), this.get('model')).then(function(response) {
+      App.Search.search_filters(redflag_params, this.get('from'), this.get('model')).then(function(response) {
         self.set('model', response);
         self.set('isLoading', false);
       });

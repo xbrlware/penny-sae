@@ -161,12 +161,30 @@ module.exports = function(app, config, client) {
     callback(data);
   }
   
+  
   // <<
+    function redflagScorer(params) {
+        return {
+            "script_score": {
+                "script": {
+                    "file": "ernest",
+                    "lang": "js",
+                    "params": { "params": params }
+                }
+            }
+        }
+    }
+  
     queryBuilder = {
         "search" : function(query, redflag_params) {
             return {
                 "_source" : ["cik", "current_symbology.name"],
-                "query"   : { "match_phrase" : { "searchterms" : query } }
+                "query"   : {
+                    "function_score" : {
+                        "query"     : { "match_phrase" : { "searchterms" : query } },
+                        "functions" : [redflagScorer(redflag_params)]
+                    }
+                }
             }
         },
         "company_table" : function(cik) {
@@ -185,13 +203,19 @@ module.exports = function(app, config, client) {
     
     app.post('/search', function(req, res) {
         var d = req.body;
+        
+        console.log('/search :: ', JSON.stringify(queryBuilder.search(d.query, d.redflag_params)));
+        
         client.search({
             "index" : "ernest_agg",
             "body"  : queryBuilder.search(d.query, d.redflag_params),
             "from"  : 0,
             "size"  : 15,
         }).then(function(es_response) {
-            var hits = _.chain(es_response.hits.hits).pluck('_source').map(hits, function(hit) {
+            
+            console.log(es_response.hits.hits[0]);
+            
+            var hits = _.chain(es_response.hits.hits).pluck('_source').map(function(hit) {
                 return {
                     "cik"  : hit['cik'],
                     "name" : hit['current_symbology']['name'],

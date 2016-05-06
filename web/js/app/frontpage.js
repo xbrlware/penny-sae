@@ -13,15 +13,15 @@ App.FrontpageRoute = App.GRoute.extend({
             this.transitionTo('sidebar', '-');
         },
         toggleFlag : function(flag) {
-            this.get('controller').get('toggles').toggleProperty(flag);
+            this.get('controlle.redflag_params._toggles').toggleProperty(flag);
         }
     }
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
-    needs   : ['application'],
-    toggles : Ember.computed.alias('controllers.application.toggles'),
-    isAdmin : function() {return App.isAdmin();}.property(),
+    needs          : ['application'],
+    redflag_params : Ember.computed.alias('controllers.application.redflag_params'),
+    isAdmin        : function() {return App.isAdmin();}.property(),
 });
 
 // --
