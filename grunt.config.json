@@ -19,7 +19,6 @@
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
          "web/css/jquery.dataTables.min.css",
-         "web/css/techan.css",
          "web/css/style.less.css"
      ],
 
@@ -40,7 +39,6 @@
          "web/js/libs/flot/jquery.flot.js",
          "web/js/libs/flot/jquery.flot.pie.js",
          "web/js/libs/jit/jit.js",
-         "web/js/libs/techan.js",
          "web/js/libs/cal-heatmap.min.js",
          "web/js/libs/numeral.js"
       ],

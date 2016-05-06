@@ -55,11 +55,18 @@ App.SearchResultsView = Ember.View.extend({
     var h   = this.get('controller').get('hits');
 
     Ember.$('#' + tid).DataTable({
+      fnDrawCallback: function(oSettings) {
+          if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+            $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
+          }
+      },  
       data     : f(tid, h),
       bFilter  : false,
       bInfo    : false,
       columns  : this.get('controller').get('tableColumns')
     });
+
+
   }
 
 });

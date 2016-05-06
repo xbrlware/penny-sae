@@ -119,7 +119,7 @@ App.PvChartView = Ember.View.extend({
     x3.domain(x.domain());
     y3.domain([0, d3.max(data, function(d) { return d.volume; })]);
 
-    x4.domain(d3.extent(fData, function(d) { return d.date; }));
+    x4.domain(x.domain());
     y4.domain(d3.extent(fData, function(d) { return d.close; }));
 
 
