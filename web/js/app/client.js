@@ -60,10 +60,11 @@ App.SearchResultsView = Ember.View.extend({
             $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
           }
       },  
-      data     : f(tid, h),
-      bFilter  : false,
-      bInfo    : false,
-      columns  : this.get('controller').get('tableColumns')
+      data      : f(tid, h),
+      bFilter   : false,
+      bInfo     : false,
+      columns   : this.get('controller').get('tableColumns'),
+      pageLength: 50
     });
 
 

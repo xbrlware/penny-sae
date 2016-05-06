@@ -19,9 +19,15 @@ App.FinancialsView = Ember.View.extend({
     var self = this;
     var con = self.get('controller');
     Ember.$('#financials-table').DataTable({
+      fnDrawCallback: function(oSettings) {
+          if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+            $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
+          }
+      },  
       retrieve: true,
       data: con.tableContent(),
-      columns: con.tableColumns()
+      columns: con.tableColumns(),
+      pageLength: 50
     });
   }
 });
