@@ -47,7 +47,7 @@
     "app_files"  : [
 	       "web/js/app/application.js",
 	       "web/js/app/associates.js",
-         "web/js/app/authentication.js",
+           "web/js/app/authentication.js",
 	       "web/js/app/client.js",
 	       "web/js/app/components.js",
 	       "web/js/app/data-management.js",
@@ -57,10 +57,10 @@
 	       "web/js/app/financials.js",
 	       "web/js/app/frontpage.js",
 	       "web/js/app/google-news.js",
-         "web/js/app/hit.js",
+           "web/js/app/hit.js",
 	       "web/js/app/icons.js",
 	       "web/js/app/leadership.js",
-         "web/js/app/login.js",
+           "web/js/app/login.js",
 	       "web/js/app/ner.js",
 	       "web/js/app/network.js",
 	       "web/js/app/previous-reg.js",
@@ -73,6 +73,6 @@
 	       "web/js/app/slider.js",
 	       "web/js/app/topic.js",
 	       "web/js/app/tts-charts.js",
-         "web/js/app/wrapper.js"
+           "web/js/app/wrapper.js"
     ]
 }
