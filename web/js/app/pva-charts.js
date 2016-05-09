@@ -74,7 +74,11 @@ App.PvChartView = Ember.View.extend({
     var yAxis3 = d3.svg.axis().scale(y3).orient('right');
     var yAxis4 = d3.svg.axis().scale(y4).orient('right');
 
-    var brush = d3.svg.brush().x(x2).on("brush", brushed);
+    var brush = d3.svg.brush()
+      .x(x2)
+      .on("brush", brushed);
+
+    console.log(brush);
 
     var line = d3.svg.line()
       .x(function(d) { return x(d.date); })
@@ -90,10 +94,10 @@ App.PvChartView = Ember.View.extend({
 
     svg.append('defs').append('clipPath')
         .attr('id', 'clip')
-        .append('rect')
+      .append('rect')
         .attr('width', width)
         .attr('height', height);
-
+    
     var focus = svg.append('g')
         .attr('class', 'focus')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -101,10 +105,22 @@ App.PvChartView = Ember.View.extend({
     var barGraph = svg.append('g')
         .attr('class', 'bar')
         .attr('transform', 'translate(' + margin3.left + ',' + margin3.top + ')');
-
+      
+    barGraph.append('defs').append('clipPath')
+        .attr('id', 'clipVolume')
+      .append('rect')
+        .attr('width', width)
+        .attr('height', height3);
+    
     var crowdsar = svg.append('g')
         .attr('class', 'crowd')
         .attr('transform', 'translate(' + margin4.left + ',' + margin4.top + ')');
+
+    crowdsar.append('defs').append('clipPath')
+        .attr('id', 'clipCrowdsar')
+        .append('rect')
+        .attr('width', width)
+        .attr('height', height4);
 
     var context = svg.append('g')
         .attr('class', 'context')
@@ -136,7 +152,8 @@ App.PvChartView = Ember.View.extend({
     focus.append('path')
         .datum(data)
         .attr('class', 'line')
-        .attr('d', line);
+        .attr('d', line)
+        .attr('clip-path', 'url(#clip)');
 
     barGraph.append('g')
         .attr('class', 'x axis volume')
@@ -148,9 +165,11 @@ App.PvChartView = Ember.View.extend({
         .attr('transform', 'translate('+ width + ',0)')
         .call(yAxis3)
 
-    barGraph.selectAll('bar')
+    barGraph.append('g')
+        .attr('clip-path', 'url(#clipVolume)')
+      .selectAll('bar')
         .data(data)
-      .enter().append('rect')
+        .enter().append('rect')
         .attr('class', 'bar vol')
         .style('fill', 'steelblue')
         .attr('x', function(d) { return x3(d.date); })
@@ -168,7 +187,9 @@ App.PvChartView = Ember.View.extend({
         .attr('transform', 'translate('+ width + ',0)')
         .call(yAxis4)
     
-    crowdsar.selectAll('crowd')
+    crowdsar.append('g')
+        .attr('clip-path', 'url(#clipCrowdsar)')
+      .selectAll('crowd')
         .data(fData)
       .enter().append('rect')
         .attr('class', 'bar crowdsar')
@@ -183,8 +204,13 @@ App.PvChartView = Ember.View.extend({
         .attr('transform', 'translate(0,' + height2 + ')')
         .call(xAxis2);
 
+    console.log('x2 domain --> ', x2.domain()[0].getMonth());
+    console.log(x2.domain()[0]);
+
     context.append('g')
         .attr('class', 'x brush')
+        .call(brush.extent([x2.domain()[1].setMonth(x2.domain()[1].getMonth() - 3), x2.domain()[1]]))
+        .call(brush.event)
         .call(brush)
         .selectAll('rect')
         .attr('y', -6)
