@@ -70,11 +70,11 @@ function set_red_flags(rf_clean, f) {
             out.pv_redflag = f.pv_scriptfield[0].condition_met.length > 0;
         }
     }
-    
+
     out.total    = out.delta_redflag + out.financials_redflag + out.trading_halts_redflag +
-                    out.delinquency_redflag + out.network_redflag;
+        out.delinquency_redflag + out.network_redflag;
     out.possible = rf_clean.toggles.delta + rf_clean.toggles.financials + rf_clean.toggles.trading_halts +
-                    rf_clean.toggles.delinquency + rf_clean.toggles.network;
+        rf_clean.toggles.delinquency + rf_clean.toggles.network;
     return out;
 };
 
@@ -100,12 +100,12 @@ function rf_clean_func(rf, toggles) {
             if(rf[key] !== undefined){
                 Object.keys(rf[key]).map(function(inner_key) {
                     if(rf[key][inner_key] !== undefined)
-                        exists[key] = true;
+                    exists[key] = true;
                 });
             }
         }
     });
-    
+
     rf.exists  = exists;
     rf.toggles = clean_toggles;
     return rf;
