@@ -27,7 +27,7 @@ App.TopicPieChartView = Ember.View.extend({
         
         data.push({label: "Misc. Others", data: others, color: "lightgrey"})
         console.log('data', data);
-        $.plot('#placeholder', data, {
+        Ember.$.plot('#placeholder', data, {
             series: {
                 pie: {
                     show: true
