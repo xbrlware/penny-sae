@@ -12,7 +12,6 @@ App.PvChartRoute = Ember.Route.extend({
         var spikesTable = this.modelFor('detail').get('spikesTable');
 
         var mod = {'pv' : pv, 'cs' : cs, 'tout' : tout, 'spikesTable' : spikesTable};
-        console.log(mod);
         return mod;
     }
 });
@@ -77,8 +76,6 @@ App.PvChartView = Ember.View.extend({
     var brush = d3.svg.brush()
       .x(x2)
       .on("brush", brushed);
-
-    console.log(brush);
 
     var line = d3.svg.line()
       .x(function(d) { return x(d.date); })
@@ -203,9 +200,6 @@ App.PvChartView = Ember.View.extend({
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + height2 + ')')
         .call(xAxis2);
-
-    console.log('x2 domain --> ', x2.domain()[0].getMonth());
-    console.log(x2.domain()[0]);
 
     context.append('g')
         .attr('class', 'x brush')
