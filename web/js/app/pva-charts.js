@@ -53,6 +53,7 @@ App.PvChartView = Ember.View.extend({
     var height4 = 500 - margin4.top - margin4.bottom;
 
     var formatDate = d3.time.format("%b-%y");
+    var formatTooltipDate = d3.time.format("%b. %d, %Y");
 
     var x = d3.time.scale().range([0, width]);
     var x2 = d3.time.scale().range([0, width]);
@@ -76,6 +77,20 @@ App.PvChartView = Ember.View.extend({
     var brush = d3.svg.brush()
       .x(x2)
       .on("brush", brushed);
+
+    var volumeTip = d3.tip()
+        .attr('class', 'volume-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>Date: </strong><span>" + formatTooltipDate(d.date) +"</span> <br /> <strong>Volume: </strong><span>" + d.volume + "</span>"
+        });
+
+    var crowdsarTip = d3.tip()
+        .attr('class', 'crowdsar-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return "<strong>Date: </strong><span>" + formatTooltipDate(d.date) + "</span> <br /> <strong>Crowdsar: </strong><span>" + d.close + "</span>";
+        });
 
     var line = d3.svg.line()
       .x(function(d) { return x(d.date); })
@@ -106,6 +121,9 @@ App.PvChartView = Ember.View.extend({
         .append('rect')
         .attr('width', width)
         .attr('height', height4);
+
+    svg.call(volumeTip);
+    svg.call(crowdsarTip);
 
     var focus = svg.append('g')
         .attr('class', 'focus')
@@ -168,11 +186,12 @@ App.PvChartView = Ember.View.extend({
         .data(data)
         .enter().append('rect')
         .attr('class', 'bar vol')
-        .style('fill', 'steelblue')
         .attr('x', function(d) { return x3(d.date); })
         .attr('width', 3)
         .attr('y', function(d) { return y3(d.volume); })
-        .attr('height', function(d) { return height3 - y3(d.volume); });
+        .attr('height', function(d) { return height3 - y3(d.volume); })
+        .on('mouseover', volumeTip.show)
+        .on('mouseout', volumeTip.hide);
 
     crowdsar.append('g')
         .attr('class', 'x axis crowdsar')
@@ -190,11 +209,12 @@ App.PvChartView = Ember.View.extend({
         .data(fData)
       .enter().append('rect')
         .attr('class', 'bar crowdsar')
-        .style('fill', 'red')
         .attr('x', function(d) { return x4(d.date); })
         .attr('width', 3)
         .attr('y', function(d) { return y4(d.close); })
-        .attr('height', function(d) { return height4 - y4(d.close); });
+        .attr('height', function(d) { return height4 - y4(d.close); })
+        .on('mouseover', crowdsarTip.show)
+        .on('mouseout', crowdsarTip.hide);
 
     context.append('g')
         .attr('class', 'x axis')
