@@ -49,7 +49,6 @@ App.AssociatesController = Ember.ObjectController.extend({
                 "cik"      : self.get('model.cik'),
                 "updates"  : updates,
                 "callback" : function(response) {
-                    console.log('response', response);
                     self.transitionToRoute('previousReg');
                     setTimeout(function() {
                         self.transitionToRoute('associates');
@@ -71,15 +70,12 @@ App.AssociatesController = Ember.ObjectController.extend({
         save_toggles : function() {
             var network_associates = this.get('network_associates');
             var updates = _.map(network_associates, function(associate) {
-                console.log('associate', associate);
                 return {"nodeTo" : associate.id, "hidden" : associate.hidden}
             });
-            console.log('updates', updates);
             this.update_network_associates(updates)
         },
         filter_er : function() {
             var searchTerm_er      = this.get('searchTerm_er');
-            console.log('did search', searchTerm_er);
             var orig_network_associates = this.get('orig_network_associates');
             if(searchTerm_er === '') {
                 this.set('network_associates', orig_network_associates);

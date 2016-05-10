@@ -41,7 +41,6 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
 
     authenticate: function(credentials) {
         var _this = this;
-        console.log('$$$ auth: trying to authenticate...');
 
         return new Ember.RSVP.Promise(function(resolve, reject) {
             var postdata = JSON.stringify({username: credentials.identification, password: credentials.password});
@@ -52,7 +51,6 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
                 contentType : 'application/json',
                 dataType    : 'json'
             }).then(function(response) {
-                console.log('$$$ auth: response -- ', response);
                 App.saveToken(response.token, response.isAdmin, response.username);
 
                 Ember.run(function() {

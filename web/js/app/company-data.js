@@ -62,7 +62,6 @@ App.DetailModel = Ember.Object.extend({
     // Financials table
     financialsTable: function(){
         var d = this.get('source.fin');
-        console.log('---', d);
         if(Object.keys(d).length > 1){
             tab = [];
             for(i=0; i < d.balance_sheet_date.length; i++){
@@ -81,7 +80,6 @@ App.DetailModel = Ember.Object.extend({
             }
             return(tab)
         } else {
-            console.log('no financials!');
             return undefined;
         }
     }.property('source'),
@@ -109,11 +107,9 @@ App.DetailModel = Ember.Object.extend({
                     }
                     return(tab)
                 } else {
-                    console.log('no del_proc!');
                     return undefined;
                 }
             } else {
-                console.log('no del_proc!');
                 return undefined;
             }
     }.property('source')

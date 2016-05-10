@@ -42,8 +42,8 @@ App.PvChartView = Ember.View.extend({
 
     var margin = {top: 0, right: 50, bottom: 280, left: 20};
     var margin2 = {top: 440, right: 50, bottom: 20, left: 20};
-    var margin3 = {top: 250, right: 50, bottom: 200, left: 20};
-    var margin4 = {top: 350, right: 50, bottom: 120, left: 20};
+    var margin3 = {top: 250, right: 50, bottom: 180, left: 20};
+    var margin4 = {top: 350, right: 50, bottom: 90, left: 20};
 
     var width = 800 - margin.left - margin.right;
 
@@ -61,17 +61,17 @@ App.PvChartView = Ember.View.extend({
 
     var y = d3.scale.linear().range([height, 0]);
     var y2 = d3.scale.linear().range([height2, 0]);
-    var y3 = d3.scale.linear().range([0, height3]);
-    var y4 = d3.scale.linear().range([0, height4]);
+    var y3 = d3.scale.linear().range([height3, 0]);
+    var y4 = d3.scale.linear().range([height4, 0]);
 
-    var xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.time.format("%b-%y"));
-    var xAxis2 = d3.svg.axis().scale(x2).orient('bottom').tickFormat(d3.time.format("%b-%y"));
-    var xAxis3 = d3.svg.axis().scale(x3).orient('bottom').tickFormat(d3.time.format("%b-%y"));
-    var xAxis4 = d3.svg.axis().scale(x4).orient('bottom').tickFormat(d3.time.format("%b-%y"));
+    var xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(d3.time.months).tickFormat(d3.time.format("%b-%y"));
+    var xAxis2 = d3.svg.axis().scale(x2).orient('bottom').ticks(d3.time.years).tickFormat(d3.time.format("%b-%y"));
+    var xAxis3 = d3.svg.axis().scale(x3).orient('bottom').ticks(d3.time.months).tickFormat(d3.time.format("%b-%y"));
+    var xAxis4 = d3.svg.axis().scale(x4).orient('bottom').ticks(d3.time.months).tickFormat(d3.time.format("%b-%y"));
 
     var yAxis = d3.svg.axis().scale(y).orient('right');
-    var yAxis3 = d3.svg.axis().scale(y3).orient('right');
-    var yAxis4 = d3.svg.axis().scale(y4).orient('right');
+    var yAxis3 = d3.svg.axis().scale(y3).orient('right').ticks(6).tickFormat(d3.format("s"));
+    var yAxis4 = d3.svg.axis().scale(y4).orient('right').ticks(4);
 
     var brush = d3.svg.brush()
       .x(x2)
@@ -94,7 +94,19 @@ App.PvChartView = Ember.View.extend({
       .append('rect')
         .attr('width', width)
         .attr('height', height);
+
+    svg.append('defs').append('clipPath')
+        .attr('id', 'clipVolume')
+      .append('rect')
+        .attr('width', width)
+        .attr('height', height3);
     
+    svg.append('defs').append('clipPath')
+        .attr('id', 'clipCrowdsar')
+        .append('rect')
+        .attr('width', width)
+        .attr('height', height4);
+
     var focus = svg.append('g')
         .attr('class', 'focus')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -102,22 +114,10 @@ App.PvChartView = Ember.View.extend({
     var barGraph = svg.append('g')
         .attr('class', 'bar')
         .attr('transform', 'translate(' + margin3.left + ',' + margin3.top + ')');
-      
-    barGraph.append('defs').append('clipPath')
-        .attr('id', 'clipVolume')
-      .append('rect')
-        .attr('width', width)
-        .attr('height', height3);
     
     var crowdsar = svg.append('g')
         .attr('class', 'crowd')
         .attr('transform', 'translate(' + margin4.left + ',' + margin4.top + ')');
-
-    crowdsar.append('defs').append('clipPath')
-        .attr('id', 'clipCrowdsar')
-        .append('rect')
-        .attr('width', width)
-        .attr('height', height4);
 
     var context = svg.append('g')
         .attr('class', 'context')

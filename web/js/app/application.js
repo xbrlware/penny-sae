@@ -3,7 +3,6 @@
 /* Setup Authorization */
 
 window.ENV = window.ENV || {};
-console.log('setting up authentication...');
 window.ENV['simple-auth'] = {
     authorizer                  : 'authorizer:custom',
     routeAfterAuthentication    : 'frontpage',
