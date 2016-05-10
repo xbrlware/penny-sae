@@ -40,10 +40,10 @@ App.PvChartView = Ember.View.extend({
         low: 0});
     }
 
-    var margin = {top: 0, right: 50, bottom: 280, left: 20};
-    var margin2 = {top: 440, right: 50, bottom: 20, left: 20};
-    var margin3 = {top: 250, right: 50, bottom: 180, left: 20};
-    var margin4 = {top: 350, right: 50, bottom: 90, left: 20};
+    var margin = {top: 0, right: 10, bottom: 280, left: 10};
+    var margin2 = {top: 440, right: 10, bottom: 20, left: 10};
+    var margin3 = {top: 250, right: 10, bottom: 180, left: 10};
+    var margin4 = {top: 350, right: 10, bottom: 90, left: 10};
 
     var width = 800 - margin.left - margin.right;
 
@@ -73,6 +73,8 @@ App.PvChartView = Ember.View.extend({
     var yAxis = d3.svg.axis().scale(y).orient('right');
     var yAxis3 = d3.svg.axis().scale(y3).orient('right').ticks(6).tickFormat(d3.format("s"));
     var yAxis4 = d3.svg.axis().scale(y4).orient('right').ticks(4);
+
+    var bisectDate = d3.bisector(function(d) { return d.date; }).right;
 
     var brush = d3.svg.brush()
       .x(x2)
@@ -161,7 +163,6 @@ App.PvChartView = Ember.View.extend({
 
     focus.append('g')
         .attr('class', 'y axis')
-        .attr('transform', 'translate('+ width + ',0)')
         .call(yAxis);
     
     focus.append('path')
@@ -170,6 +171,25 @@ App.PvChartView = Ember.View.extend({
         .attr('d', line)
         .attr('clip-path', 'url(#clip)');
 
+    var crosshair = svg.append('g')
+        .attr("class", "crosshair")
+        .style("display", "none");
+
+    crosshair.append('circle')
+        .attr('r', 4.5);
+
+    crosshair.append('text')
+        .attr('x', 9)
+        .attr('dy', '0.35em');
+
+    focus.append('rect')
+        .attr('class', 'overlay')
+        .attr('width', width)
+        .attr('height', height)
+        .on('mouseover', function() { crosshair.style('display', null); })
+        .on('mouseout', function() { crosshair.style('display', 'none'); })
+        .on('mousemove', mousemove);
+        
     barGraph.append('g')
         .attr('class', 'x axis volume')
         .attr('transform', 'translate(0,' + height3 + ')')
@@ -177,8 +197,7 @@ App.PvChartView = Ember.View.extend({
 
     barGraph.append('g')
         .attr('class', 'y axis')
-        .attr('transform', 'translate('+ width + ',0)')
-        .call(yAxis3)
+        .call(yAxis3);
 
     barGraph.append('g')
         .attr('clip-path', 'url(#clipVolume)')
@@ -200,8 +219,7 @@ App.PvChartView = Ember.View.extend({
 
     crowdsar.append('g')
         .attr('class', 'y axis')
-        .attr('transform', 'translate('+ width + ',0)')
-        .call(yAxis4)
+        .call(yAxis4);
     
     crowdsar.append('g')
         .attr('clip-path', 'url(#clipCrowdsar)')
@@ -250,5 +268,14 @@ App.PvChartView = Ember.View.extend({
 
     }
 
+    function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+        i = bisectDate(data, x0, 1),
+        d0 = data[i - 1],
+        d1 = data[i],
+        d = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
+        crosshair.attr('transform', 'translate(' + (x(d.date) + margin.left) + ',' + y(d.close) + ')');
+        crosshair.select('text').text(d.close);
     }
+  }
 });
