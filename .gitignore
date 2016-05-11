@@ -6,3 +6,4 @@ web/templates/dist/templates.js
 web/css/dist/
 node_modules/
 server/node/*config.json
+web/config/*.js

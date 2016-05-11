@@ -17,3 +17,26 @@ prodApp and prodLib do the same thing as devApp/devLib, but they also uglify the
 wth    - starts grunt-watch, but you must customize this to handle your tasks.
 
 All file locations and variables available to grunt tasks are located in ./grunt.config.json.
+
+## Setup
+
+After cloning the repository, run the following commands to get started.
+
+```bash
+
+# Install Dependencies
+npm install
+cd server/node
+npm install
+# Go back up to root directory
+
+# Set up server configuration files, eventually turn into Grunt task
+cd config
+node configure.js
+# Go back up to root directory
+
+# Launch app!
+node server/node/server.js
+# App is running at localhost:8090 or whichever port is specified by console
+
+```
