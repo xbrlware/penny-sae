@@ -33,6 +33,12 @@ npm install
 # Set up server configuration files, eventually turn into Grunt task
 cd config
 node configure.js
+
+# TODO: Modify web/config/local-config.js or global-config.js with your 
+elasticsearch credentials. Elasticsearch must be running for the app to work.
+# Possibly throw error message to indicate that elasticsearch is down if user
+# launches app without an ES instance to connect to.
+
 # Go back up to root directory
 
 # Launch app!
