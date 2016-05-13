@@ -21,14 +21,16 @@
                             placeholder="- Search Company -"
                             id="search-text" insert-newline="companySearch"
                         }}
+   
                     </div>
    
-                    {{#if App.SidebarController.isLoading }}
-                        <div class="loader-widget">
+                    {{#if isLoading }}
+                        {{!-- <div class="loader-widget"> --}}
                             <img id="spinner" src="css/ajax-loader.gif">
-                            <span class="loader-text" >Fetching your results, please stand by</span>
-                        </div>
+                            <span class="loader-text" >Searching ...</span>
+                        {{!-- </div>  --}}
                     {{/if}}
+
                 </div>
 
 

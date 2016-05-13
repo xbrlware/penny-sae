@@ -52,7 +52,7 @@ App.SidebarController = Ember.ObjectController.extend({
     toggles          : Ember.computed.alias('controllers.application.toggles'),
     searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
     searchTerm_topic : Ember.computed.alias('controllers.application.searchTerm_topic'),
-    isLoading        : false,
+    isLoading        : Ember.computed.alias('controllers.application.isLoading'),
 
     actions : {
         iterateSidebar: function(dir) {

@@ -107,6 +107,7 @@ App.ApplicationController = Ember.Controller.extend({
     showNav          : false,
     rf               : gconfig.DEFAULT_RF,
     toggles          : App.Toggles.create(),
+    isLoading        : false,
 
     search_company : function(cb) {
         App.Search.search_company(this.searchTerm, rf_clean_func(this.rf, undefined)).then(cb);
