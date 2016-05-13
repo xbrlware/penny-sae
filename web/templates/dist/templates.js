@@ -121,7 +121,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = '';
-  data.buffer.push("\r\n                        \r\n                            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\r\n                            <span class=\"loader-text\" >Searching ...</span>\r\n                        \r\n                    ");
+  data.buffer.push("\r\n                        \r\n                            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\r\n                            <span class=\"loader-text\" >Loading results...</span>\r\n                        \r\n                    ");
   return buffer;
   }
 

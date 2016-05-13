@@ -590,13 +590,16 @@ input {
     height: 35px; // resize to align with search box
     width:35px;
     top: 2px;
-    // transition: all .2s ease-in-out ; // smoother transitions
+    transition: all .2s ease-in-out; // smoother transitions
 }
 
 .loader-text { // text next to spinner
-    color: #4634B2; // neat navy
-    padding-left: 40px;
+    // color: #4634B2; // neat navy
+    padding-left: 53px;  // magic numbers to position loader text in navbar
+    top:8px;
+    font-size: 1.4em; 
     position: relative;
+    transition: all .2s ease-in-out; // smoother transitions
 }
 
 #close {
