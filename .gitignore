@@ -1,6 +1,7 @@
 nodesec.xcworkspace/
 server/node/node_modules/
 web/js/dist/
+web/templates/dist/
 web/css/style.less.css
 web/templates/dist/templates.js
 web/css/dist/

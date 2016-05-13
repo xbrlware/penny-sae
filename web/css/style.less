@@ -583,13 +583,18 @@ input {
 }
 
 /* Loading Spinner */
-#spinner {
-    position: absolute;
+#spinner {  // indicates whether page is loading
+    position: relative;
     margin: auto;
-    left: 0; 
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 25px; // magic numbers to relocate the spinner
+    height: 35px; // resize to align with search box
+    width:35px;
+    top: 2px;
+    // transition: all .2s ease-in-out ; // smoother transitions
+}
+
+.loader-text { // text next to spinner
+    color: #4634B2; // neat navy
 }
 
 #close {
