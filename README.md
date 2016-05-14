@@ -30,19 +30,19 @@ cd server/node
 npm install
 # Go back up to root directory
 
-# Set up server configuration files, eventually turn into Grunt task
+# Set up server configuration files (eventually turn into Grunt task)
 cd config
 node configure.js
 
-# TODO: Modify web/config/local-config.js or global-config.js with your 
-elasticsearch credentials. Elasticsearch must be running for the app to work.
-# Possibly throw error message to indicate that elasticsearch is down if user
-# launches app without an ES instance to connect to.
+# Connect Remote Port to your local port
+# Run this from a directory with your PEM key.
+ssh -I "yourkey.pem" -L 9205:localhost:9205 "IP address of elasticsearch instance"
 
-# Go back up to root directory
+# Go back up to app root directory
 
 # Launch app!
-node server/node/server.js
+cd server/node
+node server.js
 # App is running at localhost:8090 or whichever port is specified by console
 
 ```
