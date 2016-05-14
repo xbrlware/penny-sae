@@ -107,7 +107,7 @@ App.ApplicationController = Ember.Controller.extend({
     showNav          : false,
     rf               : gconfig.DEFAULT_RF,
     toggles          : App.Toggles.create(),
-    isLoading        : false,
+    isLoading        : false, // state variable for spinner
 
     search_company : function(cb) {
         App.Search.search_company(this.searchTerm, rf_clean_func(this.rf, undefined)).then(cb);
