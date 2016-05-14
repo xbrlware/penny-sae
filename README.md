@@ -40,6 +40,9 @@ ssh -I "yourkey.pem" -L 9205:localhost:9205 "IP address of elasticsearch instan
 
 # Go back up to app root directory
 
+# Compile static resources 
+./grunt-all.sh
+
 # Launch app!
 cd server/node
 node server.js

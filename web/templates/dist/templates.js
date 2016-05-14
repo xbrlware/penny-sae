@@ -102,7 +102,7 @@ function program1(depth0,data) {
     'insert-newline': ("companySearch")
   },hashTypes:{'class': "STRING",'placeholder': "STRING",'id': "STRING",'insert-newline': "STRING"},hashContexts:{'class': depth0,'placeholder': depth0,'id': depth0,'insert-newline': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "focus-input", options))));
   data.buffer.push("\r\n   \r\n                    </div>\r\n   \r\n                    ");
-  stack1 = helpers.unless.call(depth0, "isLoading", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers['if'].call(depth0, "isLoading", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\r\n\r\n                </div>\r\n\r\n\r\n\r\n                <ul class=\"nav navbar-nav navbar-right\">\r\n                    <li class=\"dropdown yamm\" id=\"big-dropdown\">\r\n                        <a class=\"btn btn-default navbar-btn dropdown-toggle\" id=\"big-dropdown-button\" data-toggle=\"dropdown\"> Red Flag Filters </a>\r\n                        <ul class=\"dropdown-menu dropdown-menu-animated\" id=\"filter-list\">\r\n                            <li>\r\n                                <div class=\"yamm-content\">\r\n                                    ");
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "dropdown", options) : helperMissing.call(depth0, "render", "dropdown", options))));
@@ -121,7 +121,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  data.buffer.push("\r\n                 \r\n                            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\r\n                            <span class=\"loader-text\" >Loading results...</span>\r\n            \r\n                    ");
+  data.buffer.push("\r\n                            <img id=\"spinner\" src=\"css/ajax-loader.gif\">\r\n                            <span class=\"loader-text\" >Loading results...</span>\r\n                    ");
   }
 
   data.buffer.push("\r\n\r\n");
