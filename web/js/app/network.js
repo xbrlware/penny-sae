@@ -6,8 +6,9 @@
 function create_network_associates(network_center, network_associates) {
     if(network_associates.length > 0) {
         return _.chain(network_associates).filter(function(x) {return x.id}).map(function(x) {
-            console.log('network_associate', x);
+            // console.log('network_associate', x);
             var adj = network_center._source.adjacencies.findBy('nodeTo', x.id);
+
             if(x.data.ner) {
                 x.data.type         = 'entity';
                 x.data.relationship = '';
@@ -94,7 +95,6 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                    con.set('orig_network_associates', network_associates);
                                    con.set('network_associates', network_associates);
                                };
-
                                companies = _.filter(neighbors.hits.hits, function(hit) {
                                    return hit._index === config.COMPANY_INDEX
                                });
@@ -112,9 +112,9 @@ function add_node(con, action, cik, rf_clean, is_new, that, node, rgraph) {
                                        return x.id === neighbor._id || smart_parseInt(x.id) === neighbor._id
                                    })[0];
 
-                                   if(equiv.name === undefined) {
+                                   if(equiv === undefined) {
                                        return false;
-                                   } else if(equiv === undefined) {
+                                   } else if(equiv.name === undefined) {
                                        return false;
                                    } else {
                                        return !equiv.hidden || false;
@@ -202,7 +202,7 @@ function red_flag_individuals(args) {
         error   : function (xhr, status, error) {
             console.log('Error: ' + error.message);
         }
-    });
+    }).done(function() { console.log('here is the place'); });
 };
 
 
@@ -438,81 +438,82 @@ function initElasticBig(network_center, neibs, rf_clean, callback){
         network.push(ths);
 
     var all_ciks = _.uniq(_.pluck(neibs, '_id'));
+    
     red_flag_individuals({
         query_args : {"all_ciks" : all_ciks},
         rf         : rf_clean,
         callback   : function(company_data) {
             fetch({
                 endpoint   : "fetch_companies",
-            index      : config.NETWORK_INDEX,
-            query_type : 'networkQuery_adjacencies',
-            query_args : {"all_ciks" : all_ciks},
-            rf         : rf_clean,
-            callback: function(adj_response) {
-
-                var adjs = _.filter(adj_response.hits.hits, function(x) {
-                    return x._index === config.NETWORK_INDEX;
-                });
-                _.map(neibs, function(neib) {
-                    var adj_match = adjs.findBy('_id', neib._id);
-                    neib._source.adjacencies = adj_match._source.adjacencies;
-                });
-
-                $.each(neibs, function(index, n) {
-                    // Find neighbor in network adjacencies
-                    var src = JSON.parse(JSON.stringify(n._source));
-                    var edge = network_center._source.adjacencies.findBy('nodeTo', src.id);
-
-                    // Fix relationship of neighbor
-                    relationship = edge.data.relationship;
-                    if(relationship !== undefined) {
-                        src.data['relationship'] = relationship;
-                    } else {
-                        src.data['relationship'] = 'Unknown'
-                    }
-
-                    // Find adjacencies to neighbors
-                    var new_adjacencies = [];
-                    var unconn = 0;
-                    src.adjacencies.forEach(function(a){
-                        var found_new = neibs.findBy('_source.id', a.nodeTo) === undefined ? false : true;
-                        var found_old = network.findBy('id', a.nodeTo) === undefined ? false : true;
-                        if(found_new || found_old){
-                            new_adjacencies.push(a);
-                        } else {
-                            unconn++;
-                        }
+                index      : config.NETWORK_INDEX,
+                query_type : 'networkQuery_adjacencies',
+                query_args : {"all_ciks" : all_ciks},
+                rf         : rf_clean,
+                callback: function(adj_response) {
+                    console.log('adj_response ---> ', adj_response);
+                    var adjs = _.filter(adj_response.hits.hits, function(x) {
+                        return x._index === config.NETWORK_INDEX;
                     });
-                    src.adjacencies = new_adjacencies;
 
-                    src.data['depth']     = 1;
-                    src.data['invisible'] = unconn;
+                    _.map(neibs, function(neib) {
+                        var adj_match = adjs.findBy('_id', neib._id);
+                        neib._source.adjacencies = adj_match._source.adjacencies;
+                    });
 
-                    // If node has other neighbors, compute risk score
-                    if(n.companies !== undefined){
-                        var crf = set_red_flags(rf_clean, n.companies.fields);
-                        src.data['totalRedFlags'] = crf.total;
-                    } else {
-                        company_data.map(function(x) {
-                            if(x.cik === n._id) {
-                                if(src.id === undefined) {
-                                    src.id = x.cik;
-                                }
-                                src.data['totalRedFlags'] = x.avg;
+                    Ember.$.each(neibs, function(index, n) {
+                        // Find neighbor in network adjacencies
+                        var src = JSON.parse(JSON.stringify(n._source));
+                        var edge = network_center._source.adjacencies.findBy('nodeTo', src.id);
+
+                        // Fix relationship of neighbor
+                        relationship = edge.data.relationship;
+                        if(relationship !== undefined) {
+                            src.data['relationship'] = relationship;
+                        } else {
+                            src.data['relationship'] = 'Unknown'
+                        }
+
+                        // Find adjacencies to neighbors
+                        var new_adjacencies = [];
+                        var unconn = 0;
+                        src.adjacencies.forEach(function(a){
+                            var found_new = neibs.findBy('_source.id', a.nodeTo) === undefined ? false : true;
+                            var found_old = network.findBy('id', a.nodeTo) === undefined ? false : true;
+                            if(found_new || found_old){
+                                new_adjacencies.push(a);
+                            } else {
+                                unconn++;
                             }
                         });
-                    }
-                    network.push(src);
-                    if(network.length === (neibs.length + 1)){
-                        callback(network);
-                    }
-                });
-            }
+                        src.adjacencies = new_adjacencies;
+
+                        src.data['depth']     = 1;
+                        src.data['invisible'] = unconn;
+
+                        // If node has other neighbors, compute risk score
+                        if(n.companies !== undefined){
+                            var crf = set_red_flags(rf_clean, n.companies.fields);
+                            src.data['totalRedFlags'] = crf.total;
+                        } else {
+                            company_data.map(function(x) {
+                                if(x.cik === n._id) {
+                                    if(src.id === undefined) {
+                                        src.id = x.cik;
+                                    }
+                                    src.data['totalRedFlags'] = x.avg;
+                                }
+                            });
+                        }
+                        network.push(src);
+                        if(network.length === (neibs.length + 1)){
+                            callback(network);
+                        }
+                    });
+                }
             });
         }
     });
 };
-
 
 function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, callback){
 
@@ -522,6 +523,7 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
 
     center_node.data['invisible']   = 0;
     var all_ciks = _.pluck(neibs, '_id');
+    
     red_flag_individuals({
         query_args : {"all_ciks" : all_ciks},
         rf         : rf_clean,
@@ -545,7 +547,7 @@ function updateElastic(neibs, network_center, center_node, rgraph, rf_clean, cal
         });
 
         counter = 0;
-        $.each(neibs, function(index, nn) {
+        Ember.$.each(neibs, function(index, nn) {
             var src = nn._source;
 
             var n = rgraph.graph.getNode(src.id);

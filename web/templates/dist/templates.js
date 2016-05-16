@@ -440,7 +440,7 @@ function program17(depth0,data) {
   data.buffer.push("</li>\n                <li>");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(17, program17, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "leadership", options) : helperMissing.call(depth0, "link-to", "leadership", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</li>\n            </ul>\n        </nav>\n    </div>\n    <div class=\"col-sm-12\">\n        ");
+  data.buffer.push("</li>\n            </ul>\n        </nav>\n    </div>\n    <div class=\"col-sm-12 col-sm-12-no-padding\">\n        ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n    </div>\n</div>\n");
