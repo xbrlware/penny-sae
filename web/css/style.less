@@ -706,8 +706,6 @@ input {
     overflow: auto;
 }
 
-
-/* Leadership Chart */
 .axis path,
 .axis line {
   fill: none;
@@ -754,6 +752,7 @@ path.candle.down {
       fill: lightgrey;
   }
 }
+
 .bar.crowdsar {
     fill: red;
     &:hover {
@@ -784,6 +783,17 @@ path.candle.down {
     fill: red;
 }
 
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.crosshair circle {
+    fill: none;
+    stroke: steelblue;
+}
+
+
 /* Creates a small triangle extender for the tooltip */
 .volume-tip:after, .crowdsar-tip:after {
   box-sizing: border-box;
@@ -799,7 +809,7 @@ path.candle.down {
 
 /* Style northward tooltips differently */
 .volume-tip.n:after, .crowdsar-tip.n:after {
-  margin: -1px 0 0 0;
+  margin: -2px 0 0 0;
   top: 100%;
   left: 0;
 }
