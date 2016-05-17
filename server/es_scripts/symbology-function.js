@@ -1,4 +1,4 @@
-symbology = function (data, params) {
+function symbology (data, params) {
   var n = 0
   data = data != null ? data : []
 
