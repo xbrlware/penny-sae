@@ -1,18 +1,16 @@
-function combine_scores (scores) {
-  return scores['delinquency']
+function combine_scores (scores, params) {
+    // ** Temporary **
+    // Need to actually determine how to combine these things...
+    // User defined?
+    return out['symbology'] + out['delinquency'];
 }
 
-var scores = {
-  'symbology': -1,
-  'delinquency': -1
+var functions = {
+    "symbology"   : symbology,
+    "delinquency" : delinquency
 }
 
-if (params.symbology != null) {
-  scores['symbology'] = symbology(_source.symbology, params.symbology)
-}
+var scores = {}
+for(k in params) { scores[k] = functions[k](_source[k], params[k]); }
 
-if (params.delinquency != null) {
-  scores['delinquency'] = delinquency(_source.delinquency, params.delinquency)
-}
-
-combine_scores(scores)
+score ? combine_scores(scores, params) : scores;
