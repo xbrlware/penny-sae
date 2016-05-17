@@ -5,7 +5,7 @@ App.DetailModel = Ember.Object.extend({
     source      : null,
     fields      : null,
     sarreport   : null,
-        
+
     name    : function() { return this.get('fields.name'); }.property('fields'),
     cse_url : function() { return 'cse.html?q="' + this.get('name') + '"'; }.property('name'),
     
@@ -108,6 +108,7 @@ App.DetailRoute = Ember.Route.extend({
     model: function(params) {
         return App.Search.cik2name(params.cik)
     },
+
     setupController : function(controller, model, queryParams){
         controller.set('model', model);
     }

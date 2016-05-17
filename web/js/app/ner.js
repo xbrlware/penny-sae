@@ -48,12 +48,6 @@ App.NerController = Ember.Controller.extend({
         console.log('model', this.get('model'));
         var self  = this;
         var model = this.get('model');
-//        this.update_model(model).then(function() {
-//            self.get_ner(model.get('cik'), self.get('show_hidden')).then(function(ner_data) {
-//                console.log('ner_data', ner_data);
-//                self.set('model', ner_data);
-//            })
-//        });
     }.observes('show_hidden'),
     get_ner : function(cik, show_hidden) {
         console.log('getting ner...')
@@ -97,22 +91,6 @@ App.NerController = Ember.Controller.extend({
             })
         });
     },
-//    actions : {
-//        toggle_ner : function(ner) {
-//            var model = this.get('model');
-//            var ind = _.indexOf(model, ner);
-//            var hidden = model[ind]['hidden'];
-//            if(hidden == undefined) {
-//                hidden = false;
-//            };
-//            model[ind]['hidden'] = hidden ? false : true;
-//            console.log('model', this.get('model')[ind]);
-//        },
-//        save_toggles : function() {
-//            var model = this.get('model');
-//            this.update_model(model)
-//        }
-//    }
 });
 
 App.NerView = Ember.View.extend({

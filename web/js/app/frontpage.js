@@ -6,9 +6,9 @@ App.FrontpageRoute = App.GRoute.extend({
         this.controllerFor('application').set('showNav', false);
     },
     actions : {
-        companySearch: function(searchTerm) {
+        companySearch : function(searchTerm) {
             if(searchTerm){ this.transitionTo('sidebar', searchTerm); }
-        },
+        },  
         filterSearch : function() {
             this.transitionTo('sidebar', '-');
         },
@@ -27,7 +27,7 @@ App.FrontpageController = Ember.ObjectController.extend({
 // --
 
 App.ToggleRowView = Ember.View.extend({
-    classNames: ["toggle-row-bg"],
+    classNames : ["toggle-row-bg"],
     templateName : "togglerow",
     tagName : "tr",
     click : function(e) {
@@ -57,5 +57,3 @@ App.HitTextView = Ember.View.extend({
         this.set('value',   red_flags[type]['value']);
     }
 });
-
-

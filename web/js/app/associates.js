@@ -12,16 +12,16 @@ App.AssociatesController = Ember.ObjectController.extend({
 
     hide_terminal      : gconfig.DEFAULT_HIDE_TERMINAL,
     hide_ner           : gconfig.DEFAULT_HIDE_NER,
-    
+
     rgraph_json             : null,
     rgraph_object           : null,
     network_associates      : null,
     orig_network_associates : null,
-    
+
     rgraph_origin  : null,
     orig_adj       : [],
     links          : [],
-    
+
     dummy_variable : 'test',
     refresh        : 0,
 
@@ -30,14 +30,14 @@ App.AssociatesController = Ember.ObjectController.extend({
     set_ner : function(args){
         Ember.$.ajax({
             type        : 'POST',
-			contentType : 'application/json',
-			dataType    : "json",
+            contentType : 'application/json',
+            dataType    : "json",
             url     : 'set_ner',
             data    : JSON.stringify({"cik" : args.cik, "updates" : args.updates}),
             success : args.callback,
             error   : function (xhr, status, error) {
-                        console.log('Error: ' + error.message);
-                      }
+                console.log('Error: ' + error.message);
+            }
         });
     },
 
@@ -48,7 +48,6 @@ App.AssociatesController = Ember.ObjectController.extend({
                 "cik"      : self.get('model.cik'),
                 "updates"  : updates,
                 "callback" : function(response) {
-                    console.log('response', response);
                     self.transitionToRoute('previousReg');
                     setTimeout(function() {
                         self.transitionToRoute('associates');
@@ -62,24 +61,20 @@ App.AssociatesController = Ember.ObjectController.extend({
     actions : {
         toggle_ner : function(ner) {
             var network_associates = this.get('network_associates');
-            
             var ind       = _.indexOf(network_associates, ner);
             var associate = network_associates[ind];
-            
+
             associate.toggleProperty('hidden');
         },
         save_toggles : function() {
             var network_associates = this.get('network_associates');
             var updates = _.map(network_associates, function(associate) {
-                console.log('associate', associate);
                 return {"nodeTo" : associate.id, "hidden" : associate.hidden}
             });
-            console.log('updates', updates);
             this.update_network_associates(updates)
         },
         filter_er : function() {
             var searchTerm_er      = this.get('searchTerm_er');
-            console.log('did search', searchTerm_er);
             var orig_network_associates = this.get('orig_network_associates');
             if(searchTerm_er === '') {
                 this.set('network_associates', orig_network_associates);
@@ -90,7 +85,7 @@ App.AssociatesController = Ember.ObjectController.extend({
                 }));
             }
         },
-        
+
         show_links_ner : function(ner) {
             var orig_adj = this.get('orig_adj');
             var cik      = this.get('model.cik');

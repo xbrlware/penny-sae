@@ -4,8 +4,8 @@ function fetch_leadership(args) {
     return new Ember.RSVP.Promise(function(resolve, reject) {
         Ember.$.ajax({
             type        : 'POST',
-			      contentType : 'application/json',
-			      dataType    : "json",            
+            contentType : 'application/json',
+            dataType    : "json",            
             url         : 'fetch_leadership',
             data        : JSON.stringify({"cik" : args.cik}),
             success     : function(response) {resolve(response)},
@@ -39,20 +39,9 @@ App.LeadershipView = Ember.View.extend({
     make_chart : function(data, posNames) {
         var self = this;
         moment().format();
-        
+
         console.log('data in make_chart leadership', data);
-        
-//        var posNames = _.chain(data)
-//                        .map(function(d) {
-//                            return _.keys(d);
-//                        })
-//                        .flatten()
-//                        .uniq()
-//                        .filter(function(key) {return key != 'cik' && key != 'name'})
-//                        .value();
-//        
-//        console.log('posNames', posNames);
-        
+
         data.forEach(function(d) {
             d.pos = posNames.map(function(pos) {
                 var value = {}
@@ -74,9 +63,9 @@ App.LeadershipView = Ember.View.extend({
 
         var minDate = moment(_.chain(data).pluck('pos').flatten().pluck('value').pluck('start').min().value()).subtract(1, 'month');
         var maxDate = moment(_.chain(data).pluck('pos').flatten().pluck('value').pluck('stop').max().value()).add(1, 'month');
-        
+
         var y = d3.time.scale().domain([minDate, maxDate]).range([width, 0]);
-        
+
         var color = d3.scale.ordinal().range(["#98abc5", "#ff8c00", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
         var xAxis = d3.svg.axis().scale(x0).orient("left");
         var yAxis = d3.svg.axis().scale(y).orient("top");
@@ -84,68 +73,54 @@ App.LeadershipView = Ember.View.extend({
         var svg = d3.select("#chart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-          .append("g")
+            .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                
+
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .html(function(d) {
                 return "<span>" + d.pos + ' ' + d.value.start + "</span>";
             })
         svg.call(tip);
-        
+
 
         x0.domain(data.map(function(d) { return d.name; }));
         x1.domain(posNames).rangeRoundBands([0, x0.rangeBand()]);
         y.domain([maxDate, minDate]);
-        
-          svg.append("g")
-              .attr("class", "x axis")
-//              .attr("transform", "translate(" + width + ",0)")
-              .call(yAxis);
 
-          svg.append("g")
-              .attr("class", "y axis")
-              .call(xAxis)
-//              .selectAll("text")  
-//            .style("text-anchor", "end")
-//                .attr("dy", "-1em")
-//                .attr("dx", "1em")
-//                .attr("transform", function(d) {
-//                    return "rotate(-45)"
-//                });
-//            .append("text")
-//              .attr("transform", "rotate(-90)")
-//              .attr("y", 6)
-//              .attr("dy", ".71em")
-//              .style("text-anchor", "end")
-//              .text("Date");
+        svg.append("g")
+            .attr("class", "x axis")
+            .call(yAxis);
 
-          var state = svg.selectAll(".state")
-              .data(data)
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(xAxis)
+
+            var state = svg.selectAll(".state")
+            .data(data)
             .enter().append("g")
-              .attr("class", "g")
-              .attr("class", "person")
-              .attr("transform", function(d) { return "translate(0, " + x0(d.name) + ")"; });
+            .attr("class", "g")
+            .attr("class", "person")
+            .attr("transform", function(d) { return "translate(0, " + x0(d.name) + ")"; });
 
-          state.selectAll("rect")
-              .data(function(d) { return d.pos; })
+        state.selectAll("rect")
+            .data(function(d) { return d.pos; })
             .enter().append("rect")
-                .attr("class", "bar")
-                .attr("state", function(d) {return d.name})
+            .attr("class", "bar")
+            .attr("state", function(d) {return d.name})
 
-                .attr("y", function(d) { return x1(d.pos); })
-                .attr("x", function(d) { return y(d.value.start); })
-                .attr("width", function(d) {var h = y(d.value.stop) - y(d.value.start); if(isNaN(h)) {h = 0} else if(h === 0) {h = 5};  return h;})
-                .attr("height", x1.rangeBand())
+            .attr("y", function(d) { return x1(d.pos); })
+            .attr("x", function(d) { return y(d.value.start); })
+            .attr("width", function(d) {var h = y(d.value.stop) - y(d.value.start); if(isNaN(h)) {h = 0} else if(h === 0) {h = 5};  return h;})
+            .attr("height", x1.rangeBand())
 
-                .style("fill", function(d) { return color(d.pos); })
-                .on('mouseover', function(e) {
-                    self.set('e', e);
-                })
-                .on('click', function(e) {console.log('did click ', e)})
+            .style("fill", function(d) { return color(d.pos); })
+            .on('mouseover', function(e) {
+                self.set('e', e);
+            })
+        .on('click', function(e) {console.log('did click ', e)})
 
-        state.selectAll(".vline")
+            state.selectAll(".vline")
             .data(data).enter()
             .append("line")
             .attr("y1", function (d, i) {return 0;})
@@ -177,68 +152,25 @@ App.LeadershipView = Ember.View.extend({
             .attr("x1", function (d) {return width;})
             .attr("x2", function (d) {return width;})
             .style("stroke", "#eee");
-     
-            d3.select("#d3inp").on("change", function() {
-                console.log('chaining')
-                var xs = x0.domain(data.sort(this.checked
+
+        d3.select("#d3inp").on("change", function() {
+            console.log('chaining')
+            var xs = x0.domain(data.sort(this.checked
                     ? function(a, b) { console.log('is checked'); return d3.descending(a.name, b.name);  }
                     : function(a, b) { console.log('is not checked'); return d3.ascending(a.name, b.name); })
-                    .map(function(d) { console.log('d.name', d.name); return d.name; }))
-                    .copy();
-                var transition = svg.transition().duration(750)
-                var delay = function(d, i) { return i * 50; };
+                .map(function(d) { console.log('d.name', d.name); return d.name; }))
+            .copy();
+        var transition = svg.transition().duration(750)
+            var delay = function(d, i) { return i * 50; };
 
-                transition.selectAll(".person")
-                  .attr("transform", function(d) { return "translate(0, " + xs(d.name) + ")"; });
+        transition.selectAll(".person")
+            .attr("transform", function(d) { return "translate(0, " + xs(d.name) + ")"; });
 
-                transition.select(".y.axis")
-                    .call(xAxis)
-                    .selectAll("g")
-//                    .delay(delay);
-        
-            });
-            
-//            var sortTimeout = setTimeout(function() {
-//                d3.select("input").property("checked", true).each(change);
-//            }, 2000);
-//
-//            function change() {
-//          }
-       
-//            state.selectAll("text")
-//                .data(function(d) { return d.ages; })
-//                .enter()
-//                .append("text")
-//                .text(function(d) {
-//                    return d.pos;
-//                })
-//                .attr("x", function(d, i) {
-//                    return i * x1.rangeBand() + 10;
-//                })
-//                .attr("y", function(d) { return y(d.value.stop) + 15; })
-//                .attr("fill", "white")
-//                .attr("font-family", "sans-serif")
-//                .style("text-anchor", "middle")
-                
-//          var legend = svg.selectAll(".legend")
-//              .data(posNames.slice().reverse())
-//            .enter().append("g")
-//              .attr("class", "legend")
-//              .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-//
-//          legend.append("rect")
-//              .attr("x", width - 18)
-//              .attr("width", 18)
-//              .attr("height", 18)
-//              .style("fill", color);
-//
-//          legend.append("text")
-//              .attr("x", width - 24)
-//              .attr("y", 9)
-//              .attr("dy", ".35em")
-//              .style("text-anchor", "end")
-//              .text(function(d) { return d; });
+        transition.select(".y.axis")
+            .call(xAxis)
+            .selectAll("g")
 
+        });
     }
 });
 
