@@ -5,5 +5,6 @@ web/css/style.less.css
 web/templates/dist/templates.js
 web/css/dist/
 node_modules/
-web/config/
 server/node/*config.json
+web/config/*
+web/css/style.less.css

@@ -17,31 +17,31 @@
             {{
                 view App.ToggleRowView
                 text = "Company has no business, no revenues and no product."
-                valueBinding = "toggles.financials"
+                valueBinding = "redflag_params._toggles.financials"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company undergoes frequent material changes in business strategy or its line of business."
-                valueBinding = "toggles.delta"
+                valueBinding = "redflag_params._toggles.symbology"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
-                valueBinding = "toggles.network"
+                valueBinding = "redflag_params._toggles.network"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company has been the subject of a prior trading suspension."
-                valueBinding = "toggles.trading_halts"
+                valueBinding = "redflag_params._toggles.trading_halts"
             }}
 
             {{
                 view App.ToggleRowView
                 text = "Company has not made disclosures in SEC or other regulatory filings."
-                valueBinding = "toggles.delinquency"
+                valueBinding = "redflag_params._toggles.delinquency"
             }}
 
             {{!--
@@ -71,13 +71,13 @@
             {{
                 view App.ToggleRowView
                 text = "Company stock has experienced recent price and/or volume anomalies."
-                valueBinding = "toggles.pv"
+                valueBinding = "redflag_params._toggles.pv"
             }}
                 
             {{
                 view App.ToggleRowView
                 text = "Investors have made allegations about malfeasance of the company on social media."
-                valueBinding = "toggles.crowdsar"
+                valueBinding = "redflag_params._toggles.crowdsar"
             }}
                 <tr class="no-hover">
                     <td colspan="2">
