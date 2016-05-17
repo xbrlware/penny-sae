@@ -161,37 +161,50 @@ module.exports = function (app, config, client) {
   }
 
   // <<
-  function redflagFields (params) {
-    return _.chain(params).map(function(v,k) {
-        return [k, {
-            "file"   : k,
-            "lang"   : "js",
-            "params" : v
-        }]
-    }).object().value()
+  function redflagScript (params, score) {
+    return {
+        'script': {
+            'file': 'ernest',
+            'lang': 'js',
+            'params': {
+                'score' : score,
+                'params': params
+            }
+        }
+    }
   }
   
-  function redflagScorer (params) {
-    return {
-      'script_score': {
-        'script': {
-          'file': 'ernest',
-          'lang': 'js',
-          'params': { 'params': params }
-        }
-      }
+  function redflagPostprocess (red_flags, redflag_params) {
+    const DEFAULT = {'have': false, 'value': -1, 'is_flag': false}
+    const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar']
+    
+    var out = {
+        'total': _.keys(red_flags).length,
+        'possible': _.keys(redflag_params).length,
     }
+    
+    _.map(REDFLAG_NAMES, function(k) {
+        out[k] = red_flags[k] || DEFAULT;
+    });
+    
+    return out
   }
 
   queryBuilder = {
     'search': function (query, redflag_params) {
       return {
         '_source': ['cik', 'current_symbology.name'],
-        'script_fields' : redflagFields(redflag_params),
+        'script_fields': {"red_flags" : redflagScript(redflag_params, false)},
+        'query' : { 'match_phrase': { 'searchterms': query } }
+      }
+    },
+    'sort': function (query, redflag_params) {
+      return {
+        '_source': ['cik', 'current_symbology.name'],
+        'script_fields': {"red_flags" : redflagScript(redflag_params, false)},
         'query': {
           'function_score': {
-            'query': { 'match_phrase': { 'searchterms': query } },
-            'functions': [redflagScorer(redflag_params)]
+            'functions'  : [ {"script_score" : redflagScript(redflag_params, true)} ]
           }
         }
       }
@@ -223,22 +236,11 @@ module.exports = function (app, config, client) {
     }).then(function (es_response) {
       console.log(es_response.hits.hits[0])
 
-      var hits = _.chain(es_response.hits.hits).pluck('_source').map(function (hit) {
+      var hits = _.chain(es_response.hits.hits).map(function (hit) {
         return {
-          'cik': hit['cik'],
-          'name': hit['current_symbology']['name'],
-          'red_flags': {
-            'total': 7,
-            'possible': 7,
-            // ** Add fake properties **
-            'financials': {'have': true, 'value': 1, 'is_flag': true},
-            'symbology': {'have': true, 'value': 1, 'is_flag': true},
-            'trading_halts': {'have': true, 'value': 1, 'is_flag': true},
-            'delinquency': {'have': true, 'value': 1, 'is_flag': true},
-            'network': {'have': true, 'value': 1, 'is_flag': true},
-            'pv': {'have': true, 'value': 1, 'is_flag': true},
-            'crowdsar': {'have': true, 'value': 1, 'is_flag': true},
-          },
+          'cik': hit['_source']['cik'],
+          'name': hit['_source']['current_symbology']['name'],
+          'red_flags': redflagPostprocess(hit['fields']['red_flags'][0]),
         }
       }).value()
 
