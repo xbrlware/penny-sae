@@ -634,12 +634,14 @@ function program7(depth0,data) {
   },hashTypes:{'min': "INTEGER",'max': "INTEGER",'step': "INTEGER",'valueBinding': "STRING",'class': "STRING"},hashContexts:{'min': depth0,'max': depth0,'step': depth0,'valueBinding': depth0,'class': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"col-sm-4 control-label\"> For past Y Years </label>\n            <div class=\"col-sm-8\">\n                <span>\n                    From: ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.DatepickerView", {hash:{
+    'defaultDate': ("rf.financials.from"),
     'valueBinding': ("rf.financials.from")
-  },hashTypes:{'valueBinding': "STRING"},hashContexts:{'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'defaultDate': "ID",'valueBinding': "STRING"},hashContexts:{'defaultDate': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                </span>\n                <br />\n                <span>\n                    &nbsp;&nbsp;&nbsp;&nbsp;\n                    To: ");
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.DatepickerView", {hash:{
+    'defaultDate': ("rf.financials.to"),
     'valueBinding': ("rf.financials.to")
-  },hashTypes:{'valueBinding': "STRING"},hashContexts:{'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  },hashTypes:{'defaultDate': "ID",'valueBinding': "STRING"},hashContexts:{'defaultDate': depth0,'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("\n                </span>\n            </div>\n        </div>\n    </form>\n");
   return buffer;
   }

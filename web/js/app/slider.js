@@ -12,7 +12,6 @@ JQ.Widget = Ember.Mixin.create({
         } else {
             ui = this.$()[this.get('uiType')](options);
         }
-
         this.set('ui', ui);
     },
 
@@ -36,7 +35,12 @@ JQ.Widget = Ember.Mixin.create({
             options[key] = this.get(key);
             var observer = function() {
                 var value = this.get(key);
+            try {
                 this.get('ui').option(key, value);
+            } catch (e){
+                // this is here just to catch non-functions... is safe.
+                console.warn('safe to ignore :: ', e);
+            }
             };
             this.addObserver(key, observer);
             this._observers = this._observers || {};

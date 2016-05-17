@@ -244,12 +244,12 @@
             <label class="col-sm-4 control-label"> For past Y Years </label>
             <div class="col-sm-8">
                 <span>
-                    From: {{view App.DatepickerView valueBinding="rf.financials.from"}}
+                    From: {{view App.DatepickerView defaultDate=rf.financials.from valueBinding="rf.financials.from"}}
                 </span>
                 <br />
                 <span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    To: {{view App.DatepickerView valueBinding="rf.financials.to"}}
+                    To: {{view App.DatepickerView defaultDate=rf.financials.to valueBinding="rf.financials.to"}}
                 </span>
             </div>
         </div>
