@@ -42,11 +42,7 @@ App.DropdownController = Ember.ObjectController.extend({
 
   empty: true,
   pv: false,
-<<<<<<< HEAD
   symbology: false,
-=======
-  delta: false,
->>>>>>> dev
   network: false,
   financials: false,
   crowdsar: false,

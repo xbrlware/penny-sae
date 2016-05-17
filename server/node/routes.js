@@ -203,7 +203,7 @@ module.exports = function (app, config, client) {
     var d = req.body
 
     console.log('/search :: ', JSON.stringify(queryBuilder.search(d.query, d.redflag_params)))
-
+    
     client.search({
       'index': 'ernest_agg',
       'body': queryBuilder.search(d.query, d.redflag_params),
@@ -221,7 +221,7 @@ module.exports = function (app, config, client) {
             'possible': 7,
             // ** Add fake properties **
             'financials': {'have': true, 'value': 1, 'is_flag': true},
-            'delta': {'have': true, 'value': 1, 'is_flag': true},
+            'symbology': {'have': true, 'value': 1, 'is_flag': true},
             'trading_halts': {'have': true, 'value': 1, 'is_flag': true},
             'delinquency': {'have': true, 'value': 1, 'is_flag': true},
             'network': {'have': true, 'value': 1, 'is_flag': true},

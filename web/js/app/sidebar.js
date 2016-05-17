@@ -10,6 +10,19 @@ App.SidebarRoute = App.GRoute.extend({
 
     controller.set('isLoading', true)
     app_con.set('showNav', true)
+    if (model.st !== '-') {
+      app_con.set('searchTerm', model.st)
+      app_con.search_company(function (response) {
+        controller.set('model', response)
+        controller.set('isLoading', false)
+      })
+    } else {
+      app_con.set('searchTerm', undefined)
+      app_con.search_filter(function (response) {
+        controller.set('model', response)
+        controller.set('isLoading', false)
+      })
+    }
   },
   actions: {
     toggleFlag: function (flag) {

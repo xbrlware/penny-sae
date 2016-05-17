@@ -86,6 +86,7 @@ App.Search = Ember.Object.extend({})
 App.Search.reopenClass({
   // >>
   search_company: function (query, redflag_params) {
+    console.log('searching company')
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
