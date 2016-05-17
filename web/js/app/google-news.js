@@ -18,15 +18,15 @@ App.GoogleNewsRoute = Ember.Route.extend({
 });
 
 /*
-App.GoogleNewsView = Ember.View.extend({
-    didInsertElement : function() {
-        $('.li-omx').click(function(e) {
-            $('.li-omx').css('background-color', 'white');
-            $(this).css('background-color', 'whiteSmoke');
-        });
-    }
-});
-*/
+   App.GoogleNewsView = Ember.View.extend({
+   didInsertElement : function() {
+   $('.li-omx').click(function(e) {
+   $('.li-omx').css('background-color', 'white');
+   $(this).css('background-color', 'whiteSmoke');
+   });
+   }
+   });
+   */
 
 App.SubNewsRoute = Ember.Route.extend({
     model : function() {
@@ -38,18 +38,21 @@ App.SubNewsRoute = Ember.Route.extend({
 
 App.NewsView = Ember.View.extend({
     classNames : ["news"],
+    
     controllerChanged : function () {
         this.rerender();
     }.observes('value'),
+    
     render: function(buffer) {
         console.log('this value', this.get('value'));
         buffer.push('<iframe id="cse-iframe" src=\'' + 
-						this.get('value') + '\'}} frameborder="0"></iframe>');
+            this.get('value') + '\'}} frameborder="0"></iframe>');
     },
-	willInsertElement : function() {
-		$.support.cors = true;
-		$("#google-news").load("html/cse.html"); 
-	}
+    
+    willInsertElement : function() {
+        Ember.$.support.cors = true;
+        Ember.$("#google-news").load("html/cse.html"); 
+    }
 });
 
 App.OmxNewsRoute = Ember.Route.extend({

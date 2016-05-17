@@ -8,7 +8,7 @@ App.FrontpageRoute = App.GRoute.extend({
     actions : {
         companySearch : function(searchTerm) {
             if(searchTerm){ this.transitionTo('sidebar', searchTerm); }
-        },
+        },  
         filterSearch : function() {
             this.transitionTo('sidebar', '-');
         },
@@ -49,12 +49,10 @@ App.HitTextView = Ember.View.extend({
     didInsertElement : function() {
         var type     = this.get('type');
         var redFlags = this.get('redFlags');
-        
+
         this.set('mid', 'badge-' + type);
         this.set('have', redFlags['have_' + type]);
         this.set('flagged', redFlags[type + '_redflag']);
         this.set('value', redFlags[type + '_value']);
     }
 });
-
-
