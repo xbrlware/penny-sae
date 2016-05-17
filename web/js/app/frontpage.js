@@ -13,6 +13,7 @@ App.FrontpageRoute = App.GRoute.extend({
       this.transitionTo('sidebar', '-')
     },
     toggleFlag: function (flag) {
+
       this.get('controlle.redflag_params._toggles').toggleProperty(flag)
     }
   }

@@ -81,6 +81,7 @@ App.SearchResultsView = Ember.View.extend({
   }
 })
 
+
 App.Search = Ember.Object.extend({})
 App.Search.reopenClass({
   // >>
