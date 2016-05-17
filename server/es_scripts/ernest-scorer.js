@@ -18,7 +18,7 @@ function run() {
         scores[k] = functions[k](_source[k], params[k]);
     }
 
-    score ? combine_scores(scores, params) : scores;    
+    return score ? combine_scores(scores, params) : scores;    
 }
 
 run()
