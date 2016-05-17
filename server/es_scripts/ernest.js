@@ -11,47 +11,47 @@
 
 // --
 // Helpers
-function time_filter(date, min_date, max_date) {
-    return (date > min_date) & (date < max_date)
+function time_filter (date, min_date, max_date) {
+  return (date > min_date) & (date < max_date)
 }
 
 // --
 // Scoring functions
 score_functions = {
-    symbology : function(data, params) {
-        var n = 0;
-        data = data != null ? data : [];
-        
-        for(i=0; i < data.length; i++) {
-            var field = data[i].field == params.field;            
-            n += (field & time_filter(data[i].new_date, params.min_date, params.max_date))
-        }
-        return n;
-    },
-    delinquency : function(data, params) {
-        var n = 0;
-        data = data != null ? data : [];
-        
-        for(i=0; i < data.length; i++) {
-            var is_late = data[i].is_late == true;
-            var form    = data[i].form == params.form;
-            n += is_late & form & time_filter(data[i].deadline, params.min_date, params.max_date)
-        }
-        return n;
+  symbology: function (data, params) {
+    var n = 0
+    data = data != null ? data : []
+
+    for (i = 0; i < data.length; i++) {
+      var field = data[i].field == params.field
+      n += (field & time_filter(data[i].new_date, params.min_date, params.max_date))
     }
+    return n
+  },
+  delinquency: function (data, params) {
+    var n = 0
+    data = data != null ? data : []
+
+    for (i = 0; i < data.length; i++) {
+      var is_late = data[i].is_late == true
+      var form = data[i].form == params.form
+      n += is_late & form & time_filter(data[i].deadline, params.min_date, params.max_date)
+    }
+    return n
+  }
 }
 
 var scores = {
-    "symbology"   : -1,
-    "delinquency" : -1
+  'symbology': -1,
+  'delinquency': -1
 }
 
-if(params.symbology != null) {
-    scores['symbology'] = score_functions.symbology(_source.symbology, params.symbology);
+if (params.symbology != null) {
+  scores['symbology'] = score_functions.symbology(_source.symbology, params.symbology)
 }
 
-if(params.delinquency != null) {
-    scores['delinquency'] = score_functions.delinquency(_source.delinquency, params.delinquency);
+if (params.delinquency != null) {
+  scores['delinquency'] = score_functions.delinquency(_source.delinquency, params.delinquency)
 }
 
-scores["delinquency"]
+scores['delinquency']
