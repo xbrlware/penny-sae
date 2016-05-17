@@ -15,5 +15,5 @@ if(params.delinquency != null) {
     scores['delinquency'] = delinquency(_source.delinquency, params.delinquency);
 }
 
-combine_scores(scores)
-
+10;
+// combine_scores(scores)

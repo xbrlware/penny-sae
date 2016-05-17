@@ -1,4 +1,4 @@
-delinquency = function(data, params) {
+function delinquency(data, params) {
         var n = 0;
         data = data != null ? data : [];
         
