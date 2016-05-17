@@ -135,43 +135,7 @@ App.Search.reopenClass({
     })
   }
   // <<
-
-
-  //  search_company: function(searchTerm, rf_clean) {
-  //    return new Ember.RSVP.Promise(function(resolve, reject) {
-  //      fetch({
-  //        endpoint   : "fetch_companies",
-  //        query_type : "companyQuery",
-  //        query_args : {"searchTerm" : searchTerm},
-  //        index      : 'companies',
-  //        rf         : rf_clean,
-  //        from       : 0,
-  //        callback   : function(data) {
-  //          resolve(App.Search.process_query_results(data, rf_clean, true))
-  //        }
-  //      })
-  //    })
-  //  },
-
-  //  search_filters: function(rf_clean, from, s) {
-  //    var from  = from === undefined ? 0 : from
-  //    var s     = s === undefined ? App.SearchResults.create() : s
-  //      return new Ember.RSVP.Promise(function(resolve, reject) {
-  //        fetch({
-  //          endpoint   : "fetch_companies",
-  //          query_type : "rfFilterQuery",
-  //          query_args : {},
-  //          index      : 'companies',
-  //          rf         : rf_clean,
-  //          from       : from,
-  //          callback   : function (data) {
-  //            s = App.Search.process_query_results(data, rf_clean, false)
-  //            s.set('from', from || 0)
-  //            resolve(s)
-  //          }
-  //        })
-  //      })
-  //  },
+  
   //
   //  process_query_results: function(data, rf_clean, can_break) {
   //    var s          = App.SearchResults.create()

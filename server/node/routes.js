@@ -174,20 +174,14 @@ module.exports = function (app, config, client) {
     }
   }
   
+  const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar']
+  const DEFAULT_      = {'have': false, 'value': -1, 'is_flag': false};
+  
   function redflagPostprocess (red_flags, redflag_params) {
-    const DEFAULT = {'have': false, 'value': -1, 'is_flag': false}
-    const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar']
-    
-    var out = {
-        'total': _.keys(red_flags).length,
+    return _.chain(REDFLAG_NAMES).map(function(k) { return [k, DEFAULT_] }).object().extend({
+        'total'   : _.keys(red_flags).length,
         'possible': _.keys(redflag_params).length,
-    }
-    
-    _.map(REDFLAG_NAMES, function(k) {
-        out[k] = red_flags[k] || DEFAULT;
-    });
-    
-    return out
+    }).extend(red_flags).value();
   }
 
   queryBuilder = {
@@ -198,7 +192,7 @@ module.exports = function (app, config, client) {
         'query' : { 'match_phrase': { 'searchterms': query } }
       }
     },
-    'sort': function (query, redflag_params) {
+    'sort': function (redflag_params) {
       return {
         '_source': ['cik', 'current_symbology.name'],
         'script_fields': {"red_flags" : redflagScript(redflag_params, false)},
@@ -226,24 +220,27 @@ module.exports = function (app, config, client) {
   app.post('/search', function (req, res) {
     var d = req.body
 
-    console.log('/search :: ', JSON.stringify(queryBuilder.search(d.query, d.redflag_params)))
+    console.log('/search :: ',
+        JSON.stringify(
+            d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params)
+        )
+    );
     
     client.search({
       'index': 'ernest_agg',
-      'body': queryBuilder.search(d.query, d.redflag_params),
+      'body': d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params),
       'from': 0,
       'size': 15,
     }).then(function (es_response) {
-      console.log(es_response.hits.hits[0])
 
-      var hits = _.chain(es_response.hits.hits).map(function (hit) {
+      var hits = _.map(es_response.hits.hits, function (hit) {
         return {
           'cik': hit['_source']['cik'],
-          'name': hit['_source']['current_symbology']['name'],
-          'red_flags': redflagPostprocess(hit['fields']['red_flags'][0]),
+          'name': hit['_source']['current_symbology'] ? hit['_source']['current_symbology']['name'] : '<no-name>',
+          'red_flags': redflagPostprocess(hit['fields']['red_flags'][0], d.redflag_params),
         }
-      }).value()
-
+      })
+      console.log('hits :: ', hits);
       res.send({
         'total_hits': es_response.hits.total,
         'hits': hits,

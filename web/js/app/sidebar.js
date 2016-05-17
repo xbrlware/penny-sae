@@ -18,7 +18,7 @@ App.SidebarRoute = App.GRoute.extend({
       })
     } else {
       app_con.set('searchTerm', undefined)
-      app_con.search_filter(function (response) {
+      app_con.sort_companies(function (response) {
         controller.set('model', response)
         controller.set('isLoading', false)
       })
@@ -29,16 +29,17 @@ App.SidebarRoute = App.GRoute.extend({
       var toggles = this.get('controller.redflag_params').get_toggles()
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true)
     },
-    search_filters: function () {
-      var con = this.get('controller')
-      var redflag_params = con.get('redflag_params')
-      con.set('isLoading', true)
-      App.Search.search_filters(redflag_params, undefined, undefined).then(function (response) {
-        con.transitionToRoute('sidebar')
-        con.set('model', response)
-        con.set('isLoading', false)
-      })
-    }
+//    sort_companies: function () {
+//      console.log('sidebar -> sort_companies');
+//      var controller = this.get('controller');
+//      var app_con = this.controllerFor('application');
+//      controller.set('isLoading', true)
+//      app_con(function (response) {
+//        controller.transitionToRoute('sidebar')
+//        controller.set('model', response)
+//        controller.con.set('isLoading', false)
+//      })
+//    }
   }
 })
 
@@ -46,7 +47,6 @@ App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
   redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
-  searchTerm_topic: Ember.computed.alias('controllers.application.searchTerm_topic'),
   isLoading: false,
 
   actions: {
@@ -56,14 +56,16 @@ App.SidebarController = Ember.ObjectController.extend({
       } else {
         this.set('from', Math.max(this.get('from') - gconfig.SIZE, 0))
       }
-
-      var redflag_params = this.get('redflag_params')
-
-      var self = this
-      self.set('isLoading', true)
-      App.Search.search_filters(redflag_params, this.get('from'), this.get('model')).then(function (response) {
-        self.set('model', response)
-        self.set('isLoading', false)
+      
+      this.set('isLoading', true)
+// This is what used to be implemented here:
+//      App.Search.search_filter(redflag_params, this.get('from'), this.get('model')).then(function (response) {
+//
+      alert('look at the code -- this isnt actually implemented');
+      var this_ = this;
+      App.Search.search_company(undefined, this.get('redflag_params')).then(function (response) {
+        this_.set('model', response)
+        this_.set('isLoading', false)
       })
     }
   }
