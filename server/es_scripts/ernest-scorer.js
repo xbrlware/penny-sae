@@ -11,7 +11,7 @@ function format_fields(scores, params) {
         out[s] = {
             "value"   : scores[s],
             "is_flag" : scores[s] >= params[s].threshold,
-            "have"    : true
+            "have"    : true,
         }
     }
     return out
@@ -20,7 +20,7 @@ function format_fields(scores, params) {
 // Register functions
 var functions = {
     "symbology"   : symbology,
-    "delinquency" : delinquency
+    "delinquency" : delinquency,
 }
 
 function run() {
@@ -33,4 +33,4 @@ function run() {
     return score ? combine_scores(scores, params) : format_fields(scores, params);
 }
 
-run()
+run();
