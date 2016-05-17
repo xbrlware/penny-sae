@@ -161,6 +161,16 @@ module.exports = function (app, config, client) {
   }
 
   // <<
+  function redflagFields (params) {
+    return _.chain(params).map(function(v,k) {
+        return [k, {
+            "file"   : k,
+            "lang"   : "js",
+            "params" : v
+        }]
+    }).object().value()
+  }
+  
   function redflagScorer (params) {
     return {
       'script_score': {
@@ -177,6 +187,7 @@ module.exports = function (app, config, client) {
     'search': function (query, redflag_params) {
       return {
         '_source': ['cik', 'current_symbology.name'],
+        'script_fields' : redflagFields(redflag_params),
         'query': {
           'function_score': {
             'query': { 'match_phrase': { 'searchterms': query } },
