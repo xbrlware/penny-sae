@@ -1,8 +1,11 @@
 function combine_scores (scores, params) {
     // ** Temporary **
-    // Need to actually determine how to combine these things...
-    // User defined?
-    return scores['symbology'] + scores['delinquency'];
+    // ... Need to actually determine how to combine these things...
+    var out = 0;
+    for(s in scores) {
+        out += scores[s];
+    }
+    return out;
 }
 
 function format_fields(scores, params) {
