@@ -632,21 +632,15 @@ function program7(depth0,data) {
     'valueBinding': ("rf.financials.below"),
     'class': ("input-slider-dropdown")
   },hashTypes:{'min': "INTEGER",'max': "INTEGER",'step': "INTEGER",'valueBinding': "STRING",'class': "STRING"},hashContexts:{'min': depth0,'max': depth0,'step': depth0,'valueBinding': depth0,'class': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"col-sm-4 control-label\"> For past Y Years </label>\n            <div class=\"col-sm-8\">\n                        ");
-  data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
-    'type': ("text"),
-    'valueBinding': ("rf.financials.below_for"),
-    'class': ("input-text-hidden")
-  },hashTypes:{'type': "STRING",'valueBinding': "STRING",'class': "STRING"},hashContexts:{'type': depth0,'valueBinding': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n                        ");
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.SliderView", {hash:{
-    'min': (0),
-    'max': (10),
-    'step': (1),
-    'valueBinding': ("rf.financials.below_for"),
-    'class': ("input-slider-dropdown")
-  },hashTypes:{'min': "INTEGER",'max': "INTEGER",'step': "INTEGER",'valueBinding': "STRING",'class': "STRING"},hashContexts:{'min': depth0,'max': depth0,'step': depth0,'valueBinding': depth0,'class': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("\n            </div>\n        </div>\n    </form>\n");
+  data.buffer.push("\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"col-sm-4 control-label\"> For past Y Years </label>\n            <div class=\"col-sm-8\">\n                <span>\n                    From: ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.DatepickerView", {hash:{
+    'valueBinding': ("rf.financials.from")
+  },hashTypes:{'valueBinding': "STRING"},hashContexts:{'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n                </span>\n                <br />\n                <span>\n                    &nbsp;&nbsp;&nbsp;&nbsp;\n                    To: ");
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "App.DatepickerView", {hash:{
+    'valueBinding': ("rf.financials.to")
+  },hashTypes:{'valueBinding': "STRING"},hashContexts:{'valueBinding': depth0},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("\n                </span>\n            </div>\n        </div>\n    </form>\n");
   return buffer;
   }
 

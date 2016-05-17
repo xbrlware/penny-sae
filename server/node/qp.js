@@ -73,7 +73,9 @@ function setFunctions(rf){
             "params" : {
               "type"         : financials.type,
               "below"        : parseFloat(financials.below),
-              "below_for"    : parseFloat(financials.below_for),
+              //"to"           : financials.to,
+              //"from"         : financials.from,
+              "below_for"    : 2,
               "contemporary" : financials.contemporary
           }}
       });
@@ -198,7 +200,9 @@ function setScriptFields(rf, include_generic){
         "params" : {
           "type"         : rf.financials.type,
           "below"        : parseFloat(rf.financials.below),
-          "below_for"    : parseFloat(rf.financials.below_for),
+          // "to"           : rf.financials.to,
+          // "from"         : rf.financials.from, 
+          "below_for"     : 2,
           "contemporary" : rf.financials.contemporary
          }
       }

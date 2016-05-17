@@ -93,9 +93,9 @@ function rf_clean_func(rf, toggles) {
         });
     }
 
-    exists = {};
+    var exists = {};
     Object.keys(rf).map(function(key) {
-        if(key != "exists" && key != "toggles"){
+        if(key !== "exists" && key !== "toggles"){
             exists[key] = false;
             if(rf[key] !== undefined){
                 Object.keys(rf[key]).map(function(inner_key) {

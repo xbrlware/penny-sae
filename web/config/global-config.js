@@ -35,7 +35,8 @@ var gconfig = {
   "financials": {
    "type": "revenues",
    "below": 1000,
-   "below_for": 2,
+   "from": "05-13-2011",
+   "to": "05-13-2015",
    "contemporary": null
   },
   "trading_halts": {

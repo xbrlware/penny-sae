@@ -1,12 +1,18 @@
 // web/js/app/slider.js
 
 JQ = Ember.Namespace.create();
-JQ.Widget = Em.Mixin.create({
+JQ.Widget = Ember.Mixin.create({
 
     didInsertElement: function() {
         var options = this._gatherOptions();
         this._gatherEvents(options);
-        var ui = jQuery.ui[this.get('uiType')](options, this.get('element'));
+
+        if (typeof jQuery.ui[this.get('uiType')] === 'function') {
+            ui = jQuery.ui[this.get('uiType')](options, this.get('element'));
+        } else {
+            ui = this.$()[this.get('uiType')](options);
+        }
+
         this.set('ui', ui);
     },
 
@@ -54,15 +60,43 @@ JQ.Widget = Em.Mixin.create({
 
 });
 
-JQ.SliderView = Em.View.extend(JQ.Widget, {
+JQ.SliderView = Ember.View.extend(JQ.Widget, {
     uiType: 'slider',
     uiOptions: ['value', 'min', 'max', 'step'],
     uiEvents : ['slide']
 });
 
+JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
+    tagName: 'input',
+    type: 'text',
+    uiType: 'datepicker',
+    uiOptions: ['altField','altFormat','appendText','autoSize','beforeShow','beforeShowDay',
+        'buttonImage','buttonImageOnly','buttonText','calculateWeek','changeMonth','changeYear',
+        'closeText', 'constrainInput','currentText','dateFormat','dayNames','dayNamesMin',
+        'dayNamesShort','defaultDate','duration','firstDay','gotoCurrent','hideIfNoPrevNext',
+        'isRTL','maxDate','minDate','monthNames','monthNamesShort','navigationAsDateFormat',
+        'nextText','numberOfMonths','onChangeMonthYear','onClose','onSelect','prevText','selectOtherMonths',
+        'shortYearCutoff','showAnim','showButtonPanel','showCurrentAtPos','showMonthAfterYear',
+        'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader',
+        'yearRange', 'yearSuffix'],
+    uiEvents: ['create', 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect', 'setDate']
+});
+
 App.SliderView = JQ.SliderView.extend({
     attributeBindings: ['style', 'type', 'value', 'size'],
     slide: function(e, ui) {
-        this.set('value', ui.value)
+        this.set('value', ui.value);
+    }
+});
+
+App.DatepickerView = JQ.DatepickerView.extend({
+    attribueBindings: ['id', 'value'],
+    dateFormat: "mm-dd-yy",
+    changeMonth: true,
+    changeYear: true,
+    showOn: "focus",
+    onSelect: function(event, ui) {
+        var newDate = (ui.currentMonth + 1) + '-' + ui.currentDay + '-' + ui.currentYear;
+        this.set('value', newDate);
     }
 });
