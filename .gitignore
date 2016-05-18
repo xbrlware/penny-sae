@@ -6,5 +6,5 @@ web/css/style.less.css
 web/css/dist/
 node_modules/
 server/node/*config.json
-web/config/
+web/config/*
 web/templates/dist/
