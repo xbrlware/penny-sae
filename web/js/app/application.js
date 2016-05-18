@@ -114,7 +114,7 @@ App.ApplicationController = Ember.Controller.extend({
     App.Search.search_company(this.searchTerm, this.redflag_params).then(cb)
   },
   sort_companies: function (cb) {
-    console.log('application -> sort_companies');
+    console.log('application -> sort_companies')
     App.Search.search_company(undefined, this.redflag_params).then(cb)
   }
 })

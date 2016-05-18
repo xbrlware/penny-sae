@@ -6,7 +6,7 @@ App.DropdownController = Ember.ObjectController.extend({
   needs: ['application'],
 
   redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
-  
+
   symbology_select_content: [
     {id: undefined,                name: 'Choose Type'},
     {id: 'company_name',           name: 'Company Name'},
@@ -50,9 +50,9 @@ App.DropdownController = Ember.ObjectController.extend({
   delinquency: false,
   actions: {
     sort_companies: function () {
-        var app_con = this.controllerFor('application');
-        console.log('dropdown -> sort_companies');
-        app_con.transitionToRoute('sidebar', '-');
+      var app_con = this.controllerFor('application')
+      console.log('dropdown -> sort_companies')
+      app_con.transitionToRoute('sidebar', '-')
     },
     showParameters: function (type) {
       this.set('empty', false)

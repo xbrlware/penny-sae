@@ -163,42 +163,42 @@ module.exports = function (app, config, client) {
   // <<
   function redflagScript (params, score) {
     return {
-        'script': {
-            'file': 'ernest',
-            'lang': 'js',
-            'params': {
-                'score' : score,
-                'params': params
-            }
+      'script': {
+        'file': 'ernest',
+        'lang': 'js',
+        'params': {
+          'score': score,
+          'params': params
         }
+      }
     }
   }
-  
+
   const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar']
-  const DEFAULT_      = {'have': false, 'value': -1, 'is_flag': false};
-  
+  const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false}
+
   function redflagPostprocess (red_flags, redflag_params) {
-    return _.chain(REDFLAG_NAMES).map(function(k) { return [k, DEFAULT_] }).object().extend({
-        'total'   : _.keys(red_flags).length,
-        'possible': _.keys(redflag_params).length,
-    }).extend(red_flags).value();
+    return _.chain(REDFLAG_NAMES).map(function (k) { return [k, DEFAULT_] }).object().extend({
+      'total': _.keys(red_flags).length,
+      'possible': _.keys(redflag_params).length,
+    }).extend(red_flags).value()
   }
 
   queryBuilder = {
     'search': function (query, redflag_params) {
       return {
         '_source': ['cik', 'current_symbology.name'],
-        'script_fields': {"red_flags" : redflagScript(redflag_params, false)},
-        'query' : { 'match_phrase': { 'searchterms': query } }
+        'script_fields': {'red_flags': redflagScript(redflag_params, false)},
+        'query': { 'match_phrase': { 'searchterms': query } }
       }
     },
     'sort': function (redflag_params) {
       return {
         '_source': ['cik', 'current_symbology.name'],
-        'script_fields': {"red_flags" : redflagScript(redflag_params, false)},
+        'script_fields': {'red_flags': redflagScript(redflag_params, false)},
         'query': {
           'function_score': {
-            'functions'  : [ {"script_score" : redflagScript(redflag_params, true)} ]
+            'functions': [ {'script_score': redflagScript(redflag_params, true)} ]
           }
         }
       }
@@ -221,18 +221,17 @@ module.exports = function (app, config, client) {
     var d = req.body
 
     console.log('/search :: ',
-        JSON.stringify(
-            d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params)
-        )
-    );
-    
+      JSON.stringify(
+        d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params)
+      )
+    )
+
     client.search({
       'index': 'ernest_agg',
       'body': d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params),
       'from': 0,
       'size': 15,
     }).then(function (es_response) {
-
       var hits = _.map(es_response.hits.hits, function (hit) {
         return {
           'cik': hit['_source']['cik'],
@@ -240,7 +239,7 @@ module.exports = function (app, config, client) {
           'red_flags': redflagPostprocess(hit['fields']['red_flags'][0], d.redflag_params),
         }
       })
-      console.log('hits :: ', hits);
+      console.log('hits :: ', hits)
       res.send({
         'total_hits': es_response.hits.total,
         'hits': hits,

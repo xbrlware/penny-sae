@@ -29,17 +29,17 @@ App.SidebarRoute = App.GRoute.extend({
       var toggles = this.get('controller.redflag_params').get_toggles()
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true)
     },
-//    sort_companies: function () {
-//      console.log('sidebar -> sort_companies');
-//      var controller = this.get('controller');
-//      var app_con = this.controllerFor('application');
-//      controller.set('isLoading', true)
-//      app_con(function (response) {
-//        controller.transitionToRoute('sidebar')
-//        controller.set('model', response)
-//        controller.con.set('isLoading', false)
-//      })
-//    }
+  //    sort_companies: function () {
+  //      console.log('sidebar -> sort_companies')
+  //      var controller = this.get('controller')
+  //      var app_con = this.controllerFor('application')
+  //      controller.set('isLoading', true)
+  //      app_con(function (response) {
+  //        controller.transitionToRoute('sidebar')
+  //        controller.set('model', response)
+  //        controller.con.set('isLoading', false)
+  //      })
+  //    }
   }
 })
 
@@ -56,13 +56,13 @@ App.SidebarController = Ember.ObjectController.extend({
       } else {
         this.set('from', Math.max(this.get('from') - gconfig.SIZE, 0))
       }
-      
+
       this.set('isLoading', true)
-// This is what used to be implemented here:
-//      App.Search.search_filter(redflag_params, this.get('from'), this.get('model')).then(function (response) {
-//
-      alert('look at the code -- this isnt actually implemented');
-      var this_ = this;
+      // This is what used to be implemented here:
+      //      App.Search.search_filter(redflag_params, this.get('from'), this.get('model')).then(function (response) {
+      //
+      alert('look at the code -- this isnt actually implemented')
+      var this_ = this
       App.Search.search_company(undefined, this.get('redflag_params')).then(function (response) {
         this_.set('model', response)
         this_.set('isLoading', false)

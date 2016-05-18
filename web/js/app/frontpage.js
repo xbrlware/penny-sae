@@ -51,8 +51,8 @@ App.HitTextView = Ember.View.extend({
       red_flags = this.get('red_flags')
 
     this.set('mid', 'badge-' + type)
-    console.log('type', type);
-    console.log('red_flags', red_flags);
+    console.log('type', type)
+    console.log('red_flags', red_flags)
     this.set('have', red_flags[type]['have'])
     this.set('flagged', red_flags[type]['is_flag'])
     this.set('value', red_flags[type]['value'])

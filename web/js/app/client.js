@@ -81,7 +81,6 @@ App.SearchResultsView = Ember.View.extend({
   }
 })
 
-
 App.Search = Ember.Object.extend({})
 App.Search.reopenClass({
   // >>
@@ -135,7 +134,7 @@ App.Search.reopenClass({
     })
   }
   // <<
-  
+
   //
   //  process_query_results: function(data, rf_clean, can_break) {
   //    var s          = App.SearchResults.create()

@@ -68,7 +68,7 @@ module.exports = function (app, config) {
       try {
         var decoded = jwt.decode(token, app.get('jwtTokenSecret'))
         console.warn('decoded.exp --> ', decoded.exp)
-        
+
         if (decoded.exp <= Date.now()) {
           console.log(new Date(decoded.exp), '-- token expires')
           console.log('token has expired...')
