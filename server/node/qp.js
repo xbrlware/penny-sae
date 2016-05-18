@@ -201,7 +201,9 @@ function setScriptFields (rf, include_generic) {
       'params': {
         'type': rf.crowdsar.type,
         'past_months': parseInt(rf.crowdsar.past_months, 10)
-    };
+      }
+    }
+  }
   
     // Number of filings with revenues below threshold
     if(rf.toggles.financials){
@@ -218,7 +220,6 @@ function setScriptFields (rf, include_generic) {
          }
       }
     }
-  }
 
   // Number/proportion of suspicious posts
   if (rf.toggles.tout) {

@@ -24,7 +24,7 @@
 
     "lib_files"  : [
          "web/js/libs/jquery.js",
-         "web/js/libs/jquery-ui/jquery-ui.min.js",
+         "web/js/libs/jquery-ui.js",
          "web/js/libs/jquery-mousewheel.min.js",
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",

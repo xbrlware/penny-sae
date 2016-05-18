@@ -26,9 +26,6 @@ JQ.Widget = Ember.Mixin.create({
             }
             ui._destroy();
         }
-      }
-      ui._destroy()
-    }
   },
 
   _gatherOptions: function () {
