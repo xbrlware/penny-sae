@@ -6,71 +6,30 @@
             <div class="list-group-item seventy square">
                 <div class="hit-text-wrapper">
                     <h5 class="list-group-item-heading">
-                        {{h.currentName}}
+                        {{h.name}}
                     </h5>
                 </div>
-                
+
                 <div class="row-fluid hit-badge-wrapper">
                     <div id="badge-header">
-                        {{#unless h.redFlags.possible}}
+                        {{#unless h.red_flags.possible}}
                             <p class="lg-text">
                         {{/unless}}
-                            FINRA Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
-                        {{#unless h.redFlags.possible}}
+                            Red Flags : {{h.red_flags.total}}/{{h.red_flags.possible}}
+                        {{#unless h.red_flags.possible}}
                             </p>
                         {{/unless}}
                     </div>
                     <br />
-                                
-                    {{
-                        view App.HitTextView
-                        text     = "No Revenues"
-                        type     = "financials"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Change in Business"
-                        type     = "delta"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Trading Suspensions"
-                        type     = "trading_halts"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Late Filings"
-                        type     = "delinquency"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "OTC Associates"
-                        type     = "network"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "PV Anomalies"
-                        type     = "pv"
-                        redFlags = h.redFlags
-                        first_column = false
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "CROWDSAR"
-                        type     = "crowdsar"
-                        redFlags = h.redFlags
-                        first_column = false
-                    }}
+
+                    {{ view App.HitTextView red_flags=h.red_flags text="No Revenues" type="financials" first_column=true }}
+                    {{ view App.HitTextView red_flags=h.red_flags text="Change In Business" type="symbology" first_column=true }}
+                    {{ view App.HitTextView red_flags=h.red_flags text="Trading Suspensions" type="trading_halts" first_column=true }}
+                    {{ view App.HitTextView red_flags=h.red_flags text="Late Filings" type="delinquency" first_column=true }}
+                    {{ view App.HitTextView red_flags=h.red_flags text="OTC Associates" type="network" first_column=true }}
+
+                    {{ view App.HitTextView red_flags=h.red_flags text="PV Anomalies" type="pv" first_column=false }}
+                    {{ view App.HitTextView red_flags=h.red_flags text="CROWDSAR" type="crowdsar" first_column=false }}
                 </div>
             </div>
         {{/link-to}}
@@ -78,7 +37,7 @@
     <div class="accordion-body collapse out ab-sidebar">
         <div class="accordion-inner">
         <table id="{{unbound h.cik}}" class="display"></table>
-        {{partial "uniqueRecords"}}
+            {{view App.SearchResultsView cik=h.cik}}
         </div>
     </div>
 </div>

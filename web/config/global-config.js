@@ -9,13 +9,14 @@ var gconfig = {
  "DEFAULT_HIDE_NER": true,
  "ALL_FEATURES": [
   "pv",
-  "delta",
+  "symbology",
   "network",
   "financials",
   "trading_halts",
   "crowdsar",
   "delinquency"
  ],
+<<<<<<< HEAD
  "DEFAULT_RF": {
   "pv": {
    "price_jump": 100,
@@ -44,17 +45,27 @@ var gconfig = {
   "crowdsar": {
    "type": "n_susp",
    "past_months": 4
+=======
+ "DEFAULT_REDFLAG_PARAMS": {
+  "symbology": {
+   "field": "name",
+   "min_date": "2000-01-01",
+   "max_date": "2016-01-01",
+   "threshold": 1
+>>>>>>> bkj-new-backend
   },
   "delinquency": {
-   "thresh": 5,
-   "since": 2
+   "form": "10-K",
+   "min_date": "2000-01-01",
+   "max_date": "2016-01-01",
+   "threshold": 1
   }
  },
  "DEFAULT_TOGGLES": {
-  "financials": true,
-  "delta": true,
-  "trading_halts": true,
-  "delinquency": false,
+  "financials": false,
+  "symbology": true,
+  "trading_halts": false,
+  "delinquency": true,
   "network": false,
   "pv": false,
   "crowdsar": false

@@ -168,7 +168,7 @@
 {{/if}}
 --}}
         
-{{#if delta}}
+{{#if symbology}}
     <span class="centered"><h4>Change in Business Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
@@ -177,8 +177,8 @@
                 <span class="centered">
                     {{
                         view Ember.Select
-                        content=delta_select_content
-                        valueBinding="rf.delta.type"
+                        content=symbology_select_content
+                        valueBinding="rf.symbology.type"
                         optionValuePath="content.id"
                         optionLabelPath="content.name"
                     }}
@@ -191,14 +191,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.delta.thresh"
+                    valueBinding="rf.symbology.thresh"
                     class="input-text-hidden"
                 }}  
                 {{
                     view App.SliderView min  = 0
                     max  = 10
                     step = 1
-                    valueBinding='rf.delta.thresh'
+                    valueBinding='rf.symbology.thresh'
                     class="input-slider-dropdown"
                 }}
             </div>

@@ -21,22 +21,22 @@ function make_company_table (d) {
 function set_red_flags (rf_clean, f) {
   var out = { }
 
-  out.delta_redflag = false
+  out.symbology_redflag = false
   out.financials_redflag = false
   out.trading_halts_redflag = false
   out.delinquency_redflag = false
   out.network_redflag = false
 
-  out.delta_value = false
+  out.symbology_value = false
   out.financials_value = false
   out.trading_halts_value = false
   out.delinquency_value = false
   out.network_value = false
 
-  if (f.delta != undefined) {
-    out.have_delta = true
-    out.delta_value = f.delta[0].nchange
-    out.delta_redflag = f.delta[0].nchange >= rf_clean.delta.thresh
+  if (f.symbology != undefined) {
+    out.have_symbology = true
+    out.symbology_value = f.symbology[0].nchange
+    out.symbology_redflag = f.symbology[0].nchange >= rf_clean.symbology.thresh
   }
   if (f.financials_scriptfield != undefined) {
     out.have_financials = true
@@ -71,9 +71,9 @@ function set_red_flags (rf_clean, f) {
     }
   }
 
-  out.total = out.delta_redflag + out.financials_redflag + out.trading_halts_redflag +
+  out.total = out.symbology_redflag + out.financials_redflag + out.trading_halts_redflag +
   out.delinquency_redflag + out.network_redflag
-  out.possible = rf_clean.toggles.delta + rf_clean.toggles.financials + rf_clean.toggles.trading_halts +
+  out.possible = rf_clean.toggles.symbology + rf_clean.toggles.financials + rf_clean.toggles.trading_halts +
   rf_clean.toggles.delinquency + rf_clean.toggles.network
   return out
 }

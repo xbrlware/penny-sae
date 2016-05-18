@@ -13,14 +13,14 @@ App.FrontpageRoute = App.GRoute.extend({
       this.transitionTo('sidebar', '-')
     },
     toggleFlag: function (flag) {
-      this.get('controller').get('toggles').toggleProperty(flag)
+      this.get('controlle.redflag_params._toggles').toggleProperty(flag)
     }
   }
 })
 
 App.FrontpageController = Ember.ObjectController.extend({
   needs: ['application'],
-  toggles: Ember.computed.alias('controllers.application.toggles'),
+  redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
   isAdmin: function () {return App.isAdmin();}.property(),
 })
 
@@ -47,12 +47,14 @@ App.DisabledToggleRowView = Ember.View.extend({
 App.HitTextView = Ember.View.extend({
   templateName: 'hittextview',
   didInsertElement: function () {
-    var type = this.get('type')
-    var redFlags = this.get('redFlags')
+    var type = this.get('type'),
+      red_flags = this.get('red_flags')
 
     this.set('mid', 'badge-' + type)
-    this.set('have', redFlags['have_' + type])
-    this.set('flagged', redFlags[type + '_redflag'])
-    this.set('value', redFlags[type + '_value'])
+    console.log('type', type)
+    console.log('red_flags', red_flags)
+    this.set('have', red_flags[type]['have'])
+    this.set('flagged', red_flags[type]['is_flag'])
+    this.set('value', red_flags[type]['value'])
   }
 })

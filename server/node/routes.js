@@ -160,57 +160,147 @@ module.exports = function (app, config, client) {
     callback(data)
   }
 
-  app.post('/fetch_companies', function (req, res) {
-    var d = req.body
-    var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX]
-
-    console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)))
-
-    client.search({
-      'index': index,
-      'body': qp[d.query_type](d.query_args, d.rf),
-      'from': d.from === undefined ? 0 : d.from,
-    }).then(function (es_response) {
-      res.send(es_response)
-    })
-  })
-
-  app.post('/fetch_topic', function (req, res) {
-    var d = req.body
-    var body = qp[d.query_type](d.query_args, d.rf)
-    client.search({
-      body: body,
-      from: 0,
-    }).then(function (es_response) {
-      var buckets = es_response.aggregations.trending.buckets
-      if (buckets !== undefined) {
-        var ciks = _.pluck(buckets, 'key')
+  // <<
+  function redflagScript (params, score) {
+    return {
+      'script': {
+        'file': 'ernest',
+        'lang': 'js',
+        'params': {
+          'score': score,
+          'params': params
+        }
       }
+    }
+  }
 
-      client.search({
-        index: config.COMPANY_INDEX,
-        body: qp.multiCIKQuery({'ciks': ciks}, d.rf)
-      }).then(function (es_response2) {
-        var hits = es_response2.hits.hits
-        var arr2 = []
-        for (i = 0; i < ciks.length; i++) {
-          mtc = hits.filter(function (x) {
-            return x['_id'] === parseInt(ciks[i], 10)
-          })
-          if (mtc.length > 0) {
-            arr2.push(mtc[0])
+  const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar']
+  const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false}
+
+  function redflagPostprocess (red_flags, redflag_params) {
+    return _.chain(REDFLAG_NAMES).map(function (k) { return [k, DEFAULT_] }).object().extend({
+      'total': _.keys(red_flags).length,
+      'possible': _.keys(redflag_params).length,
+    }).extend(red_flags).value()
+  }
+
+  queryBuilder = {
+    'search': function (query, redflag_params) {
+      return {
+        '_source': ['cik', 'current_symbology.name'],
+        'script_fields': {'red_flags': redflagScript(redflag_params, false)},
+        'query': { 'match_phrase': { 'searchterms': query } }
+      }
+    },
+    'sort': function (redflag_params) {
+      return {
+        '_source': ['cik', 'current_symbology.name'],
+        'script_fields': {'red_flags': redflagScript(redflag_params, false)},
+        'query': {
+          'function_score': {
+            'functions': [ {'script_score': redflagScript(redflag_params, true)} ]
           }
         }
+      }
+    },
+    'company_table': function (cik) {
+      return {
+        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic'],
+        'query': { 'term': { 'cik': cik } }
+      }
+    },
+    'cik2name': function (cik) {
+      return {
+        '_source': ['current_symbology.name', 'current_symbology.ticker'],
+        'query': { 'term': { 'cik': cik } }
+      }
+    }
+  }
 
-        topic_summary_statistics(es_response2, d.rf, function (out) {
-          out.hits.hits = arr2.slice(1, 15)
-          out.total_hits_topic = ciks.length
-          out.names = es_response.aggregations.cik_filter.trending_names.buckets
-          res.send(out)
-        })
+  app.post('/search', function (req, res) {
+    var d = req.body
+
+    console.log('/search :: ',
+      JSON.stringify(
+        d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params)
+      )
+    )
+
+    client.search({
+      'index': 'ernest_agg',
+      'body': d.query ? queryBuilder.search(d.query, d.redflag_params) : queryBuilder.sort(d.redflag_params),
+      'from': 0,
+      'size': 15,
+    }).then(function (es_response) {
+      var hits = _.map(es_response.hits.hits, function (hit) {
+        return {
+          'cik': hit['_source']['cik'],
+          'name': hit['_source']['current_symbology'] ? hit['_source']['current_symbology']['name'] : '<no-name>',
+          'red_flags': redflagPostprocess(hit['fields']['red_flags'][0], d.redflag_params),
+        }
+      })
+      console.log('hits :: ', hits)
+      res.send({
+        'total_hits': es_response.hits.total,
+        'hits': hits,
       })
     })
   })
+
+  app.post('/company_table', function (req, res) {
+    var d = req.body
+    client.search({
+      'index': 'ernest_symbology',
+      'body': queryBuilder.company_table(d.cik),
+      'from': 0,
+      'size': 999,
+    }).then(function (es_response) {
+      res.send({
+        'table': _.chain(es_response.hits.hits).sortBy(function (hit) {return hit._source.min_date}).map(function (hit) {
+          return [
+            hit._source.min_date,
+            hit._source.max_date,
+            hit._source.name,
+            hit._source.ticker,
+            hit._source.sic,
+          ]
+        }).value()
+      })
+    })
+  })
+
+  app.post('/cik2name', function (req, res) {
+    var d = req.body
+    client.search({
+      'index': 'ernest_agg',
+      'body': queryBuilder.cik2name(d.cik),
+      'from': 0,
+      'size': 999,
+    }).then(function (es_response) {
+      if (es_response.hits.total) {
+        var hit = es_response.hits.hits[0]._source
+        res.send({'cik': d.cik, 'name': hit.current_symbology.name, 'ticker': hit.current_symbology.ticker})
+      } else {
+        res.send({'cik': d.cik, 'name': undefined, 'ticker': undefined})
+      }
+    })
+  })
+  // >>
+
+  //  app.post('/fetch_companies', function(req, res) {
+  //    var d = req.body
+  //    var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX]
+  //        
+  //    console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)))
+  //        
+  //    client.search({
+  //      "index" : index,
+  //      "body"  : qp[d.query_type](d.query_args, d.rf),
+  //      "from"  : d.from === undefined ? 0 : d.from,
+  //    }).then(function (es_response) {
+  //        res.send(es_response)
+  //    })
+  //  })
 
   // Named Entity Recognition Page
   app.post('/fetch_ner', function (req, res) {

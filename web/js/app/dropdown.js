@@ -4,10 +4,10 @@
 
 App.DropdownController = Ember.ObjectController.extend({
   needs: ['application'],
-  rf: Ember.computed.alias('controllers.application.rf'),
-  toggles: Ember.computed.alias('controllers.application.toggles'),
 
-  delta_select_content: [
+  redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
+
+  symbology_select_content: [
     {id: undefined,                name: 'Choose Type'},
     {id: 'company_name',           name: 'Company Name'},
     {id: 'sic',                    name: 'SIC'},
@@ -42,13 +42,18 @@ App.DropdownController = Ember.ObjectController.extend({
 
   empty: true,
   pv: false,
-  delta: false,
+  symbology: false,
   network: false,
   financials: false,
   crowdsar: false,
   trading_halts: false,
   delinquency: false,
   actions: {
+    sort_companies: function () {
+      var app_con = this.controllerFor('application')
+      console.log('dropdown -> sort_companies')
+      app_con.transitionToRoute('sidebar', '-')
+    },
     showParameters: function (type) {
       this.set('empty', false)
       self = this

@@ -10,7 +10,6 @@ App.SidebarRoute = App.GRoute.extend({
 
     controller.set('isLoading', true)
     app_con.set('showNav', true)
-
     if (model.st !== '-') {
       app_con.set('searchTerm', model.st)
       app_con.search_company(function (response) {
@@ -19,39 +18,35 @@ App.SidebarRoute = App.GRoute.extend({
       })
     } else {
       app_con.set('searchTerm', undefined)
-      app_con.search_filter(function (response) {
+      app_con.sort_companies(function (response) {
         controller.set('model', response)
         controller.set('isLoading', false)
       })
     }
   },
-
   actions: {
     toggleFlag: function (flag) {
-      var toggles = this.get('controller').get('toggles')
+      var toggles = this.get('controller.redflag_params').get_toggles()
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true)
     },
-    search_filters: function () {
-      var con = this.get('controller')
-      var rf = con.get('rf')
-      var toggles = con.get('toggles')
-      var rf_clean = rf_clean_func(rf, toggles)
-      con.set('isLoading', true)
-      App.Search.search_filters(rf_clean, undefined, undefined).then(function (response) {
-        con.transitionToRoute('sidebar')
-        con.set('model', response)
-        con.set('isLoading', false)
-      })
-    }
+  //    sort_companies: function () {
+  //      console.log('sidebar -> sort_companies')
+  //      var controller = this.get('controller')
+  //      var app_con = this.controllerFor('application')
+  //      controller.set('isLoading', true)
+  //      app_con(function (response) {
+  //        controller.transitionToRoute('sidebar')
+  //        controller.set('model', response)
+  //        controller.con.set('isLoading', false)
+  //      })
+  //    }
   }
 })
 
 App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
-  rf: Ember.computed.alias('controllers.application.rf'),
-  toggles: Ember.computed.alias('controllers.application.toggles'),
+  redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
-  searchTerm_topic: Ember.computed.alias('controllers.application.searchTerm_topic'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
 
   actions: {
@@ -62,15 +57,15 @@ App.SidebarController = Ember.ObjectController.extend({
         this.set('from', Math.max(this.get('from') - gconfig.SIZE, 0))
       }
 
-      var rf = this.get('rf')
-      var toggles = this.get('toggles')
-      var rf_clean = rf_clean_func(rf, toggles)
-
-      var self = this
-      self.set('isLoading', true)
-      App.Search.search_filters(rf_clean, this.get('from'), this.get('model')).then(function (response) {
-        self.set('model', response)
-        self.set('isLoading', false)
+      this.set('isLoading', true)
+      // This is what used to be implemented here:
+      //      App.Search.search_filter(redflag_params, this.get('from'), this.get('model')).then(function (response) {
+      //
+      alert('look at the code -- this isnt actually implemented')
+      var this_ = this
+      App.Search.search_company(undefined, this.get('redflag_params')).then(function (response) {
+        this_.set('model', response)
+        this_.set('isLoading', false)
       })
     }
   }

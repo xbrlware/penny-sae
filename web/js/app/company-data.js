@@ -1,10 +1,5 @@
 // web/js/app/company-data.js
 
-// Company Data Model
-// Checked 2014-10-28 to make sure everything computed here is used
-// May want to move the computation of these things to the models where
-// they are used (lazy computation)
-
 App.DetailModel = Ember.Object.extend({
   cik: '',
   source: null,

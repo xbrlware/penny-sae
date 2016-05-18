@@ -1,8 +1,7 @@
 // server/node/server.js
 
-// REST service, etc...
-var cluster = require('cluster')
-var _ = require('underscore')._
+var cluster = require('cluster'),
+  _ = require('underscore')._
 
 function run_server () {
   var config = require('./server-config')
@@ -23,12 +22,7 @@ function run_server () {
     next()
   })
 
-  if (config.CLEAR_USERS_ON_RESTART) {
-    app.set('jwtTokenSecret', 'j89j9sdasdcbbopppaqwr23400' + new Date().toUTCString())
-  } else {
-    console.log('!!! not clearing current users !!!')
-    app.set('jwtTokenSecret', 'noij123000acsn12sdfooncaio091r')
-  }
+  app.set('jwtTokenSecret', 'noij123000acsn12sdfooncaio091r')
 
   require('./authentication/auth.js')(app, config)
 
@@ -37,7 +31,6 @@ function run_server () {
   require('./routes')(app, config, client)
 
   app.use('/', express.static('../../web'))
-
 
   if (config.HTTPS.ENABLED) {
     var privateKey = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8'),
