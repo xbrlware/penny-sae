@@ -1,5 +1,5 @@
 App.DatePickerView = Ember.View.extend({
-    didInsertElement: function() {
-        Ember.$("#datepicker").datepicker();
-    }
-});
+  didInsertElement: function () {
+    Ember.$('#datepicker').datepicker()
+  }
+})
