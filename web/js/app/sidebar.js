@@ -47,7 +47,7 @@ App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
   redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
-  isLoading: false,
+  isLoading: Ember.computed.alias('controllers.application.isLoading'),
 
   actions: {
     iterateSidebar: function (dir) {

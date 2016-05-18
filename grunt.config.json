@@ -14,17 +14,17 @@
          "web/css/yamm.css",
          "web/css/gafata.css",
          "web/css/base.css",
-         "web/css/jquery-ui.css",
          "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
          "web/css/jquery.dataTables.min.css",
+         "web/css/jquery-ui.css",
          "web/css/style.less.css"
      ],
 
     "lib_files"  : [
          "web/js/libs/jquery.js",
-         "web/js/libs/jquery-ui/jquery-ui.min.js",
+         "web/js/libs/jquery-ui.js",
          "web/js/libs/jquery-mousewheel.min.js",
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",
@@ -71,6 +71,7 @@
 	       "web/js/app/sic-piechart.js",
 	       "web/js/app/sidebar.js",
 	       "web/js/app/slider.js",
+           "web/js/app/datepicker.js",
 	       "web/js/app/topic.js",
 	       "web/js/app/tts-charts.js",
            "web/js/app/wrapper.js"

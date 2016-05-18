@@ -6,4 +6,3 @@ grunt devLib
 grunt css
 grunt cmp
 :: Add Grunt Serve as future command
-:: Add install dependencies command

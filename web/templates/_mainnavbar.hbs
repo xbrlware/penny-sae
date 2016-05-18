@@ -21,8 +21,18 @@
                             placeholder="- Search Company -"
                             id="search-text" insert-newline="companySearch"
                         }}
+   
                     </div>
+   
+                    {{#if isLoading }}
+                            <img id="spinner" src="css/ajax-loader.gif">
+                            <span class="loader-text" >Loading results...</span>
+                    {{/if }}
+
                 </div>
+
+
+
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown yamm" id="big-dropdown">
                         <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button" data-toggle="dropdown"> Red Flag Filters </a>

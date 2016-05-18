@@ -64,19 +64,21 @@ function setFunctions (rf) {
   }
 
   // Number of years below threshold
-  if (rf.toggles.financials) {
-    var financials = rf.financials
-    func.push({
-      'script_score': {
-        'lang': 'js',
-        'script': 'financials_score',
-        'params': {
-          'type': financials.type,
-          'below': parseFloat(financials.below),
-          'below_for': parseFloat(financials.below_for),
-          'contemporary': financials.contemporary
-      }}
-    })
+  if(rf.toggles.financials){
+    var financials = rf.financials;
+      func.push({
+        "script_score" : {
+          "lang" : "js",
+          "script" : "financials_score",
+            "params" : {
+              "type"         : financials.type,
+              "below"        : parseFloat(financials.below),
+              //"to"           : financials.to,
+              //"from"         : financials.from,
+              "below_for"    : 2,
+              "contemporary" : financials.contemporary
+          }}
+      });
   }
 
   // Number/proportion of suspicious posts
@@ -191,19 +193,6 @@ function setScriptFields (rf, include_generic) {
   }
 
   // Number of filings with revenues below threshold
-  if (rf.toggles.financials) {
-    sf.financials_scriptfield = {
-      'lang': 'js',
-      'script': 'financials_scriptfield',
-      'params': {
-        'type': rf.financials.type,
-        'below': parseFloat(rf.financials.below),
-        'below_for': parseFloat(rf.financials.below_for),
-        'contemporary': rf.financials.contemporary
-      }
-    }
-  }
-
   // Number/proportion of suspicious posts
   if (rf.toggles.crowdsar) {
     sf.crowdsar_scriptfield = {
@@ -215,6 +204,22 @@ function setScriptFields (rf, include_generic) {
       }
     }
   }
+  
+    // Number of filings with revenues below threshold
+    if(rf.toggles.financials){
+      sf.financials_scriptfield = {
+        "lang"   : "js",
+        "script" : "financials_scriptfield",
+        "params" : {
+          "type"         : rf.financials.type,
+          "below"        : parseFloat(rf.financials.below),
+          // "to"           : rf.financials.to,
+          // "from"         : rf.financials.from, 
+          "below_for"     : 2,
+          "contemporary" : rf.financials.contemporary
+         }
+      }
+    }
 
   // Number/proportion of suspicious posts
   if (rf.toggles.tout) {

@@ -68,17 +68,21 @@ App.DropdownController = Ember.ObjectController.extend({
 App.DropdownView = Ember.View.extend({
   templateName: 'dropdown',
   didInsertElement: function () {
-    $('#big-dropdown-button').trigger('click.bs.dropdown')
-    $('.dropdown-menu tr').click(function (e) {
+    Ember.$('#big-dropdown-button').trigger('click.bs.dropdown')
+
+    Ember.$('.dropdown-menu tr').click(function (e) {
       e.preventDefault()
     })
-    $('fa').click(function (e) {
+
+    Ember.$('fa').click(function (e) {
       return false
     })
-    $('#compute-button').click(function (e) {
+
+    Ember.$('#compute-button').click(function (e) {
       return false
     })
-    $('#input-topic').click(function (e) {
+
+    Ember.$('#input-topic').click(function (e) {
       return false
     })
   }
