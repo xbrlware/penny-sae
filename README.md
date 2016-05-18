@@ -34,9 +34,7 @@ npm install
 cd config
 node configure.js
 
-# Connect Remote Port to your local port
-# Run this from a directory with your PEM key.
-ssh -I "yourkey.pem" -L 9205:localhost:9205 "IP address of elasticsearch instance"
+# Connect to elasticsearch
 
 # Go back up to app root directory
 
