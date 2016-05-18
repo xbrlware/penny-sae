@@ -103,10 +103,11 @@ App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 })
 
 App.ApplicationController = Ember.Controller.extend({
-  searchTerm: undefined,
-  showNav: false,
-  rf: gconfig.DEFAULT_RF,
-  toggles: App.Toggles.create(),
+    searchTerm       : undefined,
+    showNav          : false,
+    rf               : gconfig.DEFAULT_RF,
+    toggles          : App.Toggles.create(),
+    isLoading        : false, // state variable for spinner
 
   search_company: function (cb) {
     App.Search.search_company(this.searchTerm, rf_clean_func(this.rf, undefined)).then(cb)

@@ -32,13 +32,20 @@ cd server/node
 npm install
 cd ../..
 
-# Set up server configuration files, eventually turn into Grunt task
+# Set up server configuration files (eventually turn into Grunt task)
 cd config
 node configure.js
-cd ..
+
+# Connect to elasticsearch
+
+# Go back up to app root directory
+
+# Compile static resources 
+./grunt-all.sh
 
 # Launch app!
-node server/node/server.js
+cd server/node
+node server.js
 # App is running at localhost:8090 or whichever port is specified by console
 
 ```

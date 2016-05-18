@@ -47,12 +47,13 @@ App.SidebarRoute = App.GRoute.extend({
 })
 
 App.SidebarController = Ember.ObjectController.extend({
-  needs: ['application'],
-  rf: Ember.computed.alias('controllers.application.rf'),
-  toggles: Ember.computed.alias('controllers.application.toggles'),
-  searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
-  searchTerm_topic: Ember.computed.alias('controllers.application.searchTerm_topic'),
-  isLoading: false,
+
+needs            : ['application'],
+rf               : Ember.computed.alias('controllers.application.rf'),
+toggles          : Ember.computed.alias('controllers.application.toggles'),
+searchTerm       : Ember.computed.alias('controllers.application.searchTerm'),
+searchTerm_topic : Ember.computed.alias('controllers.application.searchTerm_topic'),
+isLoading        : Ember.computed.alias('controllers.application.isLoading'),
 
   actions: {
     iterateSidebar: function (dir) {
