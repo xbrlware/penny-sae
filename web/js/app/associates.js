@@ -1,10 +1,11 @@
 // web/js/app/associates.js
+/* global Ember, App, _, gconfig, alert */
 
 App.AssociatesRoute = Ember.Route.extend({
   model: function () {
-    return this.modelFor('detail')
+    return this.modelFor('detail');
   }
-})
+});
 
 App.AssociatesController = Ember.ObjectController.extend({
   needs: ['application'],
@@ -16,17 +17,17 @@ App.AssociatesController = Ember.ObjectController.extend({
 
   rgraph_json: null,
   rgraph_object: null,
-  network_associates: null,
-  orig_network_associates: null,
+  networkAssociates: null,
+  origNetworkAssociates: null,
 
   rgraph_origin: null,
-  orig_adj: [],
+  origAdj: [],
   links: [],
 
   dummy_variable: 'test',
   refresh: 0,
 
-  searchTerm_er: '',
+  searchTermEr: '',
 
   set_ner: function (args) {
     Ember.$.ajax({
@@ -37,64 +38,64 @@ App.AssociatesController = Ember.ObjectController.extend({
       data: JSON.stringify({'cik': args.cik, 'updates': args.updates}),
       success: args.callback,
       error: function (xhr, status, error) {
-        console.log('Error: ' + error.message)
+        console.log('Error: ' + error.message);
       }
-    })
+    });
   },
 
-  update_network_associates: function (updates) {
-    var self = this
+  update_networkAssociates: function (updates) {
+    var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       self.set_ner({
         'cik': self.get('model.cik'),
         'updates': updates,
         'callback': function (response) {
-          self.transitionToRoute('previousReg')
+          self.transitionToRoute('previousReg');
           setTimeout(function () {
-            self.transitionToRoute('associates')
-          }, 50)
-          alert('Changes saved successfully!')
-          resolve()
+            self.transitionToRoute('associates');
+          }, 50);
+          alert('Changes saved successfully!');
+          resolve();
         }
-      })
-    })
+      });
+    });
   },
   actions: {
     toggle_ner: function (ner) {
-      var network_associates = this.get('network_associates')
-      var ind = _.indexOf(network_associates, ner)
-      var associate = network_associates[ind]
+      var networkAssociates = this.get('networkAssociates');
+      var ind = _.indexOf(networkAssociates, ner);
+      var associate = networkAssociates[ind];
 
-      associate.toggleProperty('hidden')
+      associate.toggleProperty('hidden');
     },
     save_toggles: function () {
-      var network_associates = this.get('network_associates')
-      var updates = _.map(network_associates, function (associate) {
-        return {'nodeTo': associate.id, 'hidden': associate.hidden}
-      })
-      this.update_network_associates(updates)
+      var networkAssociates = this.get('networkAssociates');
+      var updates = _.map(networkAssociates, function (associate) {
+        return {'nodeTo': associate.id, 'hidden': associate.hidden};
+      });
+      this.update_networkAssociates(updates);
     },
     filter_er: function () {
-      var searchTerm_er = this.get('searchTerm_er')
-      var orig_network_associates = this.get('orig_network_associates')
-      if (searchTerm_er === '') {
-        this.set('network_associates', orig_network_associates)
+      var searchTermEr = this.get('searchTermEr');
+      var origNetworkAssociates = this.get('origNetworkAssociates');
+      if (searchTermEr === '') {
+        this.set('networkAssociates', origNetworkAssociates);
       } else {
-        this.set('network_associates', _.filter(orig_network_associates, function (associate) {
-          var name = associate.name
-          return name.match(new RegExp(searchTerm_er, 'i')) != null
-        }))
+        this.set('networkAssociates', _.filter(origNetworkAssociates, function (associate) {
+          var name = associate.name;
+          return name.match(new RegExp(searchTermEr, 'i')) != null;
+        }));
       }
     },
 
     show_links_ner: function (ner) {
-      var orig_adj = this.get('orig_adj')
-      var cik = this.get('model.cik')
-      var edge = _.where(orig_adj, {'nodeTo': ner.id})[0]
+      var origAdj = this.get('origAdj');
+      var cik = this.get('model.cik');
+      var edge = _.where(origAdj, {'nodeTo': ner.id})[0];
       this.set('links', _.map(edge.data.an, function (x) {
-        var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm'
-        return {link: link}
-      }))
+        var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm';
+        return {link: link};
+      }));
     }
   }
-})
+});

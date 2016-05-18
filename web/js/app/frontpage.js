@@ -1,28 +1,29 @@
 // web/js/app/frontpage.js
 
-// Front Page
+/* global Ember, App */
+
 App.FrontpageRoute = App.GRoute.extend({
   setupController: function (controller, model) {
-    this.controllerFor('application').set('showNav', false)
+    this.controllerFor('application').set('showNav', false);
   },
   actions: {
     companySearch: function (searchTerm) {
       if (searchTerm) { this.transitionTo('sidebar', searchTerm); }
     },
     filterSearch: function () {
-      this.transitionTo('sidebar', '-')
+      this.transitionTo('sidebar', '-');
     },
     toggleFlag: function (flag) {
-      this.get('controlle.redflag_params._toggles').toggleProperty(flag)
+      this.get('controlle.redflag_params._toggles').toggleProperty(flag);
     }
   }
-})
+});
 
 App.FrontpageController = Ember.ObjectController.extend({
   needs: ['application'],
   redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
-  isAdmin: function () {return App.isAdmin();}.property(),
-})
+  isAdmin: function () { return App.isAdmin(); }.property()
+});
 
 // --
 
@@ -31,30 +32,29 @@ App.ToggleRowView = Ember.View.extend({
   templateName: 'togglerow',
   tagName: 'tr',
   click: function (e) {
-    if ($(e.target).attr('class') !== 'dropdown-button') {
-      var value = this.get('value')
-      this.toggleProperty('value')
+    if (Ember.$(e.target).attr('class') !== 'dropdown-button') {
+      this.toggleProperty('value');
     }
   }
-})
+});
 
 App.DisabledToggleRowView = Ember.View.extend({
   templateName: 'disabledtogglerow',
   tagName: 'tr',
   classNames: ['no-hover']
-})
+});
 
 App.HitTextView = Ember.View.extend({
   templateName: 'hittextview',
   didInsertElement: function () {
-    var type = this.get('type'),
-      red_flags = this.get('red_flags')
+    var type = this.get('type');
+    var redFlags = this.get('redFlags');
 
-    this.set('mid', 'badge-' + type)
-    console.log('type', type)
-    console.log('red_flags', red_flags)
-    this.set('have', red_flags[type]['have'])
-    this.set('flagged', red_flags[type]['is_flag'])
-    this.set('value', red_flags[type]['value'])
+    this.set('mid', 'badge-' + type);
+    console.log('type', type);
+    console.log('redFlags', redFlags);
+    this.set('have', redFlags[type]['have']);
+    this.set('flagged', redFlags[type]['is_flag']);
+    this.set('value', redFlags[type]['value']);
   }
-})
+});

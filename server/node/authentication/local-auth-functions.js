@@ -5,19 +5,19 @@ module.exports = function (passport, config, make_token) {
     _ = require('underscore')._,
     es = require('elasticsearch'),
     crypto = require('crypto'),
-    LocalStrategy = require('passport-local')
+    LocalStrategy = require('passport-local');
 
-  var client = new es.Client({hosts: [config.ES.HOST]})
+  var client = new es.Client({hosts: [config.ES.HOST]});
 
   function findUser (username, client, callback) {
     if (config.DEMO_FLAG) {
       var db = [
         {'username': 'dev', 'password': 'password', 'id': '001', 'isAdmin': true},
         {'username': 'ben', 'password': 'password', 'id': '002', 'isAdmin': false}
-      ]
+      ];
 
-      var user = _.findWhere(db, {'username': username})
-      callback(user, null)
+      var user = _.findWhere(db, {'username': username});
+      callback(user, null);
     } else {
       client.search({
         index: config.ES.INDEX.AUTH,
@@ -26,25 +26,25 @@ module.exports = function (passport, config, make_token) {
         var user = _.chain(response.hits.hits)
           .pluck('_source')
           .findWhere({'username': username})
-          .value()
+          .value();
         // this should be checked against the admin group
         if (user && !user.isAdmin) { user.isAdmin = false; }
-        callback(user, null)
+        callback(user, null);
       }, function (error) {
-        callback(null, error)
+        callback(null, error);
       }
-      )
+      );
     }
   }
 
   function validate_credentials (username, password) {
-    var ITER_INDEX = 0
-    var SALT_INDEX = 1
-    var HASH_INDEX = 2
-    var SPLIT_CHAR = ':'
-    var ENCODING = 'hex'
+    var ITER_INDEX = 0;
+    var SALT_INDEX = 1;
+    var HASH_INDEX = 2;
+    var SPLIT_CHAR = ':';
+    var ENCODING = 'hex';
 
-    var deferred = Q.defer()
+    var deferred = Q.defer();
 
     findUser(username, client, function (user, err) {
       if (err) { deferred.reject(err); }
@@ -52,27 +52,27 @@ module.exports = function (passport, config, make_token) {
       if (user !== undefined) {
         if (config.DEMO_FLAG) {
           if (user.password === password) {
-            deferred.resolve(user)
+            deferred.resolve(user);
           } else {
-            deferred.resolve(undefined)
+            deferred.resolve(undefined);
           }
         } else {
-          var p = user.hashedpassword.split(SPLIT_CHAR)
-          var b = new Buffer(p[SALT_INDEX], ENCODING)
+          var p = user.hashedpassword.split(SPLIT_CHAR);
+          var b = new Buffer(p[SALT_INDEX], ENCODING);
           crypto.pbkdf2(password, b, parseInt(p[ITER_INDEX], 10), b.length, function (err, derived_key) {
             if (p[HASH_INDEX] === derived_key.toString(ENCODING)) {
-              deferred.resolve(user)
+              deferred.resolve(user);
             } else {
-              deferred.resolve(false)
+              deferred.resolve(false);
             }
-          })
+          });
         }
       } else {
-        deferred.resolve(false)
+        deferred.resolve(false);
       }
-    })
+    });
 
-    return deferred.promise
+    return deferred.promise;
   }
 
   return {
@@ -81,9 +81,9 @@ module.exports = function (passport, config, make_token) {
         function (req, username, password, done) {
           validate_credentials(username, password)
             .then(function (user) { done(null, user); })
-            .fail(function (err) { console.log(err); done(err, null);})
+            .fail(function (err) { console.log(err); done(err, null);});
         }
-      ))
+      ));
     },
     authenticate: function (req, res, next) {
       passport.authenticate('local-signin', function (err, user) {
@@ -98,14 +98,14 @@ module.exports = function (passport, config, make_token) {
             }),
             isAdmin: user.isAdmin,
             username: user.username
-          })
+          });
         } else {
-          res.status(404).send('Incorrect username or password!')
+          res.status(404).send('Incorrect username or password!');
         }
-      })(req, res, next)
+      })(req, res, next);
     }
-  }
-}
+  };
+};
 
 // //used in local-signup strategy
 // exports.localReg = function (username, password) {

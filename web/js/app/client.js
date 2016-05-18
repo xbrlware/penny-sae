@@ -1,4 +1,5 @@
 // web/js/app/client.js
+/* global Ember, App, config */
 
 function fetch (args) {
   Ember.$.ajax({
@@ -15,92 +16,92 @@ function fetch (args) {
     }),
     success: args.callback,
     error: function (xhr, status, error) {
-      console.log('Error: ' + error.message)
+      console.log('Error: ' + error.message);
     }
-  })
+  });
 }
 
-function get_detail (cik, rf_clean) {
+function getDetail (cik, rfClean) { // eslint-disable-line no-unused-vars
   return new Ember.RSVP.Promise(function (resolve, reject) {
     fetch({
       endpoint: 'fetch_companies',
       index: config.COMPANY_INDEX,
       query_type: 'detailQuery',
       query_args: {'cik': cik},
-      rf: rf_clean,
+      rf: rfClean,
       callback: function (data) {
-        var hit = data.hits.hits[0]
-        var detail = App.DetailModel.create()
-        detail.set('cik', hit._id)
-        detail.set('source', hit._source)
-        detail.set('fields', hit.fields)
-        resolve(detail)
+        var hit = data.hits.hits[0];
+        var detail = App.DetailModel.create();
+        detail.set('cik', hit._id);
+        detail.set('source', hit._source);
+        detail.set('fields', hit.fields);
+        resolve(detail);
       }
-    })
-  })
+    });
+  });
 }
 
 App.SearchResults = Ember.Object.extend({
   total_hits: undefined,
   hits: undefined,
-  from: 0,
-})
+  from: 0
+});
 
 App.SearchResultsView = Ember.View.extend({
   columns: [
-    {title: 'Min Date',  defaultContent: '', className: 'dt-body-right'},
-    {title: 'Max Date',  defaultContent: '', className: 'dt-body-right'},
-    {title: 'Name',      defaultContent: ''},
-    {title: 'Ticker',    defaultContent: ''},
-    {title: 'SIC',       defaultContent: ''},
+    {title: 'Min Date', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Max Date', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Name', defaultContent: ''},
+    {title: 'Ticker', defaultContent: ''},
+    {title: 'SIC', defaultContent: ''}
   ],
 
   didInsertElement: function () {
-    this._super()
-    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent)
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
   },
 
   afterRenderEvent: function () {
-    var cik = this.get('cik'),
-      columns = this.get('columns')
+    var cik = this.get('cik');
+    var columns = this.get('columns');
 
     App.Search.get_company_table(this.get('cik')).then(function (response) {
-      console.log(response.table)
+      console.log(response.table);
       Ember.$('#' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
           if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-            Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide()
+            Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
           }
         },
         columns: columns,
         data: response['table'],
         bFilter: false,
-        bInfo: false,
-      })
-    })
+        bInfo: false
+      });
+    });
   }
-})
+});
 
-App.Search = Ember.Object.extend({})
+App.Search = Ember.Object.extend({});
 App.Search.reopenClass({
   // >>
-  search_company: function (query, redflag_params) {
-    console.log('searching company')
+  search_company: function (query, redFlagParams) {
+    console.log('searching company');
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         url: 'search',
-        data: JSON.stringify({ 'query': query, 'redflag_params': redflag_params.get_toggled_params()}),
+        data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
         success: function (response) {
-          resolve(App.SearchResults.create(response))
+          resolve(App.SearchResults.create(response));
         },
         error: function (xhr, status, error) {
-          console.log('Error: ' + error.message)
+          console.log('Error: ' + error.message);
         }
-      })
-    })
+      });
+    });
   },
 
   get_company_table: function (cik) {
@@ -112,10 +113,10 @@ App.Search.reopenClass({
         url: 'company_table',
         data: JSON.stringify({ 'cik': cik }),
         success: function (response) {
-          resolve(response)
+          resolve(response);
         }
-      })
-    })
+      });
+    });
   },
 
   cik2name: function (cik) {
@@ -127,16 +128,16 @@ App.Search.reopenClass({
         url: 'cik2name',
         data: JSON.stringify({ 'cik': cik }),
         success: function (response) {
-          console.log('response --', response)
-          resolve(response)
+          console.log('response --', response);
+          resolve(response);
         }
-      })
-    })
+      });
+    });
   }
   // <<
 
   //
-  //  process_query_results: function(data, rf_clean, can_break) {
+  //  process_query_results: function(data, rfClean, can_break) {
   //    var s          = App.SearchResults.create()
   //    var arr        = []
   //    var last_score = -1
@@ -153,7 +154,7 @@ App.Search.reopenClass({
   //          "cik"         : x._id,
   //          "currentName" : x.fields.currentName,
   //          "companyTable": make_company_table(x._source.company_data),
-  //          "redFlags"    : set_red_flags(rf_clean, x.fields),
+  //          "redFlags"    : set_red_flags(rfClean, x.fields),
   //          "score"       : x._score
   //        }
   //        if (x.fields.currentName[0] !== null) {
@@ -206,4 +207,4 @@ App.Search.reopenClass({
 //      })
 //    })
 //  }
-})
+});

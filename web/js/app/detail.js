@@ -1,5 +1,7 @@
 // web/js/app/detail.js
 
+/* global Ember, App */
+
 App.DetailModel = Ember.Object.extend({
   cik: '',
   source: null,
@@ -7,7 +9,7 @@ App.DetailModel = Ember.Object.extend({
   sarreport: null,
 
   name: function () { return this.get('fields.name'); }.property('fields'),
-  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name'),
+  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name')
 
 //    // Trading halt information for table
 //    tradingHalt: function() {
@@ -24,7 +26,7 @@ App.DetailModel = Ember.Object.extend({
 //            return null
 //        }
 //    }.property('source'),
-//    
+//
 //    // PVA information for table
 //    spikesTable: function() {
 //        var s = this.get('fields.pv_scriptfield')
@@ -47,7 +49,7 @@ App.DetailModel = Ember.Object.extend({
 //            return null
 //        }
 //    }.property('fields'),
-//    
+//
 //    // Financials table
 //    financialsTable: function(){
 //        var d = this.get('source.fin')
@@ -58,15 +60,15 @@ App.DetailModel = Ember.Object.extend({
 //                obj.bsd        = d.balance_sheet_date === undefined ? undefined : d.balance_sheet_date[i],
 //                obj.type       = d.type === undefined ? undefined : d.type[i],
 //                obj.fy         = d.fiscal_year === undefined ? undefined : d.fiscal_year[i],
-//                
+//
 //                obj.revenues   = d.revenues === undefined ? undefined : d.revenues[i]
 //                obj.netincome  = d.netincomeloss === undefined ? undefined : d.netincomeloss[i]
 //                obj.assets     = d.assets === undefined ? undefined : d.assets[i]
-//                
+//
 //                obj.revenues_pretty   = d.revenues === undefined ? undefined : numeral(d.revenues[i]).format('0,0')
 //                obj.netincome_pretty  = d.netincomeloss === undefined ? undefined : numeral(d.netincomeloss[i]).format('0,0')
 //                obj.assets_pretty     = d.assets === undefined ? undefined : numeral(d.assets[i]).format('0,0')
-//                
+//
 //                tab.push(obj)
 //            }
 //            return(tab)
@@ -81,7 +83,7 @@ App.DetailModel = Ember.Object.extend({
 //        var d = this.get('source.del_proc')
 //        if(d !== undefined && Object.keys(d).length > 1){
 //            tab = []
-//            
+//
 //            // Should be fixed on next data load
 //            d.date_of_filing = [].concat(d.date_of_filing)
 //            d.due_date       = [].concat(d.due_date)
@@ -102,24 +104,24 @@ App.DetailModel = Ember.Object.extend({
 //            return null
 //        }
 //    }.property('source')
-})
+});
 
 App.DetailRoute = Ember.Route.extend({
   model: function (params) {
-    return App.Search.cik2name(params.cik)
+    return App.Search.cik2name(params.cik);
   },
 
   setupController: function (controller, model, queryParams) {
-    controller.set('model', model)
+    controller.set('model', model);
   }
-})
+});
 
 App.DetailController = Ember.ObjectController.extend({
   needs: ['application'],
   redflag_params: Ember.computed.alias('controllers.application.redflag_params')
-})
+});
 
 App.DetailView = Ember.View.extend({
-  controllerChanged: function () { $('html, body').animate({ scrollTop: 0 }, '500', 'swing'); }.observes('controller.model'),
-  didInsertElement: function () { this.$().hide().fadeIn('slow') }
-})
+  controllerChanged: function () { Ember.$('html, body').animate({ scrollTop: 0 }, '500', 'swing'); }.observes('controller.model'),
+  didInsertElement: function () { this.$().hide().fadeIn('slow'); }
+});
