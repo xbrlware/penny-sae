@@ -32,31 +32,25 @@
             "max_date"  : "2016-01-01",
             "threshold" : 1
         },
-/*
         "network" : {
             "type"   : "otc_neibs_pct",
             "thresh" : 25
         },
-*/
-/*
         "financials" : {
             "type"         : "revenues",
             "below"        : 1000,
             "below_for"    : 2,
             "contemporary" : null
         },
-*/
-/*
         "trading_halts" : {
             "thresh" : 1
         },
-*/
 /*
         "crowdsar" : {
             "type"        : "n_susp",
             "past_months" : 4
         },
-*/
+  */
         "delinquency" : {
             "form"      : "10-K",
             "min_date"  : "2000-01-01",

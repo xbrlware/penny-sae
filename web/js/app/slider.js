@@ -98,12 +98,12 @@ App.SliderView = JQ.SliderView.extend({
 
 App.DatepickerView = JQ.DatepickerView.extend({
   attribueBindings: ['id', 'value'],
-  dateFormat: 'mm-dd-yy',
+  dateFormat: 'yy-mm-dd',
   changeMonth: true,
   changeYear: true,
   showOn: 'focus',
   onSelect: function (event, ui) {
-    var newDate = (ui.currentMonth + 1) + '-' + ui.currentDay + '-' + ui.currentYear;
+    var newDate = ui.currentYear + '-' + (ui.currentMonth + 1) + '-' + ui.currentDay;
     this.set('value', newDate);
   }
 });
