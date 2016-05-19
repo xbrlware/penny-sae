@@ -7,23 +7,35 @@
 // ---------------------------------------------------------------------------
 
 App.PvChartRoute = Ember.Route.extend({
-    setupController : function(controller, model) {
-        App.Search.cik2tickers(controller.get('name.cik')).then(function(response) {
-            controller.set('tickers', response.tickers);
-            App.Search.get_generic_detail('pv', {"ticker" : response.tickers[0]}).then(function(response) {
-                console.log('!!!', response.data);
-                controller.set('model', response.data);
-            });
-        })
-    }
+  setupController: function (controller, model) {
+    //        App.Search.cik2tickers(controller.get('name.cik')).then(function(response) {
+    //            controller.set('tickers', response.tickers)
+    //            App.Search.get_generic_detail('pv', {"ticker" : response.tickers[0]}).then(function(response) {
+    //                controller.set('model', response.data)
+    //            })
+    //        })
+    App.Search.get_generic_detail('pv', this.get('controller.name')).then(function (response) {
+      console.log('pv response', response.data);
+      controller.set('model', response.data);
+      controller.set('have_records', response.data.length > 0);
+    });
+  }
 });
 
 App.PvChartController = Ember.Controller.extend({
-    needs : ["detail"],
-    name  : Ember.computed.alias('controllers.detail.model'),
-    have_records : true,
+  needs: ['detail'],
+  name: Ember.computed.alias('controllers.detail.model'),
+  have_records: true,
+  actions: {
+    setTicker: function (ticker) {
+      var this_ = this;
+      App.Search.get_generic_detail('pv', {'ticker': ticker}).then(function (response) {
+        console.log('!!!', response.data);
+        this_.set('model', response.data);
+      });
+    }
+  }
 });
-
 
 App.PvChartView = Ember.View.extend({
   controllerChanged: function () {
@@ -31,23 +43,23 @@ App.PvChartView = Ember.View.extend({
   }.observes('controller.model'),
 
   drawChart: function (data) {
-    if(!data) {return};
-        
-    _.map(data, function(datum) { datum['date'] = new Date(datum['date']); });
-    
-    var fData = data;
-    _.map(fData, function(datum) { datum['date'] = new Date(datum['date']); });
+    if (!data) {return; }
 
-//    var fData = [];
-//    for (i = 0; i < model.cs.date.length; i++) {
-//      fData.push({
-//        date: new Date(model.cs.date[i]),
-//        high: model.cs.n_post[i],
-//        close: model.cs.n_susp[i],
-//        open: model.cs.p_susp[i],
-//        volume: (model.cs.p_susp_lb[i] * 1000) / 10,
-//        low: 0});
-//    }
+    _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });
+
+    var fData = data;
+    _.map(fData, function (datum) { datum['date'] = new Date(datum['date']); });
+
+    //    var fData = []
+    //    for (i = 0; i < model.cs.date.length; i++) {
+    //      fData.push({
+    //        date: new Date(model.cs.date[i]),
+    //        high: model.cs.n_post[i],
+    //        close: model.cs.n_susp[i],
+    //        open: model.cs.p_susp[i],
+    //        volume: (model.cs.p_susp_lb[i] * 1000) / 10,
+    //        low: 0})
+    //    }
 
     var margin = {top: 0, right: 10, bottom: 200, left: 40};
     var margin2 = {top: 340, right: 10, bottom: 100, left: 40};

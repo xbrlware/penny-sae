@@ -88,7 +88,7 @@ module.exports = function (app, config, client) {
     });
   });
 
-  function topicSummaryStatistics (data, rfClean, callback) {  // eslint-disable-line no-unused-vars
+  function topicSummaryStatistics (data, rfClean, callback) { // eslint-disable-line no-unused-vars
     var hits = data.hits.hits;
     var rfTotal = 0;
     var rfPossible = 0;
@@ -215,43 +215,60 @@ module.exports = function (app, config, client) {
         'query': { 'term': { 'cik': cik } }
       };
     },
-    'cik2tickers' : function(cik) {
-        return {
-            "query" : { "term": {"cik" : cik}},
-            "aggs"  : { "tickers" : {"terms" : {"field" : "ticker", "size" : 0}}}
-        }
+    'cik2tickers': function (cik) {
+      return {
+        'query': { 'term': {'cik': cik}},
+        'aggs': { 'tickers': {'terms': {'field': 'ticker', 'size': 0}}}
+      };
     },
     'suspensions': function (cik) {
-        return {
-            '_source' : ["link", "date", "release_number"],
-            'query' : {
-                "match_all" : {}
-            }
+      return {
+        '_source': ['link', 'date', 'release_number'],
+        'query': {
+          'match_all': {}
         }
+      };
     },
-    'pv' : function(ticker) {
-        return {
-          "sort": [
-            {
-              "date": {
-                "order": "asc"
-              }
+    'pv': function (ticker) {
+      return {
+        'sort': [
+          {
+            'date': {
+              'order': 'asc'
             }
-          ], 
-            "query" : {
-                "match" : {
-                    "symbol" : ticker
-                }
-            }
+          }
+        ],
+        'query': {
+          'match': {
+            'symbol': ticker.toLowerCase()
+          }
         }
+      };
+    },
+    'delinquency': function (cik) {
+      return {
+        '_source': ['form', 'date', '_enrich', 'url'],
+        'sort': [
+          {
+            'date': {
+              'order': 'asc'
+            }
+          }
+        ],
+        'query': {
+          'terms': {
+            'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+          }
+        }
+      };
     }
   };
 
   app.post('/search', function (req, res) {
     var d = req.body;
-    
+
     console.log('params in search :: ', JSON.stringify(d.redFlagParams));
-    
+
     console.log('/search :: ',
       JSON.stringify(
         d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams)
@@ -327,25 +344,39 @@ module.exports = function (app, config, client) {
       'from': 0,
       'size': 999
     }).then(function (esResponse) {
-        res.send({"tickers" : _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
+      res.send({'tickers': _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
     });
   });
 
-  
+  // *** Need to changed width of CIKs in delinquency index ***
+  app.post('/delinquency', function (req, res) {
+    var d = req.body;
+    console.log('delinquency <<', d.cik);
+    client.search({
+      'index': 'ernest_delinquency',
+      'body': queryBuilder.delinquency(d.cik),
+      'from': 0,
+      'size': 10000
+    }).then(function (esResponse) {
+      res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+
   // *** Not implemented yet ***
   // *** Need to link CIKs to Trading suspensions ***
   app.post('/suspensions', function (req, res) {
     var d = req.body;
+    console.log('suspensions <<', d);
     client.search({
       'index': 'ernest_suspensions',
       'body': queryBuilder.suspensions(d.cik),
       'from': 0,
-      'size': 99999
+      'size': 10
     }).then(function (esResponse) {
-        res.send({"data" : _.pluck(esResponse.hits.hits, '_source')});
+      res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
-  
+
   // *** Not fully implemented ***
   // *** Should be searching on hard symbol.cat property, which doesn't exist yet ***
   app.post('/pv', function (req, res) {
@@ -357,11 +388,11 @@ module.exports = function (app, config, client) {
       'from': 0,
       'size': 10000
     }).then(function (esResponse) {
-        res.send({"data" : _.pluck(esResponse.hits.hits, '_source')});
+      res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
 
-  
+
   // >>
 
   //  app.post('/fetch_companies', function(req, res) {
@@ -408,10 +439,10 @@ module.exports = function (app, config, client) {
       tmp.reverse();
       res.send(tmp);
     },
-    function (error) {
-      console.error(error);
-      res.send([undefined]);
-    }
+      function (error) {
+        console.error(error);
+        res.send([undefined]);
+      }
     );
   });
 

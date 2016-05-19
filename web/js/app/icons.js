@@ -27,7 +27,7 @@ networkYellowBuilding.src = 'img/yellow_building.png';
 networkOrangeBuilding.src = 'img/orange_building.png';
 networkRedBuilding.src = 'img/red_building.png';
 
-function implementIcons () {  // eslint-disable-line no-unused-vars
+function implementIcons () { // eslint-disable-line no-unused-vars
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {

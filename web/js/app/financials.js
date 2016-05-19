@@ -3,60 +3,58 @@
 /* global Ember, App, _ */
 
 App.FinancialsRoute = Ember.Route.extend({
-  model: function () {
-    var financialsTable = this.modelFor('detail').get('financialsTable');
-    return financialsTable;
-  }
-});
-
-App.FinancialsView = Ember.View.extend({
-  didInsertElement: function () {
-    this._super();
-    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
-  },
-
-  afterRenderEvent: function () {
-    var self = this;
-    var con = self.get('controller');
-    Ember.$('#financials-table').DataTable({
-      fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
-      retrieve: true,
-      data: con.tableContent(),
-      columns: con.tableColumns(),
-      pageLength: 50
+  setupController: function (controller, model) {
+    App.Search.get_generic_detail('financials', this.get('controller.name')).then(function (response) {
+      controller.set('model', response.data);
     });
   }
 });
 
 App.FinancialsController = Ember.Controller.extend({
-  tableColumns: function () {
-    return [
-      {title: 'Balance Sheet', defaultContent: '', className: 'dt-body-right'},
-      {title: 'Filing', defaultContent: '', className: 'dt-body-right'},
-      {title: 'Fiscal Year End', defaultContent: '', className: 'dt-body-right'},
-      {title: 'Revenues', defaultContent: '', className: 'dt-body-right'},
-      {title: 'Net Income', defaultContent: '', className: 'dt-body-right'},
-      {title: 'Assets', defaultContent: '', className: 'dt-body-right'}
-    ];
-  },
+  needs: ['detail'],
+  name: Ember.computed.alias('controllers.detail.model'),
+
+  tableColumns: [
+    {title: 'Balance Sheet', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Filing', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Fiscal Year End', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Revenues', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Net Income', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Assets', defaultContent: '', className: 'dt-body-right'}
+  ],
 
   tableContent: function () {
-    var m = this.get('model');
-    var content = [];
-    _.map(m, function (n) {
-      content.pushObject([
-        n.bsd,
-        n.type,
-        n.fy,
-        n.revenues_pretty,
-        n.netincome_pretty,
-        n.assets_pretty
-      ]);
+    return _.map(this.get('model'), function (n) {
+      return [ n.bsd, n.type, n.fy, n.revenues_pretty, n.netincome_pretty, n.assets_pretty];
     });
-    return content;
+  }.property('model.@each')
+});
+
+// ** Could merge this with DelinquencyView **
+App.FinancialsView = Ember.View.extend({
+  tableDiv: '#financials-table',
+
+  didInsertElement: function () {
+    this._super();
+    Ember.run.scheduleOnce('afterRender', this, this.renderTable);
+  },
+
+  contentChanged: function () {
+    this.renderTable();
+  }.observes('controller.tableContent'),
+
+  renderTable: function () {
+    var con = self.get('controller');
+    Ember.$(this.tableDiv).DataTable({
+      fnDrawCallback: function (oSettings) {
+        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
+        }
+      },
+      destroy: true,
+      data: con.get('tableContent'),
+      columns: con.tableColumns,
+      pageLength: 50
+    });
   }
 });

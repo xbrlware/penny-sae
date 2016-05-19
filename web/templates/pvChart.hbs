@@ -2,8 +2,12 @@
 {{!-- Price and Volume Chart --}}
 
 <span class="centered">
-    <h3> Price / Volume / CROWDSAR Chart </h3>
+    <h3> Price / Volume / CROWDSAR Chart for Ticker {{name.ticker}} </h3>
 </span>
+
+{{#each tickers}}
+    <button {{action "setTicker" this}}> {{this}} </button>
+{{/each}}
 
 <div>
     <div id="container-pvchart"></div>
