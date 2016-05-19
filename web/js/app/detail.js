@@ -118,7 +118,7 @@ App.DetailRoute = Ember.Route.extend({
 
 App.DetailController = Ember.ObjectController.extend({
   needs: ['application'],
-  redflag_params: Ember.computed.alias('controllers.application.redflag_params')
+  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams')
 });
 
 App.DetailView = Ember.View.extend({

@@ -28,7 +28,7 @@ App.SidebarRoute = App.GRoute.extend({
   },
   actions: {
     toggleFlag: function (flag) {
-      var toggles = this.get('controller.redflag_params').get_toggles();
+      var toggles = this.get('controller.redFlagParams').get_toggles();
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
     }
   //    sort_companies: function () {
@@ -47,7 +47,7 @@ App.SidebarRoute = App.GRoute.extend({
 
 App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
-  redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
+  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
 
@@ -61,11 +61,11 @@ App.SidebarController = Ember.ObjectController.extend({
 
       this.set('isLoading', true);
       // This is what used to be implemented here:
-      //      App.Search.search_filter(redflag_params, this.get('from'), this.get('model')).then(function (response) {
+      //      App.Search.search_filter(redFlagParams, this.get('from'), this.get('model')).then(function (response) {
       //
       alert('look at the code -- this isnt actually implemented');
       var this_ = this;
-      App.Search.search_company(undefined, this.get('redflag_params')).then(function (response) {
+      App.Search.search_company(undefined, this.get('redFlagParams')).then(function (response) {
         this_.set('model', response);
         this_.set('isLoading', false);
       });
