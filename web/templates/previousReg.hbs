@@ -3,9 +3,8 @@
 <span class="centered">
     <h3>Previous Regulatory Actions for CIK:{{name.cik}}</h3>
     {{#if have_records}}
-        {{#each model}}
-            <h4> Trading in this security was suspended on <a {{bind-attr href="link"}}>{{date}}</a></h4>
-        {{/each}}
+        <table id="previous-reg-table" class="display"></table>
+        {{view App.PreviousRegView}}
     {{else}}
         <h4> This company has never been the subject of an SEC trading suspension. </h4>
     {{/if}}

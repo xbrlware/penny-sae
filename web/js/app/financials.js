@@ -4,7 +4,7 @@
 
 App.FinancialsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
-    App.Search.get_generic_detail('financials', this.get('controller.name')).then(function (response) {
+    App.Search.fetch_data('financials', this.get('controller.name')).then(function (response) {
       controller.set('model', response.data);
     });
   }
@@ -30,31 +30,4 @@ App.FinancialsController = Ember.Controller.extend({
   }.property('model.@each')
 });
 
-// ** Could merge this with DelinquencyView **
-App.FinancialsView = Ember.View.extend({
-  tableDiv: '#financials-table',
-
-  didInsertElement: function () {
-    this._super();
-    Ember.run.scheduleOnce('afterRender', this, this.renderTable);
-  },
-
-  contentChanged: function () {
-    this.renderTable();
-  }.observes('controller.tableContent'),
-
-  renderTable: function () {
-    var con = self.get('controller');
-    Ember.$(this.tableDiv).DataTable({
-      fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
-      destroy: true,
-      data: con.get('tableContent'),
-      columns: con.tableColumns,
-      pageLength: 50
-    });
-  }
-});
+App.FinancialsView = App.GenericTableView();

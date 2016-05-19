@@ -8,13 +8,13 @@
 
 App.PvChartRoute = Ember.Route.extend({
   setupController: function (controller, model) {
-    //        App.Search.cik2tickers(controller.get('name.cik')).then(function(response) {
+    //        App.Search.fetch_data('cik2tickers', {'cik': controller.get('name.cik')}).then(function(response) {
     //            controller.set('tickers', response.tickers)
     //            App.Search.get_generic_detail('pv', {"ticker" : response.tickers[0]}).then(function(response) {
     //                controller.set('model', response.data)
     //            })
     //        })
-    App.Search.get_generic_detail('pv', this.get('controller.name')).then(function (response) {
+    App.Search.fetch_data('pv', this.get('controller.name')).then(function (response) {
       console.log('pv response', response.data);
       controller.set('model', response.data);
       controller.set('have_records', response.data.length > 0);
@@ -29,8 +29,7 @@ App.PvChartController = Ember.Controller.extend({
   actions: {
     setTicker: function (ticker) {
       var this_ = this;
-      App.Search.get_generic_detail('pv', {'ticker': ticker}).then(function (response) {
-        console.log('!!!', response.data);
+      App.Search.fetch_data('pv', {'ticker': ticker}).then(function (response) {
         this_.set('model', response.data);
       });
     }

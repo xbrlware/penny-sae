@@ -5,7 +5,8 @@
 
 App.DelinquencyRoute = Ember.Route.extend({
   setupController: function (controller, model) {
-    App.Search.get_generic_detail('delinquency', this.get('controller.name')).then(function (response) {
+    App.Search.fetch_data('delinquency', this.get('controller.name')).then(function (response) {
+      console.log('delinquency data', response);
       controller.set('model', response.data);
     });
   }
@@ -15,6 +16,7 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
 
+  tableDiv: '#delinquency-table',
   tableColumns: [
     {title: 'Date of Filing', className: 'dt-body-right'},
     {title: 'Deadline', className: 'dt-body-right'},
@@ -24,7 +26,7 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [n.date, n._enrich.deadline, n.form, n._enrich.is_late];
+      return [n.date, n._enrich.deadline || 'missing', n.form, n._enrich.is_late || 'missing'];
     });
   }.property('model'),
 
@@ -41,33 +43,4 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
   }
 });
 
-// ** Could merge this with FinancialView **
-App.DelinquencyView = Ember.View.extend({
-  tableDiv: '#delinquency-table',
-
-  didInsertElement: function () {
-    this._super();
-    Ember.run.scheduleOnce('afterRender', this, this.renderTable);
-  },
-
-  contentChanged: function () {
-    this.renderTable();
-  }.observes('controller.tableContent'),
-
-  renderTable: function () {
-    var con = this.get('controller');
-
-    var table = Ember.$(this.tableDiv).DataTable({
-      fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
-      destroy: true,
-      data: con.get('tableContent'),
-      columns: con.tableColumns,
-      pageLength: 50
-    });
-    con.set('table', table);
-  }
-});
+App.DelinquencyView = App.GenericTableView.extend();
