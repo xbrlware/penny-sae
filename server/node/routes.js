@@ -219,7 +219,9 @@ module.exports = function (app, config, client) {
 
   app.post('/search', function (req, res) {
     var d = req.body;
-
+    
+    console.log('params in search :: ', JSON.stringify(d.redflagParams));
+    
     console.log('/search :: ',
       JSON.stringify(
         d.query ? queryBuilder.search(d.query, d.redflagParams) : queryBuilder.sort(d.redflagParams)
