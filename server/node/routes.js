@@ -392,7 +392,6 @@ module.exports = function (app, config, client) {
     });
   });
 
-
   // >>
 
   //  app.post('/fetch_companies', function(req, res) {
