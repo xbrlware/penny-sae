@@ -1,5 +1,4 @@
 App.GenericTableView = Ember.View.extend({
-  
   didInsertElement: function () {
     this._super();
     Ember.run.scheduleOnce('afterRender', this, this.renderTable);
