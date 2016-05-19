@@ -108,7 +108,7 @@
 
 App.DetailRoute = Ember.Route.extend({
   model: function (params) {
-    return App.Search.fetch_data('cik2name', {'cik' : params.cik});
+    return App.Search.fetch_data('cik2name', {'cik': params.cik});
   },
 
   setupController: function (controller, model, queryParams) {
