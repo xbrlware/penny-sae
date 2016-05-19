@@ -214,6 +214,36 @@ module.exports = function (app, config, client) {
         '_source': ['current_symbology.name', 'current_symbology.ticker'],
         'query': { 'term': { 'cik': cik } }
       };
+    },
+    'cik2tickers' : function(cik) {
+        return {
+            "query" : { "term": {"cik" : cik}},
+            "aggs"  : { "tickers" : {"terms" : {"field" : "ticker", "size" : 0}}}
+        }
+    },
+    'suspensions': function (cik) {
+        return {
+            '_source' : ["link", "date", "release_number"],
+            'query' : {
+                "match_all" : {}
+            }
+        }
+    },
+    'pv' : function(ticker) {
+        return {
+          "sort": [
+            {
+              "date": {
+                "order": "asc"
+              }
+            }
+          ], 
+            "query" : {
+                "match" : {
+                    "symbol" : ticker
+                }
+            }
+        }
     }
   };
 
@@ -287,6 +317,51 @@ module.exports = function (app, config, client) {
       }
     });
   });
+
+  // *** Would be nice to return these in order by date somehow ***
+  app.post('/cik2tickers', function (req, res) {
+    var d = req.body;
+    client.search({
+      'index': 'ernest_symbology',
+      'body': queryBuilder.cik2tickers(d.cik),
+      'from': 0,
+      'size': 999
+    }).then(function (esResponse) {
+        res.send({"tickers" : _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
+    });
+  });
+
+  
+  // *** Not implemented yet ***
+  // *** Need to link CIKs to Trading suspensions ***
+  app.post('/suspensions', function (req, res) {
+    var d = req.body;
+    client.search({
+      'index': 'ernest_suspensions',
+      'body': queryBuilder.suspensions(d.cik),
+      'from': 0,
+      'size': 99999
+    }).then(function (esResponse) {
+        res.send({"data" : _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+  
+  // *** Not fully implemented ***
+  // *** Should be searching on hard symbol.cat property, which doesn't exist yet ***
+  app.post('/pv', function (req, res) {
+    var d = req.body;
+    console.log('pv ::', d);
+    client.search({
+      'index': 'ernest_pv',
+      'body': queryBuilder.pv(d.ticker),
+      'from': 0,
+      'size': 10000
+    }).then(function (esResponse) {
+        res.send({"data" : _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+
+  
   // >>
 
   //  app.post('/fetch_companies', function(req, res) {

@@ -21,25 +21,25 @@ function fetch (args) {
   });
 }
 
-function getDetail (cik, rfClean) { // eslint-disable-line no-unused-vars
-  return new Ember.RSVP.Promise(function (resolve, reject) {
-    fetch({
-      endpoint: 'fetch_companies',
-      index: config.COMPANY_INDEX,
-      query_type: 'detailQuery',
-      query_args: {'cik': cik},
-      rf: rfClean,
-      callback: function (data) {
-        var hit = data.hits.hits[0];
-        var detail = App.DetailModel.create();
-        detail.set('cik', hit._id);
-        detail.set('source', hit._source);
-        detail.set('fields', hit.fields);
-        resolve(detail);
-      }
-    });
-  });
-}
+//function getDetail (cik, rfClean) { // eslint-disable-line no-unused-vars
+//  return new Ember.RSVP.Promise(function (resolve, reject) {
+//    fetch({
+//      endpoint: 'fetch_companies',
+//      index: config.COMPANY_INDEX,
+//      query_type: 'detailQuery',
+//      query_args: {'cik': cik},
+//      rf: rfClean,
+//      callback: function (data) {
+//        var hit = data.hits.hits[0];
+//        var detail = App.DetailModel.create();
+//        detail.set('cik', hit._id);
+//        detail.set('source', hit._source);
+//        detail.set('fields', hit.fields);
+//        resolve(detail);
+//      }
+//    });
+//  });
+//}
 
 App.SearchResults = Ember.Object.extend({
   total_hits: undefined,
@@ -133,7 +133,42 @@ App.Search.reopenClass({
         }
       });
     });
+  },
+  
+  cik2tickers: function (cik) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: 'cik2tickers',
+        data: JSON.stringify({ 'cik': cik }),
+        success: function (response) {
+          console.log('response --', response);
+          resolve(response);
+        }
+      });
+    });
+  },
+  
+  get_generic_detail : function (detail_name, name) {
+    console.log(detail_name, ' :: ', name);
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: detail_name,
+        data: JSON.stringify(name),
+        success: function (response) {
+          console.log('response --', response);
+          resolve(response);
+        }
+      });
+    });
   }
+
+  
   // <<
 
   //

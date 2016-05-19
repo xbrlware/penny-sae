@@ -2,15 +2,15 @@
 
 /* global Ember, App */
 
-App.DetailModel = Ember.Object.extend({
-  cik: '',
-  source: null,
-  fields: null,
-  sarreport: null,
-
-  name: function () { return this.get('fields.name'); }.property('fields'),
-  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name')
-
+//App.DetailModel = Ember.Object.extend({
+//  cik: '',
+//  source: null,
+//  fields: null,
+//  sarreport: null,
+//
+//  name: function () { return this.get('fields.name'); }.property('fields'),
+//  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name')
+//
 //    // Trading halt information for table
 //    tradingHalt: function() {
 //        var th = this.get('source.th')
@@ -104,7 +104,7 @@ App.DetailModel = Ember.Object.extend({
 //            return null
 //        }
 //    }.property('source')
-});
+//});
 
 App.DetailRoute = Ember.Route.extend({
   model: function (params) {
@@ -122,6 +122,6 @@ App.DetailController = Ember.ObjectController.extend({
 });
 
 App.DetailView = Ember.View.extend({
-  controllerChanged: function () { Ember.$('html, body').animate({ scrollTop: 0 }, '500', 'swing'); }.observes('controller.model'),
-  didInsertElement: function () { this.$().hide().fadeIn('slow'); }
+  controllerChanged : function () { Ember.$('html, body').animate({ scrollTop: 0 }, '500', 'swing'); }.observes('controller.model'),
+  didInsertElement  : function () { this.$().hide().fadeIn('slow'); }
 });

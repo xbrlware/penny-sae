@@ -6,41 +6,10 @@
 </span>
 
 <div>
-    <div id="container-pvchart"></div> 
-           
+    <div id="container-pvchart"></div>
 </div>
 
 <p>
-    CROWDSAR is a proprietary score that quantifies the prevalence of allegations of fiscal malfeasance for the company on investor message boards and social media.
+    CROWDSAR is a proprietary score that quantifies the prevalence of allegations of fiscal malfeasance
+    for the company on investor message boards and social media.
 </p>
-
-{{#if spikesTable}}
-    <br />
-    <div class="accordion" id="pv_accordion">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#pv_accordion" href="#pvt1">
-                    <h3 class="centered"> Show List of Price/Volume Anomalies </h3>
-                </a>
-            </div>
-            <div id="pvt1" class="accordion-body collapse out">
-                <div class="accordion-inner">
-                    <table class="table table-hover">
-                        <tr>
-                            <th>Date</th><th>Size</th><th>From</th><th>To</th><th>Volume</th>
-                        </tr>
-                        {{#each r in spikesTable}}
-                            <tr>
-                                <td>{{r.spike_date}}</td>
-                                <td>{{r.spike_size}}</td>
-                                <td>{{r.spike_from}}</td>
-                                <td>{{r.spike_to}}</td>
-                                <td>{{r.spike_vol}}</td>
-                            </tr>
-                        {{/each}}
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-{{/if}}
