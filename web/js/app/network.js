@@ -12,11 +12,11 @@ App.NetView = Ember.View.extend({
   draw: function () {
     this.get('controller').set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
     this.get('controller').set('hide_ner', gconfig.DEFAULT_HIDE_NER);
-
+    
     var con = this.get('controller'),
       cik = con.get('content.cik'),
       rgraph = RGraph(con, 'main-infovis');
-
+    
     App.NetworkAPI.expand_node(rgraph, cik, true);
   }
 });
@@ -34,11 +34,12 @@ App.NetworkAPI = Ember.Object.extend({});
 
 App.NetworkAPI.reopenClass({
   _fetch: function (params, cb) {
+    console.log('trying to fetch');
     Ember.$.ajax({
       type: 'POST',
       contentType: 'application/json',
       dataType: 'json',
-      url: 'network-v02',
+      url: 'network',
       data: JSON.stringify(params),
       success: cb
     });
@@ -66,6 +67,7 @@ App.NetworkAPI.reopenClass({
   expand_node: function (rgraph, cik, init) {
     cik = zpad(cik.toString());
     App.NetworkAPI._fetch({'cik': cik}, function (data) {
+      console.log('got data ->', data.nodes);
       if (init) {
         rgraph.loadJSON(data.nodes);
       } else {
@@ -105,7 +107,8 @@ function RGraph (con, into) {
       offsetX: 10,
       offsetY: 10,
       onShow: function (tip, node) {
-        tip.innerHTML = `${node.name} ${node.data.something}`;
+        console.log('node', node);
+        tip.innerHTML = `Name: ${node.name} CIK: ${node.id}`;
       }
     },
     Edge: {

@@ -30,7 +30,7 @@ function run_server () {
 
   require('./routes')(app, config, client);
   require('./network')(app, config, client);
-  
+
   app.use('/', express.static('../../web'));
 
   if (config.HTTPS.ENABLED) {

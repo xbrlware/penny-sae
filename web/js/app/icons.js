@@ -5,6 +5,11 @@
 // Custom icons for JIT plot
 
 // This is terrible hardcoding and should be changed ~ BKJ
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 var networkGreenPerson = new Image();
 var networkYellowPerson = new Image();
 var networkOrangePerson = new Image();
@@ -28,23 +33,23 @@ networkOrangeBuilding.src = 'img/orange_building.png';
 networkRedBuilding.src = 'img/red_building.png';
 
 function implementIcons () { // eslint-disable-line no-unused-vars
+  console.log('implementing icons')
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {
         var entityType = node.data['type'];
         var iconSize = 5 * node.data['$dim'];
-
         var ctx = canvas.getCtx();
         var pos = node.pos.getc(true);
 
         var isPerson = entityType === 'owner' | entityType === undefined | entityType === 'Unknown' | entityType === 'NER' | entityType === 'entity';
-
+        
         var icon;
 
         if (isPerson) {
-          icon = window['network_' + node.data['$color'] + 'Person'];
+          icon = window['network' + node.data['$color'].capitalize() + 'Person'];
         } else if (entityType === 'issuer' | entityType === 'both') {
-          icon = window['network_' + node.data['$color'] + 'Building'];
+          icon = window['network' + node.data['$color'].capitalize() + 'Building'];
         } else {
           console.log('icons.js :: unknown entity type!', entityType);
         }
