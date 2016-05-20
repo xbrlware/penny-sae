@@ -29,7 +29,8 @@ function run_server () {
   var client = new es.Client({hosts: [config.ES.HOST]});
 
   require('./routes')(app, config, client);
-
+  require('./network')(app, config, client);
+  
   app.use('/', express.static('../../web'));
 
   if (config.HTTPS.ENABLED) {
