@@ -170,7 +170,7 @@ App.LeadershipView = Ember.View.extend({
         .map(function (d) { console.log('d.name', d.name); return d.name; }))
         .copy();
       var transition = svg.transition().duration(750);
-      // var delay = function (d, i) { return i * 50; };
+      // var delay = function (d, i) { return i * 50; }
 
       transition.selectAll('.person')
         .attr('transform', function (d) { return 'translate(0, ' + xs(d.name) + ')'; });

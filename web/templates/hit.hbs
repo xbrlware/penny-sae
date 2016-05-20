@@ -12,24 +12,24 @@
 
                 <div class="row-fluid hit-badge-wrapper">
                     <div id="badge-header">
-                        {{#unless h.red_flags.possible}}
+                        {{#unless h.redFlags.possible}}
                             <p class="lg-text">
                         {{/unless}}
-                            Red Flags : {{h.red_flags.total}}/{{h.red_flags.possible}}
-                        {{#unless h.red_flags.possible}}
+                            Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
+                        {{#unless h.redFlags.possible}}
                             </p>
                         {{/unless}}
                     </div>
                     <br />
 
-                    {{ view App.HitTextView red_flags=h.red_flags text="No Revenues" type="financials" first_column=true }}
-                    {{ view App.HitTextView red_flags=h.red_flags text="Change In Business" type="symbology" first_column=true }}
-                    {{ view App.HitTextView red_flags=h.red_flags text="Trading Suspensions" type="trading_halts" first_column=true }}
-                    {{ view App.HitTextView red_flags=h.red_flags text="Late Filings" type="delinquency" first_column=true }}
-                    {{ view App.HitTextView red_flags=h.red_flags text="OTC Associates" type="network" first_column=true }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="No Revenues" type="financials" first_column=true }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="Change In Business" type="symbology" first_column=true }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="Trading Suspensions" type="trading_halts" first_column=true }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="Late Filings" type="delinquency" first_column=true }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="OTC Associates" type="network" first_column=true }}
 
-                    {{ view App.HitTextView red_flags=h.red_flags text="PV Anomalies" type="pv" first_column=false }}
-                    {{ view App.HitTextView red_flags=h.red_flags text="CROWDSAR" type="crowdsar" first_column=false }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="PV Anomalies" type="pv" first_column=false }}
+                    {{ view App.HitTextView redFlags=h.redFlags text="CROWDSAR" type="crowdsar" first_column=false }}
                 </div>
             </div>
         {{/link-to}}

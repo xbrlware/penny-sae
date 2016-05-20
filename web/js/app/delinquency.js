@@ -4,53 +4,33 @@
 // Delinquency
 
 App.DelinquencyRoute = Ember.Route.extend({
-  model: function () {
-    var delinquencyTable = this.modelFor('detail').get('delinquencyTable');
-    return delinquencyTable;
-  }
-});
-
-App.DelinquencyView = Ember.View.extend({
-  didInsertElement: function () {
-    this._super();
-    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
-  },
-
-  afterRenderEvent: function () {
-    var self = this;
-    var con = self.get('controller');
-    Ember.$('#delinquency-table').DataTable({
-      fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
-      retrieve: true,
-      data: con.tableContent(),
-      columns: con.tableColumns(),
-      pageLength: 50
+  setupController: function (controller, model) {
+    App.Search.fetch_data('delinquency', this.get('controller.name')).then(function (response) {
+      console.log('delinquency data', response);
+      controller.set('model', response.data);
     });
   }
 });
 
 App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
-  tableColumns: function () {
-    return [
-      {title: 'Date of Filing', className: 'dt-body-right'},
-      {title: 'Due Date', className: 'dt-body-right'},
-      {title: 'Form'},
-      {title: 'Late Filing'}
-    ];
-  },
+  needs: ['detail'],
+  name: Ember.computed.alias('controllers.detail.model'),
+
+  tableDiv: '#delinquency-table',
+  tableColumns: [
+    {title: 'Date of Filing', className: 'dt-body-right'},
+    {title: 'Deadline', className: 'dt-body-right'},
+    {title: 'Form'},
+    {title: 'Late Filing'}
+  ],
 
   tableContent: function () {
-    var content = [];
-    _.map(this.get('model'), function (n) {
-      content.pushObject([n.dof, n.dd, n.form, n.std_late]);
+    return _.map(this.get('model'), function (n) {
+      return [n.date, n._enrich.deadline || 'missing', n.form, n._enrich.is_late || 'missing'];
     });
-    return content;
-  },
+  }.property('model'),
 
+  // *** What is this doing ***
   actions: {
     sortBy: function (property) {
       if (property === this.get('sortProperties')[0]) {
@@ -62,3 +42,5 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
     }
   }
 });
+
+App.DelinquencyView = App.GenericTableView.extend();

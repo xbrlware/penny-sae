@@ -2,15 +2,15 @@
 
 /* global Ember, App */
 
-App.DetailModel = Ember.Object.extend({
-  cik: '',
-  source: null,
-  fields: null,
-  sarreport: null,
-
-  name: function () { return this.get('fields.name'); }.property('fields'),
-  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name')
-
+// App.DetailModel = Ember.Object.extend({
+//  cik: '',
+//  source: null,
+//  fields: null,
+//  sarreport: null,
+//
+//  name: function () { return this.get('fields.name'); }.property('fields'),
+//  cse_url: function () { return 'cse.html?q="' + this.get('name') + '"'; }.property('name')
+//
 //    // Trading halt information for table
 //    tradingHalt: function() {
 //        var th = this.get('source.th')
@@ -104,11 +104,11 @@ App.DetailModel = Ember.Object.extend({
 //            return null
 //        }
 //    }.property('source')
-});
+// })
 
 App.DetailRoute = Ember.Route.extend({
   model: function (params) {
-    return App.Search.cik2name(params.cik);
+    return App.Search.fetch_data('cik2name', {'cik': params.cik});
   },
 
   setupController: function (controller, model, queryParams) {
@@ -118,7 +118,7 @@ App.DetailRoute = Ember.Route.extend({
 
 App.DetailController = Ember.ObjectController.extend({
   needs: ['application'],
-  redflag_params: Ember.computed.alias('controllers.application.redflag_params')
+  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams')
 });
 
 App.DetailView = Ember.View.extend({

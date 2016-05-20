@@ -14,14 +14,14 @@ App.FrontpageRoute = App.GRoute.extend({
       this.transitionTo('sidebar', '-');
     },
     toggleFlag: function (flag) {
-      this.get('controlle.redflag_params._toggles').toggleProperty(flag);
+      this.get('controlle.redFlagParams._toggles').toggleProperty(flag);
     }
   }
 });
 
 App.FrontpageController = Ember.ObjectController.extend({
   needs: ['application'],
-  redflag_params: Ember.computed.alias('controllers.application.redflag_params'),
+  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   isAdmin: function () { return App.isAdmin(); }.property()
 });
 

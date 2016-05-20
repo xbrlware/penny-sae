@@ -7,40 +7,58 @@
 // ---------------------------------------------------------------------------
 
 App.PvChartRoute = Ember.Route.extend({
-  model: function () {
-    var pv = this.modelFor('detail').source.pv;
-    var cs = this.modelFor('detail').source.crowdsar_new;
-    var tout = this.modelFor('detail').source.tout;
-    var spikesTable = this.modelFor('detail').get('spikesTable');
+  setupController: function (controller, model) {
+    //        App.Search.fetch_data('cik2tickers', {'cik': controller.get('name.cik')}).then(function(response) {
+    //            controller.set('tickers', response.tickers)
+    //            App.Search.get_generic_detail('pv', {"ticker" : response.tickers[0]}).then(function(response) {
+    //                controller.set('model', response.data)
+    //            })
+    //        })
+    App.Search.fetch_data('pv', this.get('controller.name')).then(function (response) {
+      console.log('pv response', response.data);
+      controller.set('model', response.data);
+      controller.set('have_records', response.data.length > 0);
+    });
+  }
+});
 
-    var mod = {'pv': pv, 'cs': cs, 'tout': tout, 'spikesTable': spikesTable};
-    return mod;
+App.PvChartController = Ember.Controller.extend({
+  needs: ['detail'],
+  name: Ember.computed.alias('controllers.detail.model'),
+  have_records: true,
+  actions: {
+    setTicker: function (ticker) {
+      var this_ = this;
+      App.Search.fetch_data('pv', {'ticker': ticker}).then(function (response) {
+        this_.set('model', response.data);
+      });
+    }
   }
 });
 
 App.PvChartView = Ember.View.extend({
-  didInsertElement: function () {
-    var model = this.get('controller').get('model');
-    var data = [];
-    for (var i = 0; i < model.pv.vol.length; i++) {
-      data.push({date: new Date(model.pv.date[i]),
-        volume: model.pv.vol[i],
-        close: model.pv.close[i],
-        open: model.pv.close[i],
-        high: model.pv.close[i],
-      low: model.pv.close[i]});
-    }
+  controllerChanged: function () {
+    this.drawChart(this.get('controller.model'));
+  }.observes('controller.model'),
 
-    var fData = [];
-    for (i = 0; i < model.cs.date.length; i++) {
-      fData.push({
-        date: new Date(model.cs.date[i]),
-        high: model.cs.n_post[i],
-        close: model.cs.n_susp[i],
-        open: model.cs.p_susp[i],
-        volume: (model.cs.p_susp_lb[i] * 1000) / 10,
-        low: 0});
-    }
+  drawChart: function (data) {
+    if (!data) {return; }
+
+    _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });
+
+    var fData = data;
+    _.map(fData, function (datum) { datum['date'] = new Date(datum['date']); });
+
+    //    var fData = []
+    //    for (i = 0; i < model.cs.date.length; i++) {
+    //      fData.push({
+    //        date: new Date(model.cs.date[i]),
+    //        high: model.cs.n_post[i],
+    //        close: model.cs.n_susp[i],
+    //        open: model.cs.p_susp[i],
+    //        volume: (model.cs.p_susp_lb[i] * 1000) / 10,
+    //        low: 0})
+    //    }
 
     var margin = {top: 0, right: 10, bottom: 200, left: 40};
     var margin2 = {top: 340, right: 10, bottom: 100, left: 40};

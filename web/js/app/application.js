@@ -109,14 +109,14 @@ App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 App.ApplicationController = Ember.Controller.extend({
   searchTerm: undefined,
   showNav: false,
-  redflag_params: App.RedFlagParams.create(),
+  redFlagParams: App.RedFlagParams.create(),
   isLoading: false, // state variable for spinner
 
   search_company: function (cb) {
-    App.Search.search_company(this.searchTerm, this.redflag_params).then(cb);
+    App.Search.search_company(this.searchTerm, this.redFlagParams).then(cb);
   },
   sort_companies: function (cb) {
     console.log('application -> sort_companies');
-    App.Search.search_company(undefined, this.redflag_params).then(cb);
+    App.Search.search_company(undefined, this.redFlagParams).then(cb);
   }
 });
