@@ -8,14 +8,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.pv.price_jump"
+                    valueBinding=redFlagParams._params.pv.price_jump
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 10
                     max  = 1000
                     step = 5
-                    valueBinding='rf.pv.price_jump'
+                    valueBinding=redFlagParams._params.pv.price_jump
                     class="input-slider-dropdown"
                 }}
             </div>
@@ -25,14 +25,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.pv.volume_window"
+                    valueBinding=redFlagParams._params.pv.volume_window
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 1000
                     step = 10
-                    valueBinding='rf.pv.volume_window'
+                    valueBinding=redFlagParams._params.pv.volume_window
                     class="input-slider-dropdown"
                 }}
 
@@ -43,14 +43,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.pv.volume_multiplier"
+                    valueBinding=redFlagParams._params.pv.volume_multiplier
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 100
                     step = 1
-                    valueBinding='rf.pv.volume_multiplier'
+                    valueBinding=redFlagParams._params.pv.volume_multiplier
                     class="input-slider-dropdown"
                 }}
             </div>
@@ -60,14 +60,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.pv.fall_to"
+                    valueBinding=redFlagParams._params.pv.fall_to
                     class="input-text-hidden"
                 }}    
                 {{
                     view App.SliderView min  = 0
                     max  = 100
                     step = 1
-                    valueBinding='rf.pv.fall_to'
+                    valueBinding=redFlagParams._params.pv.fall_to
                     class="input-slider-dropdown"
                 }}
             </div>
@@ -77,14 +77,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.pv.fall_within"
+                    valueBinding=redFlagParams._params.fall_within
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 1000
                     step = 10
-                    valueBinding='rf.pv.fall_within'
+                    valueBinding=redFlagParams._params.pv.fall_within
                     class="input-slider-dropdown"
                 }}
             </div>
@@ -102,7 +102,7 @@
                     {{
                         view Ember.Select
                         content=crowdsar_select_content
-                        valueBinding="rf.crowdsar.type"
+                        valueBinding=redFlagParams._params.crowdsar.type
                         optionValuePath="content.id"
                         optionLabelPath="content.name"
                     }}
@@ -114,14 +114,14 @@
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.crowdsar.past_months"
+                    valueBinding=redFlagParams._params.crowdsar.past_months
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 5
                     step = 1
-                    valueBinding="rf.crowdsar.past_months"
+                    valueBinding=redFlagParams._params.crowdsar.past_months
                     class="input-slider-dropdown"
                 }}
             </div>
@@ -172,35 +172,44 @@
     <span class="centered"><h4>Change in Business Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Type of Change </label>
+            <label class="col-sm-4 control-label"> Name Field </label>
             <div class="col-sm-8">
                 <span class="centered">
                     {{
-                        view Ember.Select
-                        content=symbology_select_content
-                        valueBinding="rf.symbology.type"
-                        optionValuePath="content.id"
-                        optionLabelPath="content.name"
+                        input type="text"
+                        valueBinding=redFlagParams._params.symbology.field
                     }}
                 </span>
             </div>
         </div>
-                
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Number of Changes </label>
+            <label class="col-sm-4 control-label"> Date Range </label>
             <div class="col-sm-8">
-                {{
-                    input type="text"
-                    valueBinding="rf.symbology.thresh"
-                    class="input-text-hidden"
-                }}  
-                {{
-                    view App.SliderView min  = 0
-                    max  = 10
-                    step = 1
-                    valueBinding='rf.symbology.thresh'
-                    class="input-slider-dropdown"
-                }}
+                <span>
+                    From:{{
+                        view App.DatepickerView
+                        defaultDate=redFlagParams._params.symbology.min_date
+                        valueBinding=redFlagParams._params.symbology.min_date
+                        }}
+                </span>
+                <span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;To: {{
+                        view App.DatepickerView
+                        defaultDate=redFlagParams._params.symbology.max_date
+                        valueBinding=redFlagParams._params.symbology.min_date
+                        }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 control-label"> Threshold </label>
+            <div class="col-sm-8">
+                <span class="centered">
+                    {{
+                        input type="number"
+                        valueBinding=redFlagParams._params.symbology.threshold
+                    }}
+                </span>
             </div>
         </div>
     </form>
@@ -216,7 +225,7 @@
                     {{
                         view Ember.Select
                         content=financials_select_content
-                        valueBinding="rf.financials.type"
+                        valueBinding=redFlagParams._params.financials.type
                         optionValuePath="content.id"
                         optionLabelPath="content.name"
                     }}
@@ -224,32 +233,45 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Below X Dollars </label>
+            <label class="col-sm-4 control-label"> Value </label>
             <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.financials.below"
+                    valueBinding=redFlagParams._params.financials.value
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 1000000
                     step = 100
-                    valueBinding='rf.financials.below'
+                    valueBinding=redFlagParams._params.financials.value
                     class="input-slider-dropdown"
                 }}
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-4 control-label"> For past Y Years </label>
+            <label class="col-sm-4 control-label"> Date Range </label>
             <div class="col-sm-8">
                 <span>
-                    From: {{view App.DatepickerView defaultDate=rf.financials.from valueBinding="rf.financials.min-date"}}
+                    From: {{view App.DatepickerView defaultDate=redFlagParams._params.financials.min_date valueBinding=redFlagParams._params.financials.min_date}}
                 </span>
                 <br />
                 <span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    To: {{view App.DatepickerView defaultDate=rf.financials.to valueBinding="rf.financials.max_date"}}
+                    To: {{view App.DatepickerView defaultDate=redFlagParams._params.financials.max_date valueBinding=redFlagParams._params.financials.max_date}}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 control-label"> Threshold </label>
+            <div class="col-sm-8">
+                <span class="centered">
+                    &nbsp;
+                    {{
+                        input
+                        type="number"
+                        valueBinding=redFlagParams._params.financials.threshold
+                    }}
                 </span>
             </div>
         </div>
@@ -260,31 +282,45 @@
     <span class="centered"><h4>Late Filings Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Number of Late Filings </label>
+            <label class="col-sm-4 control-label"> Form </label>
             <div class="col-sm-8">
-                        {{input type="text" valueBinding="rf.delinquency.thresh"
-                            class="input-text-hidden"}}
-                        {{view App.SliderView min  = 0
-                                              max  = 20
-                                              step = 1
-                                              valueBinding="rf.delinquency.thresh"
-                                              class="input-slider-dropdown"}}
+                <span class="centered">
+                    {{
+                        view Ember.Select
+                        content=late_filings_content
+                        valueBinding=redFlagParams._params.delinquency.form
+                        optionValuePath="content.id"
+                        optionLabelPath="content.name"
+                    }}
+                </span>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-4 control-label"> In Past Y Years </label>
+            <label class="col-sm-4 control-label"> Date Range </label>
+            <div class="col-sm-8">
+                <span>
+                    From: {{view App.DatepickerView
+                            defaultDate=redFlagParams._params.delinquency.min_date
+                            valueBinding=redFlagParams._params.delinquency.min_date
+                          }}
+                </span>
+                <br />
+                <span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    To: {{view App.DatepickerView
+                          defaultDate=redFlagParams._params.delinquency.max_date
+                          valueBinding=redFlagParams._params.delinquency.max_date
+                          }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 control-label"> Threshold </label>
             <div class="col-sm-8">
                 {{
-                    input type="text"   
-                    valueBinding="rf.delinquency.since"
-                    class="input-text-hidden"
-                }}
-                {{
-                    view App.SliderView min  = 0
-                    max = 10
-                    step = 1
-                    valueBinding = "rf.delinquency.since"
-                    class = "input-slider-dropdown"
+                    input type="number"
+                    size=6
+                    valueBinding=redFlagParams._params.delinquency.threshold
                 }}
             </div>
         </div>
@@ -295,19 +331,31 @@
     <span class="centered"><h4>Trading Halts Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Number of Trading Suspensions </label>
+            <label class="col-sm-4 control-label"> Date Range </label>
+            <div class="col-sm-8">
+                <span>
+                    From: {{view App.DatepickerView
+                            defaultDate=redFlagParams._params.trading_halts.min_date
+                            valueBinding=redFlagParams._params.trading_halts.min_date
+                          }}
+                </span>
+                <br />
+                <span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    To: {{view App.DatepickerView
+                          defaultDate=redFlagParams._params.trading_halts.max_date
+                          valueBinding=redFlagParams._params.trading_halts.max_date
+                          }}
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label"> Threshold </label>
             <div class="col-sm-8">
                 {{
-                    input type="text"
-                    valueBinding="rf.trading_halts.thresh"
-                    class="input-text-hidden"
-                }}
-                {{
-                    view App.SliderView min  = 0
-                    max  = 5
-                    step = 1
-                    valueBinding="rf.trading_halts.thresh"
-                    class="input-slider-dropdown"
+                    input type="number"
+                    valueBinding=redFlagParams._params.trading_halts.threshold
                 }}
             </div>
         </div>
@@ -320,30 +368,33 @@
         <div class="form-group">
             <label class="col-sm-4 control-label"> Measure of Associates </label>
             <div class="col-sm-8">
-                <span class="centered">
-                    {{
-                        view Ember.Select
-                        content=network_select_content
-                        valueBinding    ="rf.network.type"
-                        optionValuePath ="content.id"
-                        optionLabelPath ="content.name"
-                    }}
-                </span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-4 control-label"> Threshold </label>
-            <div class="col-sm-8">
                 {{
                     input type="text"
-                    valueBinding="rf.network.thresh"
+                    valueBinding=redFlagParams._params.network.number_of_neighbors
                     class="input-text-hidden"
                 }}
                 {{
                     view App.SliderView min  = 0
                     max  = 100
                     step = 1
-                    valueBinding='rf.network.thresh'
+                    valueBinding=redFlagParams._params.network.number_of_neighbors
+                    class="input-slider-dropdown"
+                }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4 control-label"> Percent OTC </label>
+            <div class="col-sm-8">
+                {{
+                    input type="text"
+                    valueBinding=redFlagParams._params.network.percent_otc
+                    class="input-text-hidden"
+                }}
+                {{
+                    view App.SliderView min  = 0
+                    max  = 100
+                    step = 1
+                    valueBinding=redFlagParams._params.network.percent_otc
                     class="input-slider-dropdown"
                 }}
             </div>

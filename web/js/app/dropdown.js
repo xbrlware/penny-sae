@@ -41,6 +41,10 @@ App.DropdownController = Ember.ObjectController.extend({
     {id: 'false', name: 'Any Time'},
     {id: 'true', name: 'Ongoing'}
   ],
+  late_filings_content: [
+    {id: undefined, name: 'Choose Form'},
+    {id: '10K', name: '10-k'}
+  ],
 
   empty: true,
   pv: false,

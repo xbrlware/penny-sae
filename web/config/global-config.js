@@ -24,18 +24,20 @@ var gconfig = { // eslint-disable-line no-unused-vars
       'threshold': 1
     },
     'network': {
-      'type': 'otc_neibs_pct',
-      'thresh': 25
+      'number_of_neighbors': 2,
+      'percent_otc': 25
     },
     'financials': {
       'type': 'revenues',
-      'below': 1000,
-      'min_date': '2000-01-01',
+      'min_date': '1976-01-27',
       'max_date': '2016-01-01',
-      'contemporary': null
+      'value': 1000,
+      'threshold': 1
     },
     'trading_halts': {
-      'thresh': 1
+      'min_date': '2000-01-01',
+      'max_date': '2016-01-01',
+      'threshold': 1
     },
     'delinquency': {
       'form': '10-K',
