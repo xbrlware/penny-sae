@@ -25,7 +25,12 @@ JQ.Widget = Ember.Mixin.create({
           this.removeObserver(prop, observers[prop]);
         }
       }
-      ui._destroy();
+
+      if (ui._destroy) {
+        ui._destroy();
+      } else if (ui.datepicker) {
+        ui.datepicker('destroy');
+      }
     }
   },
 
