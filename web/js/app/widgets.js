@@ -116,7 +116,7 @@ App.RangeSliderView = JQ.RangeSliderView.extend({
 });
 
 App.DatepickerView = JQ.DatepickerView.extend({
-  attribueBindings: ['id', 'value'],
+  attributeBindings: ['id', 'value'],
   dateFormat: 'yy-mm-dd',
   changeMonth: true,
   changeYear: true,

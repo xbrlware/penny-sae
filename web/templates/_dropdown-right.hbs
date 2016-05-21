@@ -196,7 +196,7 @@
                     &nbsp;&nbsp;&nbsp;&nbsp;To: {{
                         view App.DatepickerView
                         defaultDate=redFlagParams._params.symbology.max_date
-                        valueBinding=redFlagParams._params.symbology.min_date
+                        valueBinding=redFlagParams._params.symbology.max_date
                         }}
                 </span>
             </div>
@@ -253,12 +253,17 @@
             <label class="col-sm-4 control-label"> Date Range </label>
             <div class="col-sm-8">
                 <span>
-                    From: {{view App.DatepickerView defaultDate=redFlagParams._params.financials.min_date valueBinding=redFlagParams._params.financials.min_date}}
+                    From: {{view App.DatepickerView
+                    defaultDate=redFlagParams._params.financials.min_date
+                    valueBinding=redFlagParams._params.financials.min_date}}
                 </span>
                 <br />
                 <span>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    To: {{view App.DatepickerView defaultDate=redFlagParams._params.financials.max_date valueBinding=redFlagParams._params.financials.max_date}}
+                    To: {{view App.DatepickerView
+                    t=redFlagParams._params.financials.max_date
+                    defaultDate=redFlagParams._params.financials.max_date
+                    valueBinding=redFlagParams._params.financials.max_date}}
                 </span>
             </div>
         </div>
