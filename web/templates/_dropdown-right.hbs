@@ -366,7 +366,7 @@
     <span class="centered"><h4>OTC Affiliates Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-4 control-label"> Measure of Associates </label>
+            <label class="col-sm-4 control-label"> Number of Neighbors </label>
             <div class="col-sm-8">
                 {{
                     input type="text"
@@ -374,11 +374,11 @@
                     class="input-text-hidden"
                 }}
                 {{
-                    view App.SliderView min  = 0
-                    max  = 100
-                    step = 1
-                    valueBinding=redFlagParams._params.network.number_of_neighbors
-                    class="input-slider-dropdown"
+                view App.RangeSliderView
+                    min=0
+                    max=100
+                    valuesBinding=redFlagParams._params.network.number_of_neighbors
+                    class="range-slider"
                 }}
             </div>
         </div>

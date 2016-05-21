@@ -78,6 +78,12 @@ JQ.SliderView = Ember.View.extend(JQ.Widget, {
   uiEvents: ['slide']
 });
 
+JQ.RangeSliderView = Ember.View.extend(JQ.Widget, {
+  uiType: 'slider',
+  uiOptions: ['values', 'min', 'max', 'range'],
+  uiEvents: ['slide']
+});
+
 JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
   tagName: 'input',
   type: 'text',
@@ -97,7 +103,15 @@ JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
 App.SliderView = JQ.SliderView.extend({
   attributeBindings: ['style', 'type', 'value', 'size'],
   slide: function (e, ui) {
-    this.set('value', ui.value);
+    this.set('values', ui.values);
+  }
+});
+
+App.RangeSliderView = JQ.RangeSliderView.extend({
+  attributeBindings: ['style', 'type', 'values', 'size'],
+  range: true,
+  slide: function (e, ui) {
+    this.set('values', ui.values);
   }
 });
 
