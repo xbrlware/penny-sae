@@ -103,7 +103,7 @@ JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
 App.SliderView = JQ.SliderView.extend({
   attributeBindings: ['style', 'type', 'value', 'size'],
   slide: function (e, ui) {
-    this.set('values', ui.values);
+    this.set('value', ui.value);
   }
 });
 

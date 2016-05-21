@@ -57,6 +57,7 @@ App.DropdownController = Ember.ObjectController.extend({
   actions: {
     sort_companies: function () {
       var appCon = this.controllerFor('application');
+      appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '-');
     },
 

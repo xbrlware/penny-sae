@@ -37,6 +37,7 @@ App.SidebarRoute = App.GRoute.extend({
       var appCon = this.controllerFor('application');
       controller.set('isLoading', true);
       appCon(function (response) {
+        controller.transitionToRoute();
         controller.transitionToRoute('sidebar');
         controller.set('model', response);
         controller.con.set('isLoading', false);
