@@ -1,3 +1,5 @@
+// TODO: Create table of contents for styling sheet, break into partials.
+
 // variables ----------------
 @hundred-pct: 100%;
 @sixty-pct  : 60%;
@@ -6,6 +8,11 @@
 @light-grey : rgb(244, 244, 244);
 @dashed-grey: 1px dashed grey;
 @solid-grey : 1px solid grey;
+
+// Colors for intensities in results table
+@col_low :  hsl(102, 21%, 62%);
+@col_med :  hsl(2, 46%, 90%);
+@col_high : hsl(329, 46%, 71%);
 
 .ember-application {
     margin-right  : 10px;
@@ -1096,4 +1103,68 @@ path.candle.down {
 
 .ember-table-content {
     font-family: inherit;
+}
+
+// Search Results Table
+.hitTable {
+  width: 500px;
+}
+.hitTable th {
+    border-bottom: 2px solid lightgrey;
+    padding: 0.5em 0 0.1em 0;
+    font-size: 1em;
+}
+
+.hitTable td {
+    border-bottom: 2px solid lightgrey;
+}
+.cRow > td {
+    padding: 5px 10px;
+}
+
+
+.cName {
+  width: 180px;
+  font-size:1.2em;
+  font-weight: bold;
+}
+
+.hitTable td {
+    text-align: center;
+}
+
+/* Conditional Formatting */
+.tLow {
+    background-color: @col_low;
+}
+
+.tMedium {
+    background-color: @col_med;
+}
+
+.tHigh {
+    background-color: @col_high;
+}
+
+.noValue {
+  background: lightgrey;
+}
+
+th.rotate {
+  /* Fallback for browsers without   Transform */
+  height: 140px;
+  white-space: nowrap;
+}
+
+th.rotate > div {
+  transform: 
+    /* Magic Numbers */
+    translate(22px, 51px)
+    /* 45 is really 360 - 45 */
+    rotate(315deg);
+  width: 30px;
+}
+th.rotate > div > span {
+  border-bottom: 1px solid #ccc;
+  padding: 2px 10px;
 }
