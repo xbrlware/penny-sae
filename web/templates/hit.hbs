@@ -2,83 +2,90 @@
 
 <div class="accordion-group">
     <div class="accordion-heading">
-        {{#link-to 'detail' h.cik classNames="accordion-toggle" data-toggle="collapse-next"}}
-            <div class="list-group-item seventy square">
-                <div class="hit-text-wrapper">
-                    <h5 class="list-group-item-heading">
+        {{#link-to 'detail' h.cik classNames="accordion-toggle" data-toggle="collapse-next" }}
+            <div class="hit_item" {{bind-attr id=App.HitTextView.mid}}>
+                <div class="hit-company-name">
+                    <span class="rowLabel" >
                         {{h.currentName}}
-                    </h5>
+                    </span>
                 </div>
-                
-                <div class="row-fluid hit-badge-wrapper">
-                    <div id="badge-header">
-                        {{#unless h.redFlags.possible}}
-                            <p class="lg-text">
-                        {{/unless}}
-                            FINRA Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
-                        {{#unless h.redFlags.possible}}
-                            </p>
-                        {{/unless}}
-                    </div>
-                    <br />
-                                
-                    {{
-                        view App.HitTextView
-                        text     = "No Revenues"
-                        type     = "financials"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Change in Business"
-                        type     = "delta"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Trading Suspensions"
-                        type     = "trading_halts"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "Late Filings"
-                        type     = "delinquency"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "OTC Associates"
-                        type     = "network"
-                        redFlags = h.redFlags
-                        first_column = true
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "PV Anomalies"
-                        type     = "pv"
-                        redFlags = h.redFlags
-                        first_column = false
-                    }}
-                    {{
-                        view App.HitTextView
-                        text     = "CROWDSAR"
-                        type     = "crowdsar"
-                        redFlags = h.redFlags
-                        first_column = false
-                    }}
-                </div>
-            </div>
+
+                {{ log h}}
+                 <table class="scores"> 
+                   <tr>
+                   <td {{bind-attr class="h.redFlags.financials_redflag:tMedium"}}> 
+                   <!-- Financials means no sales? not clear. -->
+                       {{#if h.redFlags.have_financials }}
+                          {{h.redFlags.financials_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.delta_redflag:tMedium"}}>  <!-- Delta = change in business? -->
+                       {{#if h.redFlags.have_delta }}
+                          {{h.redFlags.delta_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.trading_halts_redflag:tMedium"}}>  <!--Trade Suspensions-->
+                       {{#if h.redFlags.have_trading_halts }}
+                          {{h.redFlags.trading_halts_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.delinquincy_redflag:tMedium"}}> <!-- Delinquincy = late filing? -->
+                       {{#if h.redFlags.have_delinquincy }}
+                          {{h.redFlags.delinquincy_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.network_redflag:tMedium"}}> <!-- OTC associates? -->
+                       {{#if h.redFlags.have_network }}
+                          {{h.redFlags.network_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.pv_redflag:tMedium"}}>
+                       {{!-- Different from rest since have_value always true, but value field is often null. --}}
+                       {{#if h.redFlags.pv_value }}
+                          {{h.redFlags.pv_value}}
+                       {{else}}
+                        --
+                       {{/if }}
+                   </td>
+
+                   <td {{bind-attr class="h.redFlags.crowdsar_redflag:tMedium"}}>
+                       {{!-- Different from rest since have_value always true, but value field is often null. --}}
+                       {{#if h.redFlags.crowdsar_value }}
+                          {{h.redFlags.crowdsar_value}}
+                       {{else}}
+                          --
+                       {{/if }}
+                   </td>
+
+                   <td>
+                       {{h.redFlags.total}}
+                   </td>
+
+                 </tr>
+             </table>
+            </div> <!-- End hit item -->
         {{/link-to}}
-    </div>
+    </div> <!-- End hit heading -->
     <div class="accordion-body collapse out ab-sidebar">
         <div class="accordion-inner">
         <table id="{{unbound h.cik}}" class="display"></table>
         {{partial "uniqueRecords"}}
         </div>
     </div>
+
 </div>

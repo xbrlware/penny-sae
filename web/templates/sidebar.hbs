@@ -12,92 +12,47 @@
         {{else}}
             {{total_hits}} &nbsp; companies in our database
 			match your search criteria.
-            <div class="list-group square">
-                {{#each h in hits}}
-                    {{#if h.currentName}}
-                        {{view App.HitView h=h}}
-                    {{/if}}
-                {{/each}}
-            </div>
-            <table class="hitTable">
-              <col class="cName"/>
-              <col/>
-              <col/>
-              <col/>
-              <col/>
-              <col/>
-              <col/>
-              <col/>
-              <col/>
-              <thead>
-                <tr>
-                  <th>Company</th>
-                  <th class="rotate">
-                    <div><span>No Revenues</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>Change Business</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>Late Filing</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>Trade Suspensions</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>OTC Associates</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>Price/Vol Anomaly</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>CROWDSAR</span></div>
-                  </th>
-                  <th class="rotate">
-                    <div><span>Total Flags</span></div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-              <a href="blah">
-                  <tr class="cRow">
-                  <td>Phoenix Gold International Inc</td>
-                  <td class="cond">1</td>
-                  <td class="cond">-</td>
-                  <td class="cond">3</td>
-                  <td class="cond">4</td>
-                  <td class="cond">55</td>
-                  <td class="cond">6</td>
-                  <td class="cond">7</td>
-                  <td class="tscore">5</td>
-                </tr>
-              </a>
-                
-                <tr class="cRow">
-                  <td>Blue Wings International</td>
-                  <td class="cond">1</td>
-                  <td class="cond">-</td>
-                  <td class="cond">3</td>
-                  <td class="cond">4</td>
-                  <td class="cond">55</td>
-                  <td class="cond">6</td>
-                  <td class="cond">7</td>
-                  <td class="tscore">5</td>
-                </tr>
-                <tr class="cRow">
-                  <td>Mechatronics Flex, INC LLC</td>
-                  <td class="cond">1</td>
-                  <td class="cond">-</td>
-                  <td class="cond">3</td>
-                  <td class="cond">4</td>
-                  <td class="cond">55</td>
-                  <td class="cond">6</td>
-                  <td class="cond">7</td>
-                  <td class="tscore">5</td>
-                </tr>
-              </tbody>
-            </table>
-
+            
+             <table class="hitTable">
+             <thead>
+               <tr>
+                 <th class="rotate">
+                   <div><span>No Revenues</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>Change Business</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>Trade Suspensions</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>Late Filing</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>OTC Associates</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>Price/Vol Anomaly</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>CROWDSAR</span></div>
+                 </th>
+                 <th class="rotate">
+                   <div><span>Total Flags</span></div>
+                 </th>
+               </tr>
+             </thead>
+           </table>
+          <div class="list-group square sidebar">
+        
+           
+      
+            {{#each h in hits}}
+                {{#if h.currentName}}
+                    {{view App.HitView h=h}}
+                {{/if}}
+            {{/each}}
+          </div>
 
         {{/unless}}
     {{else}}
