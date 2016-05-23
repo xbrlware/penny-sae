@@ -2,10 +2,6 @@
 
 /* global Ember, App, d3 */
 
-// ---------------------------------------------------------------------------
-// -------------- Price/Volume/Suspicious Activity Charts --------------------
-// ---------------------------------------------------------------------------
-
 App.PvChartRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     //        App.Search.fetch_data('cik2tickers', {'cik': controller.get('name.cik')}).then(function(response) {
