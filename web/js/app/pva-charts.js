@@ -1,6 +1,6 @@
 // web/js/app/pva-charts.js
 
-/* global Ember, App, d3 */
+/* global Ember, App, d3, _ */
 
 App.PvChartRoute = Ember.Route.extend({
   setupController: function (controller, model) {
@@ -15,6 +15,10 @@ App.PvChartRoute = Ember.Route.extend({
       controller.set('model', response.data);
       controller.set('have_records', response.data.length > 0);
     });
+
+    App.Search.fetch_boards('get_boards', boardIds).then(function (response) {
+      console.log('board response', response.data);
+      controller.set('boardPosts', response.data);
   }
 });
 
@@ -22,6 +26,7 @@ App.PvChartController = Ember.Controller.extend({
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
   have_records: true,
+  boardPosts: undefined,
   actions: {
     setTicker: function (ticker) {
       var this_ = this;
@@ -38,9 +43,8 @@ App.PvChartView = Ember.View.extend({
   }.observes('controller.model'),
 
   drawChart: function (data) {
-    alert('drawChart')
     console.log('drawChart -- data', data);
-    if (!data) {return; }
+    if (!data) { return; }
 
     _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });
 
@@ -69,7 +73,7 @@ App.PvChartView = Ember.View.extend({
     var height2 = 500 - margin2.top - margin2.bottom;
     var height3 = 500 - margin3.top - margin3.bottom;
 
-    var formatTooltipDate = d3.time.format('%b. %d, %Y');
+    // var formatTooltipDate = d3.time.format('%b. %d, %Y');
 
     var x = d3.time.scale().domain(d3.extent(data, function (d) { return d.date; })).range([0, width]);
     var x2 = d3.time.scale().domain(x.domain()).range([0, width]);
@@ -91,6 +95,7 @@ App.PvChartView = Ember.View.extend({
 
     var zoom = d3.behavior.zoom().x(x).y(y).scaleExtent([1, 10]).on('zoom', zoomed);
 
+    /*
     var volumeTip = d3.tip()
       .attr('class', 'volume-tip')
       .offset([-10, 0])
@@ -104,7 +109,7 @@ App.PvChartView = Ember.View.extend({
       .html(function (d) {
         return '<strong>Date: </strong><span>' + formatTooltipDate(d.date) + '</span> <br /> <strong>Crowdsar: </strong><span>' + d.close + '</span>';
       });
-
+*/
     var line = d3.svg.line()
       .x(function (d) { return x(d.date); })
       .y(function (d) { return y(d.close); });
@@ -131,9 +136,9 @@ App.PvChartView = Ember.View.extend({
       .attr('width', width)
       .attr('height', height3);
 
-    svg.call(volumeTip);
+  /* svg.call(volumeTip);
     svg.call(crowdsarTip);
-
+*/
     var focus = svg.append('g')
       .attr('class', 'focus')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
@@ -200,9 +205,9 @@ App.PvChartView = Ember.View.extend({
       .attr('x', function (d) { return x2(d.date); })
       .attr('width', 3)
       .attr('y', function (d) { return y2(d.volume); })
-      .attr('height', function (d) { return height2 - y2(d.volume); })
-      .on('mouseover', volumeTip.show)
-      .on('mouseout', volumeTip.hide);
+      .attr('height', function (d) { return height2 - y2(d.volume); });
+      // .on('mouseover', volumeTip.show)
+      // .on('mouseout', volumeTip.hide);
 
     crowdsar.append('g')
       .attr('class', 'x axis crowdsar')
@@ -222,9 +227,9 @@ App.PvChartView = Ember.View.extend({
       .attr('x', function (d) { return x3(d.date); })
       .attr('width', 3)
       .attr('y', function (d) { return y3(d.close); })
-      .attr('height', function (d) { return height3 - y3(d.close); })
-      .on('mouseover', crowdsarTip.show)
-      .on('mouseout', crowdsarTip.hide);
+      .attr('height', function (d) { return height3 - y3(d.close); });
+    //  .on('mouseover', crowdsarTip.show)
+    //  .on('mouseout', crowdsarTip.hide);
 
     function mousemove () {
       var x0 = x.invert(d3.mouse(this)[0]);

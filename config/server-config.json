@@ -10,7 +10,7 @@
         "INDEX" : {
           "AUTH"        : "",
           "AGG"         : "ernest_agg",
-          "PV"          : "ernest_pv_reshard",
+          "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_cat",
           "DELINQUENCY" : "ernest_delinquency",
           "SUSPENSIONS" : "ernest_suspensions"

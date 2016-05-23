@@ -2,8 +2,8 @@
 
 module.exports = function (app, config, client) {
   var qp = require('./qp.js');
-  var async = require('async');
-  var _s = require('underscore.string');
+  // var async = require('async');
+  // var _s = require('underscore.string');
   var _ = require('underscore')._;
 
   // function setRedFlags (rfClean, f) {
@@ -211,8 +211,8 @@ module.exports = function (app, config, client) {
     },
     'cik2tickers': function (cik) {
       return {
-        'query': { 'term': {'cik': cik}},
-        'aggs': { 'tickers': {'terms': {'field': 'ticker', 'size': 0}}}
+        'query': {'term': {'cik': cik}},
+        'aggs': {'tickers': {'terms': {'field': 'ticker', 'size': 0}}}
       };
     },
     'suspensions': function (cik) {
@@ -283,6 +283,19 @@ module.exports = function (app, config, client) {
       res.send({
         'total_hits': esResponse.hits.total,
         'hits': hits
+      });
+    });
+  });
+
+  app.post('/get_boards', function (req, res) {
+    var boards = req.boards;
+
+    client.search({
+      'index': 'crowdsar_cat',
+      'body': qp.getBoard(boards)
+    }).then(function (esResponse) {
+      _.map(esResponse.hits.hits, function (hit) {
+        res.send(hit['_source']);
       });
     });
   });

@@ -1,7 +1,7 @@
 // web/js/app/client.js
-/* global Ember, App, config */
+/* global Ember, App */
 
-function fetch (args) {
+function fetch (args) { // eslint-disable-line no-unused-vars
   Ember.$.ajax({
     type: 'POST',
     contentType: 'application/json',
@@ -42,7 +42,7 @@ App.SearchResultsView = Ember.View.extend({
   },
 
   afterRenderEvent: function () {
-    var cik     = this.get('cik');
+    var cik = this.get('cik');
     var columns = this.get('columns');
 
     App.Search.fetch_data('company_table', {'cik': this.get('cik')}).then(function (response) {
@@ -63,8 +63,8 @@ App.SearchResultsView = Ember.View.extend({
 });
 
 App.Search = Ember.Object.extend({});
+
 App.Search.reopenClass({
-  // >>
   search_company: function (query, redFlagParams) {
     console.log('searching company');
     return new Ember.RSVP.Promise(function (resolve, reject) {
@@ -85,14 +85,31 @@ App.Search.reopenClass({
     });
   },
 
-  fetch_data: function (detail_name, name) {
-    console.log(detail_name, ' :: ', name);
+  fetch_boards: function (detailName, boardIds) {
+    console.log('board ids :: ', boardIds);
+    return new Ember.RSVP.Promis(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: detailName,
+        data: boardIds,
+        success: function (response) {
+          console.log('response --', response);
+          resolve(response);
+        }
+      });
+    });
+  },
+
+  fetch_data: function (detailName, name) {
+    console.log(detailName, ' :: ', name);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        url: detail_name,
+        url: detailName,
         data: JSON.stringify(name),
         success: function (response) {
           console.log('response --', response);
