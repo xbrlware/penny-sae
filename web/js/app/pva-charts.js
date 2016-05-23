@@ -48,6 +48,7 @@ App.PvChartView = Ember.View.extend({
 
     _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });
 
+    // ** This is a placeholder -- we aren't hooked into CROWDSAR backend, so we're just using PV data here again **
     var fData = data;
     _.map(fData, function (datum) { datum['date'] = new Date(datum['date']); });
 
