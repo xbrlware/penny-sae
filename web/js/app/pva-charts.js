@@ -42,6 +42,8 @@ App.PvChartView = Ember.View.extend({
   }.observes('controller.model'),
 
   drawChart: function (data) {
+    alert('drawChart')
+    console.log('drawChart -- data', data);
     if (!data) {return; }
 
     _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });

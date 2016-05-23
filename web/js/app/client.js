@@ -42,7 +42,7 @@ App.SearchResultsView = Ember.View.extend({
   },
 
   afterRenderEvent: function () {
-    var cik = this.get('cik');
+    var cik     = this.get('cik');
     var columns = this.get('columns');
 
     App.Search.fetch_data('company_table', {'cik': this.get('cik')}).then(function (response) {
@@ -75,7 +75,7 @@ App.Search.reopenClass({
         url: 'search',
         data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
         success: function (response) {
-          console.log('response --', response);
+          console.log('response in search_company --', response);
           resolve(App.SearchResults.create(response));
         },
         error: function (xhr, status, error) {
