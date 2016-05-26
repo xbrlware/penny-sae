@@ -6,7 +6,7 @@ App.PvChartRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     //        App.Search.fetch_data('cik2tickers', {'cik': controller.get('name.cik')}).then(function(response) {
     //            controller.set('tickers', response.tickers)
-    //            App.Search.get_generic_detail('pv', {"ticker" : response.tickers[0]}).then(function(response) {
+    //            App.Search.get_generic_detail('pv', {'ticker' : response.tickers[0]}).then(function(response) {
     //                controller.set('model', response.data)
     //            })
     //        })
@@ -16,9 +16,10 @@ App.PvChartRoute = Ember.Route.extend({
       controller.set('have_records', response.data.length > 0);
     });
 
-    App.Search.fetch_boards('get_boards', boardIds).then(function (response) {
-      console.log('board response', response.data);
-      controller.set('boardPosts', response.data);
+    App.Search.fetch_data('posts', this.get('controller.name')).then(function (response) {
+      console.log('posts response', response.data);
+      controller.set('posts', response.data);
+    });
   }
 });
 
@@ -26,7 +27,7 @@ App.PvChartController = Ember.Controller.extend({
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
   have_records: true,
-  boardPosts: undefined,
+  posts: undefined,
   actions: {
     setTicker: function (ticker) {
       var this_ = this;
@@ -243,9 +244,9 @@ App.PvChartView = Ember.View.extend({
 
     function zoomed () {
       console.log('zoomed is being called!');
-      /*        focus.attr("transform",
-                  "translate(" + zoom.translate() + ")" +
-                  "scale(" + zoom.scale() + ")"); */
+      /*        focus.attr('transform',
+                  'translate(' + zoom.translate() + ')' +
+                  'scale(' + zoom.scale() + ')'); */
       focus.select('.x.axis.focus').call(xAxis);
       focus.select('.y.axis.focus').call(yAxis);
       focus.selectAll('path.line').attr('d', line);

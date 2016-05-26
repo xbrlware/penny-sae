@@ -6,14 +6,12 @@ var _ = require('underscore')._;
 
 const CONSTANT_BOOST = 1000;
 const SIZE = 15;
-const START_DATE = '2010-01-01 00:00:00';
-const END_DATE = '2015-01-01 00:00:00';
 
 const CURRENT_NAME_QUERY = {
-  'script': 'if(_source.company_data != null) { \n if(_source.company_data.company_name != null) { \n _source.company_data.company_name[_source.company_data.company_name.length-1] \n} else { \n null; \n } \n } else {\n null;\n}', 'lang': 'javascript'};
+'script': 'if(_source.company_data != null) { \n if(_source.company_data.company_name != null) { \n _source.company_data.company_name[_source.company_data.company_name.length-1] \n} else { \n null; \n } \n } else {\n null;\n}', 'lang': 'javascript'};
 
 const LENGTH_QUERY = {
-  'script': "if(doc['company_data.date'].values != null) {\ndoc['company_data.date'].values.length \n} else { \nnull; \n}", 'lang': 'javascript'};
+'script': "if(doc['company_data.date'].values != null) {\ndoc['company_data.date'].values.length \n} else { \nnull; \n}", 'lang': 'javascript'};
 
 const NULL_QUERY = { // eslint-disable-line no-unused-vars
   'script_fields': {
@@ -22,34 +20,6 @@ const NULL_QUERY = { // eslint-disable-line no-unused-vars
   },
   'size': SIZE
 };
-
-function rsplit (x, splitBy) {
-  return _.chain([x]).flatten().map(function (x) { return x.split(','); }).flatten().value();
-}
-
-function getBoard (ids) {
-  return {
-    'size': 1e6,
-    '_source': ['date', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
-    'query': {
-      'filtered': {
-        'filter': {
-          'range': {
-            'date': {
-              'gte': START_DATE,
-              'lte': END_DATE
-            }
-          }
-        },
-        'query': {
-          'terms': {
-            'board_id': rsplit(ids, ',')
-          }
-        }
-      }
-    }
-  };
-}
 
 /* --------------------- Functions for Filtering + Scoring  ---------------------- */
 function setFunctions (rf) {
@@ -364,11 +334,11 @@ function topicQuery (topic, rf) {
             'msg': topic
           }
         },
-        {
-          'match': {
-            'body': topic
+          {
+            'match': {
+              'body': topic
+            }
           }
-        }
         ],
         'minimum_should_match': 1
       }
@@ -429,9 +399,9 @@ function networkQueryCenter (narg, rf) {
 
   var parsed = {};
   parsed.query = { 'multi_match': {
-    'query': cik,
-    'fields': ['_id', 'id', 'cik']
-  }
+      'query': cik,
+      'fields': ['_id', 'id', 'cik']
+    }
   };
   parsed.fields = ['_source'];
   parsed.script_fields = setScriptFields(rf, false);

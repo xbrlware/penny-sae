@@ -87,7 +87,7 @@ App.Search.reopenClass({
 
   fetch_boards: function (detailName, boardIds) {
     console.log('board ids :: ', boardIds);
-    return new Ember.RSVP.Promis(function (resolve, reject) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',

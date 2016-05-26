@@ -38,5 +38,28 @@ var gconfig = {
   "network": false,
   "pv": false,
   "crowdsar": false
+ },
+ "N_TOP_X": 40,
+ "DEBOUNCE": 500,
+ "COOC_URL": "id/user",
+ "GET_COOC_URL": "coocurrence",
+ "GET_AGGS_URL": "aggs",
+ "GAUGE": {
+  "COLOR_PATT": [
+   "green",
+   "rgb(218, 218, 45)",
+   "red"
+  ],
+  "LABEL": {
+   "SHOW": false,
+   "WIDTH": 10
+  },
+  "LEGEND_SHOW": false,
+  "SIZE": {
+   "HEIGHT": 75,
+   "WIDTH": 75
+  },
+  "TRANS_DURA": 0,
+  "TOOTIP_SHOW": false
  }
 }
