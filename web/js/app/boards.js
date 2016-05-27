@@ -838,8 +838,6 @@ App.BoardRoute = Ember.Route.extend({
   model: function (params) {
     console.warn('things be happening! --> ', params);
     var _this = this;
-    console.warn('our route in hand --> ', _this.routeName);
-
     return new Ember.RSVP.Promise(function (resolve) {
       Ember.$.ajax({
         url: _this.routeName,
