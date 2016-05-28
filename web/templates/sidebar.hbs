@@ -1,0 +1,35 @@
+{{!-- web/templates/sidebar.hbs --}}
+
+<div class="col-sm-4 no-padding-leftright">
+    {{#unless isLoading}}
+        {{#if from}}
+            Results: Page {{page}} 
+            <br />
+        {{/if}}
+        
+        {{#unless total_hits}}
+            No companies in our database match your search criteria.
+        {{else}}
+            {{total_hits}} &nbsp; companies in our database
+			match your search criteria.
+            <div class="list-group square">
+                {{#each h in hits}}
+                    {{#if h.name}}
+                        {{view App.HitView h=h}}
+                    {{/if}}
+                {{/each}}
+            </div>
+        {{/unless}}
+    {{else}}
+        <!--         <span class="centered">
+                <img id="spinner" src="css/ajax-loader.gif">
+        <div class="calculating-top-padding">
+            Calculating...
+        </div>
+        </span> -->
+    {{/unless}}
+</div>
+
+<div class="col-md-8 outlet-min-width">
+    {{outlet}}
+</div>

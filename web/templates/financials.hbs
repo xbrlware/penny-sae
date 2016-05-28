@@ -1,0 +1,14 @@
+{{!-- web/templates/financials.hbs --}}
+{{!-- Financials --}}
+
+<span class="centered">
+    {{#if model}}
+        <h3>Financials</h3>
+        <table id="financials-table" class="display"></table>
+        {{view App.FinancialsView}}
+    {{else}}
+        <span class="centered">
+            <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
+        </span>
+    {{/if}}
+</span>

@@ -1,0 +1,19 @@
+{{!-- web/templates/pvChart.hbs --}}
+{{!-- Price and Volume Chart --}}
+
+<span class="centered">
+    <h3> Price / Volume / CROWDSAR Chart for Ticker {{name.ticker}} </h3>
+</span>
+
+{{#each tickers}}
+    <button {{action "setTicker" this}}> {{this}} </button>
+{{/each}}
+
+<div>
+    <div id="container-pvchart"></div>
+</div>
+
+<p>
+    CROWDSAR is a proprietary score that quantifies the prevalence of allegations of fiscal malfeasance
+    for the company on investor message boards and social media.
+</p>

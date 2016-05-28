@@ -1,72 +1,122 @@
-App = Ember.Application.create();
+// web/js/app/application.js
 
-App.Router.map(function() {
-    this.resource('frontpage', {path: '/'}, function () {}),
-    this.resource('sidebar', {path: '/o'}, function() {
-        this.resource('detail', {path: 'detail/:cik'}, function() {
-            this.resource('pvChart',     function() {})
-            this.resource('googleNews',  function() {
-                this.resource('subNews', function() {})
-                this.resource('omxNews', {path: "omxNews/:omx"}, function() {})
-            })
-            this.resource('previousReg', function() {})
-            this.resource('financials',  function() {})
-            this.resource('delinquency', function() {})
-            this.resource('associates',  function() {
-                this.resource('ner', function() {})
-            })
-            this.resource('promotions',  function() {})
-            this.resource('leadership',  function() {})
-        });
-        this.resource('topic', {path: 'topic'}, function() {});
+/* Setup Authorization */
+
+/* global Ember, SimpleAuth, _, gconfig */
+
+window.ENV = window.ENV || {};
+window.ENV['simple-auth'] = {
+  authorizer: 'authorizer:custom',
+  routeAfterAuthentication: 'frontpage',
+  routeIfAlreadyAuthenticated: 'frontpage',
+  applicationRootUrl: 'login'
+};
+
+Ember.Application.initializer({
+  name: 'authentication',
+  before: 'simple-auth',
+  initialize: function (container, application) {
+    container.register('authenticator:custom', App.NodesecAuthenticator);
+    container.register('authorizer:custom', App.NodesecAuthorizer);
+  }
+});
+
+var App = Ember.Application.create({
+  // for development only, remove for production
+  LOG_TRANSITIONS: true,
+  // Global getters for localstorage
+  isAdmin: function () {
+    return window.localStorage.getItem('isAdmin') === 'true';
+  },
+  username: function () {
+    return window.localStorage.getItem('username');
+  },
+  token: function () {
+    return window.localStorage.getItem('token');
+  },
+
+  saveToken: function (token, isAdmin, username) {
+    // Save to local storage
+    window.localStorage.setItem('token', token);
+    window.localStorage.setItem('isAdmin', isAdmin);
+    window.localStorage.setItem('username', username);
+    // Set headers
+    Ember.$.ajaxSetup({headers: { 'x-access-token': token }});
+  },
+
+  updateToken: function (token, callback) {
+    // Save to local storage
+    window.localStorage.setItem('token', token);
+
+    // Set headers
+    Ember.$.ajaxSetup({headers: { 'x-access-token': token }});
+    Ember.run(function () {
+      callback();
     });
+  }
 });
 
-Ember.RSVP.configure('onerror', function(error) {
-    if (error instanceof Error) {
-        Ember.Logger.assert(false, error);
-        Ember.Logger.error(error.stack);
-    }
+App.GRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);
+
+App.Router.map(function () {
+  this.route('login');
+  this.resource('frontpage', {path: '/'}, function () {});
+  this.resource('sidebar', {path: 'sidebar/:st'}, function () {
+    this.resource('detail', {path: 'detail/:cik'}, function () {
+      this.resource('pvChart', function () {});
+      this.resource('googleNews', function () {
+        this.resource('subNews', function () {});
+        this.resource('omxNews', {path: 'omxNews/:omx'}, function () {});
+      });
+      this.resource('previousReg', function () {});
+      this.resource('financials', function () {});
+      this.resource('delinquency', function () {});
+      this.resource('associates', function () {
+        this.resource('ner', function () {});
+      });
+      this.resource('promotions', function () {});
+      this.resource('leadership', function () {});
+    });
+    this.resource('topic', {path: 'topic'}, function () {});
+  });
 });
 
-App.ApplicationRoute = Ember.Route.extend({
-    model : function() {
-        return App.RFQ.create();
+// --
+
+App.RedFlagParams = Ember.Object.extend({
+  _params: gconfig.DEFAULT_REDFLAG_PARAMS,
+  _toggles: gconfig.DEFAULT_TOGGLES,
+  get_params: function () { return this.get('_params'); },
+  get_toggles: function () { return this.get('_toggles'); },
+  get_toggled_params: function () {
+    var params = this.get('_params');
+    var toggles = this.get('_toggles');
+    return _.chain(params).pairs().filter(function (x) { return toggles[x[0]]; }).object().value();
+  }
+});
+
+App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
+  actions: {
+    companySearch: function (searchTerm) {
+      if (searchTerm) { this.transitionTo('sidebar', searchTerm); }
     },
-    setupController : function(controller, model) {
-        controller.set('model', model);
-    },
-    actions : {
-        // Functions in menu bar
-        companySearch: function() {
-            var con         = this.get('controller');
-            var sidebar_con = this.controllerFor('sidebar');
-            var searchTerm  = con.get('searchTerm');
-            if(searchTerm != '' & searchTerm != undefined) {
-                sidebar_con.set('isLoading', true);
-                var promise = App.Search.search_company(searchTerm, rf_clean_func(con.get('rf'), undefined));
-                promise.then(function(response) {
-                    sidebar_con.set('model', response);
-                    sidebar_con.set('isLoading', false);
-                });
-            }
-        },
-        topicSearch: function() {
-            var con         = this.get('controller');
-            var sidebar_con = this.controllerFor('sidebar');
-            var searchTerm_topic = this.get('controller').get('searchTerm_topic');
-            if(searchTerm_topic != '' & searchTerm_topic != undefined) {
-                sidebar_con.set('isLoading', true);
-                var promise = App.Search.search_topic(searchTerm_topic, rf_clean_func(con.get('rf'), undefined));
-                promise.then(function(response) {
-                    con.transitionToRoute('topic');
-                    sidebar_con.set('model', response);
-                    sidebar_con.set('isLoading', false);
-                });
-            }
-        },
-        run_search_filters_from_application: function () {
-            this.controllerFor('sidebar').send('run_search_filters');
-        }
+    invalidateSession: function () {
+      this.get('session').invalidate();
     }
+  }
+});
+
+App.ApplicationController = Ember.Controller.extend({
+  searchTerm: undefined,
+  showNav: false,
+  redFlagParams: App.RedFlagParams.create(),
+  isLoading: false, // state variable for spinner
+
+  search_company: function (cb) {
+    App.Search.search_company(this.searchTerm, this.redFlagParams).then(cb);
+  },
+  sort_companies: function (cb) {
+    console.log('application -> sort_companies');
+    App.Search.search_company(undefined, this.redFlagParams).then(cb);
+  }
 });

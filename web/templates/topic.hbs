@@ -1,0 +1,70 @@
+{{!-- web/templates/topic.hbs --}}
+
+<span class="centered">
+    <h2> Summary Statistics: <i>{{searchTerm_topic}}</i> </h2>
+            
+    <div>
+        <h3 class="red-text"> Topic Trends Over Time </h3>
+        {{view App.TopicTimeSeriesView searchTerm_topic=searchTerm_topic}}
+    </div>
+    <hr />
+
+    <div>
+        <h3 class="red-text"> Red Flag Summary </h3>
+        <h4> {{rf_any}} of the {{count}} companies ({{pct_any}})% had one or more FINRA red flags. </h4>
+
+        <table class="table table-hover topic-table centered">
+            <tr class="bold-font"><td>Type of Red Flag</td><td>Number of Offending Companies</td></tr>
+            {{#each a in agg_redflag}}
+                <tr>
+                    {{#each a}}
+                        <td>{{this}}</td>
+                    {{/each}}
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+    <hr />
+    <div>
+        <h3 class="text-red"> Industry Classification Summary </h3>
+        <div class="auto-overflow" id="placeholder"></div>
+        {{view App.TopicPieChartView data=this}}
+        <div class="accordion" id="topic_sic_accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" id="link-padding" data-toggle="collapse" data-parent="#topic_sic_accordion" href="#a1">
+                        <span class="centered"><h3>Show Counts of SICs</h3></span>
+                    </a>
+                </div>
+                <div id="a1" class="accordion-body collapse out">
+                    <div class="accordion-inner">
+                        <table class="table table-hover topic-table">
+                            <tr>
+                                <td>Securities Industry Classification</td>
+                                <td>Count</td>
+                            </tr>
+                            {{#each c in cd_last}}
+                                <tr>
+                                    {{#each c}}
+                                        <td>{{this}}</td>
+                                    {{/each}}
+                                </tr>
+                            {{/each}}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div>
+            <h3 class="red-text"> Topic Of Interest Companies with No SEC Filings </h3>
+            <table class="table table-hover topic-table centered">
+                {{#each un in unknown_names}}
+                    <tr class="cursor-initial">
+                        <td>{{un.key}}</td>
+                    </tr>
+                {{/each}}
+            </table>
+        </div>
+    </div>
+</span>

@@ -1,0 +1,18 @@
+{{!-- web/templates/omxNews.hbs --}}
+
+<div class="omx-wrapper">
+    <div class="omx-head">
+        {{model.head}}
+    </div>
+    <div class="omx-time">
+        {{model.time}}
+    </div>
+    <div class="omx-body">
+        {{!--
+        <button type="button" class="btn btn-default pull-right" {{action "run_mitie"}}>
+            Run MITIE NER
+        </button>
+        --}}
+        {{model.body}}
+    </div>
+</div>

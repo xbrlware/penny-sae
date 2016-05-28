@@ -1,0 +1,87 @@
+{{!-- web/templates/_dropdown-left.hbs --}}
+
+<table class="table hoverTable sidebar-index-table">
+    <tr class="no-hover">
+        <th></th>
+        <th>
+            <h3 class="h3-small" id="add-red-flags">
+                Red Flags
+            </h3>
+        </th>
+    </tr>
+
+    {{
+        view App.ToggleRowView
+        text = "Company has no business, no revenues and no product."
+        valueBinding = "redFlagParams._toggles.financials"
+        showParameters = "financials"
+    }}
+    {{
+        view App.ToggleRowView
+        text = "Company undergoes frequent material changes in business strategy or its line of business."
+        valueBinding = "redFlagParams._toggles.symbology"
+        showParameters = "symbology"
+    }}
+    {{
+        view App.ToggleRowView
+        text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
+        valueBinding = "redFlagParams._toggles.network"
+        showParameters = "network"
+    }}
+    {{
+        view App.ToggleRowView
+        text = "Company has been the subject of a prior trading suspension."
+        valueBinding = "redFlagParams._toggles.trading_halts"
+        showParameters = "trading_halts"
+    }}
+    {{
+        view App.ToggleRowView
+        text = "Company has not made disclosures in SEC or other regulatory filings."
+        valueBinding = "redFlagParams._toggles.delinquency"
+        showParameters = "delinquency"
+    }}
+
+    {{!--
+    <tr class="no-hover">
+        <td colspan="3">
+            <div class="under-construction">Currently Under Development</div>
+        <td>
+    </tr>
+    {{
+        view App.DisabledToggleRowView
+        text = "Company has experienced frequent or continuous changes in its business structure."
+        showParameters=true
+    }}
+    {{
+        view App.DisabledToggleRowView
+        text = "Officers or insiders of the issuer have a history of securities violations."
+        showParameters=true
+    }}
+    --}}
+
+    <tr class="no-hover" id="hovertable-bottom-border"><td colspan="3"></tr>
+    <tr class="no-hover">
+        <td></td>
+        <td><h3 class="h3-small" id="add-red-flags">Additional Red Flags</h3></td>
+    </tr>
+    {{
+        view App.ToggleRowView
+        text = "Company stock has experienced recent price and/or volume anomalies."
+        valueBinding = "redFlagParams._toggles.pv"
+        showParameters = "pv"
+    }}
+    {{
+        view App.ToggleRowView
+        text = "Investors have made allegations about malfeasance of the company on social media."
+        valueBinding = "redFlagParams._toggles.crowdsar"
+        showParameters = "crowdsar"
+    }}
+
+    <tr class="no-hover">
+        <td colspan="3">
+            <button class="btn btn-success" id="find-button" {{action "sort_companies"}}>
+                Find
+            </button>
+        </td>
+    </tr>
+</table>
