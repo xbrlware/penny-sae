@@ -1,4 +1,4 @@
-# NODESEC
+# Penny: Suspicious Activity Explorer
 
 ## Grunt
 
