@@ -37,6 +37,7 @@
          "web/js/libs/moment.min.js",
          "web/js/libs/d3.min.js",
          "web/js/libs/crossfilter.min.js",
+         "web/js/libs/reductio.min.js",
          "web/js/libs/c3.min.js",
          "web/js/libs/techan.js",
          "web/js/libs/d3.tip.js",
