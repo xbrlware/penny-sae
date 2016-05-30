@@ -245,8 +245,8 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   }
 
   function getDates (dateRange) {
-    let dateArray = [];
-    let currentDate = dateRange[0];
+    var dateArray = [];
+    var currentDate = dateRange[0];
 
     while (currentDate <= dateRange[1]) {
       dateArray.push(new Date(currentDate));
@@ -257,10 +257,10 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   }
 
   function addCrosshair (obj) {
-    let _yAnnotation = techan.plot.axisannotation()
+    var _yAnnotation = techan.plot.axisannotation()
       .axis(obj.yAxis)
       .format(d3.format(',.2fs'));
-    let _xAnnotation = techan.plot.axisannotation()
+    var _xAnnotation = techan.plot.axisannotation()
       .axis(obj.xAxis)
       .format(d3.time.format('%Y-%m-%d'))
       .width(65)
@@ -383,14 +383,14 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     volume.div = makeDiv(volume, 'c2');
   }
 
-  pvData = _.chain(pvData).map(function (d) {
+  pvData = _.chain(pvData.hits.hits).map(function (d) {
     return {
-      date: parseDate(d.date),
-      open: +d.open,
-      high: +d.high,
-      low: +d.low,
-      close: +d.close,
-      volume: +d.volume
+      date: parseDate(d._source.date),
+      open: +d._source.open,
+      high: +d._source.high,
+      low: +d._source.low,
+      close: +d._source.close,
+      volume: +d._source.volume
     };
   }).sortBy(function (a) { return a.date; }).value();
 
@@ -472,7 +472,7 @@ App.BoardController = Ember.Controller.extend({
   splitBy: 'board',
   selection_ids: undefined,
   routeName_pretty: function () {
-    let rn = this.get('routeName');
+    var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
   }.property(),
 
@@ -575,7 +575,7 @@ App.BoardController = Ember.Controller.extend({
       });
 
       // Whenever the brush moves, re-rendering everything.
-      let renderAll = function (_this) {
+      var renderAll = function (_this) {
         // Get all posts
         _this.set('filteredData', split.top(10e10));
 
@@ -764,7 +764,8 @@ App.BoardController = Ember.Controller.extend({
 
   // Significant terms aggs, NER aggs
   getAggs () {
-    let runner = {
+    var self = this;
+    var runner = {
       board_ids: this.get('board_filter'),
       date: this.get('dateFilter'),
       userIds: this.get('user_filter')};
@@ -776,7 +777,7 @@ App.BoardController = Ember.Controller.extend({
       contentType: 'application/x-www-form-urlencoded',
       data: runner,
       success: function (response) {
-        this.set('aggs', response);
+        self.set('aggs', response);
       }
     });
   },
@@ -836,7 +837,6 @@ App.BoardController = Ember.Controller.extend({
 
 App.BoardRoute = Ember.Route.extend({
   model: function (params) {
-    console.warn('things be happening! --> ', params);
     var _this = this;
     return new Ember.RSVP.Promise(function (resolve) {
       Ember.$.ajax({
@@ -844,7 +844,7 @@ App.BoardRoute = Ember.Route.extend({
         type: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        data: params,
+        data: {id: 17838},
         success: function (data) {
           console.log('data ::', data);
           resolve(data);

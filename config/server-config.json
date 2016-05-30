@@ -12,8 +12,8 @@
           "AGG"         : "ernest_agg",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_cat",
-          "DELINQUENCY" : "ernest_delinquency",
-          "SUSPENSIONS" : "ernest_suspensions"
+          "DELINQUENCY" : "ernest_delinquency_cat",
+          "SUSPENSIONS" : "ernest_suspensions_cat"
         }
     },
     "HTTPS":{

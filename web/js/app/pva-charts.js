@@ -15,11 +15,6 @@ App.PvChartRoute = Ember.Route.extend({
       controller.set('model', response.data);
       controller.set('have_records', response.data.length > 0);
     });
-
-    App.Search.fetch_data('posts', this.get('controller.name')).then(function (response) {
-      console.log('posts response', response.data);
-      controller.set('posts', response.data);
-    });
   }
 });
 
@@ -27,7 +22,6 @@ App.PvChartController = Ember.Controller.extend({
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
   have_records: true,
-  posts: undefined,
   actions: {
     setTicker: function (ticker) {
       var this_ = this;

@@ -114,6 +114,9 @@ App.Search.reopenClass({
         success: function (response) {
           console.log('response --', response);
           resolve(response);
+        },
+        error: function (error) {
+          console.error('fetch_data :: ', error);
         }
       });
     });

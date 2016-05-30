@@ -556,26 +556,25 @@ module.exports = function (app, config, client) {
   });
 
   app.get('/board', function (req, res) {
-    var bobby = '17838';
+    var d = req.query;
+    console.log('Board Request Body --> ', d);
 
     if (true) {
       client.search({
         index: 'crowdsar_cat',
-        body: pennyQueryBuilder.board(bobby)
+        body: pennyQueryBuilder.board(d.id)
       }).then(function (forumResponse) {
         var ticker = forumResponse.hits.hits[0]._source.ticker;
         console.log('ticker', ticker);
         getPvData(ticker, function (pvData) {
-          console.log('pvData ---<> >>> ', pvData);
           res.send({
             'data': _.pluck(forumResponse.hits.hits, '_source'),
             'pvData': pvData
           });
         });
       });
-      console.log('FINISH forumPromise');
     } else {
-      console.error('board id not provided :: ', bobby);
+      console.error('board id not provided :: ', d.id);
       res.send({'data': null, 'pvData': null});
     }
   });
