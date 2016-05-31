@@ -6,67 +6,67 @@
             <div class="hit_item" {{bind-attr id=App.HitTextView.mid}}>
                 <div class="hit-company-name">
                     <span class="rowLabel" >
-                        {{h.currentName}}
+                        {{h.name}}
                     </span>
                 </div>
 
-                {{ log h}}
+                {{log h}}
                  <table class="scores"> 
                    <tr>
-                   <td {{bind-attr class="h.redFlags.financials_redflag:tMedium"}}> 
+                   <td {{bind-attr class="h.redFlags.financials.is_flag:tMedium"}}> 
                    <!-- Financials means no sales? not clear. -->
-                       {{#if h.redFlags.have_financials }}
-                          {{h.redFlags.financials_value}}
+                       {{#if h.redFlags.financials.have }}
+                          {{h.redFlags.financials.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.delta_redflag:tMedium"}}>  <!-- Delta = change in business? -->
-                       {{#if h.redFlags.have_delta }}
-                          {{h.redFlags.delta_value}}
+                   <td {{bind-attr class="h.redFlags.symbology.is_flag:tMedium"}}>  <!-- Delta = change in business? -->
+                       {{#if h.redFlags.symbology.have }}
+                          {{h.redFlags.symbology.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.trading_halts_redflag:tMedium"}}>  <!--Trade Suspensions-->
-                       {{#if h.redFlags.have_trading_halts }}
-                          {{h.redFlags.trading_halts_value}}
+                   <td {{bind-attr class="h.redFlags.trading_halts.is_flag:tMedium"}}>  <!--Trade Suspensions-->
+                       {{#if h.redFlags.trading_halts.have }}
+                          {{h.redFlags.trading_halts.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.delinquincy_redflag:tMedium"}}> <!-- Delinquincy = late filing? -->
-                       {{#if h.redFlags.have_delinquincy }}
-                          {{h.redFlags.delinquincy_value}}
+                   <td {{bind-attr class="h.redFlags.delinquency.is_flag:tMedium"}}> <!-- Delinquincy = late filing? -->
+                       {{#if h.redFlags.delinquency.have }}
+                          {{h.redFlags.delinquency.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.network_redflag:tMedium"}}> <!-- OTC associates? -->
-                       {{#if h.redFlags.have_network }}
-                          {{h.redFlags.network_value}}
+                   <td {{bind-attr class="h.redFlags.network.is_flag:tMedium"}}> <!-- OTC associates? -->
+                       {{#if h.redFlags.network.have }}
+                          {{h.redFlags.network.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.pv_redflag:tMedium"}}>
+                   <td {{bind-attr class="h.redFlags.pv.is_flag:tMedium"}}>
                        {{!-- Different from rest since have_value always true, but value field is often null. --}}
-                       {{#if h.redFlags.pv_value }}
-                          {{h.redFlags.pv_value}}
+                       {{#if h.redFlags.pv.have }}
+                          {{h.redFlags.pv.value}}
                        {{else}}
                         --
                        {{/if }}
                    </td>
 
-                   <td {{bind-attr class="h.redFlags.crowdsar_redflag:tMedium"}}>
+                   <td {{bind-attr class="h.redFlags.crowdsar.is_flag:tMedium"}}>
                        {{!-- Different from rest since have_value always true, but value field is often null. --}}
-                       {{#if h.redFlags.crowdsar_value }}
-                          {{h.redFlags.crowdsar_value}}
+                       {{#if h.redFlags.crowdsar.have }}
+                          {{h.redFlags.crowdsar.value}}
                        {{else}}
                           --
                        {{/if }}

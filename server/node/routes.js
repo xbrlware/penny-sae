@@ -263,7 +263,8 @@ module.exports = function (app, config, client) {
 
     console.log('/search :: ',
       JSON.stringify(
-        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams)
+        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
+        null, 2
       )
     );
 
