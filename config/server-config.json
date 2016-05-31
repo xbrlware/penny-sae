@@ -6,16 +6,21 @@
     "COMPANY_INDEX" : "companies_restore",
     "DEMO_FLAG" : true,
     "ES" : {
-        "HOST" : "http://localhost:9205",
+        "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "AUTH" : ""
+          "AUTH"        : "",
+          "AGG"         : "ernest_agg",
+          "PV"          : "ernest_pv_reshard",
+          "SYMBOLOGY"   : "ernest_symbology_cat",
+          "DELINQUENCY" : "ernest_delinquency",
+          "SUSPENSIONS" : "ernest_suspensions"
         }
     },
     "HTTPS":{
-        "ENABLED": false,
+        "ENABLED" : false,
         "CERTIFICATES": {
             "PEM" : "authentication/nodesec.pem",
-            "CRT": "authentication/nodesec.crt"
+            "CRT" : "authentication/nodesec.crt"
         }
     },
     "NETWORK_INDEX" : "petwork",

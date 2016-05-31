@@ -15,8 +15,9 @@
     "DEFAULT_HIDE_TERMINAL" : false,
     "DEFAULT_HIDE_NER"      : true,
     
-    "ALL_FEATURES" : ["pv", "delta", "network", "financials", "trading_halts", "crowdsar", "delinquency"],
-    "DEFAULT_RF" : {
+    "ALL_FEATURES" : ["pv", "symbology", "network", "financials", "trading_halts", "crowdsar", "delinquency"],
+    "DEFAULT_REDFLAG_PARAMS" : {
+/*
         "pv" : {
             "price_jump"        : 100,
             "volume_window"     : 50,
@@ -24,38 +25,51 @@
             "fall_to"           : 50,
             "fall_within"       : 50
         },
-        "delta"      : {
-            "type"   : "company_name",
-            "thresh" : 2
+*/
+        "symbology" : {
+            "field"     : "name",
+            "min_date"  : "2000-01-01",
+            "max_date"  : "2016-01-01",
+            "threshold" : 1
         },
+/*
         "network" : {
             "type"   : "otc_neibs_pct",
             "thresh" : 25
         },
+*/
+/*
         "financials" : {
             "type"         : "revenues",
             "below"        : 1000,
             "below_for"    : 2,
             "contemporary" : null
         },
+*/
+/*
         "trading_halts" : {
             "thresh" : 1
         },
+*/
+/*
         "crowdsar" : {
             "type"        : "n_susp",
             "past_months" : 4
         },
+*/
         "delinquency" : {
-            "thresh" : 5,
-            "since"  : 2
+            "form"      : "10-K",
+            "min_date"  : "2000-01-01",
+            "max_date"  : "2016-01-01",
+            "threshold" : 1
         }
     },
     
     "DEFAULT_TOGGLES" : {
-        "financials"    : true,
-        "delta"         : true,
-        "trading_halts" : true,
-        "delinquency"   : false,
+        "financials"    : false,
+        "symbology"     : true,
+        "trading_halts" : false,
+        "delinquency"   : true,
         "network"       : false,
         "pv"            : false,
         "crowdsar"      : false

@@ -46,12 +46,13 @@
     
     "app_files"  : [
 	       "web/js/app/application.js",
-	       "web/js/app/associates.js",
+           "web/js/app/associates.js",
            "web/js/app/authentication.js",
 	       "web/js/app/client.js",
 	       "web/js/app/components.js",
 	       "web/js/app/data-management.js",
-	       "web/js/app/delinquency.js",
+	       "web/js/app/generic-table-view.js",
+           "web/js/app/delinquency.js",
 	       "web/js/app/detail.js",
 	       "web/js/app/dropdown.js",
 	       "web/js/app/financials.js",

@@ -1,11 +1,11 @@
 // server/node/authentication/gated-auth-functions.js
 
-var LdapStrategy = require('passport-ldapauth')
+var LdapStrategy = require('passport-ldapauth');
 
 module.exports = function (passport, config, make_token) {
   return {
     set_strategy: function () {
-      passport.use(new LdapStrategy(config.AUTHENTICATION.LDAP_OPTS))
+      passport.use(new LdapStrategy(config.AUTHENTICATION.LDAP_OPTS));
     },
     authenticate: function (req, res, next) {
       passport.authenticate('ldapauth', {session: false}, function (err, user) {
@@ -20,11 +20,11 @@ module.exports = function (passport, config, make_token) {
             }),
             isAdmin: false,
             username: user.uid
-          })
+          });
         } else {
-          res.status(404).send('Incorrect username or password!')
+          res.status(404).send('Incorrect username or password!');
         }
-      })(req, res, next)
+      })(req, res, next);
     }
-  }
-}
+  };
+};
