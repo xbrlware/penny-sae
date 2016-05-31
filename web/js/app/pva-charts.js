@@ -38,7 +38,6 @@ App.PvChartView = Ember.View.extend({
   }.observes('controller.model'),
 
   drawChart: function (data) {
-    alert('drawChart');
     console.log('drawChart -- data', data);
     if (!data) {return; }
 
