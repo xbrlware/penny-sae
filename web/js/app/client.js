@@ -42,7 +42,7 @@ App.SearchResultsView = Ember.View.extend({
   },
 
   afterRenderEvent: function () {
-    var cik     = this.get('cik');
+    var cik = this.get('cik');
     var columns = this.get('columns');
 
     App.Search.fetch_data('company_table', {'cik': this.get('cik')}).then(function (response) {

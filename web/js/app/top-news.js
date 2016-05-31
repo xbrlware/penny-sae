@@ -1,24 +1,15 @@
-// web/js/app/google-news.js
+// web/js/app/top-news.js
 
 /* global Ember, App */
 
-App.GoogleNewsRoute = Ember.Route.extend({
+App.TopNewsRoute = Ember.Route.extend({
   beforeModel: function (args) {
-    try {
-      console.log(args.params.omxNews.omx);
-    } catch (err) {
-      this.transitionTo('subNews');
-    }
-  },
-  model: function () {
-    var cik = this.modelFor('detail').get('cik');
-    console.log('downloading omx ids for cik', cik);
-    return App.Search.search_omx(cik);
+    this.transitionTo('subNews');
   }
 });
 
 /*
-   App.GoogleNewsView = Ember.View.extend({
+   App.TopNewsView = Ember.View.extend({
    didInsertElement : function() {
    $('.li-omx').click(function(e) {
    $('.li-omx').css('background-color', 'white')
@@ -29,11 +20,14 @@ App.GoogleNewsRoute = Ember.Route.extend({
    */
 
 App.SubNewsRoute = Ember.Route.extend({
-  model: function () {
-    var currentName = this.modelFor('detail').get('currentName');
-    console.log(' ************ google news current name', currentName);
-    return 'cse.html?q="' + currentName + '"';
+  setupController: function (controller, model) {
+    controller.set('model', 'cse.html?q="' + controller.get('name.name') + '"');
   }
+});
+
+App.SubNewsController = Ember.Controller.extend({
+  needs: ['detail'],
+  name: Ember.computed.alias('controllers.detail.model')
 });
 
 App.NewsView = Ember.View.extend({
