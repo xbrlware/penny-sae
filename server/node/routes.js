@@ -39,12 +39,10 @@ module.exports = function (app, config, client) {
         if (error) {
           console.error(error);
         } else {
-          console.log('TICKER RESPONSE ---> ', response);
-          res(response);
+          res(response.hits.hits);
         }
       });
     } else {
-      console.log('NO TICKER!!!!');
       res();
     }
   }
@@ -76,7 +74,7 @@ module.exports = function (app, config, client) {
     'board': function (ids) {
       return {
         'size': 1000,
-        '_source': ['date', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
@@ -557,7 +555,6 @@ module.exports = function (app, config, client) {
 
   app.get('/board', function (req, res) {
     var d = req.query;
-    console.log('Board Request Body --> ', d);
 
     if (true) {
       client.search({

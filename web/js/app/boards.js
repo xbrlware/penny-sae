@@ -7,8 +7,11 @@ function makeTimeSeries (ts, bounds) {
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  var height = Ember.$(div).height() - margin.top - margin.bottom;
-  var width = Ember.$(div).width() - margin.left - margin.right;
+  // var height = Ember.$(div).height() - margin.top - margin.bottom;
+  // var width = Ember.$(div).width() - margin.left - margin.right;
+
+  var height = 10;
+  var width = 227;
 
   // Calculate bar width
   var BAR_WIDTH = 3;
@@ -24,7 +27,7 @@ function makeTimeSeries (ts, bounds) {
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, bounds.ymax]);
+  y.domain([bounds.ymin, bounds.ymax]);
 
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
@@ -383,7 +386,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     volume.div = makeDiv(volume, 'c2');
   }
 
-  pvData = _.chain(pvData.hits.hits).map(function (d) {
+  pvData = _.chain(pvData).map(function (d) {
     return {
       date: parseDate(d._source.date),
       open: +d._source.open,
@@ -489,27 +492,29 @@ App.BoardController = Ember.Controller.extend({
   }.property(),
 
   // Field names for "splitting" entity (i.e. the user if board, board if user)
-  splitByFilter: 'user_filter',
+  splitByFilter: 'board_filter',
 
-  post_filteredData: function () {
-    var xId = this.get('splitBy_id');
+  filtered_data: [],
+
+  post_filtered_data: function () {
+    var xId = this.get('splitById'); // xId === user_id
     var out;
 
-    if (this.splitByFilter.length) {
-      out = _.filter(this.get('filteredData'), function (x) {
+    if (this.splitByFilter.length) { // this.splitByFilter === board_filter
+      out = _.filter(this.get('filtered_data'), function (x) {
+        console.log(x['user_id']);
         return _.contains(this.splitByFilter, x[xId]);
       });
     } else {
-      out = this.get('filteredData');
+      out = this.get('filtered_data');
     }
-
     return _.chain(out).filter(function (x, i) {
       return i < 100;
     }).value();
   //        return _.chain(out).sortBy(function (x) { return x.date }).filter(function (x, i) { return i < 100 }).value()
-  }.property('filteredData', 'board_filter', 'user_filter'),
+  }.property('filtered_data', 'board_filter', 'user_filter'),
 
-  splitBy_id: function () {
+  splitById: function () {
     return this.get('splitBy') + '_id';
   }.property(),
 
@@ -519,11 +524,11 @@ App.BoardController = Ember.Controller.extend({
 
   n_posts: function () {
     if (this.get('splitByFilter_nonempty')) {
-      return this.get('post_filteredData').length;
+      return this.get('post_filtered_data').length;
     } else {
       return this.get('model.data').length;
     }
-  }.property('model.data', 'post_filteredData'),
+  }.property('model.data', 'post_filtered_data'),
 
   // Triggered when selection changes
   filter_did_change: function () {
@@ -539,7 +544,7 @@ App.BoardController = Ember.Controller.extend({
       var _this = this;
       var data = this.get('model.data');
       var pvData = this.get('model.pvData');
-      var xId = this.get('splitBy_id');
+      var xId = this.get('splitById');
 
       data.forEach(function (d, i) {
         d.index = i;
@@ -558,6 +563,7 @@ App.BoardController = Ember.Controller.extend({
         return d[xId];
       });
       var splits = split.group();
+
       var preds = {
         'neg': reductio().avg(function (d) {
           return (d.tri_pred || { 'neg': 0 }).neg;
@@ -577,7 +583,8 @@ App.BoardController = Ember.Controller.extend({
       // Whenever the brush moves, re-rendering everything.
       var renderAll = function (_this) {
         // Get all posts
-        _this.set('filteredData', split.top(10e10));
+
+        // _this.set('filtered_data', split.top(10));
 
         // Time series
         var topX = _.pluck(splits.top(10), 'key');
@@ -621,13 +628,12 @@ App.BoardController = Ember.Controller.extend({
 
   renderX () {
     var model = this.get('model');
-    var filteredData = this.get('filteredData');
+    var filteredData = this.get('filtered_data');
     var splitBy = this.get('splitBy');
     var topX = this.get('topX');
-    var xId = this.get('splitBy_id');
+    var xId = this.get('splitById');
 
     var dateFilter = this.get('dateFilter');
-
     // NB: I bet this would scale better if we used crossfilter reduces
     var topXData = _.filter(filteredData,
       function (x) {
@@ -663,7 +669,7 @@ App.BoardController = Ember.Controller.extend({
           }).length
         },
         'timeseries': _.chain(v)
-          .pluck('date')
+          .pluck('time')
           .map(function (x) {
             return roundingFunction(new Date(x));
           })
@@ -711,7 +717,7 @@ App.BoardController = Ember.Controller.extend({
         });
         predData.reverse();
 
-        return _this.drawGauge('#gauge-' + i, predData);
+        return _this.drawGauge('#gauge-' + x, predData);
       });
     });
   }, // This should really be broken apart
@@ -866,6 +872,7 @@ App.BoardRoute = Ember.Route.extend({
     // Reset both filters
     con.set('board_filter', []);
     con.set('user_filter', []);
+    con.set('filtered_data', model.data);
 
     // Make route aware of splitting variable
     if (this.routeName === 'user') {

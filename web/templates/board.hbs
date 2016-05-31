@@ -47,14 +47,14 @@
     <div class="tab-content" id="vis-wrapper">
       <div role="tabpanel" class="tab-pane active" id="time">
         <div class="col-xs-12">
-          {{#each top_x}}
+            {{#each topX}}
             <div class="row-fluid">
               <div class="col-xs-2">
-                <div id='gauge-{{this.index}}' class="gauge chart"></div>
+                <div id='gauge-{{this}}' class="gauge chart"></div>
               </div>
 
               <div class="col-xs-10">
-                <div id="ts-{{this.item}}" class="ts chart" {{action "top_x_clicked" item}}>
+                <div id="ts-{{this}}" class="ts chart" {{action "top_x_clicked" item}}>
                   <span class="title"></span>
                   <div class="count-wrapper pull-right">
                     <span class="before"></span> |
@@ -114,14 +114,16 @@
     <div class="row-fluid">
       <div class="col-xs-12">
         <div class="list-group" id="collection">
+            {{#each model.data}}
             <div class="list-group-item comments-group-item">
               <span class="list-group-item-heading" id='app-grey'>
-                (post user){{post.user}} at (post date){{post.date}} on (post board){{post.board}}
+                {{this.user}} at {{this.time}} on {{this.board}}
               </span>
               <p class="list-group-item-text" id='app-msg'>
-                (post msg){{post.msg}}
+                {{this.msg}}
               </p>
             </div>
+        {{/each}}
         </div>
       </div>
     </div>
