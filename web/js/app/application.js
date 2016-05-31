@@ -64,7 +64,7 @@ App.Router.map(function () {
   this.resource('sidebar', {path: 'sidebar/:st'}, function () {
     this.resource('detail', {path: 'detail/:cik'}, function () {
       this.resource('pvChart', function () {});
-      this.resource('googleNews', function () {
+      this.resource('topNews', function () {
         this.resource('subNews', function () {});
         this.resource('omxNews', {path: 'omxNews/:omx'}, function () {});
       });

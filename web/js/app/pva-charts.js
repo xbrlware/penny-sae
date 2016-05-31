@@ -2,10 +2,6 @@
 
 /* global Ember, App, d3 */
 
-// ---------------------------------------------------------------------------
-// -------------- Price/Volume/Suspicious Activity Charts --------------------
-// ---------------------------------------------------------------------------
-
 App.PvChartRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     //        App.Search.fetch_data('cik2tickers', {'cik': controller.get('name.cik')}).then(function(response) {
@@ -42,10 +38,12 @@ App.PvChartView = Ember.View.extend({
   }.observes('controller.model'),
 
   drawChart: function (data) {
+    console.log('drawChart -- data', data);
     if (!data) {return; }
 
     _.map(data, function (datum) { datum['date'] = new Date(datum['date']); });
 
+    // ** This is a placeholder -- we aren't hooked into CROWDSAR backend, so we're just using PV data here again **
     var fData = data;
     _.map(fData, function (datum) { datum['date'] = new Date(datum['date']); });
 

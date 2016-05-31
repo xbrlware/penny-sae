@@ -75,7 +75,7 @@ App.Search.reopenClass({
         url: 'search',
         data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
         success: function (response) {
-          console.log('response --', response);
+          console.log('response in search_company --', response);
           resolve(App.SearchResults.create(response));
         },
         error: function (xhr, status, error) {
