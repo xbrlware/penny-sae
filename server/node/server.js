@@ -46,15 +46,15 @@ function run_server () {
   console.log('Nodesec | protocol = %s | port = %s', config.HTTPS.ENABLED ? 'https' : 'http', config.SERVER.PORT);
 }
 
-// if (cluster.isMaster) {
-//  var cpuCount = Math.floor(require('os').cpus().length / 2) || 1
-//
-//  _.map(_.range(cpuCount), function (i) { cluster.fork(); })
-//
-//  cluster.on('exit', function (worker) {
-//    console.log('Worker ' + worker.id + ' died')
-//    cluster.fork()
-//  })
-// } else {
-run_server();
-// }
+ if (cluster.isMaster) {
+  var cpuCount = Math.floor(require('os').cpus().length / 2) || 1
+
+  _.map(_.range(cpuCount), function (i) { cluster.fork(); })
+
+  cluster.on('exit', function (worker) {
+    console.log('Worker ' + worker.id + ' died')
+    cluster.fork()
+  })
+ } else {
+    run_server();
+ }
