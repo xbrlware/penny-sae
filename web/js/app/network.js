@@ -1,6 +1,6 @@
 // web/js/app/network.js
 
-App.NetController = Ember.ObjectController.extend({
+App.NetController = Ember.Controller.extend({
   isLoading: true,
   noData: false
 });
@@ -10,14 +10,16 @@ App.NetView = Ember.View.extend({
   didInsertElement: function () { this.draw(); },
   controllerChanged: function () { this.draw(); }.observes('controller.model'),
   draw: function () {
-    this.get('controller').set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
-    this.get('controller').set('hide_ner', gconfig.DEFAULT_HIDE_NER);
-    
-    var con = this.get('controller'),
-      cik = con.get('content.cik'),
-      rgraph = RGraph(con, 'main-infovis');
-    
-    App.NetworkAPI.expand_node(rgraph, cik, true);
+    var con = this.get('controller');
+
+    //    con.set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL)
+    //    con.set('hide_ner', gconfig.DEFAULT_HIDE_NER)
+
+    var cik = con.get('content.cik');
+    var redFlagParams = con.get('redFlagParams');
+
+    var rgraph = App.RGraph.init(con, 'main-infovis', redFlagParams);
+    App.NetworkAPI.expand_node(rgraph, cik, redFlagParams, true);
   }
 });
 
@@ -50,8 +52,7 @@ App.NetworkAPI.reopenClass({
     _.map(edges, function (edge) {
       rgraph.graph.addAdjacence(
         {'id': edge['ownerCik']},
-        {'id': edge['issuerCik']},
-        {'$type': 'arrow'}
+        {'id': edge['issuerCik']}
       );
     });
   },
@@ -59,15 +60,15 @@ App.NetworkAPI.reopenClass({
   _add_nodes: function (rgraph, nodes) {
     _.map(nodes, function (node) {
       if (!rgraph.graph.hasNode(node)) {
-        rgraph.graph.addNode(node);
+        console.log('redFlags', node.redFlags);
+        rgraph.graph.addNode(node, {'redFlags': node.redFlags});
       }
     });
   },
 
-  expand_node: function (rgraph, cik, init) {
+  expand_node: function (rgraph, cik, redFlagParams, init) {
     cik = zpad(cik.toString());
-    App.NetworkAPI._fetch({'cik': cik}, function (data) {
-      console.log('got data ->', data.nodes);
+    App.NetworkAPI._fetch({'cik': cik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
       if (init) {
         rgraph.loadJSON(data.nodes);
       } else {
@@ -79,151 +80,156 @@ App.NetworkAPI.reopenClass({
   }
 });
 
-function RGraph (con, into) {
-  var rgraph = new $jit.RGraph({
-    injectInto: into,
+App.RGraph = Ember.Object.extend();
 
-    // Transitions
-    duration: 1000,
-    interpolation: 'linear',
-    background: {
-      CanvasStyles: {
-        strokeStyle: '#333'
-      }
-    },
-    Navigation: {
-      enable: true,
-      panning: 'avoid nodes',
-      zooming: 10
-    },
-    Node: {
-      type: 'image',
-      dim: 5,
-      overridable: true
-    },
-    Tips: {
-      enable: true,
-      type: 'Native',
-      offsetX: 10,
-      offsetY: 10,
-      onShow: function (tip, node) {
-        console.log('node', node);
-        tip.innerHTML = `Name: ${node.name} CIK: ${node.id}`;
-      }
-    },
-    Edge: {
-      overridable: true,
-      color: gconfig.NETWORK_EDGE_COLOR,
-      lineWidth: gconfig.NETWORK_EDGE_WIDTH,
-      alpha: .9
-    },
-    Events: {
-      enable: true,
-      type: 'Native',
-      onDragMove: function (node, eventInfo, e) {
-        if (node) {
-          var pos = eventInfo.getPos();
-          node.pos.setc(pos.x, pos.y);
-          rgraph.plot();
+App.RGraph.reopenClass({
+  init: function (con, into, redFlagParams) {
+    var rgraph = new $jit.RGraph({
+      injectInto: into,
+
+      // Transitions
+      duration: 1000,
+      interpolation: 'linear',
+      background: {
+        CanvasStyles: {
+          strokeStyle: '#333'
         }
       },
-      onDragStart: function (node, eventInfo, e) {
-        if (node) {
-          node.setData('dim', gconfig.DRAG_NODE_SIZE);
-          rgraph.plot();
+      Navigation: {
+        enable: true,
+        panning: 'avoid nodes',
+        zooming: 10
+      },
+      Node: {
+        type: 'image',
+        dim: 5,
+        overridable: true
+      },
+      Tips: {
+        enable: true,
+        type: 'Native',
+        offsetX: 10,
+        offsetY: 10,
+        onShow: function (tip, node) {
+          console.log('node', node);
+          tip.innerHTML = `Name: ${node.name} <br> CIK: ${node.id}`;
         }
       },
-      onDragEnd: function (node, eventInfo, e) {
-        if (node) {
-          node.setData('dim', gconfig.STANDARD_NODE_SIZE);
-          rgraph.plot();
+      Edge: {
+        overridable: true,
+        color: gconfig.NETWORK_EDGE_COLOR,
+        lineWidth: gconfig.NETWORK_EDGE_WIDTH,
+        alpha: .9
+      },
+      Events: {
+        enable: true,
+        type: 'Native',
+        onDragMove: function (node, eventInfo, e) {
+          if (node) {
+            var pos = eventInfo.getPos();
+            node.pos.setc(pos.x, pos.y);
+            rgraph.plot();
+          }
+        },
+        onDragStart: function (node, eventInfo, e) {
+          if (node) {
+            node.setData('dim', gconfig.DRAG_NODE_SIZE);
+            rgraph.plot();
+          }
+        },
+        onDragEnd: function (node, eventInfo, e) {
+          if (node) {
+            node.setData('dim', gconfig.STANDARD_NODE_SIZE);
+            rgraph.plot();
+          }
+        },
+        onClick: function (node, eventInfo, e) {
+          if (node) {
+            node.setData('dim', gconfig.STANDARD_NODE_SIZE);
+            App.NetworkAPI.expand_node(rgraph, node.id, redFlagParams, false);
+          }
+        },
+        onRightClick: function (node, eventInfo, e) {
+          if (node) {
+            console.log('node on rightclick', node);
+          }
         }
       },
-      onClick: function (node, eventInfo, e) {
-        if (node) {
-          node.setData('dim', gconfig.STANDARD_NODE_SIZE);
-          App.NetworkAPI.expand_node(rgraph, node.id);
+      onPlaceLabel: function (domElement, node) {
+        var style = domElement.style;
+        domElement.innerHTML = node.name;
+
+        style.display = '';
+        style.cursor = 'move';
+        style['user-select'] = 'none';
+        style['-webkit-user-select'] = 'none';
+        style['-moz-user-select'] = 'none';
+
+        if (node._depth <= 1) {
+          style.fontSize = '0.9em';
+          style.color = '#FFFFFF';
+          style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black';
+        } else if (node._depth === 2 || node._depth === 3) {
+          style.fontSize = '0.7em';
+          style.color = '#FFFFFF';
+        } else {
+          style.fontSize = '0.3em';
+          style.color = '#494949';
         }
+
+        var left = parseInt(style.left);
+        var w = domElement.offsetWidth;
+        style.left = (left - (w / 2)) + 'px';
       },
-      onRightClick: function (node, eventInfo, e) {
-        if (node) {
-          console.log('node on rightclick', node);
+      onBeforePlotNode: function (node) {
+        // Resize node
+        if (node.data['$dim'] !== gconfig.DRAG_NODE_SIZE) {
+          node.data['$dim'] = gconfig.STANDARD_NODE_SIZE;
         }
+
+        // Hide terminal nodes
+        //        if (con.get('hide_terminal') && node.data['terminal']) {
+        //          node.data['$alpha'] = 0
+        //        }
+
+        node.data['$color'] = App.RGraph.computeColor(node.data['redFlags']['total']);
       }
-    },
-    onPlaceLabel: function (domElement, node) {
-      var style = domElement.style;
-      domElement.innerHTML = node.name;
+    });
+    //    App.RGraph.addButtons(con, rgraph)
+    return rgraph;
+  },
 
-      style.display = '';
-      style.cursor = 'move';
-      style['user-select'] = 'none';
-      style['-webkit-user-select'] = 'none';
-      style['-moz-user-select'] = 'none';
+  //  addButtons: function (con, rgraph) {
+  //    button = $jit.id('toggle-terminal')
+  //    button.onclick = function () {
+  //      con.toggleProperty('hide_terminal')
+  //
+  //      $(this).context.value = (con.get('hide_terminal') ? 'Show' : 'Hide') + ' Terminal Nodes'
+  //      rgraph.graph.eachNode(function (node) {
+  //        node.setData('alpha', con.get('hide_terminal') ? (node.data['terminal'] ? 0 : 1) : 1, 'end')
+  //      })
+  //
+  //      rgraph.fx.animate({
+  //        modes: ['node-property:alpha'],
+  //        duration: 250
+  //      })
+  //    }
+  //  },
 
-      if (node._depth <= 1) {
-        style.fontSize = '0.9em';
-        style.color = '#FFFFFF';
-        style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black';
-      } else if (node._depth === 2 || node._depth === 3) {
-        style.fontSize = '0.7em';
-        style.color = '#FFFFFF';
-      } else {
-        style.fontSize = '0.3em';
-        style.color = '#494949';
-      }
+  computeColor: function (redFlags_total) {
+    if (redFlags_total === undefined) { return 'grey'; }
 
-      var left = parseInt(style.left);
-      var w = domElement.offsetWidth;
-      style.left = (left - (w / 2)) + 'px';
-    },
-    onBeforePlotNode: function (node) {
-      // Resize node
-      if (node.data['$dim'] !== gconfig.DRAG_NODE_SIZE) {
-        node.data['$dim'] = gconfig.STANDARD_NODE_SIZE;
-      }
-
-      // Hide terminal nodes
-      // if(con.get('hide_terminal') && node.data['terminal']) {
-      //     node.data["$alpha"] = 0
-      // }
-
-      // // Hide Augmented nodes
-      // if(con.get('hide_ner') && node.data['ner']) {
-      //     node.data["$alpha"] = 0
-      // }
-
-      // // Hackily override red flags given information about incarceration
-      // if(node.data.enhanced !== undefined) {
-      //     if(node.data.enhanced.incarcerated || node.data.enhanced.confirmed_bad) {
-      //         if(!con.get('hide_ner')) {
-      //             node.data["overrideRedFlags"] = true
-      //         } else {
-      //             node.data["overrideRedFlags"] = false
-      //         }
-      //     }
-      // }
-
-      // var totalRedFlags = node.data["totalRedFlags"]
-      // if(!node.data['overrideRedFlags']) {
-      //     if(totalRedFlags === undefined) {
-      //         node.data["$color"] = "grey"
-      //     } if(totalRedFlags < 1) {
-      //         node.data["$color"] = "green"
-      //     } else if (totalRedFlags >= 1 & totalRedFlags < 2) {
-      //         node.data["$color"] = "yellow"
-      //     } else if (totalRedFlags >= 2 & totalRedFlags < 4){
-      //         node.data["$color"] = "orange"
-      //     } else if (totalRedFlags >= 4){
-      //         node.data["$color"] = "red"
-      //     }
-      // } else {
-      node.data['$color'] = 'red';
-    // }
+    if (redFlags_total < 1) {
+      return 'green';
+    } else if (redFlags_total >= 1 & redFlags_total < 2) {
+      return 'yellow';
+    } else if (redFlags_total >= 2 & redFlags_total < 4) {
+      return 'orange';
+    } else if (redFlags_total >= 4) {
+      return 'red';
     }
-  });
-  return rgraph;
-}
+  }
+});
 
 // function create_network_associates(network_center, network_associates) {
 //     if(!network_associates.length) {return []}
@@ -589,7 +595,7 @@ function RGraph (con, into) {
 //                 return 1
 //             }
 //         }
-
+//
 //         button = $jit.id('toggle-terminal')
 //         button.onclick = function(){
 //             con.toggleProperty('hide_terminal')
@@ -607,22 +613,6 @@ function RGraph (con, into) {
 //             })
 //         }
 
-//         ner_button = $jit.id('toggle-ner')
-//         ner_button.onclick = function() {
-//             con.toggleProperty('hide_ner')
-//             if(con.get('hide_ner')) {
-//                 $(this).context.value = "Show Augmented Network"
-//             } else {
-//                 $(this).context.value = "Hide Augmented Network"
-//             }
-//             rgraph.graph.eachNode( function(node){
-//                 node.setData("alpha", getAlpha(node, con.get('hide_terminal'), con.get('hide_ner')), "end")
-//             })
-//             rgraph.fx.animate({
-//                 modes: ['node-property:alpha'],
-//                 duration: 250
-//             })
-//         }
 //     }
 // })
 

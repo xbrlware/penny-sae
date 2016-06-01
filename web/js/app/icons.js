@@ -6,9 +6,9 @@
 
 // This is terrible hardcoding and should be changed ~ BKJ
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
 
 var networkGreenPerson = new Image();
 var networkYellowPerson = new Image();
@@ -33,7 +33,7 @@ networkOrangeBuilding.src = 'img/orange_building.png';
 networkRedBuilding.src = 'img/red_building.png';
 
 function implementIcons () { // eslint-disable-line no-unused-vars
-  console.log('implementing icons')
+  console.log('implementing icons');
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {
@@ -43,7 +43,7 @@ function implementIcons () { // eslint-disable-line no-unused-vars
         var pos = node.pos.getc(true);
 
         var isPerson = entityType === 'owner' | entityType === undefined | entityType === 'Unknown' | entityType === 'NER' | entityType === 'entity';
-        
+
         var icon;
 
         if (isPerson) {

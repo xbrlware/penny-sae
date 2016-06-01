@@ -169,7 +169,7 @@ module.exports = function (app, config, client) {
   }
 
   const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar'];
-  const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
+  const DEFAULT_      = {'have': false, 'value': -1, 'is_flag': false};
 
   function redflagPostprocess (redFlags, redFlagParams) {
     return _.chain(REDFLAG_NAMES).map(function (k) { return [k, DEFAULT_]; }).object().extend({

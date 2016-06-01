@@ -3,17 +3,13 @@
 <span class="centered">
     <h3>
         {{#if isLoading}}
-            <span class="centered">
-                - Loading -
-            </span>
+            <span class="centered"> - Loading - </span>
         {{else}}
             Known Associates
         {{/if}}
         
         {{#if noData}}
-                <span class="centered">
-                    - No network data available -
-                </span>
+            <span class="centered"> - No network data available - </span>
         {{/if}}
     </h3>
 </span>
@@ -23,46 +19,9 @@
 <span class="centered">
     <div onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';" id="main-center-container">
         <input type="button" class="btn btn-default" value="Hide Terminal Nodes" id="toggle-terminal">
-        <input type="button" class="btn btn-default" value="Show Augmented Network" id="toggle-ner">
         <div id="main-infovis"></div>
     </div>
     <div id="right-container">
         <div id="inner-details"></div>
     </div>
 </span>
-
-<br />
-
-{{#if network_associates}}
-    
-<div class="accordion" id="associates_accordion">
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle" id="link-padding" data-toggle="collapse" data-parent="#associates_accordion" href="#a1">
-                <h3 class="assc-center">List Associates of {{currentName}} </h3>
-            </a>
-        </div>
-        <div id="a1" class="accordion-body collapse out">
-            <div class="accordion-inner">
-                <div id="search-wrapper-network-er">
-                    {{
-                        input class="input"
-                        value=searchTerm_er
-                        class="assc-center"
-                        insert-newline="filter_er"
-                        placeholder="Filter"
-                    }}
-                </div>
-                <div id="button-wrapper-network-er">
-                    <button class="btn btn-danger" {{action "save_toggles"}}>
-                        Apply Changes
-                    </button>
-                </div>
-                <div class="ner-size">
-                    {{partial "ner"}}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{{/if}}

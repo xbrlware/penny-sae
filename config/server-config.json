@@ -13,7 +13,8 @@
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_cat",
           "DELINQUENCY" : "ernest_delinquency",
-          "SUSPENSIONS" : "ernest_suspensions"
+          "SUSPENSIONS" : "ernest_suspensions",
+          "OWNERSHIP"   : "ernest_ownership_cat"
         }
     },
     "HTTPS":{
