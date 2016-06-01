@@ -103,7 +103,7 @@ App.Search.reopenClass({
   },
 
   fetch_data: function (detailName, name) {
-    console.log(detailName, ' :: ', name);
+    console.log('detail name --> ', detailName, ' :: Name --> ', name);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',

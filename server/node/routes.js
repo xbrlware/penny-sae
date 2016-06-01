@@ -51,7 +51,7 @@ module.exports = function (app, config, client) {
     'user': function (ids) {
       return {
         'size': 1e6,
-        '_source': ['date', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
@@ -71,10 +71,10 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'board': function (ids) {
+    'board': function (boardName) {
       return {
         'size': 1000,
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
@@ -86,8 +86,8 @@ module.exports = function (app, config, client) {
               }
             },
             'query': {
-              'terms': {
-                'board_id': rsplit(ids, ',')
+              'match': {
+                'board': boardName
               }
             }
           }
@@ -559,7 +559,7 @@ module.exports = function (app, config, client) {
     if (true) {
       client.search({
         index: 'crowdsar_cat',
-        body: pennyQueryBuilder.board(d.id)
+        body: pennyQueryBuilder.board(d.ticker)
       }).then(function (forumResponse) {
         var ticker = forumResponse.hits.hits[0]._source.ticker;
         console.log('ticker', ticker);

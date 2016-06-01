@@ -27,7 +27,7 @@ function makeTimeSeries (ts, bounds) {
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
-  y.domain([bounds.ymin, bounds.ymax]);
+  y.domain(d3.extent([bounds.ymin, bounds.ymax]));
 
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
@@ -360,7 +360,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
     div.append('g')
       .attr('class', obj.class)
-      .attr('clip-path', 'url(/' + routeId + '/' + subjectId + '#' + clip + ')');
+      .attr('clip-path', 'url(/' + routeId + '/' + '#' + clip + ')');
 
     div.append('g')
       .attr('class', 'x axis')
@@ -397,7 +397,9 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     };
   }).sortBy(function (a) { return a.date; }).value();
 
-  forumData = _.sortBy(forumData, function (x) { return x.date; });
+  forumData = _.sortBy(forumData, function (x) {
+    return x.date;
+  });
 
   var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
     _.pluck(forumData, 'date')]));
@@ -502,7 +504,6 @@ App.BoardController = Ember.Controller.extend({
 
     if (this.splitByFilter.length) { // this.splitByFilter === board_filter
       out = _.filter(this.get('filtered_data'), function (x) {
-        console.log(x['user_id']);
         return _.contains(this.splitByFilter, x[xId]);
       });
     } else {
@@ -548,14 +549,17 @@ App.BoardController = Ember.Controller.extend({
 
       data.forEach(function (d, i) {
         d.index = i;
-        d.date = new Date(d.date);
+        d.date = new Date(d.time);
       });
 
       // For parent filter
+
       var datum = crossfilter(data);
+
       var date = datum.dimension(function (d) {
         return d.date;
       });
+
       var dates = date.group(d3.time.day);
 
       // For dependent filters
@@ -566,13 +570,13 @@ App.BoardController = Ember.Controller.extend({
 
       var preds = {
         'neg': reductio().avg(function (d) {
-          return (d.tri_pred || { 'neg': 0 }).neg;
+          return (d.__meta__.tri_pred || { 'neg': 0 }).neg;
         })(split.group()),
         'neut': reductio().avg(function (d) {
-          return (d.tri_pred || {'neut': 0}).neut;
+          return (d.__meta__.tri_pred || {'neut': 0}).neut;
         })(split.group()),
         'pos': reductio().avg(function (d) {
-          return (d.tri_pred || {'pos': 0}).pos;
+          return (d.__meta__.tri_pred || {'pos': 0}).pos;
         })(split.group())
       };
 
@@ -641,11 +645,11 @@ App.BoardController = Ember.Controller.extend({
       }
     );
 
-    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('time').map(function (x) {
       return new Date(x);
     }).min().value();
 
-    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('time').map(function (x) {
       return new Date(x);
     }).max().value();
 
@@ -662,10 +666,10 @@ App.BoardController = Ember.Controller.extend({
         'count': {
           'during': v.length,
           'before': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) < (+xmin);
+            return x[xId] === k & (+x.time) < (+xmin);
           }).length,
           'after': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) > (+xmax);
+            return x[xId] === k & (+x.time) > (+xmax);
           }).length
         },
         'timeseries': _.chain(v)
@@ -850,7 +854,7 @@ App.BoardRoute = Ember.Route.extend({
         type: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        data: {id: 17838},
+        data: {ticker: 'taug'},
         success: function (data) {
           console.log('data ::', data);
           resolve(data);
