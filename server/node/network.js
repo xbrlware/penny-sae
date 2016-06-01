@@ -32,7 +32,7 @@ function edges2nodes (edges) {
 }
 
 // >>
-// Duplicate from routes.js
+// Duplicate from routes.js -- should refactor
 function redflagScript (params, score) {
   return {
     'script': {
@@ -45,7 +45,6 @@ function redflagScript (params, score) {
     }
   };
 }
-
 // <<
 
 module.exports = function (app, config, client) {
@@ -88,8 +87,6 @@ module.exports = function (app, config, client) {
       'possible': n_redFlags_computed * n_neighbors
     };
   }
-
-
 
   function computeIntrinsicRedFlags (nodes, redFlagParams, cb) {
     client.msearch({
