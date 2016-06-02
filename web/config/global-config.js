@@ -56,8 +56,8 @@ var gconfig = {
   },
   "LEGEND_SHOW": false,
   "SIZE": {
-   "HEIGHT": 75,
-   "WIDTH": 75
+   "HEIGHT": 60,
+   "WIDTH": 60
   },
   "TRANS_DURA": 0,
   "TOOTIP_SHOW": false

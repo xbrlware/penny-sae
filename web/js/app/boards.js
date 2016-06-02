@@ -1,5 +1,29 @@
 /* global Ember, App, d3, c3, _, techan, crossfilter, gconfig, reductio, alert */
 
+Ember.Handlebars.helper('forum-posts', function (data) {
+  var mincount = 20;
+  var maxcount = 40;
+  var ourString = '';
+  Ember.$('.list-group li').slice(20).hide();
+  Ember.$('.list-group').scroll(function () {
+    if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
+      Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
+      mincount = mincount + 20;
+      maxcount = maxcount + 20;
+    }
+  });
+
+  ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
+
+  for (var i = 0; i < data.length; i++) {
+    ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span><p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+  }
+
+  ourString = ourString + '</ul></div>';
+
+  return new Ember.Handlebars.SafeString(ourString);
+});
+
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
   var margin = {top: 10, right: 20, bottom: 20, left: 10};
@@ -27,7 +51,7 @@ function makeTimeSeries (ts, bounds) {
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
-  y.domain(d3.extent([bounds.ymin, bounds.ymax]));
+  y.domain([bounds.ymin, bounds.ymax]);
 
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
@@ -702,6 +726,19 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
+  renderForumPosts () {
+    var mincount = 20;
+    var maxcount = 40;
+    Ember.$('.list-group li').slice(20).hide();
+    Ember.$('.list-group').scroll(function () {
+      if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
+        Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
+        mincount = mincount + 20;
+        maxcount = maxcount + 20;
+      }
+    });
+  },
+
   renderGauges () {
     var _this = this;
     var topPreds = this.get('topPreds');
@@ -781,7 +818,7 @@ App.BoardController = Ember.Controller.extend({
       userIds: this.get('user_filter')};
 
     Ember.$.ajax({
-      url: gconfig.GET_AGGS_URL,
+      url: 'aggs',
       type: 'POST',
       dataType: 'json',
       contentType: 'application/x-www-form-urlencoded',
@@ -796,7 +833,7 @@ App.BoardController = Ember.Controller.extend({
   getCooc () {
     if (this.get('routeName') === 'board') {
       Ember.$.ajax({
-        url: gconfig.GET_COOC_URL,
+        url: 'coocurrence',
         type: 'get',
         contentType: 'application/json',
         dataType: 'JSON',
@@ -821,7 +858,7 @@ App.BoardController = Ember.Controller.extend({
   coocCallback (p) {
     if (p.x === p.y) {
       Ember.$.ajax({
-        url: gconfig.COOC_URL,
+        url: 'coocurrence',
         type: 'get',
         contentType: 'application/json',
         dataType: 'JSON',
@@ -854,7 +891,7 @@ App.BoardRoute = Ember.Route.extend({
         type: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        data: {ticker: 'taug'},
+        data: {ticker: 'TAUG'},
         success: function (data) {
           console.log('data ::', data);
           resolve(data);

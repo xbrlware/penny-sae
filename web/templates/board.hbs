@@ -24,29 +24,8 @@
 
 <div class="row-fluid">
   <div class="col-xs-6">
-    <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active">
-        <a href="#time" aria-controls="home" role="tab" data-toggle="tab">
-          Time Series by
-          {{#if routeIsBoard}}
-            Poster
-          {{else}}
-            Board
-          {{/if}}
-        </a>
-      </li>
-
-      {{#if routeIsBoard}}
-        <li role="presentation">
-          <a href="#network" aria-controls="profile" role="tab" data-toggle="tab">
-            Poster Network Similiarity
-          </a>
-        </li>
-      {{/if}}
-    </ul>
     <div class="tab-content" id="vis-wrapper">
       <div role="tabpanel" class="tab-pane active" id="time">
-        <div class="col-xs-12">
             {{#each topX}}
             <div class="row-fluid">
               <div class="col-xs-2">
@@ -63,69 +42,16 @@
                   </div>
                 </div>
               </div>
-
             </div>
           {{/each}}
         </div>
       </div>
-
-      <div role="tabpanel" class="tab-pane" id="network">
-        <div class="row-fluid">
-          <h4> User Coocurrence Matrix </h4>
-          <div id="cooc"></div>
-        </div>
-      </div>
-
     </div>
   </div>
 
   <div class="col-xs-6">
-    {{#if aggs}}
-      <table class="terms-wrapper" id='sig-terms'>
-
-        <tr>
-          <td id='app-grey'>
-            Significant Terms
-          </td>
-          {{#each aggs.general}}
-            <td id='app-key'> {{this.key}} </td>
-          {{/each}}
-        </tr>
-
-        <tr>
-          <td id='app-grey'>
-            Entities
-          </td>
-          {{#each aggs.ents}}
-            <td id='app-key-two'>
-              {{this.key}}
-            </td>
-          {{/each}}
-        </tr>
-
-      </table>
-    {{else}}
-      <table class="terms-wrapper" id="sig-terms">
-        <tr><td id='app-grey'>Significant Terms</td><td id='app-key'></td></tr>
-        <tr><td id='app-grey'>Entities</td><td id='app-key-two'></td></tr>
-      </table>
-    {{/if}}
-
     <div class="row-fluid">
-      <div class="col-xs-12">
-        <div class="list-group" id="collection">
-            {{#each model.data}}
-            <div class="list-group-item comments-group-item">
-              <span class="list-group-item-heading" id='app-grey'>
-                {{this.user}} at {{this.time}} on {{this.board}}
-              </span>
-              <p class="list-group-item-text" id='app-msg'>
-                {{this.msg}}
-              </p>
-            </div>
-        {{/each}}
-        </div>
-      </div>
+        {{forum-posts model.data}}
     </div>
   </div>
 </div>

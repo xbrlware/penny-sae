@@ -558,11 +558,10 @@ module.exports = function (app, config, client) {
 
     if (true) {
       client.search({
-        index: 'crowdsar_cat',
+        index: config['ES']['INDEX']['CROWDSAR'],
         body: pennyQueryBuilder.board(d.ticker)
       }).then(function (forumResponse) {
         var ticker = forumResponse.hits.hits[0]._source.ticker;
-        console.log('ticker', ticker);
         getPvData(ticker, function (pvData) {
           res.send({
             'data': _.pluck(forumResponse.hits.hits, '_source'),
