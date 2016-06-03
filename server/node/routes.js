@@ -87,7 +87,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'board': boardName
+                'board': boardName.toLowerCase()
               }
             }
           }
@@ -553,16 +553,14 @@ module.exports = function (app, config, client) {
     });
   });
 
-  app.get('/board', function (req, res) {
-    var d = req.query;
-
+  app.post('/board', function (req, res) {
+    var d = req.body;
     if (true) {
       client.search({
         index: config['ES']['INDEX']['CROWDSAR'],
         body: pennyQueryBuilder.board(d.ticker)
       }).then(function (forumResponse) {
-        var ticker = forumResponse.hits.hits[0]._source.ticker;
-        getPvData(ticker, function (pvData) {
+        getPvData(d.ticker, function (pvData) {
           res.send({
             'data': _.pluck(forumResponse.hits.hits, '_source'),
             'pvData': pvData

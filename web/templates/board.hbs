@@ -1,13 +1,5 @@
 {{!-- web/templates/board.hbs --}}
 
-<h3 id="mbinline">
-  {{routeName_pretty}} : {{selection_pretty}}
-</h3>
-
-<h5 id="post-total">
-  {{n_posts}} posts total
-</h5>
-
 {{#if split_by_filter_nonempty}}
   <span id="examine-button">
     <button class="btn btn-primary" {{action 'drilldown'}}>
@@ -32,8 +24,7 @@
                 <div id='gauge-{{this}}' class="gauge chart"></div>
               </div>
 
-              <div class="col-xs-10">
-                <div id="ts-{{this}}" class="ts chart" {{action "top_x_clicked" item}}>
+              <div class="col-xs-10 ts chart" id="ts-{{this}}" {{action "top_x_clicked" item}}>
                   <span class="title"></span>
                   <div class="count-wrapper pull-right">
                     <span class="before"></span> |

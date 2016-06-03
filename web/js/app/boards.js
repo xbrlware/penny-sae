@@ -4,6 +4,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
   var mincount = 20;
   var maxcount = 40;
   var ourString = '';
+
   Ember.$('.list-group li').slice(20).hide();
   Ember.$('.list-group').scroll(function () {
     if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
@@ -15,27 +16,28 @@ Ember.Handlebars.helper('forum-posts', function (data) {
 
   ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
 
-  for (var i = 0; i < data.length; i++) {
-    ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span><p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+  if (data) {
+    for (var i = 0; i < data.length; i++) {
+      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span><p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+    }
   }
-
   ourString = ourString + '</ul></div>';
 
   return new Ember.Handlebars.SafeString(ourString);
 });
 
 function makeTimeSeries (ts, bounds) {
+  console.log('TS :: --> ', ts);
+  console.log('BOUNDS :: --> ', bounds);
+
   var div = '#ts-' + ts.id;
   var margin = {top: 10, right: 20, bottom: 20, left: 10};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  // var height = Ember.$(div).height() - margin.top - margin.bottom;
-  // var width = Ember.$(div).width() - margin.left - margin.right;
-
-  var height = 10;
-  var width = 227;
+  var height = Ember.$(div).height() - margin.top - margin.bottom;
+  var width = Ember.$(div).width() - margin.left - margin.right;
 
   // Calculate bar width
   var BAR_WIDTH = 3;
@@ -89,176 +91,6 @@ function makeTimeSeries (ts, bounds) {
     .attr('height', function (d) { return height - y(d.value); })
     .append('title')
     .text(function (d) { return d.date + ' : ' + d.value; });
-}
-
-function renderCooc (coocData, div, clickCallback) {
-  if (!coocData) { return; }
-
-  // Clear previous charts
-  d3.select(div).selectAll('svg').remove();
-
-  var margin = {top: 100, right: 0, bottom: 20, left: 120};
-  var width = (Ember.$(div).width() > 0 ? Ember.$(div).width() : Ember.$('#vis-wrapper').width()) - margin.left - margin.right;
-  var height = width;
-
-  var colorRamp = [
-    ['#000233', 1], // Background color
-    ['#a50026', 0.99],
-    ['#a50026', 0.9],
-    ['#d73027', 0.8],
-    ['#f46d43', 0.7],
-    ['#fdae61', 0.6],
-    ['#fee090', 0.5],
-    ['#e0f3f8', 0.4],
-    ['#abd9e9', 0.3],
-    ['#74add1', 0.2],
-    ['#4575b4', 0.1],
-    ['#313695', 0]
-  ];
-
-  var x = d3.scale.ordinal().rangeBands([0, width]);
-    // z = d3.scale.linear().domain([0, 1]).clamp(true),
-  var color = d3.scale.linear()
-      .domain(_.map(colorRamp, function (x) { return x[1]; }))
-      .range(_.map(colorRamp, function (x) { return x[0]; }));
-
-  var svg = d3.select(div).append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g').attr('transform',
-    'translate(' + margin.left + ',' + margin.top + ')');
-
-  var matrix = [];
-  var nodes = coocData.nodes;
-  var n = nodes.length;
-
-  // Compute index per node.
-  _.map(nodes, function (yNode, i) {
-    yNode.index = i;
-    matrix[i] = _.map(nodes, function (xNode, j) {
-      return { x: j,
-        y: i,
-        xName: xNode.name,
-        yName: yNode.name,
-        col: 0,
-        pct: 0
-      };
-    });
-  });
-
-  // Convert links to matrix; count character occurrences.
-  coocData.links.forEach(function (link) {
-    console.log(Math.pow(link.scaled_value, 0.5));
-    matrix[link.source][link.target].col += (Math.pow(link.scaled_value, 0.5));
-    matrix[link.source][link.target].pct += link.value;
-  });
-
-  var order = d3.range(n).sort(function (a, b) {
-    return d3.ascending(nodes[a].index, nodes[b].index);
-  });
-
-  x.domain(order);
-
-  svg.append('rect')
-    .attr('class', 'background')
-    .attr('width', width)
-    .attr('height', height);
-
-  svg.append('text').attr({
-    'class': 'heatmap-info',
-    'text-anchor': 'end',
-    'x': width,
-    'y': height + margin.bottom / 2,
-    'fill': 'grey'
-  });
-
-  var row = svg.selectAll('.row')
-    .data(matrix)
-    .enter().append('g')
-    .attr('class', 'row')
-    .attr('transform', function (d, i) {
-      return 'translate(0,' + x(i) + ')';
-    })
-    .each(makeRow);
-
-  row.append('text')
-    .attr('x', -6)
-    .attr('y', x.rangeBand() / 2)
-    .attr('size', function () { return '.25em'; })
-    .attr('dy', '.32em')
-    .attr('text-anchor', 'end')
-    .text(function (d, i) { return nodes[i].name; })
-    .attr('fill', 'grey');
-
-  var column = svg.selectAll('.column')
-    .data(matrix)
-    .enter().append('g')
-    .attr('class', 'column')
-    .attr('transform', function (d, i) {
-      return 'translate(' + x(i) + ')rotate(-90)';
-    });
-
-  column.append('text')
-    .attr('x', 6)
-    .attr('y', x.rangeBand() / 2)
-    .attr('size', function () { return '.25em'; })
-    .attr('dy', '.32em')
-    .attr('text-anchor', 'start')
-    .text(function (d, i) { return nodes[i].name; })
-    .attr('fill', 'grey');
-
-  function makeRow (row) {
-    var cell = d3.select(this).selectAll('.cell').data(row).enter()
-      .append('rect')
-      .attr('class', 'cell')
-      .attr('x', function (d) { return x(d.x); })
-      .attr('width', function () { return x.rangeBand(); })
-      .attr('height', function () { return x.rangeBand(); })
-      .style('fill', function (d) { return color(d.col); })
-      .on('mouseover', mouseover)
-      .on('mouseout', mouseout)
-      .on('click', click);
-    return cell;
-  }
-
-  function mouseover (p) {
-    d3.selectAll('.row text').classed('active-cooc-label',
-      function (d, i) { return i === p.y; });
-    d3.selectAll('.column text').classed('active-cooc-label',
-      function (d, i) { return i === p.x; });
-
-    var p1 = Ember.$('.row text')[p.y].innerHTML;
-    var p2 = Ember.$('.row text')[p.x].innerHTML;
-
-    // Should set a tool tip
-    var msg = p1 + ' and ' + p2 + ' have Jaccard Similarity of ' + p.pct;
-    d3.select('.heatmap-info').text(msg);
-  }
-
-  function mouseout () {
-    d3.selectAll('text').classed('active-cooc-label', false);
-    d3.select('.heatmap-info').text('');
-  }
-
-  function click (p) {
-    if (p.x === p.y) {
-      // This is a hack -- I was having trouble adding multiple
-      // classes to an SVG element, so I just set a flag and
-      // change the fill accordingly
-      Ember.$('.row text').filter(function (i) {
-        return i === p.y;
-      }).each(function (i, x) {
-        if (Ember.$(x).attr('selected')) {
-          Ember.$(x).attr('selected', false);
-          Ember.$(x).attr('fill', 'grey');
-        } else {
-          Ember.$(x).attr('selected', true);
-          Ember.$(x).attr('fill', 'orange');
-        }
-      });
-      clickCallback(p);
-    }
-  }
 }
 
 function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
@@ -494,11 +326,12 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 }
 
 App.BoardController = Ember.Controller.extend({
-  needs: ['application'],
+  needs: ['application', 'detail'],
+  name: Ember.computed.alias('controllers.detail.model'),
   routeName: undefined,
   board_filter: undefined,
   user_filter: [],
-  splitBy: 'board',
+  splitBy: 'user',
   selection_ids: undefined,
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -555,93 +388,82 @@ App.BoardController = Ember.Controller.extend({
     }
   }.property('model.data', 'post_filtered_data'),
 
-  // Triggered when selection changes
-  filter_did_change: function () {
-    Ember.run.debounce(this, 'getAggs', gconfig.DEBOUNCE);
-  }.observes('dateFilter', 'user_filter', 'board_filter'),
-
-  filter_did_change_2: function () {
-    Ember.run.debounce(this, 'getCooc', gconfig.DEBOUNCE);
-  }.observes('dateFilter', 'board_filter'),
-
   draw: function () {
-    Ember.run.schedule('afterRender', this, function () {
-      var _this = this;
-      var data = this.get('model.data');
-      var pvData = this.get('model.pvData');
-      var xId = this.get('splitById');
+    var _this = this;
+    var data = this.get('model.data');
+    var pvData = this.get('model.pvData');
+    var xId = this.get('splitById');
 
-      data.forEach(function (d, i) {
-        d.index = i;
-        d.date = new Date(d.time);
-      });
+    data.forEach(function (d, i) {
+      d.index = i;
+      d.date = new Date(d.time);
+    });
 
-      // For parent filter
+    // For parent filter
 
-      var datum = crossfilter(data);
+    var datum = crossfilter(data);
 
-      var date = datum.dimension(function (d) {
-        return d.date;
-      });
+    var date = datum.dimension(function (d) {
+      return d.date;
+    });
 
-      var dates = date.group(d3.time.day);
+    var dates = date.group(d3.time.day);
 
-      // For dependent filters
-      var split = datum.dimension(function (d) {
-        return d[xId];
-      });
-      var splits = split.group();
+    // For dependent filters
+    var split = datum.dimension(function (d) {
+      return d[xId];
+    });
 
-      var preds = {
-        'neg': reductio().avg(function (d) {
-          return (d.__meta__.tri_pred || { 'neg': 0 }).neg;
-        })(split.group()),
-        'neut': reductio().avg(function (d) {
-          return (d.__meta__.tri_pred || {'neut': 0}).neut;
-        })(split.group()),
-        'pos': reductio().avg(function (d) {
-          return (d.__meta__.tri_pred || {'pos': 0}).pos;
-        })(split.group())
-      };
+    var splits = split.group();
 
-      var forumData = _.map(dates.all(), function (x) {
-        return { 'date': x.key, 'volume': x.value };
-      });
+    var preds = {
+      'neg': reductio().avg(function (d) {
+        return (d.__meta__.tri_pred || { 'neg': 0 }).neg;
+      })(split.group()),
+      'neut': reductio().avg(function (d) {
+        return (d.__meta__.tri_pred || {'neut': 0}).neut;
+      })(split.group()),
+      'pos': reductio().avg(function (d) {
+        return (d.__meta__.tri_pred || {'pos': 0}).pos;
+      })(split.group())
+    };
 
-      // Whenever the brush moves, re-rendering everything.
-      var renderAll = function (_this) {
-        // Get all posts
+    var forumData = _.map(dates.all(), function (x) {
+      return { 'date': x.key, 'volume': x.value };
+    });
 
-        // _this.set('filtered_data', split.top(10));
+    // Whenever the brush moves, re-rendering everything.
+    var renderAll = function (_this) {
+      // Get all posts
+
+      _this.set('filtered_data', split.top(10));
 
         // Time series
-        var topX = _.pluck(splits.top(10), 'key');
-        _this.set('topX', topX);
-        _this.renderX();
+      var topX = _.pluck(splits.top(10), 'key');
+      _this.set('topX', topX);
+      _this.renderX();
 
-        // Gauges
-        var topPreds = _.map(preds, function (pred) {
-          return _.filter(pred.all(), function (x) {
-            return _.contains(topX, x.key);
-          });
+      // Gauges
+      var topPreds = _.map(preds, function (pred) {
+        return _.filter(pred.all(), function (x) {
+          return _.contains(topX, x.key);
         });
+      });
 
-        _this.set('topPreds', _.object(_.keys(preds), topPreds));
-        _this.renderGauges();
-      };
+      _this.set('topPreds', _.object(_.keys(preds), topPreds));
+      _this.renderGauges();
+    };
 
-      renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
-        function (dateFilter) {
-          _this.set('dateFilter', dateFilter);
-          date.filterRange(dateFilter);
-          renderAll(_this);
-        }
+    renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
+      function (dateFilter) {
+        _this.set('dateFilter', dateFilter);
+        date.filterRange(dateFilter);
+        renderAll(_this);
+      }
       );
 
-      renderAll(_this);
-    }.observes('model')
-    );
-  }.on('init'),
+    renderAll(_this);
+  }.observes('model'),
 
   toggleSplitByFilterMember (id) {
     var splitByFilter = this.get('splitByFilter');
@@ -662,18 +484,20 @@ App.BoardController = Ember.Controller.extend({
     var xId = this.get('splitById');
 
     var dateFilter = this.get('dateFilter');
+
     // NB: I bet this would scale better if we used crossfilter reduces
-    var topXData = _.filter(filteredData,
+    var topXData = _.filter(model.data,
       function (x) {
         return _.contains(topX, x[xId]);
       }
     );
 
-    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('time').map(function (x) {
+    console.log('TOP X DATA :: --> ', topXData);
+    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
       return new Date(x);
     }).min().value();
 
-    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('time').map(function (x) {
+    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('date').map(function (x) {
       return new Date(x);
     }).max().value();
 
@@ -690,10 +514,10 @@ App.BoardController = Ember.Controller.extend({
         'count': {
           'during': v.length,
           'before': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.time) < (+xmin);
+            return x[xId] === k & (+x.date) < (+xmin);
           }).length,
           'after': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.time) > (+xmax);
+            return x[xId] === k & (+x.date) > (+xmax);
           }).length
         },
         'timeseries': _.chain(v)
@@ -809,67 +633,6 @@ App.BoardController = Ember.Controller.extend({
     return gauge;
   },
 
-  // Significant terms aggs, NER aggs
-  getAggs () {
-    var self = this;
-    var runner = {
-      board_ids: this.get('board_filter'),
-      date: this.get('dateFilter'),
-      userIds: this.get('user_filter')};
-
-    Ember.$.ajax({
-      url: 'aggs',
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/x-www-form-urlencoded',
-      data: runner,
-      success: function (response) {
-        self.set('aggs', response);
-      }
-    });
-  },
-
-  // Coocurrance matrix
-  getCooc () {
-    if (this.get('routeName') === 'board') {
-      Ember.$.ajax({
-        url: 'coocurrence',
-        type: 'get',
-        contentType: 'application/json',
-        dataType: 'JSON',
-        data: JSON.stringify({
-          'board_ids': this.get('board_filter'),
-          'date': this.get('dateFilter'),
-          // 'userIds'   : this.get('user_filter')
-          'userIds': []
-        }),
-        success: function (response) {
-          if (response) {
-            this.set('cooc', response.data);
-            renderCooc(response.data, '#cooc', this.coocCallback.bind(this));
-          } else {
-            console.log('no response from R server');
-          }
-        }
-      });
-    }
-  },
-
-  coocCallback (p) {
-    if (p.x === p.y) {
-      Ember.$.ajax({
-        url: 'coocurrence',
-        type: 'get',
-        contentType: 'application/json',
-        dataType: 'JSON',
-        data: p.xName,
-        success: function (response) {
-          this.toggleSplitByFilterMember(response);
-        }
-      });
-    }
-  },
-
   actions: {
     topXClicked (id) {
       Ember.$('#ts-' + id).toggleClass('chart-selected');
@@ -883,51 +646,40 @@ App.BoardController = Ember.Controller.extend({
 });
 
 App.BoardRoute = Ember.Route.extend({
-  model: function (params) {
-    var _this = this;
-    return new Ember.RSVP.Promise(function (resolve) {
-      Ember.$.ajax({
-        url: _this.routeName,
-        type: 'GET',
-        contentType: 'application/json',
-        dataType: 'json',
-        data: {ticker: 'TAUG'},
-        success: function (data) {
-          console.log('data ::', data);
-          resolve(data);
-        }
-      });
-    });
-  },
-
   setupController: function (con, model, params) {
     console.log(this.routeName + ' :: setting up controller');
+    var _this = this;
 
-    con.set('model', model);
-    con.set('routeName', this.routeName);
+    App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
+      console.log('board response', response);
+      con.set('model', response);
 
-    // Reset both search terms
-    this.controllerFor('application').set('board_searchterm', '');
-    this.controllerFor('application').set('user_searchterm', '');
+      // con.set('model', model);
+      con.set('routeName', _this.routeName);
 
-    // Reset both filters
-    con.set('board_filter', []);
-    con.set('user_filter', []);
-    con.set('filtered_data', model.data);
+      // Reset both search terms
+      _this.controllerFor('application').set('board_searchterm', '');
+      _this.controllerFor('application').set('user_searchterm', '');
 
-    // Make route aware of splitting variable
-    if (this.routeName === 'user') {
-      con.set('splitBy', 'board');
-    } else if (this.routeName === 'board') {
-      con.set('splitBy', 'user');
-    } else {
-      alert('unknown routeName!');
-    }
+      // Reset both filters
+      con.set('board_filter', []);
+      con.set('user_filter', []);
+      con.set('filtered_data', _this.get('model.data'));
 
-    // Populate appropriate filter
-    con.set('selection_ids', params.params[this.routeName].ids);
-    con.set(this.routeName + '_filter', params.params[this.routeName].ids);
+      // Make route aware of splitting variable
+      if (_this.routeName === 'user') {
+        con.set('splitBy', 'board');
+      } else if (_this.routeName === 'board') {
+        con.set('splitBy', 'user');
+      } else {
+        alert('unknown routeName!');
+      }
 
-    console.log(this.routeName + ' :: done setting up controller');
+      // Populate appropriate filter
+      con.set('selection_ids', params.params[_this.routeName].ids);
+      con.set(_this.routeName + '_filter', params.params[_this.routeName].ids);
+
+      console.log(this.routeName + ' :: done setting up controller');
+    });
   }
 });
