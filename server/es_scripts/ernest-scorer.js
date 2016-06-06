@@ -3,27 +3,16 @@ function combine_scores (scores, params) {
     // ... Need to actually determine how to combine these things...
     var out = 0;
     for(s in scores) {
-        out += scores[s];
+        out += scores[s]['value'];
     }
     return out;
 }
 
-function format_fields(scores, params) {
-    out = {}
-    for(s in scores) {
-        out[s] = {
-            "value"   : scores[s],
-            "is_flag" : scores[s] >= params[s].threshold,
-            "have"    : true,
-        }
-    }
-    return out
-}
-
 // Register functions
 var functions = {
-    "symbology"   : symbology,
-    "delinquency" : delinquency,
+    "symbology"     : symbology,
+    "delinquency"   : delinquency,
+    "otc_neighbors" : otc_neighbors
 }
 
 function run() {
@@ -32,8 +21,8 @@ function run() {
     for(k in params) {
         scores[k] = functions[k](_source[k], params[k]);
     }
-
-    return score ? combine_scores(scores, params) : format_fields(scores, params);
+    
+    return score ? combine_scores(scores, params) : scores;
 }
 
 run();
