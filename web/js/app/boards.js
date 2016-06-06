@@ -10,7 +10,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
     if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
       Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
       mincount = mincount + 20;
-      maxcount = maxcount + 20;
+      maxcount = maxcount + 40;
     }
   });
 
@@ -28,17 +28,16 @@ Ember.Handlebars.helper('forum-posts', function (data) {
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 10, bottom: 20, left: 10};
+  var margin = {top: 10, right: 30, bottom: 20, left: 30};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  var height = d3.select(div).node().getBoundingClientRect().height;
-  // var height = Ember.$(div).height() - margin.top - margin.bottom;
-  var width = Ember.$(div).width() - margin.left - margin.right;
+  var height = Ember.$(div).height();
+  var width = Ember.$(div).width();
 
   // Calculate bar width
-  var BAR_WIDTH = 3;
+  var BAR_WIDTH = 2;
 
   var data = _.chain(ts.timeseries).map(function (x) {
     return {
@@ -70,8 +69,8 @@ function makeTimeSeries (ts, bounds) {
   var xaxis = d3.svg.axis()
     .scale(x)
     .orient('bottom')
-    .ticks(4)
-    .tickFormat(d3.time.format('%b-%d-%Y'));
+    .ticks(3)
+    .tickFormat(d3.time.format('%b-%d-%y'));
 
   svg.append('g')
     .attr('class', 'axis')
@@ -137,46 +136,59 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
       y: 40,
       x: 40
     },
-    left: 30,
-    right: 0
+    left: 25,
+    right: 5
   };
 
-  var totalHeight = 300 - margin.top - margin.between.y - margin.bottom;
+  var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
   var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
   var heights = [1, 0.5, 0.5];
   // var widths  = [0.5, 0.5, 0.5]
   // var n_panels = heights.length
   var parseDate = d3.time.format('%Y-%m-%d').parse;
 
-  var price = {};
-  price.title = 'Price';
-  price.method = 'ohlc';
-  price.class = 'close';
-  price.width = totalWidth * 0.5;
-  price.height = totalHeight * heights[0];
-  price.position_left = margin.left;
-  price.position_top = margin.top;
-  price.x = techan.scale.financetime().range([0, price.width]);
-  price.y = d3.scale.linear().range([price.height, 0]);
-  price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-  price.xAxis = d3.svg.axis().scale(price.x).orient('bottom').ticks(5);
-  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-  // price.crosshair = addCrosshair(price);
-
   var posts = {};
   posts.title = 'Post Volume';
   posts.method = 'volume';
   posts.class = 'volume_posts';
-  posts.width = includePV ? totalWidth * 0.5 - 2 * margin.between.x : totalWidth;
+  posts.width = totalWidth * 0.5;
+  // posts.height = totalHeight * heights[0];
   posts.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  posts.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+  posts.position_left = margin.left;
   posts.position_top = margin.top;
   posts.x = techan.scale.financetime().range([0, posts.width]);
   posts.y = d3.scale.linear().range([posts.height, 0]);
   posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
   posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom').ticks(5);
   posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(6);
-  //    posts['crosshair'] = ... // Doesn't work with brush
+
+  var crowdsar = {};
+  crowdsar.title = 'Post Crowdsar';
+  crowdsar.method = 'volume';
+  crowdsar.class = 'crowdsar_posts';
+  crowdsar.width = totalWidth * 0.5;
+  crowdsar.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+  crowdsar.position_left = margin.left;
+  crowdsar.position_top = totalHeight * 0.5 + margin.between.y;
+  crowdsar.x = techan.scale.financetime().range([0, crowdsar.width]);
+  crowdsar.y = d3.scale.linear().range([crowdsar.height, 0]);
+  crowdsar.plot = techan.plot.volume().xScale(crowdsar.x).yScale(crowdsar.y);
+  crowdsar.xAxis = d3.svg.axis().scale(crowdsar.x).orient('bottom').ticks(5);
+  crowdsar.yAxis = d3.svg.axis().scale(crowdsar.y).orient('left').ticks(6);
+
+  var price = {};
+  price.title = 'Price';
+  price.method = 'ohlc';
+  price.class = 'close';
+  price.width = includePV ? totalWidth * 0.5 - 2 * margin.between.x : totalWidth;
+  price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+  price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+  price.position_top = margin.top;
+  price.x = techan.scale.financetime().range([0, price.width]);
+  price.y = d3.scale.linear().range([price.height, 0]);
+  price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
+  price.xAxis = d3.svg.axis().scale(price.x).orient('bottom').ticks(5);
+  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
 
   var volume = {};
   volume.title = 'Volume';
@@ -189,7 +201,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   volume.x = price.x;
   volume.y = d3.scale.linear().range([volume.height, 0]);
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
-  volume.xAxis = posts.xAxis;
+  volume.xAxis = price.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
   volume.crosshair = addCrosshair(volume);
 
@@ -235,6 +247,8 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.div = makeDiv(posts, 'c1');
   posts.div.append('g').attr('class', 'pane'); // Add hook for brush
 
+  crowdsar.div = makeDiv(crowdsar, 'c1');
+
   if (includePV) {
     price.div = makeDiv(price, 'c2');
     volume.div = makeDiv(volume, 'c2');
@@ -275,6 +289,12 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.div.select('g.volume_posts').datum(forumData).call(posts.plot);
   posts.div.select('g.x.axis').call(posts.xAxis);
   posts.div.select('g.y.axis').call(posts.yAxis);
+
+  crowdsar.x.domain(dateSupport);
+  crowdsar.y.domain(techan.scale.plot.volume(forumData).domain());
+  crowdsar.div.select('g.crowdsar_posts').datum(forumData).call(crowdsar.plot);
+  crowdsar.div.select('g.x.axis').call(crowdsar.xAxis);
+  crowdsar.div.select('g.y.axis').call(crowdsar.yAxis);
 
   // Associate the brush with the scale and render the brush
   // only AFTER a domain has been applied
@@ -377,14 +397,6 @@ App.BoardController = Ember.Controller.extend({
   splitByFilter_nonempty: function () {
     return this.splitByFilter.length > 0;
   }.property('board_filter', 'user_filter'),
-
-  n_posts: function () {
-    if (this.get('splitByFilter_nonempty')) {
-      return this.get('post_filtered_data').length;
-    } else {
-      return this.get('model.data').length;
-    }
-  }.property('model.data', 'post_filtered_data'),
 
   draw: function () {
     var _this = this;
