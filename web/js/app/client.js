@@ -46,7 +46,6 @@ App.SearchResultsView = Ember.View.extend({
     var columns = this.get('columns');
 
     App.Search.fetch_data('company_table', {'cik': this.get('cik')}).then(function (response) {
-      console.log(response.table);
       Ember.$('#' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
           if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {

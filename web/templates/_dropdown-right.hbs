@@ -327,22 +327,22 @@
         </div>
     </form>
 {{/if}}
-    
-{{#if network}}
+
+{{#if otc_neighbors}}
     <span class="centered"><h4>OTC Affiliates Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
             <label class="control-label"> Number of Neighbors </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.network.number_of_neighbors
+                valueBinding=redFlagParams._params.otc_neighbors.number_of_neighbors
                 class="form-control input-text-hidden"
             }}
             {{
                 view App.RangeSliderView
                 min=0
                 max=100
-                valuesBinding=redFlagParams._params.network.number_of_neighbors
+                valuesBinding=redFlagParams._params.otc_neighbors.number_of_neighbors
                 class="range-slider"
             }}
         </div>
@@ -350,7 +350,7 @@
             <label class="control-label"> Percent OTC </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.network.percent_otc
+                valueBinding=redFlagParams._params.otc_neighbors.threshold
                 class="form-control input-text-hidden"
             }}
             {{
@@ -358,7 +358,7 @@
                 min=0
                 max=100
                 step=1
-                valueBinding=redFlagParams._params.network.percent_otc
+                valueBinding=redFlagParams._params.otc_neighbors.threshold
                 class="input-slider-dropdown"
             }}
         </div>

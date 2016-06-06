@@ -168,12 +168,11 @@ module.exports = function (app, config, client) {
     };
   }
 
-  const REDFLAG_NAMES = ['financials', 'symbology', 'trading_halts', 'delinquency', 'network', 'pv', 'crowdsar'];
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
 
   function redflagPostprocess (redFlags, redFlagParams) {
-    return _.chain(REDFLAG_NAMES).map(function (k) { return [k, DEFAULT_]; }).object().extend({
-      'total': _.keys(redFlags).length,
+    return _.chain(_.keys(config.DEFAULT_TOGGLES)).map(function (k) { return [k, DEFAULT_]; }).object().extend({
+      'total': _.filter(redFlags, function(x) {return x.is_flag}).length,
       'possible': _.keys(redFlagParams).length
     }).extend(redFlags).value();
   }
@@ -341,6 +340,7 @@ module.exports = function (app, config, client) {
 
   // *** Need to changed width of CIKs in delinquency index ***
   app.post('/delinquency', function (req, res) {
+    console.log('querying delinquency');
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['DELINQUENCY'],

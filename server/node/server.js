@@ -4,7 +4,7 @@ var cluster = require('cluster'),
   _ = require('underscore')._;
 
 function run_server () {
-  var config = require('./server-config');
+  var config = _.extend(require('./server-config'), require('./global-config'));
   var express = require('express'),
     https = require('https'),
     es = require('elasticsearch'),
