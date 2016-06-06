@@ -24,7 +24,7 @@ App.Topic = Ember.Object.extend({
       'trading_halts': 'Trading Halts',
       'symbology': 'Change in Business',
       'financials': 'No Revenues',
-      'network': 'OTC Associates',
+      'otc_neighbors': 'OTC Associates',
       'delinquency': 'Late Filings'
     };
 

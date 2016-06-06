@@ -62,3 +62,4 @@ setupConfig(configPath.global, 'global', filePath.web, 'global-config.js', 'var 
 
 /* Setup server config */
 setupConfig(configPath.server, 'server', filePath.server, 'server-config.json', '')
+setupConfig(configPath.global, 'global', filePath.server, 'global-config.json', '')

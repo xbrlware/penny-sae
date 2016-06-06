@@ -7,15 +7,6 @@ var gconfig = {
  "DRAG_NODE_SIZE": 12,
  "DEFAULT_HIDE_TERMINAL": false,
  "DEFAULT_HIDE_NER": true,
- "ALL_FEATURES": [
-  "pv",
-  "symbology",
-  "network",
-  "financials",
-  "trading_halts",
-  "crowdsar",
-  "delinquency"
- ],
  "DEFAULT_REDFLAG_PARAMS": {
   "symbology": {
    "field": "name",
@@ -23,12 +14,12 @@ var gconfig = {
    "max_date": "2016-01-01",
    "threshold": 1
   },
-  "network": {
+  "otc_neighbors": {
    "number_of_neighbors": [
     2,
     10
    ],
-   "percent_otc": 50
+   "threshold": 50
   },
   "financials": {
    "type": "revenues",
@@ -50,11 +41,11 @@ var gconfig = {
   }
  },
  "DEFAULT_TOGGLES": {
-  "financials": false,
   "symbology": true,
+  "otc_neighbors": false,
+  "financials": false,
   "trading_halts": false,
   "delinquency": true,
-  "network": false,
   "pv": false,
   "crowdsar": false
  }

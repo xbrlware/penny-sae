@@ -26,7 +26,7 @@ App.DropdownController = Ember.ObjectController.extend({
     {id: 'p_toutw', name: 'Proportion of Tout Words'},
     {id: 'n_toutw', name: 'Number of Tout Words'}
   ],
-  network_select_content: [
+  otc_neighbors_select_content: [
     {id: undefined, name: 'Choose Type'},
     {id: 'otc_neibs_total', name: '% OTC Affiliated Neighbors'},
     {id: 'otc_neibs_pct', name: 'N OTC Affiliated Neighbors'}
@@ -43,13 +43,13 @@ App.DropdownController = Ember.ObjectController.extend({
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},
-    {id: '10K', name: '10-k'}
+    {id: '10-K', name: '10-K'}
   ],
 
   empty: true,
   pv: false,
   symbology: false,
-  network: false,
+  otc_neighbors: false,
   financials: false,
   crowdsar: false,
   trading_halts: false,
@@ -64,8 +64,12 @@ App.DropdownController = Ember.ObjectController.extend({
     showParameters: function (type) {
       this.set('empty', false);
       var self = this;
-      _.map(gconfig.ALL_FEATURES, function (feature) {
-        self.set(feature, false);
+      _.map(_.keys(gconfig.DEFAULT_TOGGLES), function (feature) {
+        try {
+            self.set(feature, false);
+        } catch(e) {
+            console.log(e.message)
+        }
       });
       this.set(type, true);
     }

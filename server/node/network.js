@@ -80,7 +80,7 @@ module.exports = function (app, config, client) {
     var n_redFlags_computed = _.keys(redFlags[0]).length;
     var total_redFlags_hit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
     var avg_redFlags_hit = total_redFlags_hit / n_neighbors;
-
+    
     return {
       'raw': raw,
       'total': avg_redFlags_hit,
@@ -89,6 +89,8 @@ module.exports = function (app, config, client) {
   }
 
   function computeIntrinsicRedFlags (nodes, redFlagParams, cb) {
+    if(!nodes.length) {cb([])}
+    
     client.msearch({
       'index': config['ES']['INDEX']['AGG'],
       'body': _.chain(nodes).map((node) => {
@@ -108,6 +110,8 @@ module.exports = function (app, config, client) {
   }
 
   function computeNeighborRedFlags (nodes, redFlagParams, cb) {
+    if(!nodes.length) {cb([])}
+    
     client.msearch({
       'index': config['ES']['INDEX']['OWNERSHIP'],
       'body': _.chain(nodes).map((node) => {
@@ -206,7 +210,6 @@ module.exports = function (app, config, client) {
     ], function (err, edges) {
       var edges = _.chain(edges).flatten().value();
       var nodes = edges2nodes(edges);
-
       computeRedFlags(nodes, redFlagParams, function (nodes) {
         res.send({'nodes': nodes, 'edges': edges});
       });

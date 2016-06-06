@@ -20,14 +20,14 @@
                             </p>
                         {{/unless}}
                     </div>
+                    
                     <br />
 
                     {{ view App.HitTextView redFlags=h.redFlags text="No Revenues" type="financials" first_column=true }}
                     {{ view App.HitTextView redFlags=h.redFlags text="Change In Business" type="symbology" first_column=true }}
                     {{ view App.HitTextView redFlags=h.redFlags text="Trading Suspensions" type="trading_halts" first_column=true }}
                     {{ view App.HitTextView redFlags=h.redFlags text="Late Filings" type="delinquency" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags text="OTC Associates" type="network" first_column=true }}
-
+                    {{ view App.HitTextView redFlags=h.redFlags text="OTC Associates" type="otc_neighbors" first_column=true }}
                     {{ view App.HitTextView redFlags=h.redFlags text="PV Anomalies" type="pv" first_column=false }}
                     {{ view App.HitTextView redFlags=h.redFlags text="CROWDSAR" type="crowdsar" first_column=false }}
                 </div>
