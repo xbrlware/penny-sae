@@ -50,11 +50,11 @@ var gconfig = {
   }
  },
  "DEFAULT_TOGGLES": {
-  "financials": true,
+  "financials": false,
   "symbology": true,
-  "trading_halts": true,
+  "trading_halts": false,
   "delinquency": true,
-  "network": true,
+  "network": false,
   "pv": false,
   "crowdsar": false
  }
