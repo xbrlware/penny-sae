@@ -6,5 +6,9 @@ function delinquency(data, params) {
     var form = data[i].form == params.form
     n += is_late & form & time_filter(data[i].deadline, params.min_date, params.max_date)
   }
-  return n
+  return {
+    "value" : n,
+    "is_flag" : n >= params.threshold,
+    "have" : true
+  }
 }
