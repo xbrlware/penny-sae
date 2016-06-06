@@ -1,5 +1,4 @@
-{                                                                                                                                                    
-    "css"        : "web/css/",   
+{                                                                                                                                                    "css"        : "web/css/",   
     "app"        : "web/js/app/",
     "lib"        : "web/js/libs/",
     "cdt"        : "web/css/dist/",
@@ -71,8 +70,7 @@
 	       "web/js/app/sar-generator.js",
 	       "web/js/app/sic-piechart.js",
 	       "web/js/app/sidebar.js",
-	       "web/js/app/slider.js",
-           "web/js/app/datepicker.js",
+	       "web/js/app/widgets.js",
 	       "web/js/app/topic.js",
 	       "web/js/app/tts-charts.js",
            "web/js/app/wrapper.js"

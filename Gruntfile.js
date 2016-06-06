@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
   // watch has problems finding the working directory
   // watch requires this variable
-  var cwd = process.cwd()
+  var cwd = process.cwd();
 
   grunt.initConfig({
     cfg: grunt.file.readJSON('grunt.config.json'),
@@ -52,7 +52,7 @@ module.exports = function (grunt) {
     emberTemplates: {
       compile: {
         options: {
-          templateBasePath: '<%= cfg.tmp %>',
+          templateBasePath: '<%= cfg.tmp %>'
         },
         files: {
           '<%= cfg.tdt %>templates.js': ['<%= cfg.tmp %>*.hbs', '<%= cfg.tmp %>detail/*.hbs']
@@ -61,17 +61,17 @@ module.exports = function (grunt) {
     },
 
     jshint: {
-      files: ['<%= cfg.app %>*.js',]
+      files: ['<%= cfg.app %>*.js']
     },
 
     less: {
       dev: {
         options: {
           compress: true,
-          ieCompat: true,
+          ieCompat: true
         },
         files: {
-          '<%= cfg.css %>style.less.css': '<%= cfg.lss %>style.less',
+          '<%= cfg.css %>style.less.css': '<%= cfg.lss %>style.less'
         }
       }
     },
@@ -87,13 +87,13 @@ module.exports = function (grunt) {
           if_return: true,
           negate_iife: true
         },
-        preserveComments: false,
+        preserveComments: false
 
       },
       libs: {
         files: {
           '<%= cfg.jdt %>libs.min.js': '<%= cfg.jdt %>libs.concat.js'
-        },
+        }
       },
       apps: {
         files: {
@@ -107,31 +107,31 @@ module.exports = function (grunt) {
         cliArgs: ['--grunt-file', require('path').join(cwd, 'Gruntfile.js')]
       },
       scripts: {
-        files: ['<%= cfg.app %>*.js',],
+        files: ['<%= cfg.app %>*.js'],
         tasks: ['devApp']
       },
       less: {
         files: ['<%= cfg.lss %>*.less'],
-        tasks: ['css',]
+        tasks: ['css']
       }
     }
-  })
+  });
 
-  grunt.loadNpmTasks('grunt-bless')
-  grunt.loadNpmTasks('grunt-contrib-concat')
-  grunt.loadNpmTasks('grunt-contrib-cssmin')
-  grunt.loadNpmTasks('grunt-contrib-jshint')
-  grunt.loadNpmTasks('grunt-contrib-less')
-  grunt.loadNpmTasks('grunt-contrib-uglify')
-  grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-ember-templates')
+  grunt.loadNpmTasks('grunt-bless');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-ember-templates');
 
-  grunt.registerTask('prodApp', ['concat:appsJS', 'uglify:apps', 'concat:prodJS'])
-  grunt.registerTask('prodLib', ['concat:libsJS', 'uglify:libs', 'concat:prodJS'])
-  grunt.registerTask('devApp', ['concat:appsJS', 'concat:devJS'])
-  grunt.registerTask('devLib', ['emberTemplates', 'concat:libsJS', 'concat:devJS'])
-  grunt.registerTask('css', ['less:dev', 'concat:devCSS', 'cssmin', 'bless'])
-  grunt.registerTask('wth', ['watch',])
-  grunt.registerTask('cmp', ['emberTemplates',])
-  grunt.registerTask('default', ['css', 'concat:libsJS', 'uglify:libs', 'concat:appsJS', 'uglify:apps', 'concat:allJS'])
-}
+  grunt.registerTask('prodApp', ['concat:appsJS', 'uglify:apps', 'concat:prodJS']);
+  grunt.registerTask('prodLib', ['concat:libsJS', 'uglify:libs', 'concat:prodJS']);
+  grunt.registerTask('devApp', ['concat:appsJS', 'concat:devJS']);
+  grunt.registerTask('devLib', ['emberTemplates', 'concat:libsJS', 'concat:devJS']);
+  grunt.registerTask('css', ['less:dev', 'concat:devCSS', 'cssmin', 'bless']);
+  grunt.registerTask('wth', ['watch']);
+  grunt.registerTask('cmp', ['emberTemplates']);
+  grunt.registerTask('default', ['css', 'concat:libsJS', 'uglify:libs', 'concat:appsJS', 'uglify:apps', 'concat:allJS']);
+};

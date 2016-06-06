@@ -25,7 +25,12 @@ JQ.Widget = Ember.Mixin.create({
           this.removeObserver(prop, observers[prop]);
         }
       }
-      ui._destroy();
+
+      if (ui._destroy) {
+        ui._destroy();
+      } else if (ui.datepicker) {
+        ui.datepicker('destroy');
+      }
     }
   },
 
@@ -73,6 +78,12 @@ JQ.SliderView = Ember.View.extend(JQ.Widget, {
   uiEvents: ['slide']
 });
 
+JQ.RangeSliderView = Ember.View.extend(JQ.Widget, {
+  uiType: 'slider',
+  uiOptions: ['values', 'min', 'max', 'range'],
+  uiEvents: ['slide']
+});
+
 JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
   tagName: 'input',
   type: 'text',
@@ -96,14 +107,23 @@ App.SliderView = JQ.SliderView.extend({
   }
 });
 
+App.RangeSliderView = JQ.RangeSliderView.extend({
+  attributeBindings: ['style', 'type', 'values', 'size'],
+  range: true,
+  slide: function (e, ui) {
+    this.set('values', ui.values);
+  }
+});
+
 App.DatepickerView = JQ.DatepickerView.extend({
-  attribueBindings: ['id', 'value'],
-  dateFormat: 'mm-dd-yy',
+  attributeBindings: ['id', 'value'],
+  dateFormat: 'yy-mm-dd',
   changeMonth: true,
   changeYear: true,
   showOn: 'focus',
   onSelect: function (event, ui) {
-    var newDate = (ui.currentMonth + 1) + '-' + ui.currentDay + '-' + ui.currentYear;
+    var newDate = ui.currentYear + '-' + (ui.currentMonth + 1) + '-' + ui.currentDay;
+    console.warn('New Date ---> ', newDate);
     this.set('value', newDate);
   }
 });

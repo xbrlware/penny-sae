@@ -30,18 +30,19 @@ App.SidebarRoute = App.GRoute.extend({
     toggleFlag: function (flag) {
       var toggles = this.get('controller.redFlagParams').get_toggles();
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
+    },
+    sort_companies: function () {
+      console.log('sidebar -> sort_companies');
+      var controller = this.get('controller');
+      var appCon = this.controllerFor('application');
+      controller.set('isLoading', true);
+      appCon(function (response) {
+        controller.transitionToRoute();
+        controller.transitionToRoute('sidebar');
+        controller.set('model', response);
+        controller.con.set('isLoading', false);
+      });
     }
-  //    sort_companies: function () {
-  //      console.log('sidebar -> sort_companies')
-  //      var controller = this.get('controller')
-  //      var appCon = this.controllerFor('application')
-  //      controller.set('isLoading', true)
-  //      appCon(function (response) {
-  //        controller.transitionToRoute('sidebar')
-  //        controller.set('model', response)
-  //        controller.con.set('isLoading', false)
-  //      })
-  //    }
   }
 });
 

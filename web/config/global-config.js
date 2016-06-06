@@ -23,19 +23,38 @@ var gconfig = {
    "max_date": "2016-01-01",
    "threshold": 1
   },
+  "network": {
+   "number_of_neighbors": [
+    2,
+    10
+   ],
+   "percent_otc": 50
+  },
+  "financials": {
+   "type": "revenues",
+   "min_date": "2000-01-01",
+   "max_date": "2016-01-01",
+   "value": 1000,
+   "threshold": 10
+  },
+  "trading_halts": {
+   "min_date": "2000-01-01",
+   "max_date": "2016-01-01",
+   "threshold": 1
+  },
   "delinquency": {
    "form": "10-K",
    "min_date": "2000-01-01",
    "max_date": "2016-01-01",
-   "threshold": 1
+   "threshold": 3
   }
  },
  "DEFAULT_TOGGLES": {
-  "financials": false,
+  "financials": true,
   "symbology": true,
-  "trading_halts": false,
+  "trading_halts": true,
   "delinquency": true,
-  "network": false,
+  "network": true,
   "pv": false,
   "crowdsar": false
  }

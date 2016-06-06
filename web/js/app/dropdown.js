@@ -41,6 +41,10 @@ App.DropdownController = Ember.ObjectController.extend({
     {id: 'false', name: 'Any Time'},
     {id: 'true', name: 'Ongoing'}
   ],
+  late_filings_content: [
+    {id: undefined, name: 'Choose Form'},
+    {id: '10K', name: '10-k'}
+  ],
 
   empty: true,
   pv: false,
@@ -53,9 +57,10 @@ App.DropdownController = Ember.ObjectController.extend({
   actions: {
     sort_companies: function () {
       var appCon = this.controllerFor('application');
-      console.log('dropdown -> sort_companies');
+      appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '-');
     },
+
     showParameters: function (type) {
       this.set('empty', false);
       var self = this;
