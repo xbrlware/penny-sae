@@ -27,16 +27,14 @@ Ember.Handlebars.helper('forum-posts', function (data) {
 });
 
 function makeTimeSeries (ts, bounds) {
-  console.log('TS :: --> ', ts);
-  console.log('BOUNDS :: --> ', bounds);
-
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 20, bottom: 20, left: 10};
+  var margin = {top: 10, right: 10, bottom: 20, left: 10};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  var height = Ember.$(div).height() - margin.top - margin.bottom;
+  var height = d3.select(div).node().getBoundingClientRect().height;
+  // var height = Ember.$(div).height() - margin.top - margin.bottom;
   var width = Ember.$(div).width() - margin.left - margin.right;
 
   // Calculate bar width
@@ -53,7 +51,7 @@ function makeTimeSeries (ts, bounds) {
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
-  y.domain([bounds.ymin, bounds.ymax]);
+  y.domain([0, bounds.ymax]);
 
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
@@ -73,11 +71,11 @@ function makeTimeSeries (ts, bounds) {
     .scale(x)
     .orient('bottom')
     .ticks(4)
-    .tickFormat(d3.time.format('%b-%d %H'));
+    .tickFormat(d3.time.format('%b-%d-%Y'));
 
   svg.append('g')
     .attr('class', 'axis')
-    .attr('transform', 'translate(0,' + (height) + ')')
+    .attr('transform', 'translate(0,' + height + ')')
     .call(xaxis)
     .attr('stroke', TEXT_COLOR);
 
@@ -150,13 +148,28 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   // var n_panels = heights.length
   var parseDate = d3.time.format('%Y-%m-%d').parse;
 
+  var price = {};
+  price.title = 'Price';
+  price.method = 'ohlc';
+  price.class = 'close';
+  price.width = totalWidth * 0.5;
+  price.height = totalHeight * heights[0];
+  price.position_left = margin.left;
+  price.position_top = margin.top;
+  price.x = techan.scale.financetime().range([0, price.width]);
+  price.y = d3.scale.linear().range([price.height, 0]);
+  price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
+  price.xAxis = d3.svg.axis().scale(price.x).orient('bottom').ticks(5);
+  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
+  // price.crosshair = addCrosshair(price);
+
   var posts = {};
   posts.title = 'Post Volume';
   posts.method = 'volume';
   posts.class = 'volume_posts';
-  posts.width = includePV ? totalWidth * 0.5 : totalWidth;
-  posts.height = totalHeight * heights[0];
-  posts.position_left = margin.left;
+  posts.width = includePV ? totalWidth * 0.5 - 2 * margin.between.x : totalWidth;
+  posts.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+  posts.position_left = totalWidth * 0.5 + 2 * margin.between.x;
   posts.position_top = margin.top;
   posts.x = techan.scale.financetime().range([0, posts.width]);
   posts.y = d3.scale.linear().range([posts.height, 0]);
@@ -164,21 +177,6 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom').ticks(5);
   posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(6);
   //    posts['crosshair'] = ... // Doesn't work with brush
-
-  var price = {};
-  price.title = 'Price';
-  price.method = 'ohlc';
-  price.class = 'candlestick';
-  price.width = totalWidth * 0.5 - 2 * margin.between.x;
-  price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-  price.position_top = margin.top;
-  price.x = techan.scale.financetime().range([0, price.width]);
-  price.y = d3.scale.linear().range([price.height, 0]);
-  price.plot = techan.plot.candlestick().xScale(price.x).yScale(price.y);
-  price.xAxis = d3.svg.axis().scale(price.x).orient('bottom').ticks(5);
-  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-  price.crosshair = addCrosshair(price);
 
   var volume = {};
   volume.title = 'Volume';
@@ -191,7 +189,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   volume.x = price.x;
   volume.y = d3.scale.linear().range([volume.height, 0]);
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
-  volume.xAxis = price.xAxis;
+  volume.xAxis = posts.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
   volume.crosshair = addCrosshair(volume);
 
@@ -265,7 +263,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     // var accessor = price.plot.accessor()
     price.x.domain(dateSupport);
     price.y.domain(techan.scale.plot.ohlc(pvData).domain());
-    price.div.select('g.candlestick').datum(pvData);
+    price.div.select('g.close').datum(pvData);
 
     volume.x.domain(dateSupport);
     volume.y.domain(techan.scale.plot.volume(pvData).domain());
@@ -478,7 +476,7 @@ App.BoardController = Ember.Controller.extend({
 
   renderX () {
     var model = this.get('model');
-    var filteredData = this.get('filtered_data');
+    // var filteredData = this.get('filtered_data');
     var splitBy = this.get('splitBy');
     var topX = this.get('topX');
     var xId = this.get('splitById');
@@ -492,7 +490,6 @@ App.BoardController = Ember.Controller.extend({
       }
     );
 
-    console.log('TOP X DATA :: --> ', topXData);
     var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
       return new Date(x);
     }).min().value();
@@ -647,14 +644,10 @@ App.BoardController = Ember.Controller.extend({
 
 App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
-    console.log(this.routeName + ' :: setting up controller');
     var _this = this;
 
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
-      console.log('board response', response);
       con.set('model', response);
-
-      // con.set('model', model);
       con.set('routeName', _this.routeName);
 
       // Reset both search terms
@@ -678,8 +671,6 @@ App.BoardRoute = Ember.Route.extend({
       // Populate appropriate filter
       con.set('selection_ids', params.params[_this.routeName].ids);
       con.set(_this.routeName + '_filter', params.params[_this.routeName].ids);
-
-      console.log(this.routeName + ' :: done setting up controller');
     });
   }
 });
