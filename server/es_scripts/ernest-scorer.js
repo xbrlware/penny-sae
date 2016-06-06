@@ -19,7 +19,8 @@ function run() {
     // Compute scores (if parameterized)
     var scores = {}
     for(k in params) {
-        scores[k] = functions[k](_source[k], params[k]);
+        kscore = functions[k](_source[k], params[k]);
+        if(kscore.have) {scores[k] = kscore}
     }
     
     return score ? combine_scores(scores, params) : scores;
