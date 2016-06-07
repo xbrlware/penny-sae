@@ -44,9 +44,9 @@ App.SearchResultsView = Ember.View.extend({
   afterRenderEvent: function () {
     var cik = this.get('cik');
     var columns = this.get('columns');
-
-    App.Search.fetch_data('company_table', {'cik': this.get('cik')}).then(function (response) {
-      Ember.$('#' + cik).DataTable({
+    
+    App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
+      Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
           if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
             Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
@@ -93,7 +93,6 @@ App.Search.reopenClass({
         url: detail_name,
         data: JSON.stringify(name),
         success: function (response) {
-          console.log('response --', response);
           resolve(response);
         }
       });
