@@ -226,7 +226,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
     div.append('g')
       .attr('class', obj.class)
-      .attr('clip-path', 'url(/' + routeId + '/' + '#' + clip + ')');
+      .attr('clip-path', 'url(#' + clip + ')');
 
     div.append('g')
       .attr('class', 'x axis')
@@ -251,7 +251,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
   if (includePV) {
     price.div = makeDiv(price, 'c2');
-    volume.div = makeDiv(volume, 'c2');
+    volume.div = makeDiv(volume, 'c3');
   }
 
   pvData = _.chain(pvData).map(function (d) {
@@ -354,18 +354,6 @@ App.BoardController = Ember.Controller.extend({
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
-  }.property(),
-
-  routeIsBoard: function () {
-    return this.get('routeName') === 'board';
-  }.property('routeName'),
-
-  selection_pretty: function () {
-    return _.chain(this.get('model.data')).pluck(this.get('routeName')).uniq().value();
-  }.property('selection_ids.[]'),
-
-  range_topX: function () {
-    return _.range(0, gconfig.N_TOP_X);
   }.property(),
 
   // Field names for "splitting" entity (i.e. the user if board, board if user)
@@ -660,7 +648,7 @@ App.BoardRoute = Ember.Route.extend({
 
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
       con.set('model', response);
-      con.set('routeName', _this.routeName);
+      con.set('routeName', 'board');
 
       // Reset both search terms
       _this.controllerFor('application').set('board_searchterm', '');
