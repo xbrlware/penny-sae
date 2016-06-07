@@ -255,28 +255,27 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'omx' : function (cik) {
-        return {
-            '_source' : ['id', 'headline', 'date'],
-            'sort' : [
-                {
-                    'date' : {
-                        'order' : 'desc'
-                    }
-                }
-            ],
-            'query' : {
-                "match" : {
-                    "__meta__.sym.cik" : cik
-                }
+    'omx': function (cik) {
+      return {
+        '_source': ['id', 'headline', 'date'],
+        'sort': [
+          {
+            'date': {
+              'order': 'desc'
             }
+          }
+        ],
+        'query': {
+          'match': {
+            '__meta__.sym.cik': cik
+          }
         }
+      };
     }
   };
 
   app.post('/search', function (req, res) {
     var d = req.body;
-
     console.log('/search :: ',
       JSON.stringify(
         d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
@@ -396,28 +395,28 @@ module.exports = function (app, config, client) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
-  
+
   app.post('/omx', function (req, res) {
     var d = req.body;
     client.search({
-      'index' : config['ES']['INDEX']['OMX'],
-      'body' : queryBuilder.omx(d.cik),
-      'from' : 0,
-      'size' : 100
-    }).then(function(esResponse) {
-        res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+      'index': config['ES']['INDEX']['OMX'],
+      'body': queryBuilder.omx(d.cik),
+      'from': 0,
+      'size': 100
+    }).then(function (esResponse) {
+      res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
-  
-  app.post('/omx_body', function(req, res) {
+
+  app.post('/omx_body', function (req, res) {
     var d = req.body;
     client.get({
-      'index' : config['ES']['INDEX']['OMX'],
-      'type'  : "article",
-      'id'    : d.article_id,
-    }).then(function(esResponse) {
-        console.log('esResponse', esResponse);
-        res.send({'data': esResponse['_source']});
+      'index': config['ES']['INDEX']['OMX'],
+      'type': 'article',
+      'id': d.article_id
+    }).then(function (esResponse) {
+      console.log('esResponse', esResponse);
+      res.send({'data': esResponse['_source']});
     });
   });
 

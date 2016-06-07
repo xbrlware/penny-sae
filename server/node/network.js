@@ -1,5 +1,5 @@
-var _ = require('underscore')._,
-  async = require('async');
+var _ = require('underscore')._;
+var async = require('async');
 
 const MAX_NEIGHBORS = 100;
 
@@ -54,7 +54,6 @@ module.exports = function (app, config, client) {
       .filter(function (tuple) {return tuple[0].hits.total > 0;})
       .map(tuple => {
         var redFlags = _.map(tuple[0]['hits']['hits'], (hit) => hit['fields']['redFlags'][0]);
-
         return {
           'id': tuple[1]['id'],
           'name': tuple[1]['name'],
@@ -67,6 +66,7 @@ module.exports = function (app, config, client) {
   }
 
   function reduceRedFlags (redFlags) {
+    redFlags = _.filter(redFlags, function (rf) {return _.keys(rf).length > 0;});
     var raw = _.reduce(redFlags, (a, b) => {
       _.map(a, (v, k) => {
         _.map(v, (vv, kk) => {
@@ -106,7 +106,7 @@ module.exports = function (app, config, client) {
       }).flatten().value()
     }).then((response) => {
       cb(formatRedFlagResponse(response, nodes));
-    });
+    }).catch(function (err) {console.log(err.stack);});
   }
 
   function computeNeighborRedFlags (nodes, redFlagParams, cb) {
@@ -159,8 +159,8 @@ module.exports = function (app, config, client) {
         'body': neighbor_queries
       }).then((response) => {
         cb(formatRedFlagResponse(response, nodes));
-      });
-    });
+      }).catch(function (err) {console.log(err.stack);});
+    }).catch(function (err) {console.log(err.stack);});
   }
 
   function computeRedFlags (nodes, redFlagParams, cb) {
@@ -194,25 +194,24 @@ module.exports = function (app, config, client) {
           };
         })
       );
-    });
+    }).catch(function (err) {console.log(err.stack);});
   }
 
   app.post('/network', function (req, res) {
     var d = req.body;
     var cik = zpad(d.cik.toString());
     var redFlagParams = d.redFlagParams;
-
     console.log('/network :: redFlags', redFlagParams);
-
+    
     async.parallel([
-      function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb); },
-      function (cb) { neighbors({ 'cik': cik, 'source': 'owner',  'target': 'issuer' }, cb); }
-    ], function (err, edges) {
-      var edges = _.chain(edges).flatten().value();
-      var nodes = edges2nodes(edges);
-      computeRedFlags(nodes, redFlagParams, function (nodes) {
-        res.send({'nodes': nodes, 'edges': edges});
-      });
+        function(cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb) },
+        function(cb) { neighbors({ 'cik': cik, 'source': 'owner',  'target': 'issuer' }, cb) },
+    ], function(err, results) {
+        var edges = _.chain([results]).flatten().value();
+        var nodes = edges2nodes(edges);
+        computeRedFlags(nodes, redFlagParams, function (nodes) {
+          res.send({'nodes': nodes, 'edges': edges});
+        });
     });
   });
 };
