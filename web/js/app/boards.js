@@ -1,4 +1,4 @@
-/* global Ember, App, d3, c3, _, techan, crossfilter, gconfig, reductio, alert */
+/* global Ember, App, d3, _, techan, crossfilter, gconfig, reductio, alert */
 
 Ember.Handlebars.helper('forum-posts', function (data) {
   var mincount = 20;
@@ -567,15 +567,20 @@ App.BoardController = Ember.Controller.extend({
 
     Ember.run.next(function () {
       _.map(topX, function (x, i) {
+        /*
+        if (Ember.$('#gauge-' + x).length > 0) {
+          return;
+        }
+        */
         var predData = _.map(topPreds, function (topPred, k) {
           return [k,
             100 * _.findWhere(topPred, {'key': x}).value.avg];
         });
 
         // For gauges, we calculate the cumulative sum
-        _.map(_.range(1, predData.length), function (i) {
-          var tmp = predData[i][1] + predData[i - 1][1];
-          predData[i][1] = tmp;
+        _.map(_.range(0, predData.length), function (i) {
+          var tmp = {label: predData[i][0], value: predData[i][1]};
+          predData[i] = tmp;
         });
         predData.reverse();
 
@@ -584,50 +589,58 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  // This whole function is fairly messy
-  drawGauge (bindto, data) {
-    var gauge = c3.generate({
-      bindto: bindto,
-      transition: {
-        duration: gconfig.GAUGE.TRANS_DURA
-      },
-      legend: {
-        show: gconfig.GAUGE.LEGEND_SHOW
-      },
-      data: {
-        columns: data,
-        type: 'gauge',
-        onclick: function () {
-          return false;
-        },
-        onmouseover: function () {
-          return false;
-        },
-        onmouseout: function () {
-          return false;
-        }
-      },
-      gauge: {
-        label: {
-          format: function () {
-            return undefined;
-          },
-          show: gconfig.GAUGE.LABEL.SHOW
-        },
-        width: gconfig.GAUGE.LABEL.WIDTH
-      },
-      color: {
-        pattern: gconfig.GAUGE.COLOR_PATT
-      },
-      size: {
-        height: gconfig.GAUGE.SIZE.HEIGHT,
-        width: gconfig.GAUGE.SIZE.WIDTH
-      },
-      tooltip: {
-        show: gconfig.GAUGE.TOOLTIP_SHOW
-      }
-    });
-    return gauge;
+  drawGauge (bindTo, gaugeData) {
+    // draw gauge gets called twice and we need this for now
+    d3.select(bindTo).selectAll('svg').remove();
+
+    var w = gconfig.GAUGE.SIZE.WIDTH;
+    var h = gconfig.GAUGE.SIZE.HEIGHT;
+    var r = w / 2;
+    var ir = w / 4;
+    var pi = Math.PI;
+    var color = {pos: 'green', neut: 'yellow', neg: 'red'};
+    var valueFormat = d3.format('.2f');
+
+    var data = gaugeData;
+
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function (d) {
+        return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
+      });
+
+    var vis = d3.select(bindTo).append('svg')
+      .data([data])
+      .attr('width', w)
+      .attr('height', h)
+      .append('svg:g')
+      .attr('transform', 'translate(' + r + ',' + r + ')');
+
+    vis.call(tip);
+
+    var arc = d3.svg.arc()
+      .outerRadius(r)
+      .innerRadius(ir);
+
+    var pie = d3.layout.pie()
+      .value(function (d) { return d.value; })
+      .startAngle(-90 * (pi / 180))
+      .endAngle(90 * (pi / 180));
+
+    var arcs = vis.selectAll('g.slice')
+        .data(pie)
+        .enter()
+          .append('svg:g')
+          .attr('class', 'slice')
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+
+    arcs.append('svg:path')
+        .attr('fill', function (d, i) { return color[d.data.label]; })
+        .attr('d', arc);
+
+    return arcs;
   },
 
   actions: {
