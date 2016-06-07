@@ -255,12 +255,19 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'omx' : function (ticker) {
+    'omx' : function (cik) {
         return {
-            '_source' : ['id', 'headline'],
+            '_source' : ['id', 'headline', 'date'],
+            'sort' : [
+                {
+                    'date' : {
+                        'order' : 'desc'
+                    }
+                }
+            ],
             'query' : {
                 "match" : {
-                    "tickers.symbol.cat" : ticker.toUpperCase()
+                    "__meta__.sym.cik" : cik
                 }
             }
         }
@@ -394,7 +401,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     client.search({
       'index' : config['ES']['INDEX']['OMX'],
-      'body' : queryBuilder.omx(d.ticker),
+      'body' : queryBuilder.omx(d.cik),
       'from' : 0,
       'size' : 100
     }).then(function(esResponse) {

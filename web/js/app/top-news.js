@@ -33,7 +33,7 @@ App.SubNewsController = Ember.Controller.extend({
   name: Ember.computed.alias('controllers.detail.model'),
 });
 
-App.SubNewsView = Ember.View.extend({
+App.NewsView = Ember.View.extend({
   classNames: ['news'],
 
   controllerChanged: function () {

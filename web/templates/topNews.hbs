@@ -20,7 +20,8 @@
                     <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
                         {{#each release in model}}
                             <li class="li-omx">
-                                {{#link-to "omxNews" release.id}} {{release.headline}} {{/link-to}}
+                                {{#link-to "omxNews" release.id}}
+                                {{release.date}} - {{release.headline}} {{/link-to}}
                             </li>
                         {{/each}}
                     </ul>
