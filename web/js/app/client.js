@@ -1,7 +1,7 @@
 // web/js/app/client.js
-/* global Ember, App, config */
+/* global Ember, App */
 
-function fetch (args) {
+function fetch (args) { // eslint-disable-line no-unused-vars
   Ember.$.ajax({
     type: 'POST',
     contentType: 'application/json',
@@ -62,6 +62,7 @@ App.SearchResultsView = Ember.View.extend({
 });
 
 App.Search = Ember.Object.extend({});
+
 App.Search.reopenClass({
   search_company: function (query, redFlagParams) {
     console.log('searching company');
@@ -83,17 +84,35 @@ App.Search.reopenClass({
     });
   },
 
-  fetch_data: function (detail_name, name) {
-    console.log(detail_name, ' :: ', name);
+  fetch_boards: function (detailName, boardIds) {
+    console.log('board ids :: ', boardIds);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        url: detail_name,
+        url: detailName,
+        data: boardIds,
+        success: function (response) {
+          resolve(response);
+        }
+      });
+    });
+  },
+
+  fetch_data: function (detailName, name) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: detailName,
         data: JSON.stringify(name),
         success: function (response) {
           resolve(response);
+        },
+        error: function (error) {
+          console.error('fetch_data :: ', error);
         }
       });
     });
