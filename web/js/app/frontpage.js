@@ -49,7 +49,7 @@ App.HitTextView = Ember.View.extend({
   didInsertElement: function () {
     var type = this.get('type');
     var redFlags = this.get('redFlags');
-    
+
     this.set('mid', 'badge-' + type);
     this.set('have', redFlags[type]['have']);
     this.set('flagged', redFlags[type]['is_flag']);

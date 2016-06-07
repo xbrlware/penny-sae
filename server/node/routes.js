@@ -172,7 +172,7 @@ module.exports = function (app, config, client) {
 
   function redflagPostprocess (redFlags, redFlagParams) {
     return _.chain(_.keys(config.DEFAULT_TOGGLES)).map(function (k) { return [k, DEFAULT_]; }).object().extend({
-      'total': _.filter(redFlags, function(x) {return x.is_flag}).length,
+      'total': _.filter(redFlags, function (x) {return x.is_flag;}).length,
       'possible': _.keys(redFlagParams).length
     }).extend(redFlags).value();
   }

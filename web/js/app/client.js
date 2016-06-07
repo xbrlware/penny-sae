@@ -44,7 +44,7 @@ App.SearchResultsView = Ember.View.extend({
   afterRenderEvent: function () {
     var cik = this.get('cik');
     var columns = this.get('columns');
-    
+
     App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
       Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {

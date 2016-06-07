@@ -66,9 +66,9 @@ App.DropdownController = Ember.ObjectController.extend({
       var self = this;
       _.map(_.keys(gconfig.DEFAULT_TOGGLES), function (feature) {
         try {
-            self.set(feature, false);
+          self.set(feature, false);
         } catch(e) {
-            console.log(e.message)
+          console.log(e.message);
         }
       });
       this.set(type, true);
