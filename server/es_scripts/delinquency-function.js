@@ -1,4 +1,4 @@
-function delinquency(data, params) {
+function delinquency (data, params) {
   var n = 0;
   var have = data != null;
   data = data != null ? data : [];
@@ -8,8 +8,8 @@ function delinquency(data, params) {
     n += is_late & form & time_filter(data[i].deadline, params.min_date, params.max_date);
   }
   return {
-    "value" : n,
-    "is_flag" : n >= params.threshold,
-    "have" : have
-  }
+    'value': n,
+    'is_flag': n >= params.threshold,
+    'have': have
+  };
 }

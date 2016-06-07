@@ -7,8 +7,8 @@ function symbology (data, params) {
     n += (field & time_filter(data[i].new_date, params.min_date, params.max_date));
   }
   return {
-    "value" : n,
-    "is_flag" : n >= params.threshold,
-    "have" : have
-  }
+    'value': n,
+    'is_flag': n >= params.threshold,
+    'have': have
+  };
 }

@@ -1,7 +1,7 @@
 App.DatePickerView = Ember.View.extend({
   didInsertElement: function () {
-//    Ember.$('#datepicker').datepicker({
-//        dateFormat: "yy-mm-dd"
-//    });
+    //    Ember.$('#datepicker').datepicker({
+    //        dateFormat: "yy-mm-dd"
+    //    })
   }
 });

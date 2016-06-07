@@ -367,7 +367,7 @@ module.exports = function (app, config, client) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
-  
+
   app.post('/pv', function (req, res) {
     var d = req.body;
     client.search({
