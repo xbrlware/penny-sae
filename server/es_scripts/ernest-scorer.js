@@ -12,7 +12,8 @@ function combine_scores (scores, params) {
 var functions = {
   'symbology': symbology,
   'delinquency': delinquency,
-  'otc_neighbors': otc_neighbors
+  'otc_neighbors': otc_neighbors,
+  'crowdsar': crowdsar
 };
 
 function run () {
