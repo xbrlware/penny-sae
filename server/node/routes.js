@@ -254,6 +254,16 @@ module.exports = function (app, config, client) {
           }
         }
       };
+    },
+    'omx' : function (ticker) {
+        return {
+            '_source' : ['id', 'headline'],
+            'query' : {
+                "match" : {
+                    "tickers.symbol.cat" : ticker.toUpperCase()
+                }
+            }
+        }
     }
   };
 
@@ -377,6 +387,30 @@ module.exports = function (app, config, client) {
       'size': 10000
     }).then(function (esResponse) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+  
+  app.post('/omx', function (req, res) {
+    var d = req.body;
+    client.search({
+      'index' : config['ES']['INDEX']['OMX'],
+      'body' : queryBuilder.omx(d.ticker),
+      'from' : 0,
+      'size' : 100
+    }).then(function(esResponse) {
+        res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+  
+  app.post('/omx_body', function(req, res) {
+    var d = req.body;
+    client.get({
+      'index' : config['ES']['INDEX']['OMX'],
+      'type'  : "article",
+      'id'    : d.article_id,
+    }).then(function(esResponse) {
+        console.log('esResponse', esResponse);
+        res.send({'data': esResponse['_source']});
     });
   });
 

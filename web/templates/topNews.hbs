@@ -4,10 +4,8 @@
 
 <div id="google-news"></div>
 <div class="row">
+
     <div class="col-sm-2">
-
-{{!-- Not implemented yet
-
         {{#if model}}
             <div class="btn-group-vertical">
                 
@@ -22,14 +20,13 @@
                     <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
                         {{#each release in model}}
                             <li class="li-omx">
-                                {{#link-to "omxNews" release._id}} {{release.head}} {{/link-to}}
+                                {{#link-to "omxNews" release.id}} {{release.headline}} {{/link-to}}
                             </li>
                         {{/each}}
                     </ul>
                 </div>
             </div>
         {{/if}}
---}}
     </div>
 
     <div class="col-sm-10">

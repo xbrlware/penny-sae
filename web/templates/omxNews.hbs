@@ -1,18 +1,14 @@
 {{!-- web/templates/omxNews.hbs --}}
 
 <div class="omx-wrapper">
+    Something
     <div class="omx-head">
-        {{model.head}}
+        {{headline}}
     </div>
     <div class="omx-time">
-        {{model.time}}
+        {{date}}
     </div>
     <div class="omx-body">
-        {{!--
-        <button type="button" class="btn btn-default pull-right" {{action "run_mitie"}}>
-            Run MITIE NER
-        </button>
-        --}}
-        {{model.body}}
+        {{article}}
     </div>
 </div>

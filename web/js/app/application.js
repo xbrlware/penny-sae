@@ -66,7 +66,7 @@ App.Router.map(function () {
       this.resource('pvChart', function () {});
       this.resource('topNews', function () {
         this.resource('subNews', function () {});
-        this.resource('omxNews', {path: 'omxNews/:omx'}, function () {});
+        this.resource('omxNews', {path: 'omxNews/:article_id'}, function () {});
       });
       this.resource('previousReg', function () {});
       this.resource('financials', function () {});

@@ -14,7 +14,8 @@
           "SYMBOLOGY"   : "ernest_symbology_cat",
           "DELINQUENCY" : "ernest_delinquency_cat",
           "SUSPENSIONS" : "ernest_suspensions_cat",
-          "OWNERSHIP"   : "ernest_ownership_cat"
+          "OWNERSHIP"   : "ernest_ownership_cat",
+          "OMX"         : "ernest_omx_cat"
         }
     },
     "HTTPS":{
