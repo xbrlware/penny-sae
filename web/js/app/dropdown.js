@@ -17,9 +17,8 @@ App.DropdownController = Ember.ObjectController.extend({
   ],
   crowdsar_select_content: [
     {id: undefined, name: 'Choose Metric'},
-    {id: 'n_post', name: 'Number of Posts'},
-    {id: 'n_susp', name: 'Number of Suspicious Posts'},
-    {id: 'p_susp', name: 'Proportion of Suspicious Posts'}
+    {id: 'n_posts', name: 'Number of Posts'},
+    // Need to add more
   ],
   tout_select_content: [
     {id: undefined, name: 'Choose Metric'},
