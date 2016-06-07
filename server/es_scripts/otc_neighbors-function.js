@@ -12,8 +12,8 @@ function otc_neighbors (data, params) {
 
   return {
     'value': prop,
-    'is_flag': (cond1 & cond1 & (prop > params.threshold)) > 0,
-    // "is_flag" : prop > 0,
+    // 'is_flag': (cond1 & cond1 & (prop > params.threshold)) > 0,
+    "is_flag" : prop > 0,
     'have': have
   };
 }
