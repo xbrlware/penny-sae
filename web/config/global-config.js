@@ -54,7 +54,7 @@ var gconfig = {
   "trading_halts": false,
   "delinquency": false,
   "pv": false,
-  "crowdsar": true 
+  "crowdsar": true
  },
  "N_TOP_X": 40,
  "DEBOUNCE": 500,
