@@ -3,7 +3,7 @@ function combine_scores (scores, params) {
     // ... Need to actually determine how to combine these things...
     var out = 0;
     for(s in scores) {
-        out += scores[s]['is_flag'];
+        out += scores[s]['value'];
     }
     return out;
 }
@@ -12,7 +12,8 @@ function combine_scores (scores, params) {
 var functions = {
     "symbology"     : symbology,
     "delinquency"   : delinquency,
-    "otc_neighbors" : otc_neighbors
+    "otc_neighbors" : otc_neighbors,
+    "crowdsar"      : crowdsar,
 }
 
 function run() {
