@@ -15,7 +15,7 @@
     	"symbology" : {
             "field"     : "name",
             "min_date"  : "2000-01-01",
-            "max_date"  : "2016-01-01",
+            "max_date"  : "2017-01-01",
             "threshold" : 1
         },
         "otc_neighbors" : {
@@ -25,29 +25,38 @@
         "financials" : {
             "type"      : "revenues",
             "min_date"  : "2000-01-01",
-            "max_date"  : "2016-01-01",
+            "max_date"  : "2017-01-01",
             "value"     : 1000,
             "threshold" : 10
         },
         "trading_halts" : {
             "min_date" : "2000-01-01",
-            "max_date" : "2016-01-01",
+            "max_date" : "2017-01-01",
             "threshold" : 1
         },
         "delinquency" : {
             "form"      : "10-K",
             "min_date"  : "2000-01-01",
-            "max_date"  : "2016-01-01",
+            "max_date"  : "2017-01-01",
             "threshold" : 3
+        },
+        
+        "crowdsar" : {
+            "min_date"  : "2016-05-01",
+            "max_date"  : "2017-01-01",
+            "metric"    : "sum",
+            "field"     : "n_posts",
+            "threshold" : 10
         }
 	}, 
     "DEFAULT_TOGGLES" : {
-        "symbology"     : true,
+        "symbology"     : false,
         "otc_neighbors" : false,
         "financials"    : false,
         "trading_halts" : false,
-        "delinquency"   : true,
+        "delinquency"   : false,
+
         "pv"            : false,
-        "crowdsar"      : false
+        "crowdsar"      : true
     }
 }

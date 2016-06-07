@@ -233,7 +233,7 @@ module.exports = function (app, config, client) {
         ],
         'query': {
           'match': {
-            'symbol': ticker.toLowerCase()
+            'symbol.cat': ticker.toLowerCase()
           }
         }
       };
@@ -262,7 +262,8 @@ module.exports = function (app, config, client) {
 
     console.log('/search :: ',
       JSON.stringify(
-        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams)
+        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
+        null, 2
       )
     );
 
@@ -366,9 +367,7 @@ module.exports = function (app, config, client) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
-
-  // *** Not fully implemented ***
-  // *** Should be searching on hard symbol.cat property, which doesn't exist yet ***
+  
   app.post('/pv', function (req, res) {
     var d = req.body;
     client.search({
