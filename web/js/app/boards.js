@@ -33,8 +33,9 @@ function makeTimeSeries (ts, bounds) {
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  var height = Ember.$(div).height();
-  var width = Ember.$(div).width();
+  // var height = Ember.$(div).height();
+  var height = (margin.top + margin.bottom) * 1.5;
+  var width = Ember.$(div).width() - (margin.left + margin.right);
 
   // Calculate bar width
   var BAR_WIDTH = 2;
@@ -46,7 +47,7 @@ function makeTimeSeries (ts, bounds) {
     };
   }).value();
 
-  var x = d3.time.scale().range([0, width]);
+  var x = d3.time.scale().range([0, width + (margin.left + margin.right)]);
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
@@ -91,8 +92,7 @@ function makeTimeSeries (ts, bounds) {
 }
 
 function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
-  d3.select(div).selectAll('svg').remove();
-  var includePV = (pvData !== undefined && pvData.length > 0);
+  var includePV = true;
 
   function addDays (currentDate, days) {
     var dat = new Date(currentDate);
@@ -112,6 +112,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     return dateArray;
   }
 
+  /*
   function addCrosshair (obj) {
     var _yAnnotation = techan.plot.axisannotation()
       .axis(obj.yAxis)
@@ -128,7 +129,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
       .xAnnotation(_xAnnotation)
       .yAnnotation(_yAnnotation);
   }
-
+  */
   var margin = {
     top: 20,
     bottom: 10,
@@ -142,7 +143,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
   var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
   var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-  var heights = [1, 0.5, 0.5];
+  // var heights = [1, 0.5, 0.5];
   // var widths  = [0.5, 0.5, 0.5]
   // var n_panels = heights.length
   var parseDate = d3.time.format('%Y-%m-%d').parse;
@@ -152,7 +153,6 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.method = 'volume';
   posts.class = 'volume_posts';
   posts.width = totalWidth * 0.5;
-  // posts.height = totalHeight * heights[0];
   posts.height = totalHeight * 0.5 - 0.5 * margin.between.y;
   posts.position_left = margin.left;
   posts.position_top = margin.top;
@@ -160,7 +160,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.y = d3.scale.linear().range([posts.height, 0]);
   posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
   posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom').ticks(5);
-  posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(6);
+  posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
 
   var crowdsar = {};
   crowdsar.title = 'Post Crowdsar';
@@ -174,7 +174,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   crowdsar.y = d3.scale.linear().range([crowdsar.height, 0]);
   crowdsar.plot = techan.plot.volume().xScale(crowdsar.x).yScale(crowdsar.y);
   crowdsar.xAxis = d3.svg.axis().scale(crowdsar.x).orient('bottom').ticks(5);
-  crowdsar.yAxis = d3.svg.axis().scale(crowdsar.y).orient('left').ticks(6);
+  crowdsar.yAxis = d3.svg.axis().scale(crowdsar.y).orient('left').ticks(4);
 
   var price = {};
   price.title = 'Price';
@@ -203,7 +203,6 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
   volume.xAxis = price.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
-  volume.crosshair = addCrosshair(volume);
 
   var brush = d3.svg.brush().on('brushend', draw);
 
@@ -247,11 +246,11 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.div = makeDiv(posts, 'c1');
   posts.div.append('g').attr('class', 'pane'); // Add hook for brush
 
-  crowdsar.div = makeDiv(crowdsar, 'c1');
+  crowdsar.div = makeDiv(crowdsar, 'c2');
 
   if (includePV) {
-    price.div = makeDiv(price, 'c2');
-    volume.div = makeDiv(volume, 'c3');
+    price.div = makeDiv(price, 'c3');
+    volume.div = makeDiv(volume, 'c4');
   }
 
   pvData = _.chain(pvData).map(function (d) {
@@ -299,8 +298,11 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   // Associate the brush with the scale and render the brush
   // only AFTER a domain has been applied
   var zoomable = price.x.zoomable();
+  var crowdZoom = crowdsar.x.zoomable();
   var zoomable2 = posts.x.zoomable();
+
   brush.x(zoomable2);
+
   posts.div.select('g.pane')
     .call(brush)
     .selectAll('rect')
@@ -331,11 +333,14 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
 
     zoomable.domain(brushDomain);
+    crowdZoom.domain(brushDomain);
 
     if (includePV) {
       _draw(price, dateFilter);
       _draw(volume, dateFilter);
     }
+
+    _draw(crowdsar, dateFilter);
 
     cb(dateFilter);
   }
@@ -594,18 +599,20 @@ App.BoardController = Ember.Controller.extend({
     d3.select(bindTo).selectAll('svg').remove();
 
     var w = gconfig.GAUGE.SIZE.WIDTH;
-    var h = gconfig.GAUGE.SIZE.HEIGHT;
+    var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
+    var c = gconfig.GAUGE.COLOR_PATT;
+
     var r = w / 2;
     var ir = w / 4;
     var pi = Math.PI;
-    var color = {pos: 'green', neut: 'yellow', neg: 'red'};
+    var color = {pos: c[0], neut: c[1], neg: c[2]};
     var valueFormat = d3.format('.2f');
 
     var data = gaugeData;
 
     var tip = d3.tip()
       .attr('class', 'd3-tip')
-      .offset([-10, 0])
+      .offset([-5, 0])
       .html(function (d) {
         return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
       });
@@ -615,6 +622,7 @@ App.BoardController = Ember.Controller.extend({
       .attr('width', w)
       .attr('height', h)
       .append('svg:g')
+      .attr('class', 'gauge-align')
       .attr('transform', 'translate(' + r + ',' + r + ')');
 
     vis.call(tip);

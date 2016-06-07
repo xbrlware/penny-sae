@@ -353,7 +353,7 @@ body {
 }
 
 #forum-div {
-    max-height: 725px;
+    height: 800px;
     overflow-y: auto;
 }
 #div-dropdown-right {
@@ -617,6 +617,10 @@ input {
     cursor: pointer;
 }
 
+.close {
+    opacity: 1;
+}
+
 /* Pagination */
 .pagination a:hover {
     cursor:pointer;
@@ -809,17 +813,13 @@ path {
 
 }
 
-.c3-chart-arc path {
-    stroke : none;
-}
-
-.c3-chart-arcs .c3-chart-arcs-background {
-    fill : rgba(220, 220, 220, .2)
-}
-
 .msg {
     width      : 300px !important;
     overflow   : auto;
+}
+
+.gauge.chart {
+	padding-top: 50%;
 }
 
 .chart {
