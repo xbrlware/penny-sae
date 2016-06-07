@@ -122,8 +122,6 @@ App.DatepickerView = JQ.DatepickerView.extend({
   changeYear: true,
   showOn: 'focus',
   onSelect: function (event, ui) {
-    var newDate = ui.currentYear + '-' + (ui.currentMonth + 1) + '-' + ui.currentDay;
-    console.warn('New Date ---> ', newDate);
-    this.set('value', newDate);
+    this.set('value', event);
   }
 });
