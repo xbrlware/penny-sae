@@ -67,16 +67,9 @@ var gconfig = {
    "rgb(218, 218, 45)",
    "red"
   ],
-  "LABEL": {
-   "SHOW": false,
-   "WIDTH": 10
-  },
-  "LEGEND_SHOW": false,
   "SIZE": {
-   "HEIGHT": 60,
-   "WIDTH": 60
-  },
-  "TRANS_DURA": 0,
-  "TOOTIP_SHOW": false
+   "HEIGHT": 80,
+   "WIDTH": 80
+  }
  }
 }

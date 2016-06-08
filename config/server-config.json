@@ -10,6 +10,7 @@
         "INDEX" : {
           "AUTH"        : "",
           "AGG"         : "ernest_agg_v2",
+          "CROWDSAR"    : "crowdsar",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_cat",
           "DELINQUENCY" : "ernest_delinquency_cat",
