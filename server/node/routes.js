@@ -216,9 +216,11 @@ module.exports = function (app, config, client) {
     },
     'suspensions': function (cik) {
       return {
-        '_source': ['link', 'date', 'release_number'],
+        '_source': ['company', 'link', 'date', 'release_number'],
         'query': {
-          'match_all': {}
+          'term': {
+            "__meta__.sym.cik" : cik
+          }
         }
       };
     },
@@ -342,7 +344,6 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Would be nice to return these in order by date somehow ***
   app.post('/cik2tickers', function (req, res) {
     var d = req.body;
     client.search({
@@ -369,8 +370,6 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Not implemented yet ***
-  // *** Need to link CIKs to Trading suspensions ***
   app.post('/suspensions', function (req, res) {
     var d = req.body;
     console.log('suspensions <<', d);

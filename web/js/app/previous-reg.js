@@ -22,6 +22,7 @@ App.PreviousRegController = Ember.Controller.extend({
 
   tableDiv: '#previous-reg-table',
   tableColumns: [
+    {title: 'Company'},
     {title: 'Date', className: 'dt-body-right'},
     {title: 'Release Number'},
     {title: 'Link'}
@@ -29,7 +30,7 @@ App.PreviousRegController = Ember.Controller.extend({
 
   tableContent: function () {
     return _.map(this.get('model'), function (x) {
-      return [x.date, x.release_number, x.link];
+      return [x.company, x.date, x.release_number, x.link];
     });
   }.property('model')
 

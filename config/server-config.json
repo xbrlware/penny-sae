@@ -9,9 +9,9 @@
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
           "AUTH"        : "",
-          "AGG"         : "ernest_agg_v2",
+          "AGG"         : "ernest_agg_v3",
           "PV"          : "ernest_pv_cat",
-          "SYMBOLOGY"   : "ernest_symbology_cat",
+          "SYMBOLOGY"   : "ernest_symbology_v2",
           "DELINQUENCY" : "ernest_delinquency_cat",
           "SUSPENSIONS" : "ernest_suspensions_cat",
           "OWNERSHIP"   : "ernest_ownership_cat",
