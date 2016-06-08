@@ -8,12 +8,10 @@ const CONSTANT_BOOST = 1000;
 const SIZE = 15;
 
 const CURRENT_NAME_QUERY = {
-  'script': 'if(_source.company_data != null) { \n if(_source.company_data.company_name != null) { \n _source.company_data.company_name[_source.company_data.company_name.length-1] \n} else { \n null; \n } \n } else {\n null;\n}',
-'lang': 'javascript'};
+'script': 'if(_source.company_data != null) { \n if(_source.company_data.company_name != null) { \n _source.company_data.company_name[_source.company_data.company_name.length-1] \n} else { \n null; \n } \n } else {\n null;\n}', 'lang': 'javascript'};
 
 const LENGTH_QUERY = {
-  'script': "if(doc['company_data.date'].values != null) {\ndoc['company_data.date'].values.length \n} else { \nnull; \n}",
-'lang': 'javascript'};
+'script': "if(doc['company_data.date'].values != null) {\ndoc['company_data.date'].values.length \n} else { \nnull; \n}", 'lang': 'javascript'};
 
 const NULL_QUERY = { // eslint-disable-line no-unused-vars
   'script_fields': {
@@ -37,7 +35,8 @@ function setFunctions (rf) {
         'params': {
           'type': delta.type,
           'thresh': parseInt(delta.thresh, 10)
-      }}
+        }
+      }
     });
   }
 
@@ -65,7 +64,8 @@ function setFunctions (rf) {
           // "from"         : financials.from,
           'below_for': 2,
           'contemporary': financials.contemporary
-      }}
+        }
+      }
     });
   }
 
@@ -110,7 +110,8 @@ function setFunctions (rf) {
           'volume_multiplier': parseFloat(pv.volume_multiplier),
           'fall_within': parseFloat(pv.fall_within),
           'fall_to': parseFloat(pv.fall_to) / 100
-      }}
+        }
+      }
     });
   }
 
@@ -123,7 +124,8 @@ function setFunctions (rf) {
         'params': {
           'since': delinquency.since,
           'thresh': delinquency.thresh
-      }}
+        }
+      }
     });
   }
 
@@ -327,12 +329,13 @@ function topicQuery (topic, rf) {
     'size': 0,
     'query': {
       'bool': {
-        'should': [
-          {'match': {
-              'msg': topic
-            }
-          },
-          {'match': {
+        'should': [{
+          'match': {
+            'msg': topic
+          }
+        },
+          {
+            'match': {
               'body': topic
             }
           }

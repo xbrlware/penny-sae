@@ -18,6 +18,7 @@
          "web/css/ember-toggle-switch.css",
          "web/css/jquery.dataTables.min.css",
          "web/css/jquery-ui.css",
+         "web/css/techan.css",
          "web/css/style.less.css"
      ],
 
@@ -34,6 +35,9 @@
          "web/js/libs/bootstrap.min.js",
          "web/js/libs/moment.min.js",
          "web/js/libs/d3.min.js",
+         "web/js/libs/crossfilter.min.js",
+         "web/js/libs/reductio.min.js",
+         "web/js/libs/techan.js",
          "web/js/libs/d3.tip.js",
          "web/js/libs/flot/jquery.flot.js",
          "web/js/libs/flot/jquery.flot.pie.js",
@@ -65,7 +69,8 @@
 	       "web/js/app/network.js",
 	       "web/js/app/previous-reg.js",
 	       "web/js/app/promotions.js",
-	       "web/js/app/pva-charts.js",
+	       "web/js/app/boards.js",
+           "web/js/app/pva-charts.js",
 	       "web/js/app/red-flag_query.js",
 	       "web/js/app/sar-generator.js",
 	       "web/js/app/sic-piechart.js",

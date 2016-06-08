@@ -7,6 +7,10 @@
 @dashed-grey: 1px dashed grey;
 @solid-grey : 1px solid grey;
 
+@highlight-color  : orange;
+@list-group-background: rgba(220, 220, 220, .4);
+@axis-stroke          : rgba(220, 220, 220, 0.6);
+
 .ember-application {
     margin-right  : 10px;
     margin-bottom : 10px;
@@ -116,8 +120,6 @@ select {
     padding-bottom:7px;
 }
 
-
-
 #aggregate-button {
     border: 2px solid blue;
     color: blue;
@@ -128,7 +130,6 @@ select {
     padding-left: 10%;
     padding-right: 10%;
 }
-
 
 /* End Front Page */
 .dropdown {
@@ -154,8 +155,6 @@ select {
 #dropdown-detail-type > li > a{
     padding: 7px;
 }
-
-
 
 .input-text-hidden {
     border: none;
@@ -353,11 +352,28 @@ body {
     color: red;
 }
 
+#forum-div {
+    height: 800px;
+    overflow-y: auto;
+}
+#div-dropdown-right {
+    margin-top: 20%;
+}
+
 /* Promotions */
 #table-promotions {
     width: 85%;
 }
 
+#app-msg {
+	font-size: 100%;
+	overflow-x: auto;
+}
+
+#post-total {
+	display: inline;
+	float: right;
+}
 
 /* Named Entity Recognition */
 #table-ner {
@@ -601,6 +617,10 @@ input {
     cursor: pointer;
 }
 
+.close {
+    opacity: 1;
+}
+
 /* Pagination */
 .pagination a:hover {
     cursor:pointer;
@@ -711,112 +731,109 @@ input {
     overflow: auto;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-.x.axis path {
-    display: none;
-}
-
-.line {
+path {
+  &.volume {
+	fill: #049479;
+  }
+  &.line {
     fill: none;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-}
-
-.brush .extent {
-  stroke: #000;
-  fill-opacity: .125;
-  shape-rendering: crispEdges;
-}
-
-path.candle {
-    stroke: #000000;
- }
- 
-path.candle.body {
-    stroke-width: 0;
- }
- 
-path.candle.up {
-    fill: #00AA00;
-    stroke: #00AA00;
-}
- 
-path.candle.down {
-    fill: #FF0000;
-    stroke: #FF0000;
-}
- 
-.bar.vol {
-  fill: steelblue;
-  &:hover {
-      fill: lightgrey;
+    stroke-width: 2;
+	stroke: red;
   }
 }
 
-.bar.crowdsar {
-    fill: red;
-    &:hover {
-        fill: orange;
-    }
-}
-
-.x.axis path {
-  display: none;
-}
-
-.volume-tip, .crowdsar-tip {
+.d3-tip {
   line-height: 1;
   font-weight: bold;
   padding: 2px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   border-radius: 2px;
+  &:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+  }
+  &.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+  }
+  strong {
+    color: red;
+  }
 }
 
-.focusLine {
-    fill: none;
-    stroke: steelblue;
-    stroke-width: 0.5px;
+.list-group {
+    background : rgba(220, 220, 220, .2);
+    color : @highlight-color;
+
+    a {
+        color : @highlight-color !important;
+    }
+
+    small {
+        color : darken(@highlight-color, 20%)
+    }
+
+    .list-group-item {
+        background : none;
+        width: inherit;
+        &:hover {
+            background: @list-group-background;
+        }
+
+    }
+    .comments-group-item {
+      height: 110px;
+	  overflow: auto;
+    }
+    &.potential-results-wrapper {
+        background : @list-group-background;
+    }
 }
 
-.focusCircle {
-    fill: red;
+.axis {
+	path , line {
+		fill: none;
+		shape-rendering: crispEdges;
+		stroke: @axis-stroke;
+	}
+
+	text {
+    stroke: @axis-stroke;
+		font-weight: lighter !important;
+	}
+
 }
 
-.overlay {
-  fill: none;
-  pointer-events: all;
+.msg {
+    width      : 300px !important;
+    overflow   : auto;
 }
 
-.crosshair circle {
-    fill: none;
-    stroke: steelblue;
+.gauge.chart {
+	padding-top: 50%;
 }
 
-
-/* Creates a small triangle extender for the tooltip */
-.volume-tip:after, .crowdsar-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
+.chart {
+  border : 1px solid transparent;
+	display: inline-block;
 }
 
-/* Style northward tooltips differently */
-.volume-tip.n:after, .crowdsar-tip.n:after {
-  margin: -2px 0 0 0;
-  top: 100%;
-  left: 0;
+.chart-selected {
+    border : 1px solid orange;
+}
+
+#collection {
+  position: relative;
+  height: 500px;
 }
 
 #ui-datepicker-div {
