@@ -362,8 +362,17 @@ module.exports = function (app, config, client) {
         '_source': ['cik', 'current_symbology.name'],
         'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
         'query': {
-          'function_score': {
-            'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
+          'filtered' : {
+            'filter' : {
+              'or' : _.map(_.keys(redFlagParams), function(key) {
+                return { "exists" : {"field" : key} }
+              })
+            },
+            'query' : {
+              'function_score': {
+                'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
+              }
+            }
           }
         }
       };

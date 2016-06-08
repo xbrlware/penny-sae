@@ -28,7 +28,7 @@ var gconfig = {
    "value": 1000,
    "threshold": 10
   },
-  "trading_halts": {
+  "suspensions": {
    "min_date": "2000-01-01",
    "max_date": "2017-01-01",
    "threshold": 1
@@ -40,7 +40,7 @@ var gconfig = {
    "threshold": 3
   },
   "crowdsar": {
-   "min_date": "2016-05-01",
+   "min_date": "2000-01-01",
    "max_date": "2017-01-01",
    "metric": "sum",
    "field": "n_posts",
@@ -49,12 +49,12 @@ var gconfig = {
  },
  "DEFAULT_TOGGLES": {
   "symbology": false,
+  "suspensions": true,
+  "delinquency": false,
+  "crowdsar": false,
   "otc_neighbors": false,
   "financials": false,
-  "trading_halts": false,
-  "delinquency": false,
-  "pv": false,
-  "crowdsar": true
+  "pv": false
  },
  "N_TOP_X": 40,
  "DEBOUNCE": 500,
