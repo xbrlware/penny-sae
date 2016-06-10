@@ -9,40 +9,33 @@ module.exports = function (passport, config, make_token) {
 
   var client = new es.Client({hosts: [config.ES.HOST]});
 
-  
   function findUser (username, client, callback) {
-      var user_hash = crypto.createHash('sha').update(username).digest().toString('hex')
-      console.log(user_hash)
-
-      client.get({
-        index: config.ES.INDEX.AUTH,
-        type: "user",
-        id: crypto.createHash('sha').update(username).digest().toString('hex')
-      }).then(function (response) {
-        callback(response['_source'], null)
-      }).catch(function(err) {
-        console.log('err', err)
-        callback(null, error)
-      });
+    var user_hash = crypto.createHash('sha').update(username).digest().toString('hex');
+    client.get({
+      index: config.ES.INDEX.AUTH,
+      type: 'user',
+      id: crypto.createHash('sha').update(username).digest().toString('hex')
+    }).then(function (response) {
+      callback(response['_source'], null);
+    }).catch(function (err) {
+      console.log('user not found!', err);
+      callback();
+    });
   }
 
-  function validate_credentials (username, password) {
+  function validate_credentials (username, password, cb) {
     var deferred = Q.defer();
 
     findUser(username, client, function (au, err) {
-      if (err) { deferred.reject(err); }
+      if (!au) { deferred.resolve(false); return deferred.promise; }
 
-      if (au !== undefined) {
-          crypto.pbkdf2(password, au['salt'], au['n_iters'], au['key_size'], 'sha512', function (err, key) {
-            if (au['password'] === key.toString('hex')) {
-              deferred.resolve(au);
-            } else {
-              deferred.resolve(false);
-            }
-          });
-      } else {
-        deferred.resolve(false);
-      }
+      crypto.pbkdf2(password, au['salt'], au['n_iters'], au['key_size'], 'sha512', function (err, key) {
+        if (au['password'] === key.toString('hex')) {
+          deferred.resolve(au);
+        } else {
+          deferred.resolve(false);
+        }
+      });
     });
 
     return deferred.promise;
