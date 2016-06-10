@@ -37,12 +37,11 @@ function implementIcons () { // eslint-disable-line no-unused-vars
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {
-        
         var icon = window['network' + node.data['$color'].capitalize() + (node.data['is_issuer'] ? 'Building' : 'Person')];
         var iconSize = 5 * node.data['$dim'];
         var ctx = canvas.getCtx();
         var pos = node.pos.getc(true);
-        
+
         ctx.drawImage(icon, pos.x - iconSize / 2, pos.y - iconSize / 2, iconSize, iconSize);
       },
 
