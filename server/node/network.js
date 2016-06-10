@@ -16,6 +16,7 @@ function edges2nodes (edges) {
   var nodes = [];
   _.map(edges, function (edge) {
     if (!_.findWhere(nodes, {'id': edge['issuerCik']})) {
+    
       nodes.push({
         'id': edge['issuerCik'],
         'name': edge['issuerName']
@@ -36,8 +37,8 @@ function edges2nodes (edges) {
 function redflagScript (params, score) {
   return {
     'script': {
-      'file': 'ernest',
-      'lang': 'js',
+      'id': 'ernest',
+      'lang': 'javascript',
       'params': {
         'score': score,
         'params': params
@@ -51,7 +52,7 @@ module.exports = function (app, config, client) {
   function formatRedFlagResponse (response, nodes) {
     return _.chain(response.responses)
       .zip(nodes)
-      .filter(function (tuple) {return tuple[0].hits.total > 0;})
+      .filter(function (tuple) {console.log(tuple); return tuple[0].hits.total > 0;})
       .map(tuple => {
         var redFlags = _.map(tuple[0]['hits']['hits'], (hit) => hit['fields']['redFlags'][0]);
         return {
@@ -111,7 +112,7 @@ module.exports = function (app, config, client) {
 
   function computeNeighborRedFlags (nodes, redFlagParams, cb) {
     if (!nodes.length) {cb([]);}
-
+    console.log('nodes', nodes);
     client.msearch({
       'index': config['ES']['INDEX']['OWNERSHIP'],
       'body': _.chain(nodes).map((node) => {
@@ -154,6 +155,7 @@ module.exports = function (app, config, client) {
         }];
       }).flatten().value();
 
+      console.log('neighbor_queries', JSON.stringify(neighbor_queries));
       client.msearch({
         'index': config['ES']['INDEX']['AGG'],
         'body': neighbor_queries

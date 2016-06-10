@@ -191,7 +191,8 @@ App.RGraph.reopenClass({
         //        if (con.get('hide_terminal') && node.data['terminal']) {
         //          node.data['$alpha'] = 0
         //        }
-
+        
+        console.log(node);
         node.data['$color'] = App.RGraph.computeColor(node.data['redFlags']['total']);
       }
     });
