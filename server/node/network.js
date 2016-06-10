@@ -18,14 +18,21 @@ function edges2nodes (edges) {
     if (!_.findWhere(nodes, {'id': edge['issuerCik']})) {
       nodes.push({
         'id': edge['issuerCik'],
-        'name': edge['issuerName']
+        'name': edge['issuerName'],
+        'role': new Set(['issuer'])
       });
+    } else {
+      _.findWhere(nodes, {'id': edge['issuerCik']})['role'].add('issuer');
     }
+
     if (!_.findWhere(nodes, {'id': edge['ownerCik']})) {
       nodes.push({
         'id': edge['ownerCik'],
-        'name': edge['ownerName']
+        'name': edge['ownerName'],
+        'role': new Set(['owner'])
       });
+    } else {
+      _.findWhere(nodes, {'id': edge['ownerCik']})['role'].add('owner');
     }
   });
   return nodes;
@@ -36,7 +43,7 @@ function edges2nodes (edges) {
 function redflagScript (params, score) {
   return {
     'script': {
-      'file': 'ernest',
+      'id': 'ernest',
       'lang': 'js',
       'params': {
         'score': score,
@@ -53,20 +60,25 @@ module.exports = function (app, config, client) {
       .zip(nodes)
       .filter(function (tuple) {return tuple[0].hits.total > 0;})
       .map(tuple => {
-        var redFlags = _.map(tuple[0]['hits']['hits'], (hit) => hit['fields']['redFlags'][0]);
+        var redFlags = _.chain(tuple[0]['hits']['hits'])
+          .map((hit) => hit['fields']['redFlags'][0])
+          .filter(function (rf) {return _.keys(rf).length > 0;})
+          .value();
+
         return {
           'id': tuple[1]['id'],
           'name': tuple[1]['name'],
           'data': {
+            'is_issuer': tuple[1].role.has('issuer'),
             'redFlags': reduceRedFlags(redFlags)
           }
         };
       })
+      .filter((x) => x)
       .value();
   }
 
   function reduceRedFlags (redFlags) {
-    redFlags = _.filter(redFlags, function (rf) {return _.keys(rf).length > 0;});
     var raw = _.reduce(redFlags, (a, b) => {
       _.map(a, (v, k) => {
         _.map(v, (vv, kk) => {
@@ -88,8 +100,8 @@ module.exports = function (app, config, client) {
     };
   }
 
-  function computeIntrinsicRedFlags (nodes, redFlagParams, cb) {
-    if (!nodes.length) {cb([]);}
+  function computeIssuerRedFlags (nodes, redFlagParams, cb) {
+    if (!nodes.length) {return cb([]);}
 
     client.msearch({
       'index': config['ES']['INDEX']['AGG'],
@@ -109,9 +121,8 @@ module.exports = function (app, config, client) {
     }).catch(function (err) {console.log(err.stack);});
   }
 
-  function computeNeighborRedFlags (nodes, redFlagParams, cb) {
-    if (!nodes.length) {cb([]);}
-
+  function computeOwnerRedFlags (nodes, redFlagParams, cb) {
+    if (!nodes.length) {return cb([]);}
     client.msearch({
       'index': config['ES']['INDEX']['OWNERSHIP'],
       'body': _.chain(nodes).map((node) => {
@@ -123,16 +134,12 @@ module.exports = function (app, config, client) {
               'filtered': {
                 'filter': {
                   'or': [
-                    { 'term': { 'issuerCik': node.id } },
                     { 'term': { 'ownerCik': node.id } }
                   ]
                 }
               }
             },
             'aggs': {
-              'ownerCiks': {
-                'terms': {'field': 'ownerCik', 'size': 100}
-              },
               'issuerCiks': {
                 'terms': {'field': 'issuerCik', 'size': 100}
               }
@@ -142,10 +149,7 @@ module.exports = function (app, config, client) {
       }).flatten().value()
     }).then(function (response) {
       var neighbor_queries = _.chain(response.responses).map((r) => {
-        return _.union(
-          _.pluck(r['aggregations']['ownerCiks']['buckets'], 'key'),
-          _.pluck(r['aggregations']['issuerCiks']['buckets'], 'key')
-        );
+        return _.pluck(r['aggregations']['issuerCiks']['buckets'], 'key');
       }).map((ciks) => {
         return [{}, {
           'size': 100,
@@ -164,10 +168,11 @@ module.exports = function (app, config, client) {
   }
 
   function computeRedFlags (nodes, redFlagParams, cb) {
-    computeIntrinsicRedFlags(nodes, redFlagParams, function (intrinsicRedFlags) {
-      var noIntrinsic = _.filter(nodes, (node) => !_.findWhere(intrinsicRedFlags, {'id': node.id}));
-      computeNeighborRedFlags(noIntrinsic, redFlagParams, (neighborRedFlags) => {
-        cb(intrinsicRedFlags.concat(neighborRedFlags));
+    var issuers = _.filter(nodes, (node) => node.role.has('issuer'));
+    computeIssuerRedFlags(issuers, redFlagParams, function (issuerRedFlags) {
+      var owners = _.filter(nodes, (node) => !node.role.has('issuer'));
+      computeOwnerRedFlags(owners, redFlagParams, (ownerRedFlags) => {
+        cb(issuerRedFlags.concat(ownerRedFlags));
       });
     });
   }

@@ -8,7 +8,7 @@ App.TopNewsRoute = Ember.Route.extend({
   beforeModel: function (args) {
     this.transitionTo('subNews');
   },
-  setupController : function(controller, model) {
+  setupController: function (controller, model) {
     App.Search.fetch_data('omx', this.get('controller.name')).then(function (response) {
       controller.set('model', response.data);
     });
@@ -17,7 +17,7 @@ App.TopNewsRoute = Ember.Route.extend({
 
 App.TopNewsController = Ember.Controller.extend({
   needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  name: Ember.computed.alias('controllers.detail.model')
 });
 
 // --
@@ -30,7 +30,7 @@ App.SubNewsRoute = Ember.Route.extend({
 
 App.SubNewsController = Ember.Controller.extend({
   needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  name: Ember.computed.alias('controllers.detail.model')
 });
 
 App.NewsView = Ember.View.extend({
@@ -56,10 +56,10 @@ App.NewsView = Ember.View.extend({
 
 App.OmxNewsRoute = Ember.Route.extend({
   model: function (params) {
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-        App.Search.fetch_data('omx_body', {"article_id" : params.article_id}).then(function(response) {
-            resolve(response.data);
-        });
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      App.Search.fetch_data('omx_body', {'article_id': params.article_id}).then(function (response) {
+        resolve(response.data);
+      });
     });
   }
 });
