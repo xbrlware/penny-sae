@@ -38,7 +38,7 @@ function redflagScript (params, score) {
   return {
     'script': {
       'id': 'ernest',
-      'lang': 'javascript',
+      'lang': 'js',
       'params': {
         'score': score,
         'params': params
@@ -155,7 +155,6 @@ module.exports = function (app, config, client) {
         }];
       }).flatten().value();
 
-      console.log('neighbor_queries', JSON.stringify(neighbor_queries));
       client.msearch({
         'index': config['ES']['INDEX']['AGG'],
         'body': neighbor_queries
@@ -168,6 +167,7 @@ module.exports = function (app, config, client) {
   function computeRedFlags (nodes, redFlagParams, cb) {
     computeIntrinsicRedFlags(nodes, redFlagParams, function (intrinsicRedFlags) {
       var noIntrinsic = _.filter(nodes, (node) => !_.findWhere(intrinsicRedFlags, {'id': node.id}));
+      console.log('noIntrinsic', noIntrinsic)
       computeNeighborRedFlags(noIntrinsic, redFlagParams, (neighborRedFlags) => {
         cb(intrinsicRedFlags.concat(neighborRedFlags));
       });
