@@ -24,12 +24,12 @@ function edges2nodes (edges) {
     } else {
       _.findWhere(nodes, {'id': edge['issuerCik']})['role'].add('issuer');
     }
-    
+
     if (!_.findWhere(nodes, {'id': edge['ownerCik']})) {
       nodes.push({
         'id': edge['ownerCik'],
         'name': edge['ownerName'],
-        'role' : new Set(['owner'])
+        'role': new Set(['owner'])
       });
     } else {
       _.findWhere(nodes, {'id': edge['ownerCik']})['role'].add('owner');
@@ -61,20 +61,20 @@ module.exports = function (app, config, client) {
       .filter(function (tuple) {return tuple[0].hits.total > 0;})
       .map(tuple => {
         var redFlags = _.chain(tuple[0]['hits']['hits'])
-            .map((hit) => hit['fields']['redFlags'][0])
-            .filter(function (rf) {return _.keys(rf).length > 0;})
-            .value()
-         
+          .map((hit) => hit['fields']['redFlags'][0])
+          .filter(function (rf) {return _.keys(rf).length > 0;})
+          .value();
+
         return {
           'id': tuple[1]['id'],
           'name': tuple[1]['name'],
           'data': {
-            'is_issuer' : tuple[1].role.has('issuer'),
-            'redFlags'  : reduceRedFlags(redFlags)
+            'is_issuer': tuple[1].role.has('issuer'),
+            'redFlags': reduceRedFlags(redFlags)
           }
         };
       })
-      .filter( (x) => x )
+      .filter((x) => x)
       .value();
   }
 
@@ -88,10 +88,10 @@ module.exports = function (app, config, client) {
       return b;
     }, {});
 
-    var n_neighbors         = redFlags.length;
+    var n_neighbors = redFlags.length;
     var n_redFlags_computed = _.keys(redFlags[0]).length;
-    var total_redFlags_hit  = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
-    var avg_redFlags_hit    = total_redFlags_hit / n_neighbors;
+    var total_redFlags_hit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
+    var avg_redFlags_hit = total_redFlags_hit / n_neighbors;
 
     return {
       'raw': raw,
@@ -149,7 +149,7 @@ module.exports = function (app, config, client) {
       }).flatten().value()
     }).then(function (response) {
       var neighbor_queries = _.chain(response.responses).map((r) => {
-        return _.pluck(r['aggregations']['issuerCiks']['buckets'], 'key')
+        return _.pluck(r['aggregations']['issuerCiks']['buckets'], 'key');
       }).map((ciks) => {
         return [{}, {
           'size': 100,

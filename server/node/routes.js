@@ -175,7 +175,7 @@ module.exports = function (app, config, client) {
       };
     }
   };
-  
+
   function redflagScript (params, score) {
     return {
       'script': {
