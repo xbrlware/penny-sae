@@ -9,64 +9,37 @@ module.exports = function (passport, config, make_token) {
 
   var client = new es.Client({hosts: [config.ES.HOST]});
 
+  
   function findUser (username, client, callback) {
-    if (config.DEMO_FLAG) {
-      var db = [
-        {'username': 'dev', 'password': 'password', 'id': '001', 'isAdmin': true},
-        {'username': 'ben', 'password': 'password', 'id': '002', 'isAdmin': false}
-      ];
+      var user_hash = crypto.createHash('sha').update(username).digest().toString('hex')
+      console.log(user_hash)
 
-      var user = _.findWhere(db, {'username': username});
-      callback(user, null);
-    } else {
-      client.search({
+      client.get({
         index: config.ES.INDEX.AUTH,
-        body: {'query': {'match': {'username': username}}}
+        type: "user",
+        id: crypto.createHash('sha').update(username).digest().toString('hex')
       }).then(function (response) {
-        var user = _.chain(response.hits.hits)
-          .pluck('_source')
-          .findWhere({'username': username})
-          .value();
-        // this should be checked against the admin group
-        if (user && !user.isAdmin) { user.isAdmin = false; }
-        callback(user, null);
-      }, function (error) {
-        callback(null, error);
-      }
-      );
-    }
+        callback(response['_source'], null)
+      }).catch(function(err) {
+        console.log('err', err)
+        callback(null, error)
+      });
   }
 
   function validate_credentials (username, password) {
-    var ITER_INDEX = 0;
-    var SALT_INDEX = 1;
-    var HASH_INDEX = 2;
-    var SPLIT_CHAR = ':';
-    var ENCODING = 'hex';
-
     var deferred = Q.defer();
 
-    findUser(username, client, function (user, err) {
+    findUser(username, client, function (au, err) {
       if (err) { deferred.reject(err); }
 
-      if (user !== undefined) {
-        if (config.DEMO_FLAG) {
-          if (user.password === password) {
-            deferred.resolve(user);
-          } else {
-            deferred.resolve(undefined);
-          }
-        } else {
-          var p = user.hashedpassword.split(SPLIT_CHAR);
-          var b = new Buffer(p[SALT_INDEX], ENCODING);
-          crypto.pbkdf2(password, b, parseInt(p[ITER_INDEX], 10), b.length, function (err, derived_key) {
-            if (p[HASH_INDEX] === derived_key.toString(ENCODING)) {
-              deferred.resolve(user);
+      if (au !== undefined) {
+          crypto.pbkdf2(password, au['salt'], au['n_iters'], au['key_size'], 'sha512', function (err, key) {
+            if (au['password'] === key.toString('hex')) {
+              deferred.resolve(au);
             } else {
               deferred.resolve(false);
             }
           });
-        }
       } else {
         deferred.resolve(false);
       }
@@ -106,22 +79,3 @@ module.exports = function (passport, config, make_token) {
     }
   };
 };
-
-// //used in local-signup strategy
-// exports.localReg = function (username, password) {
-//  var deferred = Q.defer()
-//  var hash = bcrypt.hashSync(password, 8)
-//  var user = {
-//    "username" : username,
-//    "password" : hash
-//  }
-//  var match = _.findWhere(db, {"username" : username})
-//  if(match !== undefined) {
-//    deferred.resolve(false)
-//  } else {
-//    db.push(user)
-//    deferred.resolve(user)
-//  }
-//
-//  return deferred.promise
-// }
