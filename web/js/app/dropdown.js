@@ -17,7 +17,7 @@ App.DropdownController = Ember.ObjectController.extend({
   ],
   crowdsar_select_content: [
     {id: undefined, name: 'Choose Metric'},
-    {id: 'n_posts', name: 'Number of Posts'},
+    {id: 'n_posts', name: 'Number of Posts'}
   // Need to add more
   ],
   tout_select_content: [
@@ -66,7 +66,7 @@ App.DropdownController = Ember.ObjectController.extend({
       _.map(_.keys(gconfig.DEFAULT_TOGGLES), function (feature) {
         try {
           self.set(feature, false);
-        } catch(e) {
+        } catch (e) {
           console.log(e.message);
         }
       });
@@ -82,6 +82,10 @@ App.DropdownView = Ember.View.extend({
 
     Ember.$('.dropdown-menu tr').click(function (e) {
       e.preventDefault();
+    });
+
+    Ember.$('#big-dropdown-button').on('click', function (event) {
+          $(this).parent().toggleClass('open');
     });
 
     Ember.$('fa').click(function (e) {
