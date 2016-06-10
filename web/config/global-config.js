@@ -51,7 +51,7 @@ var gconfig = {
   "symbology": false,
   "suspensions": true,
   "delinquency": false,
-  "crowdsar": false,
+  "crowdsar": true,
   "otc_neighbors": false,
   "financials": false,
   "pv": false
@@ -67,14 +67,9 @@ var gconfig = {
    "rgb(218, 218, 45)",
    "red"
   ],
-  "LABEL": {
-   "SHOW": false,
-   "WIDTH": 10
-  },
-  "LEGEND_SHOW": false,
   "SIZE": {
-   "HEIGHT": 60,
-   "WIDTH": 60
+   "HEIGHT": 80,
+   "WIDTH": 80
   },
   "TRANS_DURA": 0,
   "TOOTIP_SHOW": false

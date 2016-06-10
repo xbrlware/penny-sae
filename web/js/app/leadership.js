@@ -8,7 +8,7 @@ function fetchLeadership (args) {
       type: 'POST',
       contentType: 'application/json',
       dataType: 'json',
-      url: 'fetchLeadership',
+      url: 'fetch_leadership',
       data: JSON.stringify({'cik': args.cik}),
       success: function (response) { resolve(response); },
       error: function (xhr, status, error) { console.log('Error: ' + error.message); }
@@ -18,8 +18,8 @@ function fetchLeadership (args) {
 
 App.LeadershipRoute = Ember.Route.extend({
   model: function () {
-    var cik = this.modelFor('detail').get('cik');
-    return fetchLeadership({'cik': cik});
+    var dm = this.modelFor('detail');
+    return fetchLeadership({'cik': dm.cik});
   },
   setupController: function (con, model) {
     con.set('model', model);

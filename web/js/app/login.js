@@ -6,7 +6,7 @@ App.LoginRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     if (this.get('session.isAuthenticated')) {
       console.log('$$$ auth: already authenticated...');
-      this.transitionTo('wrapper');
+      this.transitionTo('frontpage');
     } else {
       controller.set('errorMessage', null);
     }

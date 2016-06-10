@@ -25,7 +25,7 @@ App.FinancialsController = Ember.Controller.extend({
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [ n.bsd, n.type, n.fy, n.revenues_pretty, n.netincome_pretty, n.assets_pretty];
+      return [n.bsd, n.type, n.fy, n.revenues_pretty, n.netincome_pretty, n.assets_pretty];
     });
   }.property('model.@each')
 });

@@ -202,16 +202,16 @@ module.exports = function (app, config, client) {
     var cik = zpad(d.cik.toString());
     var redFlagParams = d.redFlagParams;
     console.log('/network :: redFlags', redFlagParams);
-    
+
     async.parallel([
-        function(cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb) },
-        function(cb) { neighbors({ 'cik': cik, 'source': 'owner',  'target': 'issuer' }, cb) },
-    ], function(err, results) {
-        var edges = _.chain([results]).flatten().value();
-        var nodes = edges2nodes(edges);
-        computeRedFlags(nodes, redFlagParams, function (nodes) {
-          res.send({'nodes': nodes, 'edges': edges});
-        });
+      function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb); },
+      function (cb) { neighbors({ 'cik': cik, 'source': 'owner',  'target': 'issuer' }, cb); }
+    ], function (err, results) {
+      var edges = _.chain([results]).flatten().value();
+      var nodes = edges2nodes(edges);
+      computeRedFlags(nodes, redFlagParams, function (nodes) {
+        res.send({'nodes': nodes, 'edges': edges});
+      });
     });
   });
 };
