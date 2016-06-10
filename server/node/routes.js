@@ -18,19 +18,6 @@ module.exports = function (app, config, client) {
 
   function getPvData (ticker, res) {
     if (ticker) {
-      /* client.get({
-        index: 'ernest_pv_cat',
-        type: 'ticker__date',
-        id: ticker.toLowerCase()
-      }, function (error, response) {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log('TICKER RESPONSE ---> ', response);
-          res(response._source.data);
-        }
-      });*/
-
       client.search({
         index: 'ernest_pv_cat',
         type: 'ticker__date',
@@ -587,7 +574,6 @@ module.exports = function (app, config, client) {
       'type': 'article',
       'id': d.article_id
     }).then(function (esResponse) {
-      console.log('esResponse', esResponse);
       res.send({'data': esResponse['_source']});
     });
   });
@@ -721,8 +707,6 @@ module.exports = function (app, config, client) {
         searchType: 'count',
         queryCache: true
       }).then(function (response2) {
-        console.log('starting to calculate cooc');
-
         var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
           return user1.by_board.buckets.length > config.ROUTES.THRESH;
         });
@@ -736,8 +720,6 @@ module.exports = function (app, config, client) {
             })
           };
         });
-        console.log('done calculating cooc');
-
         // Make a call to R to format the adjacency matrix
         request.post({
           'url': config.R_IP,
@@ -759,256 +741,262 @@ module.exports = function (app, config, client) {
   });
 
   // >>
-
-  //  app.post('/fetch_companies', function(req, res) {
-  //    var d = req.body
-  //    var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX]
-  //
-  //    console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)))
-  //
-  //    client.search({
-  //      "index" : index,
-  //      "body"  : qp[d.query_type](d.query_args, d.rf),
-  //      "from"  : d.from === undefined ? 0 : d.from,
-  //    }).then(function (esResponse) {
-  //        res.send(esResponse)
-  //    })
-  //  })
-
+/*
+    app.post('/fetch_companies', function(req, res) {
+      var d = req.body
+      var index = (d.index !== config.NETWORK_INDEX && d.index !== 'network') ? d.index : [config.NETWORK_INDEX, config.COMPANY_INDEX]
+      console.log('fetch_companies :: ', JSON.stringify(qp[d.query_type](d.query_args, d.rf)))
+      client.search({
+        "index" : index,
+        "body"  : qp[d.query_type](d.query_args, d.rf),
+        "from"  : d.from === undefined ? 0 : d.from,
+      }).then(function (esResponse) {
+          res.send(esResponse)
+      })
+    })
+*/
   // Named Entity Recognition Page
-  // app.post('/fetch_ner', function (req, res) {
-  //   var d = req.body
-  //   client.get({
-  //     index: 'ner',
-  //     type: 'cik',
-  //     id: d.cik
-  //   }).then(function (esResponse) {
-  //     var tmp = _.map(esResponse._source.ner, function (x) {
-  //       if (x.hidden === undefined) {
-  //         x.hidden = false
-  //       }
-  //       if (x.hidden && !d.show_hidden) {
-  //         return undefined
-  //       } else {
-  //         return {
-  //           name: x.name[0],
-  //           cnt_total: x.cnt_total[0],
-  //           occ_total: x.occ_total[0],
-  //           records: x.records,
-  //           hidden: x.hidden
-  //         }
-  //       }
-  //     })
-  //     tmp = _.filter(tmp, function (x) { return x !== undefined; })
-  //     tmp = _.sortBy(tmp, function (x) { return x.cnt_total; })
-  //     tmp.reverse()
-  //     res.send(tmp)
-  //   },
-  //     function (error) {
-  //       console.error(error)
-  //       res.send([undefined])
-  //     }
-  //   )
-  // })
+ /*
+   app.post('/fetch_ner', function (req, res) {
+     var d = req.body
+     client.get({
+       index: 'ner',
+       type: 'cik',
+       id: d.cik
+     }).then(function (esResponse) {
+       var tmp = _.map(esResponse._source.ner, function (x) {
+         if (x.hidden === undefined) {
+           x.hidden = false
+         }
+         if (x.hidden && !d.show_hidden) {
+           return undefined
+         } else {
+           return {
+             name: x.name[0],
+             cnt_total: x.cnt_total[0],
+             occ_total: x.occ_total[0],
+             records: x.records,
+             hidden: x.hidden
+           }
+         }
+       })
+       tmp = _.filter(tmp, function (x) { return x !== undefined; })
+       tmp = _.sortBy(tmp, function (x) { return x.cnt_total; })
+       tmp.reverse()
+       res.send(tmp)
+     },
+       function (error) {
+         console.error(error)
+         res.send([undefined])
+       }
+     )
+   })
+   */
+/*
+   app.post('/set_ner', function (req, res) {
+     var d = req.body
+     client.get({
+       index: config.NETWORK_INDEX,
+       type: 'actor',
+       id: d.cik
+     }).then(function (orig) {
+       _.map(orig._source.adjacencies, function (origAdj) {
+         var update = _.where(d.updates, {'nodeTo': origAdj.nodeTo})[0]
+         if (update !== undefined) {
+           origAdj.data.hidden = update.hidden
+         } else {
+           origAdj.data.hidden = true
+         }
+       })
 
-  // app.post('/set_ner', function (req, res) {
-  //   var d = req.body
-  //   client.get({
-  //     index: config.NETWORK_INDEX,
-  //     type: 'actor',
-  //     id: d.cik
-  //   }).then(function (orig) {
-  //     _.map(orig._source.adjacencies, function (origAdj) {
-  //       var update = _.where(d.updates, {'nodeTo': origAdj.nodeTo})[0]
-  //       if (update !== undefined) {
-  //         origAdj.data.hidden = update.hidden
-  //       } else {
-  //         origAdj.data.hidden = true
-  //       }
-  //     })
+       client.index({
+         index: config.NETWORK_INDEX,
+         type: 'actor',
+         id: d.cik,
+         body: orig._source
+       }).then(function (resp) {
+         res.send(resp)
+       })
+     })
+   })
+*/
+  /*
+   app.post('/red_flag_individuals', function (req, res) {
+     var d = req.body
+     var allCiks = d.query_args.allCiks
 
-  //     client.index({
-  //       index: config.NETWORK_INDEX,
-  //       type: 'actor',
-  //       id: d.cik,
-  //       body: orig._source
-  //     }).then(function (resp) {
-  //       res.send(resp)
-  //     })
-  //   })
-  // })
+     function calculateRfIndividual (cik, callback) {
+       // Get companies that individual is connected to
+       client.search({
+         index: config.NETWORK_INDEX,
+         body: qp.networkQuery_center({'cik': cik}, d.rf),
+         from: 0
+       }).then(function (data) {
+         var adj = data.hits.hits[0]._source.adjacencies
+         var nodeTos = _.pluck(adj, 'nodeTo')
 
-  // app.post('/red_flag_individuals', function (req, res) {
-  //   var d = req.body
-  //   var allCiks = d.query_args.allCiks
+         client.search({
+           index: config.COMPANY_INDEX,
+           body: qp.multiCIKQuery({'ciks': nodeTos}, d.rf),
+           from: 0
+         }).then(function (companyData) {
+           var cd = companyData.hits.hits
+           var rfTotal = 0
+           var rfPossible = 0
+           var nAss = 0
+           cd.map(function (x) {
+             var rf = setRedFlags(d.rf, x.fields)
+             rfTotal += rf.total
+             rfPossible += rf.possible
+             nAss++
+           })
 
-  //   function calculateRfIndividual (cik, callback) {
-  //     // Get companies that individual is connected to
-  //     client.search({
-  //       index: config.NETWORK_INDEX,
-  //       body: qp.networkQuery_center({'cik': cik}, d.rf),
-  //       from: 0
-  //     }).then(function (data) {
-  //       var adj = data.hits.hits[0]._source.adjacencies
-  //       var nodeTos = _.pluck(adj, 'nodeTo')
+           var rfScore = rfPossible > 0 ? Math.round(100 * rfTotal / nAss) / 100 : -1
+           rfScore = isNaN(rfScore) ? 0 : rfScore
+         }).then(function () {
+           callback(null, {'cik': cik, 'avg': rfScore, 'total': rfTotal, 'possible': rfPossible, 'nAss': nAss})
+         })
+       })
+     }
 
-  //       client.search({
-  //         index: config.COMPANY_INDEX,
-  //         body: qp.multiCIKQuery({'ciks': nodeTos}, d.rf),
-  //         from: 0
-  //       }).then(function (companyData) {
-  //         var cd = companyData.hits.hits
-  //         var rfTotal = 0
-  //         var rfPossible = 0
-  //         var nAss = 0
-  //         cd.map(function (x) {
-  //           var rf = setRedFlags(d.rf, x.fields)
-  //           rfTotal += rf.total
-  //           rfPossible += rf.possible
-  //           nAss++
-  //         })
+     async.map(allCiks, calculateRfIndividual, function (err, results) {
+       res.send(results)
+     })
+   })
+  */
+  /*
+     app.post('/search_omx', function (req, res) {
+     var d = req.body;
+     client.search({
+        'index': 'omx',
+        'type': 'release',
+        'body': {
+         'query': {
+           'match': {
+             'cik': _s.pad(d.cik, 10, '0')
+           }
+         },
+         'sort': [
+           { 'time': {
+               'order': 'desc'
+             }
+           }
+         ],
+         'size': 100
+       }
+     }).then(function (response) {
+       res.send(
+         _.map(response.hits.hits, function (hit) {
+           var src = hit._source
+           src._id = hit._id
+           return src
+         })
+       )
+     })
+   })
+  */
+  /*
+  app.post('/fetch_omx', function (req, res) {
+    var d = req.body;
+    client.get({
+      'index': 'omx',
+      'type': 'release',
+      'id': d.omx_id
+    }).then(function (response) {
+      res.send(response._source);
+    });
+  });
+  */
 
-  //         var rfScore = rfPossible > 0 ? Math.round(100 * rfTotal / nAss) / 100 : -1
-  //         rfScore = isNaN(rfScore) ? 0 : rfScore
-  //       }).then(function () {
-  //         callback(null, {'cik': cik, 'avg': rfScore, 'total': rfTotal, 'possible': rfPossible, 'nAss': nAss})
-  //       })
-  //     })
-  //   }
+  /*
+  app.post('/fetch_leadership', function (req, res) {
+    var d = req.body;
+    var flattenObj = function (x, result, prefix) {
+      if (_.isObject(x)) {
+        _.each(x, function (v, k) {
+          flattenObj(v, result, prefix ? prefix + '_' + k : k);
+        });
+      } else {
+        result[prefix] = x;
+      }
+      return result;
+    };
 
-  //   async.map(allCiks, calculateRfIndividual, function (err, results) {
-  //     res.send(results)
-  //   })
-  // })
+    client.search({
+      'index': 'forms',
+      'type': '4',
+      'body': {
+        '_source': [
+          'ownershipDocument.reportingOwner.reportingOwnerRelationship',
+          'ownershipDocument.periodOfReport',
+          'ownershipDocument.reportingOwner.reportingOwnerId'
+        ],
+        'size': 999999,
+        'query': {
+          'match': {
+            'ownershipDocument.issuer.issuerCik': _s.pad(d.cik, 10, '0')
+          }
+        }
+      }
+    }).then(function (response) {
+      var hits = response.hits.hits;
+      var src = _.chain(hits)
+        .pluck('_source')
+        .pluck('ownershipDocument')
+        .map(function (x) {
+          if (x.reportingOwner.length === undefined) {
+            x.reportingOwner = [x.reportingOwner];
+          }
+          _.map(x.reportingOwner, function (y) {
+            y.periodOfReport = x.periodOfReport;
+          });
+          return x;
+        })
+      .pluck('reportingOwner')
+        .flatten()
+        .map(function (x) { return flattenObj(x, {}); })
+        .groupBy('reportingOwnerId_rptOwnerCik')
+        .value();
 
-  // app.post('/search_omx', function (req, res) {
-  //   var d = req.body
-  //   client.search({
-  //     'index': 'omx',
-  //     'type': 'release',
-  //     'body': {
-  //       'query': {
-  //         'match': {
-  //           'cik': _s.pad(d.cik, 10, '0')
-  //         }
-  //       },
-  //       'sort': [
-  //         { 'time': {
-  //             'order': 'desc'
-  //           }
-  //         }
-  //       ],
-  //       'size': 100
-  //     }
-  //   }).then(function (response) {
-  //     res.send(
-  //       _.map(response.hits.hits, function (hit) {
-  //         var src = hit._source
-  //         src._id = hit._id
-  //         return src
-  //       })
-  //     )
-  //   })
-  // })
+      var poses = [
+        'reportingOwnerRelationship_isDirector',
+        'reportingOwnerRelationship_isOfficer',
+        'reportingOwnerRelationship_isTenPercentOwner',
+        'reportingOwnerRelationship_isOther'
+      ];
 
-  // app.post('/fetch_omx', function (req, res) {
-  //   var d = req.body
-  //   client.get({
-  //     'index': 'omx',
-  //     'type': 'release',
-  //     'id': d.omx_id
-  //   }).then(function (response) {
-  //     res.send(response._source)
-  //   })
-  // })
+      var dates = _.chain(_.values(src))
+        .map(function (x) {
+          var out = {
+            'name': x[0]['reportingOwnerId_rptOwnerName'],
+            'cik': x[0]['reportingOwnerId_rptOwnerCik']
+          };
 
-  // app.post('/fetch_leadership', function (req, res) {
-  //   var d = req.body
-  //   var flatten_obj = function (x, result, prefix) {
-  //     if (_.isObject(x)) {
-  //       _.each(x, function (v, k) {
-  //         flatten_obj(v, result, prefix ? prefix + '_' + k : k)
-  //       })
-  //     } else {
-  //       result[prefix] = x
-  //     }
-  //     return result
-  //   }
+          function getPos (pos, out) {
+            var dates = _.chain(x)
+              .filter(function (y) { return y[pos] === '1'; })
+              .pluck('periodOfReport')
+              .value();
 
-  //   client.search({
-  //     'index': 'forms',
-  //     'type': '4',
-  //     'body': {
-  //       '_source': [
-  //         'ownershipDocument.reportingOwner.reportingOwnerRelationship',
-  //         'ownershipDocument.periodOfReport',
-  //         'ownershipDocument.reportingOwner.reportingOwnerId'
-  //       ],
-  //       'size': 999999,
-  //       'query': {
-  //         'match': {
-  //           'ownershipDocument.issuer.issuerCik': _s.pad(d.cik, 10, '0')
-  //         }
-  //       }
-  //     }
-  //   }).then(function (response) {
-  //     var hits = response.hits.hits
-  //     var src = _.chain(hits)
-  //       .pluck('_source')
-  //       .pluck('ownershipDocument')
-  //       .map(function (x) {
-  //         if (x.reportingOwner.length === undefined) {
-  //           x.reportingOwner = [x.reportingOwner]
-  //         }
-  //         _.map(x.reportingOwner, function (y) {
-  //           y.periodOfReport = x.periodOfReport
-  //         })
-  //         return x
-  //       })
-  //       .pluck('reportingOwner')
-  //       .flatten()
-  //       .map(function (x) {return flatten_obj(x, {});})
-  //       .groupBy('reportingOwnerId_rptOwnerCik')
-  //       .value()
+            var max = _.max(dates, function (d) { return new Date(d); });
+            var min = _.min(dates, function (d) { return new Date(d); });
+            if (max !== -Infinity) {
+              out[pos] = {
+                'start': min,
+                'stop': max
+              };
+            }
+            return out;
+          }
 
-  //     var poses = [
-  //       'reportingOwnerRelationship_isDirector',
-  //       'reportingOwnerRelationship_isOfficer',
-  //       'reportingOwnerRelationship_isTenPercentOwner',
-  //       'reportingOwnerRelationship_isOther'
-  //     ]
+          _.map(poses, function (pos) {
+            out = getPos(pos, out);
+          });
+          return out;
+        }).value();
 
-  //     var dates = _.chain(_.values(src))
-  //       .map(function (x) {
-  //         var out = {
-  //           'name': x[0]['reportingOwnerId_rptOwnerName'],
-  //           'cik': x[0]['reportingOwnerId_rptOwnerCik']
-  //         }
-
-  //         function get_pos (pos, out) {
-  //           var dates = _.chain(x)
-  //             .filter(function (y) {return y[pos] === '1';})
-  //             .pluck('periodOfReport')
-  //             .value()
-
-  //           var max = _.max(dates, function (d) {return new Date(d);})
-  //           var min = _.min(dates, function (d) {return new Date(d);})
-  //           if (max !== -Infinity) {
-  //             out[pos] = {
-  //               'start': min,
-  //               'stop': max
-  //             }
-  //           }
-  //           return out
-  //         }
-
-  //         _.map(poses, function (pos) {
-  //           out = get_pos(pos, out)
-  //         })
-  //         return out
-  //       }).value()
-
-//     res.send({'dates': dates, 'posNames': poses})
-//   })
-// })
+      res.send({'dates': dates, 'posNames': poses});
+    });
+  });
+  */
 };

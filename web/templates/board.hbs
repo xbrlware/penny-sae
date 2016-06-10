@@ -1,39 +1,27 @@
 {{!-- web/templates/board.hbs --}}
 
-{{#if split_by_filter_nonempty}}
-  <span id="examine-button">
-    <button class="btn btn-primary" {{action 'drilldown'}}>
-      Examine Selected
-    </button>
-  </span>
-{{/if}}
-
 <div class="col-xs-12" id="techan-wrapper">
-  <div id="time-chart" class="chart"></div>
+        <div id="time-chart" class="chart"></div>
 </div>
 
-<hr>
-
 <div class="col-xs-6">
-    <div class="tab-content" id="vis-wrapper">
-        <div role="tabpanel" class="tab-pane active" id="time">
-            {{#each topX}}
-                <div class="row-fluid">
-                    <div class="col-xs-3">
-                        <div id='gauge-{{this}}' class="gauge chart"></div>
-                    </div>
+    <div class="timeline-panel" id="timeline">
+        {{#each topX}}
+            <div class="row-fluid">
+                <div class="col-xs-3">
+                    <div id='gauge-{{this}}' class="gauge chart"></div>
+                </div>
 
-                    <div class="col-xs-9 ts chart" id="ts-{{this}}">
-                        <span class="title"></span>
-                        <div class="count-wrapper pull-right">
-                            <span class="before"></span> |
-                            <span class="during"></span> |
-                            <span class="after"></span>
-                        </div>
+                <div class="col-xs-9 ts chart" id="ts-{{this}}">
+                    <span class="title"></span>
+                    <div class="count-wrapper pull-right">
+                        <span class="before"></span> |
+                        <span class="during"></span> |
+                        <span class="after"></span>
                     </div>
                 </div>
-            {{/each}}
-        </div>
+            </div>
+        {{/each}}
     </div>
 </div>
 

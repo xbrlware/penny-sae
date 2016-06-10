@@ -112,7 +112,7 @@ App.Search.reopenClass({
           resolve(response);
         },
         error: function (error) {
-          console.error('fetch_data :: ', error);
+          console.error('fetch_data :: ', error.message);
         }
       });
     });

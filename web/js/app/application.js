@@ -3,13 +3,12 @@
 /* Setup Authorization */
 
 /* global Ember, SimpleAuth, _, gconfig */
-
 window.ENV = window.ENV || {};
 window.ENV['simple-auth'] = {
   authorizer: 'authorizer:custom',
   routeAfterAuthentication: 'frontpage',
   routeIfAlreadyAuthenticated: 'frontpage',
-  applicationRootUrl: 'login'
+  applicationRootUrl: '/'
 };
 
 Ember.Application.initializer({
@@ -59,7 +58,7 @@ var App = Ember.Application.create({
 App.GRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);
 
 App.Router.map(function () {
-  this.route('login');
+  this.route('login', {path: 'login'}, function () {});
   this.resource('frontpage', {path: '/'}, function () {});
   this.resource('sidebar', {path: 'sidebar/:st'}, function () {
     this.resource('detail', {path: 'detail/:cik'}, function () {
