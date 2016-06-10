@@ -1,7 +1,7 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  // var qp = require('./qp.js');
+  // var qp = require('./qp.js')
   // var async = require('async')
   // var _s = require('underscore.string')
   var request = require('request');
@@ -18,6 +18,19 @@ module.exports = function (app, config, client) {
 
   function getPvData (ticker, res) {
     if (ticker) {
+      /* client.get({
+        index: 'ernest_pv_cat',
+        type: 'ticker__date',
+        id: ticker.toLowerCase()
+      }, function (error, response) {
+        if (error) {
+          console.error(error)
+        } else {
+          console.log('TICKER RESPONSE ---> ', response)
+          res(response._source.data)
+        }
+      });*/
+
       client.search({
         index: 'ernest_pv_cat',
         type: 'ticker__date',
@@ -349,8 +362,17 @@ module.exports = function (app, config, client) {
         '_source': ['cik', 'current_symbology.name'],
         'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
         'query': {
-          'function_score': {
-            'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
+          'filtered': {
+            'filter': {
+              'or': _.map(_.keys(redFlagParams), function (key) {
+                return { 'exists': {'field': key} };
+              })
+            },
+            'query': {
+              'function_score': {
+                'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
+              }
+            }
           }
         }
       };
@@ -375,9 +397,11 @@ module.exports = function (app, config, client) {
     },
     'suspensions': function (cik) {
       return {
-        '_source': ['link', 'date', 'release_number'],
+        '_source': ['company', 'link', 'date', 'release_number'],
         'query': {
-          'match_all': {}
+          'term': {
+            '__meta__.sym.cik': cik
+          }
         }
       };
     },
@@ -501,7 +525,6 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Would be nice to return these in order by date somehow ***
   app.post('/cik2tickers', function (req, res) {
     var d = req.body;
     client.search({
@@ -528,8 +551,6 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Not implemented yet ***
-  // *** Need to link CIKs to Trading suspensions ***
   app.post('/suspensions', function (req, res) {
     var d = req.body;
     console.log('suspensions <<', d);
@@ -728,14 +749,13 @@ module.exports = function (app, config, client) {
             'params': _.flatten(out)
           },
           'headers': { 'Expect': 'nothing' }
-        },
-          function (error, response, body) {
-            if (error) {
-              console.error(error);
-            } else {
-              res.send(body);
-            }
-          });
+        }, function (error, response, body) {
+          if (error) {
+            console.error(error);
+          } else {
+            res.send(body);
+          }
+        });
       });
     });
   });

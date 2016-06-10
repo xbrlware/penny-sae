@@ -21,7 +21,7 @@ App.Topic = Ember.Object.extend({
   agg_redflag: function () {
     var key = {
       'pv': 'Price/Volume',
-      'trading_halts': 'Trading Halts',
+      'suspensions': 'Trading Halts',
       'symbology': 'Change in Business',
       'financials': 'No Revenues',
       'otc_neighbors': 'OTC Associates',

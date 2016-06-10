@@ -29,7 +29,7 @@
             "value"     : 1000,
             "threshold" : 10
         },
-        "trading_halts" : {
+        "suspensions" : {
             "min_date" : "2000-01-01",
             "max_date" : "2017-01-01",
             "threshold" : 1
@@ -40,9 +40,8 @@
             "max_date"  : "2017-01-01",
             "threshold" : 3
         },
-        
         "crowdsar" : {
-            "min_date"  : "2016-05-01",
+            "min_date"  : "2000-01-01",
             "max_date"  : "2017-01-01",
             "metric"    : "sum",
             "field"     : "n_posts",
@@ -51,12 +50,12 @@
 	}, 
     "DEFAULT_TOGGLES" : {
         "symbology"     : false,
+        "suspensions"   : true,
+        "delinquency"   : false,
+        "crowdsar"      : true,
         "otc_neighbors" : false,
         "financials"    : false,
-        "trading_halts" : false,
-        "delinquency"   : false,
-        "pv"            : false,
-        "crowdsar"      : true
+        "pv"            : false
     },
     "N_TOP_X"        : 40,
     "DEBOUNCE"       : 500,
@@ -68,6 +67,8 @@
         "SIZE"        : {
         "HEIGHT" : 80,
         "WIDTH"  : 80
-        }
-    }
+    },
+    "TRANS_DURA"  : 0,
+    "TOOTIP_SHOW" : false
+  }
 }

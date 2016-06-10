@@ -297,22 +297,22 @@
     </form>
 {{/if}}
 
-{{#if trading_halts}}
+{{#if suspensions}}
     <span class="centered"><h4>Trading Halts Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
                 view App.DatepickerView
-                defaultDate=redFlagParams._params.trading_halts.min_date
-                valueBinding=redFlagParams._params.trading_halts.min_date
+                defaultDate=redFlagParams._params.suspensions.min_date
+                valueBinding=redFlagParams._params.suspensions.min_date
                 class="form-control"
             }}
             <label class="control-label">To Date:</label>
             {{
                 view App.DatepickerView
-                defaultDate=redFlagParams._params.trading_halts.max_date
-                valueBinding=redFlagParams._params.trading_halts.max_date
+                defaultDate=redFlagParams._params.suspensions.max_date
+                valueBinding=redFlagParams._params.suspensions.max_date
                 class="form-control"
             }}
         </div>
@@ -321,7 +321,7 @@
             <label class=" control-label"> Threshold </label>
             {{
                 input type="number"
-                valueBinding=redFlagParams._params.trading_halts.threshold
+                valueBinding=redFlagParams._params.suspensions.threshold
                 class="form-control"
             }}
         </div>

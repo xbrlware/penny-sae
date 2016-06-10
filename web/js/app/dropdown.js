@@ -51,7 +51,7 @@ App.DropdownController = Ember.ObjectController.extend({
   otc_neighbors: false,
   financials: false,
   crowdsar: false,
-  trading_halts: false,
+  suspensions: false,
   delinquency: false,
   actions: {
     sort_companies: function () {

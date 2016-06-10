@@ -3,16 +3,14 @@
       "STRATEGY" : "local"
     },    
     "CLEAR_USERS_ON_RESTART" : false,
-    "COMPANY_INDEX" : "companies_restore",
-    "DEMO_FLAG" : true,
     "ES" : {
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "AUTH"        : "",
-          "AGG"         : "ernest_agg_v2",
           "CROWDSAR"    : "crowdsar",
+          "AUTH"        : "ernest_auth",
+          "AGG"         : "ernest_agg_v3",
           "PV"          : "ernest_pv_cat",
-          "SYMBOLOGY"   : "ernest_symbology_cat",
+          "SYMBOLOGY"   : "ernest_symbology_v2",
           "DELINQUENCY" : "ernest_delinquency_cat",
           "SUSPENSIONS" : "ernest_suspensions_cat",
           "OWNERSHIP"   : "ernest_ownership_cat",
@@ -26,11 +24,9 @@
             "CRT" : "authentication/nodesec.crt"
         }
     },
-    "NETWORK_INDEX" : "petwork",
     "SERVER" : {
         "PORT" : 8090
     },
     "TIMEOUT_AMOUNT": 2,
-    "TIMEOUT_UNITS" : "hours",
-    "TTS_TYPE"      : "js"
+    "TIMEOUT_UNITS" : "hours"
 }
