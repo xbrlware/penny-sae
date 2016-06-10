@@ -13,7 +13,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
       maxcount = maxcount + 40;
     }
   });
-
+  
   ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
 
   if (data) {
