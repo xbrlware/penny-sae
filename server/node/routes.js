@@ -126,23 +126,23 @@ module.exports = function (app, config, client) {
             'must': _.filter([dateClause, boardClause, userClause])
           }
         },
-        'aggs': {
-          'significant_terms_general': {
-            'significant_terms': {
-              'field': 'msg',
-              'size': 10,
-              'mutual_information': {
-                'include_negatives': false
-              }
-            }
-          },
-          'ents': {
-            'terms': {
-              'field': 'ents.entity.cat', // Change to only be person
-              'size': 10
-            }
-          }
-        }
+//        'aggs': {
+//          'significant_terms_general': {
+//            'significant_terms': {
+//              'field': 'msg',
+//              'size': 10,
+//              'mutual_information': {
+//                'include_negatives': false
+//              }
+//            }
+//          },
+//          'ents': {
+//            'terms': {
+//              'field': 'ents.entity.cat', // Change to only be person
+//              'size': 10
+//            }
+//          }
+//        }
       };
     },
     'search': function (params) {
@@ -175,6 +175,8 @@ module.exports = function (app, config, client) {
       };
     }
   };
+
+  // -- </Penny>
 
   function redflagScript (params, score) {
     return {
@@ -386,7 +388,7 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Need to changed width of CIKs in delinquency index ***
+  // *** Need to change width of CIKs in delinquency index ***
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -468,144 +470,144 @@ module.exports = function (app, config, client) {
     }
   });
 
-  app.post('/aggs', function (req, res) {
-    client.search({
-      index: 'crowdsar',
-      body: pennyQueryBuilder.aggs(req.body),
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response) {
-      res.send({
-        'general': response.aggregations.significant_terms_general.buckets,
-        'ents': response.aggregations.ents.buckets
-      });
-    });
-  });
+// <Penny>
+// This is not being used
 
-  // Also, this is hard-coded for message boards right now,
-  // rather than a user.  This could be expanded, though I'm not sure
-  // how much sense it'd make really...
-  app.get('/coocurrence', function (req, res) {
-    var dateClause, boardClause, userClause;
-    dateClause = {
-      'users': {
-        'range': {
-          'date': {
-            'gte': +new Date(req.date ? req.date[0] : '2001-01-01 00:00:00'),
-            'lte': +new Date(req.date ? req.date[1] : '2015-01-01 00:00:00')
-          }
-        }
-      },
-      'cooc': {
-        'range': {
-          'date': {
-            'lte': +new Date('2015-01-01 00:00:00') // Everything up until faux end date
-          }
-        }
-      }
-    };
+//  app.post('/aggs', function (req, res) {
+//    client.search({
+//      index: 'crowdsar',
+//      body: pennyQueryBuilder.aggs(req.body),
+//      searchType: 'count',
+//      queryCache: true
+//    }).then(function (response) {
+//      res.send({
+//        'general': response.aggregations.significant_terms_general.buckets,
+//        'ents': response.aggregations.ents.buckets
+//      });
+//    });
+//  });
 
-    // Filter boards
-    if (req.boardIds && req.boardIds.length > 0) {
-      boardClause = {
-        'terms': {
-          'board_id': rsplit(req.boardIds, ',')
-        }
-      };
-    }
-
-    // Filter users
-    if (req.userIds && req.userIds.length > 0) {
-      userClause = {
-        'terms': {
-          'user_id': rsplit(req.userIds, ',')
-        }
-      };
-    }
-
-    var query1 = {
-      'query': {
-        'bool': {
-          'must': _.filter([dateClause.users, boardClause, userClause])
-        }
-      },
-      'aggs': {
-        'users': {
-          'terms': {
-            'field': 'user_id',
-            'size': 75
-          }
-        }
-      }
-    };
-
-    client.search({
-      index: config.INDEX,
-      body: query1,
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response1) {
-      var users = _.pluck(response1.aggregations.users.buckets, 'key');
-      var query2 = {
-        'query': {
-          'bool': {
-            'must': _.filter([dateClause.cooc,
-              { 'terms': { 'user_id': users } }])
-          }
-        },
-        'aggs': {
-          'by_user': {
-            'terms': {
-              'field': 'user.cat', // This can change over time, so this actually isn't the best method
-              'size': 75
-            },
-            'aggs': {
-              'by_board': {
-                'terms': {
-                  'field': config.AGG_FIELD,
-                  'size': config.ROUTES.N_BOARDS
-                }
-              }
-            }
-          }
-        }
-      };
-
-      client.search({
-        index: config.INDEX,
-        body: query2,
-        searchType: 'count',
-        queryCache: true
-      }).then(function (response2) {
-        var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
-          return user1.by_board.buckets.length > config.ROUTES.THRESH;
-        });
-        var out = _.map(filteredUsers, function (user1) {
-          var user1Boards = _.pluck(user1.by_board.buckets, 'key');
-          return {
-            'user1': user1.key,
-            'vals': _.map(filteredUsers, function (user2) {
-              var user2Boards = _.pluck(user2.by_board.buckets, 'key');
-              return _.intersection(user1Boards, user2Boards).length / _.union(user1Boards, user2Boards).length;
-            })
-          };
-        });
-        // Make a call to R to format the adjacency matrix
-        request.post({
-          'url': config.R_IP,
-          'json': {
-            'fun': 'process',
-            'params': _.flatten(out)
-          },
-          'headers': { 'Expect': 'nothing' }
-        }, function (error, response, body) {
-          if (error) {
-            console.error(error);
-          } else {
-            res.send(body);
-          }
-        });
-      });
-    });
-  });
+//  app.get('/coocurrence', function (req, res) {
+//    var dateClause, boardClause, userClause;
+//    dateClause = {
+//      'users': {
+//        'range': {
+//          'date': {
+//            'gte': +new Date(req.date ? req.date[0] : '2001-01-01 00:00:00'),
+//            'lte': +new Date(req.date ? req.date[1] : '2015-01-01 00:00:00')
+//          }
+//        }
+//      },
+//      'cooc': {
+//        'range': {
+//          'date': {
+//            'lte': +new Date('2015-01-01 00:00:00') // Everything up until faux end date
+//          }
+//        }
+//      }
+//    };
+//
+//    // Filter boards
+//    if (req.boardIds && req.boardIds.length > 0) {
+//      boardClause = {
+//        'terms': {
+//          'board_id': rsplit(req.boardIds, ',')
+//        }
+//      };
+//    }
+//
+//    // Filter users
+//    if (req.userIds && req.userIds.length > 0) {
+//      userClause = {
+//        'terms': {
+//          'user_id': rsplit(req.userIds, ',')
+//        }
+//      };
+//    }
+//
+//    var query1 = {
+//      'query': {
+//        'bool': {
+//          'must': _.filter([dateClause.users, boardClause, userClause])
+//        }
+//      },
+//      'aggs': {
+//        'users': {
+//          'terms': {
+//            'field': 'user_id',
+//            'size': 75
+//          }
+//        }
+//      }
+//    };
+//
+//    client.search({
+//      index: config.INDEX,
+//      body: query1,
+//      searchType: 'count',
+//      queryCache: true
+//    }).then(function (response1) {
+//      var users = _.pluck(response1.aggregations.users.buckets, 'key');
+//      var query2 = {
+//        'query': {
+//          'bool': {
+//            'must': _.filter([dateClause.cooc,
+//              { 'terms': { 'user_id': users } }])
+//          }
+//        },
+//        'aggs': {
+//          'by_user': {
+//            'terms': {
+//              'field': 'user.cat', // This can change over time, so this actually isn't the best method
+//              'size': 75
+//            },
+//            'aggs': {
+//              'by_board': {
+//                'terms': {
+//                  'field': config.AGG_FIELD,
+//                  'size': config.ROUTES.N_BOARDS
+//                }
+//              }
+//            }
+//          }
+//        }
+//      };
+//
+//      client.search({
+//        index: config.INDEX,
+//        body: query2,
+//        searchType: 'count',
+//        queryCache: true
+//      }).then(function (response2) {
+//        var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
+//          return user1.by_board.buckets.length > config.ROUTES.THRESH;
+//        });
+//        var out = _.map(filteredUsers, function (user1) {
+//          var user1Boards = _.pluck(user1.by_board.buckets, 'key');
+//          return {
+//            'user1': user1.key,
+//            'vals': _.map(filteredUsers, function (user2) {
+//              var user2Boards = _.pluck(user2.by_board.buckets, 'key');
+//              return _.intersection(user1Boards, user2Boards).length / _.union(user1Boards, user2Boards).length;
+//            })
+//          };
+//        });
+//        // Make a call to R to format the adjacency matrix
+//        request.post({
+//          'url': config.R_IP,
+//          'json': {
+//            'fun': 'process',
+//            'params': _.flatten(out)
+//          },
+//          'headers': { 'Expect': 'nothing' }
+//        }, function (error, response, body) {
+//          if (error) {
+//            console.error(error);
+//          } else {
+//            res.send(body);
+//          }
+//        });
+//      });
+//    });
+//  });
 };
