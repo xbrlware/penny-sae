@@ -2,14 +2,7 @@
 
 /* global Ember, App, _, CalHeatMap */
 
-App.PromotionsRoute = Ember.Route.extend({
-  model: function () {
-    var src = this.modelFor('detail').get('source');
-    var promotions = src['promotions'];
-    console.log('************* promotions', promotions);
-    return promotions;
-  }
-});
+App.PromotionsRoute = Ember.Route.extend({});
 
 App.PromotionsView = Ember.View.extend({
   templateName: 'promotions',

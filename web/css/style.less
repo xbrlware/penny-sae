@@ -354,6 +354,8 @@ body {
 
 #forum-div {
     height: 800px;
+    padding: 0px;
+    border: 1px solid gray;
     overflow-y: auto;
 }
 #div-dropdown-right {
@@ -823,12 +825,29 @@ path {
 }
 
 .chart {
-  border : 1px solid transparent;
+    border : 1px solid transparent;
 	display: inline-block;
 }
 
 .chart-selected {
     border : 1px solid orange;
+}
+
+#forum-item {
+    overflow-y: hidden;
+    p.full-msg {
+        display: none;
+    }
+
+    &:hover {
+        p#app-msg {
+            display: none;
+        }
+        p.full-msg {
+            display: block;
+        }
+        overflow-y: auto;
+    }
 }
 
 #collection {

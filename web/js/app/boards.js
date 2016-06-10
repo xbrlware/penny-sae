@@ -18,9 +18,17 @@ Ember.Handlebars.helper('forum-posts', function (data) {
 
   if (data) {
     for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span><p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span>';
+
+      if (data[i].msg.length > 70) {
+        var msg = data[i].msg.substring(0, 70);
+        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
+      } else {
+        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+      }
     }
   }
+
   ourString = ourString + '</ul></div>';
 
   return new Ember.Handlebars.SafeString(ourString);
@@ -153,7 +161,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.method = 'volume';
   posts.class = 'volume_posts';
   posts.width = totalWidth * 0.5;
-  posts.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+  posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
   posts.position_left = margin.left;
   posts.position_top = margin.top;
   posts.x = techan.scale.financetime().range([0, posts.width]);
@@ -162,19 +170,19 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom').ticks(5);
   posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
 
-  var crowdsar = {};
-  crowdsar.title = 'Post Crowdsar';
-  crowdsar.method = 'volume';
-  crowdsar.class = 'crowdsar_posts';
-  crowdsar.width = totalWidth * 0.5;
-  crowdsar.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  crowdsar.position_left = margin.left;
-  crowdsar.position_top = totalHeight * 0.5 + margin.between.y;
-  crowdsar.x = techan.scale.financetime().range([0, crowdsar.width]);
-  crowdsar.y = d3.scale.linear().range([crowdsar.height, 0]);
-  crowdsar.plot = techan.plot.volume().xScale(crowdsar.x).yScale(crowdsar.y);
-  crowdsar.xAxis = d3.svg.axis().scale(crowdsar.x).orient('bottom').ticks(5);
-  crowdsar.yAxis = d3.svg.axis().scale(crowdsar.y).orient('left').ticks(4);
+  var brushChart = {};
+  brushChart.title = '';
+  brushChart.method = 'volume';
+  brushChart.class = 'brushChart_posts';
+  brushChart.width = totalWidth * 0.5;
+  brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
+  brushChart.position_left = margin.left;
+  brushChart.position_top = totalHeight * 0.8 + margin.between.y;
+  brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
+  brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
+  brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
+  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).orient('bottom').ticks(0);
+  brushChart.yAxis = d3.svg.axis().scale(brushChart.y).orient('left').ticks(0);
 
   var price = {};
   price.title = 'Price';
@@ -203,8 +211,6 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
   volume.xAxis = price.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
-
-  var brush = d3.svg.brush().on('brushend', draw);
 
   var svg = d3.select(div).append('svg')
     .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
@@ -244,9 +250,9 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   }
 
   posts.div = makeDiv(posts, 'c1');
-  posts.div.append('g').attr('class', 'pane'); // Add hook for brush
 
-  crowdsar.div = makeDiv(crowdsar, 'c2');
+  brushChart.div = makeDiv(brushChart, 'c2');
+  brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
 
   if (includePV) {
     price.div = makeDiv(price, 'c3');
@@ -289,24 +295,26 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   posts.div.select('g.x.axis').call(posts.xAxis);
   posts.div.select('g.y.axis').call(posts.yAxis);
 
-  crowdsar.x.domain(dateSupport);
-  crowdsar.y.domain(techan.scale.plot.volume(forumData).domain());
-  crowdsar.div.select('g.crowdsar_posts').datum(forumData).call(crowdsar.plot);
-  crowdsar.div.select('g.x.axis').call(crowdsar.xAxis);
-  crowdsar.div.select('g.y.axis').call(crowdsar.yAxis);
+  brushChart.x.domain(dateSupport);
+  brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
+  brushChart.div.select('g.brushChart_posts').datum(forumData).call(brushChart.plot);
+  brushChart.div.select('g.x.axis').call(brushChart.xAxis);
+  brushChart.div.select('g.y.axis').call(brushChart.yAxis);
 
   // Associate the brush with the scale and render the brush
   // only AFTER a domain has been applied
+  var brushZoom = brushChart.x.zoomable();
   var zoomable = price.x.zoomable();
-  var crowdZoom = crowdsar.x.zoomable();
   var zoomable2 = posts.x.zoomable();
 
-  brush.x(zoomable2);
+  var brush = d3.svg.brush()
+    .x(brushZoom)
+    .on('brushend', draw);
 
-  posts.div.select('g.pane')
+  brushChart.div.select('g.pane')
     .call(brush)
     .selectAll('rect')
-    .attr('height', posts.height);
+    .attr('height', brushChart.height);
 
   function _draw (obj, dateFilter) {
     var data = obj.div.select('g.' + obj.class).datum();
@@ -329,18 +337,18 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   }
 
   function draw () {
-    var brushDomain = brush.empty() ? zoomable2.domain() : brush.extent();
+    var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
     var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
 
     zoomable.domain(brushDomain);
-    crowdZoom.domain(brushDomain);
+    zoomable2.domain(brushDomain);
 
     if (includePV) {
       _draw(price, dateFilter);
       _draw(volume, dateFilter);
     }
 
-    _draw(crowdsar, dateFilter);
+    _draw(posts, dateFilter);
 
     cb(dateFilter);
   }
@@ -572,11 +580,6 @@ App.BoardController = Ember.Controller.extend({
 
     Ember.run.next(function () {
       _.map(topX, function (x, i) {
-        /*
-        if (Ember.$('#gauge-' + x).length > 0) {
-          return;
-        }
-        */
         var predData = _.map(topPreds, function (topPred, k) {
           return [k,
             100 * _.findWhere(topPred, {'key': x}).value.avg];
@@ -632,6 +635,7 @@ App.BoardController = Ember.Controller.extend({
       .innerRadius(ir);
 
     var pie = d3.layout.pie()
+      .sort(null)
       .value(function (d) { return d.value; })
       .startAngle(-90 * (pi / 180))
       .endAngle(90 * (pi / 180));
@@ -670,7 +674,6 @@ App.BoardRoute = Ember.Route.extend({
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
       con.set('model', response);
       con.set('routeName', 'board');
-
       // Reset both search terms
       _this.controllerFor('application').set('board_searchterm', '');
       _this.controllerFor('application').set('user_searchterm', '');

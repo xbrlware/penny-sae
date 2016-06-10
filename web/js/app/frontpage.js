@@ -6,6 +6,11 @@ App.FrontpageRoute = App.GRoute.extend({
   setupController: function (controller, model) {
     this.controllerFor('application').set('showNav', false);
   },
+
+  renderTemplate: function () {
+    this.render();
+  },
+
   actions: {
     companySearch: function (searchTerm) {
       if (searchTerm) { this.transitionTo('sidebar', searchTerm); }
