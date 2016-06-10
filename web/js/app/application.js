@@ -59,8 +59,8 @@ App.GRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);
 
 App.Router.map(function () {
   this.route('login', {path: 'login'}, function () {});
-  this.resource('frontpage', {path: '/'}, function () {});
-  this.resource('sidebar', {path: 'sidebar/:st'}, function () {
+  this.route('frontpage', {path: '/'}, function () {});
+  this.route('sidebar', {path: 'sidebar/:st'}, function () {
     this.resource('detail', {path: 'detail/:cik'}, function () {
       this.resource('board', function () {});
       this.resource('topNews', function () {

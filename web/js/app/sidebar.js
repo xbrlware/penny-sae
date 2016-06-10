@@ -7,10 +7,6 @@ App.SidebarRoute = App.GRoute.extend({
     return params;
   },
 
-  renderTemplate: function () {
-    this.render();
-  },
-
   setupController: function (controller, model) {
     var appCon = this.controllerFor('application');
 
