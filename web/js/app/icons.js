@@ -37,26 +37,13 @@ function implementIcons () { // eslint-disable-line no-unused-vars
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {
-        var entityType = node.data['type'];
+        
+        var icon = window['network' + node.data['$color'].capitalize() + (node.data['is_issuer'] ? 'Building' : 'Person')];
         var iconSize = 5 * node.data['$dim'];
         var ctx = canvas.getCtx();
         var pos = node.pos.getc(true);
-
-        var isPerson = entityType === 'owner' | entityType === undefined | entityType === 'Unknown' | entityType === 'NER' | entityType === 'entity';
-
-        var icon;
-
-        if (isPerson) {
-          icon = window['network' + node.data['$color'].capitalize() + 'Person'];
-        } else if (entityType === 'issuer' | entityType === 'both') {
-          icon = window['network' + node.data['$color'].capitalize() + 'Building'];
-        } else {
-          console.log('icons.js :: unknown entity type!', entityType);
-        }
-
-        if (icon) {
-          ctx.drawImage(icon, pos.x - iconSize / 2, pos.y - iconSize / 2, iconSize, iconSize);
-        }
+        
+        ctx.drawImage(icon, pos.x - iconSize / 2, pos.y - iconSize / 2, iconSize, iconSize);
       },
 
       'contains': function (node, pos) {
