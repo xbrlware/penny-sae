@@ -24,7 +24,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
         var msg = data[i].msg.substring(0, 70);
         ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
       } else {
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
+        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
       }
     }
   }
