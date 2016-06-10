@@ -51,7 +51,7 @@ var gconfig = {
   "symbology": false,
   "suspensions": true,
   "delinquency": false,
-  "crowdsar": false,
+  "crowdsar": true,
   "otc_neighbors": false,
   "financials": false,
   "pv": false
@@ -70,6 +70,8 @@ var gconfig = {
   "SIZE": {
    "HEIGHT": 80,
    "WIDTH": 80
-  }
+  },
+  "TRANS_DURA": 0,
+  "TOOTIP_SHOW": false
  }
 }
