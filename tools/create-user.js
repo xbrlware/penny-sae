@@ -44,4 +44,9 @@ function store_password (username, password) {
   });
 }
 
-store_password(process.argv[2], process.argv[3]);
+if(process.argv.length > 2) {
+  store_password(process.argv[2], process.argv[3]);    
+} else {
+  console.log('Usage: create-user.js username [password]');
+}
+
