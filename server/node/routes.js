@@ -1,7 +1,7 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  // var qp = require('./qp.js');
+  // var qp = require('./qp.js')
   // var async = require('async')
   // var _s = require('underscore.string')
   var request = require('request');
@@ -24,10 +24,10 @@ module.exports = function (app, config, client) {
         id: ticker.toLowerCase()
       }, function (error, response) {
         if (error) {
-          console.error(error);
+          console.error(error)
         } else {
-          console.log('TICKER RESPONSE ---> ', response);
-          res(response._source.data);
+          console.log('TICKER RESPONSE ---> ', response)
+          res(response._source.data)
         }
       });*/
 
@@ -362,13 +362,13 @@ module.exports = function (app, config, client) {
         '_source': ['cik', 'current_symbology.name'],
         'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
         'query': {
-          'filtered' : {
-            'filter' : {
-              'or' : _.map(_.keys(redFlagParams), function(key) {
-                return { "exists" : {"field" : key} }
+          'filtered': {
+            'filter': {
+              'or': _.map(_.keys(redFlagParams), function (key) {
+                return { 'exists': {'field': key} };
               })
             },
-            'query' : {
+            'query': {
               'function_score': {
                 'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
               }
@@ -400,7 +400,7 @@ module.exports = function (app, config, client) {
         '_source': ['company', 'link', 'date', 'release_number'],
         'query': {
           'term': {
-            "__meta__.sym.cik" : cik
+            '__meta__.sym.cik': cik
           }
         }
       };
@@ -754,14 +754,14 @@ module.exports = function (app, config, client) {
             'params': _.flatten(out)
           },
           'headers': { 'Expect': 'nothing' }
-        },
-          function (error, response, body) {
-            if (error) {
-              console.error(error);
-            } else {
-              res.send(body);
-            }
-          });
+        }, function (error, response, body) {
+          if (error) {
+            console.error(error);
+          } else {
+            res.send(body);
+          }
+        });
       });
     });
   });
+};
