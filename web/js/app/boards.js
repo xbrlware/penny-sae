@@ -261,12 +261,12 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
   pvData = _.chain(pvData).map(function (d) {
     return {
-      date: parseDate(d._source.date),
-      open: +d._source.open,
-      high: +d._source.high,
-      low: +d._source.low,
-      close: +d._source.close,
-      volume: +d._source.volume
+      date: parseDate(d.date),
+      open: +d.open,
+      high: +d.high,
+      low: +d.low,
+      close: +d.close,
+      volume: +d.volume
     };
   }).sortBy(function (a) { return a.date; }).value();
 
