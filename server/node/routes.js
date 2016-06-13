@@ -1,9 +1,11 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  var request = require('request');
+  // var request = require('request');
   var _ = require('underscore')._;
+  var async = require('async');
 
+/*
   function rsplit (x, splitBy) {
     try {
       return _.chain([x]).flatten().map(function (x) { return x.split(','); }).flatten().value();
@@ -12,65 +14,42 @@ module.exports = function (app, config, client) {
       return null;
     }
   }
-
-  function getPvData (ticker, res) {
-    if (ticker) {
-      /* client.get({
-        index: 'ernest_pv_cat',
-        type: 'ticker__date',
-        id: ticker.toLowerCase()
-      }, function (error, response) {
-        if (error) {
-          console.error(error)
-        } else {
-          console.log('TICKER RESPONSE ---> ', response)
-          res(response._source.data)
-        }
-      });*/
-
-      client.search({
-        index: 'ernest_pv_cat',
-        type: 'ticker__date',
-        body: '{"query": {"term": {"symbol": "' + ticker.toLowerCase() + '"}}}'
-      }, function (error, response) {
-        if (error) {
-          console.error(error);
-        } else {
-          res(response.hits.hits);
-        }
-      });
-    } else {
-      res();
-    }
-  }
+*/
 
   var pennyQueryBuilder = {
-    'user': function (ids) {
-      return {
-        'size': 1e6,
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'range': {
-                'date': {
-                  'gte': '2000-01-01 00:00:00',
-                  'lte': '2015-01-01 00:00:00'
-                }
-              }
-            },
-            'query': {
-              'terms': {
-                'user_id': rsplit(ids, ',')
-              }
-            }
-          }
-        }
-      };
-    },
+    //    'user': function (ids) {
+    //      return {
+    //        'size': 1e6,
+    //        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
+    //        'query': {
+    //          'filtered': {
+    //            'filter': {
+    //              'range': {
+    //                'date': {
+    //                  'gte': '2010-01-01 00:00:00',
+    //                  'lte': '2015-01-01 00:00:00'
+    //                }
+    //              }
+    //            },
+    //            'query': {
+    //              'terms': {
+    //                'user_id': rsplit(ids, ',')
+    //              }
+    //            }
+    //          }
+    //        }
+    //      }
+    //    },
     'board': function (boardName) {
       return {
-        'size': 1000,
+        'size': 1000, // This limits the hits to 1000
+        'sort': [
+          {
+            'time': {
+              'order': 'desc'
+            }
+          }
+        ],
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
         'query': {
           'filtered': {
@@ -90,91 +69,132 @@ module.exports = function (app, config, client) {
           }
         }
       };
-    },
-    'aggs': function (params) {
-      var dateClause, boardClause, userClause;
-
-      // Filter by date
-      dateClause = {
-        'range': {
-          'date': {
-            'gte': +new Date(params.date ? params.date[0] : '2010-01-01'),
-            'lte': +new Date(params.date ? params.date[1] : '2015-01-01')
-          }
-        }
-      };
-      // Filter boards
-      if (params.boardIds && params.boardIds.length > 0) {
-        boardClause = {
-          'terms': {
-            'board_id': rsplit(params.boardIds, ',')
-          }
-        };
-      }
-      // Filter users
-      if (params.userIds && params.userIds.length > 0) {
-        userClause = {
-          'terms': {
-            'user_id': rsplit(params.userIds, ',')
-          }
-        };
-      }
-      return {
-        'size': 0,
-        'query': {
-          'bool': {
-            'must': _.filter([dateClause, boardClause, userClause])
-          }
-        },
-        'aggs': {
-          'significant_terms_general': {
-            'significant_terms': {
-              'field': 'msg',
-              'size': 10,
-              'mutual_information': {
-                'include_negatives': false
-              }
-            }
-          },
-          'ents': {
-            'terms': {
-              'field': 'ents.entity.cat', // Change to only be person
-              'size': 10
-            }
-          }
-        }
-      };
-    },
-    'search': function (params) {
-      var clause1 = {'prefix': {}};
-      clause1.prefix[params.type] = params.term;
-
-      var clause2 = {'prefix': {}};
-      clause2.prefix[params.type + '_id'] = params.term;
-
-      var clause3;
-      if (params.type === 'board') {
-        clause3 = {'match': {'ticker': params.term}};
-      }
-
-      return {
-        'query': {
-          'bool': {
-            'should': _.filter([ clause1, clause2, clause3 ]),
-            'minimum_number_should_match': 1
-          }
-        },
-        'aggs': {
-          'top': {
-            'terms': {
-              'field': params.type + '_id',
-              'size': 5
-            }
-          }
-        }
-      };
     }
+  //    'aggs': function (params) {
+  //      var dateClause, boardClause, userClause
+  //
+  //      // Filter by date
+  //      dateClause = {
+  //        'range': {
+  //          'date': {
+  //            'gte': +new Date(params.date ? params.date[0] : '2010-01-01'),
+  //            'lte': +new Date(params.date ? params.date[1] : '2015-01-01')
+  //          }
+  //        }
+  //      }
+  //      // Filter boards
+  //      if (params.boardIds && params.boardIds.length > 0) {
+  //        boardClause = {
+  //          'terms': {
+  //            'board_id': rsplit(params.boardIds, ',')
+  //          }
+  //        }
+  //      }
+  //      // Filter users
+  //      if (params.userIds && params.userIds.length > 0) {
+  //        userClause = {
+  //          'terms': {
+  //            'user_id': rsplit(params.userIds, ',')
+  //          }
+  //        }
+  //      }
+  //      return {
+  //        'size': 0,
+  //        'query': {
+  //          'bool': {
+  //            'must': _.filter([dateClause, boardClause, userClause])
+  //          }
+  //        },
+  //      //        'aggs': {
+  //      //          'significant_terms_general': {
+  //      //            'significant_terms': {
+  //      //              'field': 'msg',
+  //      //              'size': 10,
+  //      //              'mutual_information': {
+  //      //                'include_negatives': false
+  //      //              }
+  //      //            }
+  //      //          },
+  //      //          'ents': {
+  //      //            'terms': {
+  //      //              'field': 'ents.entity.cat', // Change to only be person
+  //      //              'size': 10
+  //      //            }
+  //      //          }
+  //      //        }
+  //      }
+  //    },
+  //    'search': function (params) {
+  //      var clause1 = {'prefix': {}}
+  //      clause1.prefix[params.type] = params.term
+  //
+  //      var clause2 = {'prefix': {}}
+  //      clause2.prefix[params.type + '_id'] = params.term
+  //
+  //      var clause3
+  //      if (params.type === 'board') {
+  //        clause3 = {'match': {'ticker': params.term}}
+  //      }
+  //
+  //      return {
+  //        'query': {
+  //          'bool': {
+  //            'should': _.filter([ clause1, clause2, clause3 ]),
+  //            'minimum_number_should_match': 1
+  //          }
+  //        },
+  //        'aggs': {
+  //          'top': {
+  //            'terms': {
+  //              'field': params.type + '_id',
+  //              'size': 5
+  //            }
+  //          }
+  //        }
+  //      }
+  //    }
   };
+
+  app.post('/board', function (req, res) {
+    var d = req.body;
+
+    if (!d.ticker) {
+      return res.send({'data': undefined, 'pvData': undefined});
+    }
+    async.parallel([
+      function (cb) { getForumdata(d.ticker, cb); },
+      function (cb) { getPvData(d.ticker, cb); }
+    ], function (err, results) {
+      if (err) {
+        console.error(err);
+      } else {
+        res.send({
+          'data': results[0],
+          'pvData': results[1]
+        });
+      }
+    });
+  });
+
+  function getForumdata (ticker, cb) {
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.board(ticker)
+    }).then(function (forumResponse) {
+      cb(null, _.pluck(forumResponse.hits.hits, '_source'));
+    });
+  }
+
+  function getPvData (ticker, cb) {
+    client.search({
+      index: config['ES']['INDEX']['PV'],
+      body: {'query': {'term': {'symbol': ticker.toLowerCase()}}}
+    }).then(function (response) {
+      cb(null, _.pluck(response.hits.hits, '_source'));
+    });
+  }
+
+  // -- </Penny>
 
   function redflagScript (params, score) {
     return {
@@ -386,7 +406,7 @@ module.exports = function (app, config, client) {
     });
   });
 
-  // *** Need to changed width of CIKs in delinquency index ***
+  // *** Need to change width of CIKs in delinquency index ***
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -468,144 +488,144 @@ module.exports = function (app, config, client) {
     }
   });
 
-  app.post('/aggs', function (req, res) {
-    client.search({
-      index: 'crowdsar_cat',
-      body: pennyQueryBuilder.aggs(req.body),
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response) {
-      res.send({
-        'general': response.aggregations.significant_terms_general.buckets,
-        'ents': response.aggregations.ents.buckets
-      });
-    });
-  });
+  // <Penny>
+  // This is not being used
 
-  // Also, this is hard-coded for message boards right now,
-  // rather than a user.  This could be expanded, though I'm not sure
-  // how much sense it'd make really...
-  app.get('/coocurrence', function (req, res) {
-    var dateClause, boardClause, userClause;
-    dateClause = {
-      'users': {
-        'range': {
-          'date': {
-            'gte': +new Date(req.date ? req.date[0] : '2001-01-01 00:00:00'),
-            'lte': +new Date(req.date ? req.date[1] : '2015-01-01 00:00:00')
-          }
-        }
-      },
-      'cooc': {
-        'range': {
-          'date': {
-            'lte': +new Date('2015-01-01 00:00:00') // Everything up until faux end date
-          }
-        }
-      }
-    };
+  //  app.post('/aggs', function (req, res) {
+  //    client.search({
+  //      index: 'crowdsar',
+  //      body: pennyQueryBuilder.aggs(req.body),
+  //      searchType: 'count',
+  //      queryCache: true
+  //    }).then(function (response) {
+  //      res.send({
+  //        'general': response.aggregations.significant_terms_general.buckets,
+  //        'ents': response.aggregations.ents.buckets
+  //      })
+  //    })
+  //  })
 
-    // Filter boards
-    if (req.boardIds && req.boardIds.length > 0) {
-      boardClause = {
-        'terms': {
-          'board_id': rsplit(req.boardIds, ',')
-        }
-      };
-    }
-
-    // Filter users
-    if (req.userIds && req.userIds.length > 0) {
-      userClause = {
-        'terms': {
-          'user_id': rsplit(req.userIds, ',')
-        }
-      };
-    }
-
-    var query1 = {
-      'query': {
-        'bool': {
-          'must': _.filter([dateClause.users, boardClause, userClause])
-        }
-      },
-      'aggs': {
-        'users': {
-          'terms': {
-            'field': 'user_id',
-            'size': 75
-          }
-        }
-      }
-    };
-
-    client.search({
-      index: config.INDEX,
-      body: query1,
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response1) {
-      var users = _.pluck(response1.aggregations.users.buckets, 'key');
-      var query2 = {
-        'query': {
-          'bool': {
-            'must': _.filter([dateClause.cooc,
-              { 'terms': { 'user_id': users } }])
-          }
-        },
-        'aggs': {
-          'by_user': {
-            'terms': {
-              'field': 'user.cat', // This can change over time, so this actually isn't the best method
-              'size': 75
-            },
-            'aggs': {
-              'by_board': {
-                'terms': {
-                  'field': config.AGG_FIELD,
-                  'size': config.ROUTES.N_BOARDS
-                }
-              }
-            }
-          }
-        }
-      };
-
-      client.search({
-        index: config.INDEX,
-        body: query2,
-        searchType: 'count',
-        queryCache: true
-      }).then(function (response2) {
-        var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
-          return user1.by_board.buckets.length > config.ROUTES.THRESH;
-        });
-        var out = _.map(filteredUsers, function (user1) {
-          var user1Boards = _.pluck(user1.by_board.buckets, 'key');
-          return {
-            'user1': user1.key,
-            'vals': _.map(filteredUsers, function (user2) {
-              var user2Boards = _.pluck(user2.by_board.buckets, 'key');
-              return _.intersection(user1Boards, user2Boards).length / _.union(user1Boards, user2Boards).length;
-            })
-          };
-        });
-        // Make a call to R to format the adjacency matrix
-        request.post({
-          'url': config.R_IP,
-          'json': {
-            'fun': 'process',
-            'params': _.flatten(out)
-          },
-          'headers': { 'Expect': 'nothing' }
-        }, function (error, response, body) {
-          if (error) {
-            console.error(error);
-          } else {
-            res.send(body);
-          }
-        });
-      });
-    });
-  });
+//  app.get('/coocurrence', function (req, res) {
+//    var dateClause, boardClause, userClause
+//    dateClause = {
+//      'users': {
+//        'range': {
+//          'date': {
+//            'gte': +new Date(req.date ? req.date[0] : '2001-01-01 00:00:00'),
+//            'lte': +new Date(req.date ? req.date[1] : '2015-01-01 00:00:00')
+//          }
+//        }
+//      },
+//      'cooc': {
+//        'range': {
+//          'date': {
+//            'lte': +new Date('2015-01-01 00:00:00') // Everything up until faux end date
+//          }
+//        }
+//      }
+//    }
+//
+//    // Filter boards
+//    if (req.boardIds && req.boardIds.length > 0) {
+//      boardClause = {
+//        'terms': {
+//          'board_id': rsplit(req.boardIds, ',')
+//        }
+//      }
+//    }
+//
+//    // Filter users
+//    if (req.userIds && req.userIds.length > 0) {
+//      userClause = {
+//        'terms': {
+//          'user_id': rsplit(req.userIds, ',')
+//        }
+//      }
+//    }
+//
+//    var query1 = {
+//      'query': {
+//        'bool': {
+//          'must': _.filter([dateClause.users, boardClause, userClause])
+//        }
+//      },
+//      'aggs': {
+//        'users': {
+//          'terms': {
+//            'field': 'user_id',
+//            'size': 75
+//          }
+//        }
+//      }
+//    }
+//
+//    client.search({
+//      index: config.INDEX,
+//      body: query1,
+//      searchType: 'count',
+//      queryCache: true
+//    }).then(function (response1) {
+//      var users = _.pluck(response1.aggregations.users.buckets, 'key')
+//      var query2 = {
+//        'query': {
+//          'bool': {
+//            'must': _.filter([dateClause.cooc,
+//              { 'terms': { 'user_id': users } }])
+//          }
+//        },
+//        'aggs': {
+//          'by_user': {
+//            'terms': {
+//              'field': 'user.cat', // This can change over time, so this actually isn't the best method
+//              'size': 75
+//            },
+//            'aggs': {
+//              'by_board': {
+//                'terms': {
+//                  'field': config.AGG_FIELD,
+//                  'size': config.ROUTES.N_BOARDS
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
+//
+//      client.search({
+//        index: config.INDEX,
+//        body: query2,
+//        searchType: 'count',
+//        queryCache: true
+//      }).then(function (response2) {
+//        var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
+//          return user1.by_board.buckets.length > config.ROUTES.THRESH
+//        })
+//        var out = _.map(filteredUsers, function (user1) {
+//          var user1Boards = _.pluck(user1.by_board.buckets, 'key')
+//          return {
+//            'user1': user1.key,
+//            'vals': _.map(filteredUsers, function (user2) {
+//              var user2Boards = _.pluck(user2.by_board.buckets, 'key')
+//              return _.intersection(user1Boards, user2Boards).length / _.union(user1Boards, user2Boards).length
+//            })
+//          }
+//        })
+//        // Make a call to R to format the adjacency matrix
+//        request.post({
+//          'url': config.R_IP,
+//          'json': {
+//            'fun': 'process',
+//            'params': _.flatten(out)
+//          },
+//          'headers': { 'Expect': 'nothing' }
+//        }, function (error, response, body) {
+//          if (error) {
+//            console.error(error)
+//          } else {
+//            res.send(body)
+//          }
+//        })
+//      })
+//    })
+//  })
 };
