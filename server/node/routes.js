@@ -338,6 +338,7 @@ module.exports = function (app, config, client) {
         };
       });
       res.send({
+        'query_time' : esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
         'hits': hits
       });
