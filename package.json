@@ -1,14 +1,14 @@
 {
-  "name": "grunt-dev",
+  "name": "Penny-SAE-root",
   "version": "1.0.0",
-  "description": "Nodesec Dev Environment",
+  "description": "Penny-SAE grunt dependencies",
   "main": "Gruntfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bkj/nodesec"
+    "url": "https://github.com/gophronesis/penny-sae"
   },
   "keywords": [
     "development"
@@ -16,7 +16,7 @@
   "author": "Phronesis LLC",
   "license": "AVL2",
   "bugs": {
-    "url": "https://github.com/bkj/nodesec/issues"
+    "url": "https://github.com/gophronesis/penny-sae/issues"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
