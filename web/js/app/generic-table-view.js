@@ -14,7 +14,7 @@ App.GenericTableView = Ember.View.extend({
     var con = this.get('controller');
     Ember.$(con.get('tableDiv')).DataTable({
       fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+        if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {
           Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
         }
       },

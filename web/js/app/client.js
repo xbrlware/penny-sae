@@ -48,7 +48,8 @@ App.SearchResultsView = Ember.View.extend({
     App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
       Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
-          if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+          console.log('OSETTINGS :: --> ', oSettings);
+          if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {
             Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
           }
         },
