@@ -1,3 +1,5 @@
+/* global App, Ember */
+
 App.GenericTableView = Ember.View.extend({
   didInsertElement: function () {
     this._super();

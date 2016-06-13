@@ -57,7 +57,7 @@ module.exports = function (app, config, client) {
             'filter': {
               'range': {
                 'date': {
-                  'gte': '2010-01-01 00:00:00',
+                  'gte': '2000-01-01 00:00:00',
                   'lte': '2015-01-01 00:00:00'
                 }
               }
@@ -80,8 +80,8 @@ module.exports = function (app, config, client) {
             'filter': {
               'range': {
                 'time': {
-                  'gte': '2010-01-01',
-                  'lte': '2016-01-01'
+                  'gte': '2000-01-01 00:00:00',
+                  'lte': '2016-01-01 00:00:00'
                 }
               }
             },
@@ -473,7 +473,7 @@ module.exports = function (app, config, client) {
 
   app.post('/aggs', function (req, res) {
     client.search({
-      index: 'crowdsar',
+      index: 'crowdsar_cat',
       body: pennyQueryBuilder.aggs(req.body),
       searchType: 'count',
       queryCache: true
