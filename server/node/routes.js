@@ -41,13 +41,6 @@ module.exports = function (app, config, client) {
     'board': function (boardName) {
       return {
         'size': 1000, // This limits the hits to 1000
-        'sort': [
-          {
-            'time': {
-              'order': 'desc'
-            }
-          }
-        ],
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
         'query': {
           'filtered': {
@@ -176,7 +169,6 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: pennyQueryBuilder.board(ticker)
     }).then(function (response) {
-     console.log('pv response', response);
       cb(null, _.pluck(response.hits.hits, '_source'));
     });
   }
@@ -187,7 +179,6 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['PV'],
       body: {'size' : 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
     }).then(function (response) {
-      console.log('pv response', response);
       cb(null, _.pluck(response.hits.hits, '_source'));
     });
   }
