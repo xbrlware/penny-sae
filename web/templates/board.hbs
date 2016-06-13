@@ -1,32 +1,33 @@
 {{!-- web/templates/board.hbs --}}
 
-<div class="col-xs-12" id="techan-wrapper">
+
+    <div class="col-xs-12" id="techan-wrapper">
         <div id="time-chart" class="chart"></div>
-</div>
+    </div>
 
-<div class="col-xs-6">
-    <div class="timeline-panel" id="timeline">
-        {{#each topX}}
-            <div class="row-fluid">
-                <div class="col-xs-3">
-                    <div id='gauge-{{this}}' class="gauge chart"></div>
-                </div>
+    <div class="col-xs-6">
+        <div class="timeline-panel" id="timeline">
+            {{#each topX}}
+                <div class="row-fluid">
+                    <div class="col-xs-3">
+                        <div id='gauge-{{this}}' class="gauge chart"></div>
+                    </div>
 
-                <div class="col-xs-9 ts chart" id="ts-{{this}}">
-                    <span class="title"></span>
-                    <div class="count-wrapper pull-right">
-                        <span class="before"></span> |
-                        <span class="during"></span> |
-                        <span class="after"></span>
+                    <div class="col-xs-9 ts chart" id="ts-{{this}}">
+                        <span class="title"></span>
+                        <div class="count-wrapper pull-right">
+                            <span class="before"></span> |
+                            <span class="during"></span> |
+                            <span class="after"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {{/each}}
+            {{/each}}
+        </div>
     </div>
-</div>
 
-<div class="col-xs-6">
-    <div class="row-fluid">
-        {{forum-posts model.data}}
+    <div class="col-xs-6">
+        <div class="row-fluid">
+            {{forum-posts model.data}}
+        </div>
     </div>
-</div>

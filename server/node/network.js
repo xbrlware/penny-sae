@@ -82,12 +82,17 @@ module.exports = function (app, config, client) {
     var raw = _.reduce(redFlags, (a, b) => {
       _.map(a, (v, k) => {
         _.map(v, (vv, kk) => {
-          b[k][kk] += vv;
+          if(!b[k]) {
+            b[k] = {}
+            b[k][kk] = vv;
+          } else {
+            b[k][kk] += vv;
+          }
         });
       });
       return b;
     }, {});
-
+    
     var n_neighbors = redFlags.length;
     var n_redFlags_computed = _.keys(redFlags[0]).length;
     var total_redFlags_hit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
@@ -206,7 +211,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     var cik = zpad(d.cik.toString());
     var redFlagParams = d.redFlagParams;
-    console.log('/network :: redFlags', redFlagParams);
+    console.log('/network ::', d);
 
     async.parallel([
       function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb); },
@@ -215,6 +220,7 @@ module.exports = function (app, config, client) {
       var edges = _.chain([results]).flatten().value();
       var nodes = edges2nodes(edges);
       computeRedFlags(nodes, redFlagParams, function (nodes) {
+        console.log('/network :: returning', nodes, edges);
         res.send({'nodes': nodes, 'edges': edges});
       });
     });
