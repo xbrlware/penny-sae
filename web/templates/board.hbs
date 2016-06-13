@@ -4,10 +4,10 @@
         <div id="time-chart" class="chart"></div>
 </div>
 
-<div class="col-xs-6">
-    <div class="timeline-panel" id="timeline">
-        {{#each topX}}
-            <div class="row-fluid">
+<div class="charts-wrapper">
+    <div class="col-xs-6" id="gauge-timeline-cell">
+        <div class="timeline-panel" id="timeline">
+            {{#each topX}}
                 <div class="col-xs-3">
                     <div id='gauge-{{this}}' class="gauge chart"></div>
                 </div>
@@ -20,13 +20,8 @@
                         <span class="after"></span>
                     </div>
                 </div>
-            </div>
-        {{/each}}
+            {{/each}}
+        </div>
     </div>
-</div>
-
-<div class="col-xs-6">
-    <div class="row-fluid">
-        {{forum-posts model.data}}
-    </div>
+	{{forum-posts model.data}}
 </div>

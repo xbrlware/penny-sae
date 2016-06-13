@@ -3,7 +3,7 @@
 Ember.Handlebars.helper('forum-posts', function (data) {
   var mincount = 20;
   var maxcount = 40;
-  var ourString = '';
+  var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
 
   Ember.$('.list-group li').slice(20).hide();
   Ember.$('.list-group').scroll(function () {
@@ -29,8 +29,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
     }
   }
 
-  ourString = ourString + '</ul></div>';
-
+  ourString = ourString + '</ul></div></div>';
   return new Ember.Handlebars.SafeString(ourString);
 });
 
@@ -41,7 +40,6 @@ function makeTimeSeries (ts, bounds) {
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  // var height = Ember.$(div).height()
   var height = (margin.top + margin.bottom) * 1.5;
   var width = Ember.$(div).width() - (margin.left + margin.right);
 
@@ -557,19 +555,6 @@ App.BoardController = Ember.Controller.extend({
           'ymin': 0
         });
       });
-    });
-  },
-
-  renderForumPosts () {
-    var mincount = 20;
-    var maxcount = 40;
-    Ember.$('.list-group li').slice(20).hide();
-    Ember.$('.list-group').scroll(function () {
-      if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
-        Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
-        mincount = mincount + 20;
-        maxcount = maxcount + 20;
-      }
     });
   },
 

@@ -353,7 +353,6 @@ body {
 }
 
 #forum-div {
-    height: 800px;
     padding: 0px;
     border: 1px solid gray;
     overflow-y: auto;
@@ -811,7 +810,6 @@ path.candle.down {
 
     }
     .comments-group-item {
-      height: 110px;
 	  overflow: auto;
     }
     &.potential-results-wrapper {
@@ -851,6 +849,12 @@ path.candle.down {
     border : 1px solid orange;
 }
 
+.charts-wrapper {
+	display: table;
+	height: 100%;
+	overflow-y: hidden;
+}
+
 #forum-item {
     overflow-y: hidden;
     p.full-msg {
@@ -870,7 +874,6 @@ path.candle.down {
 
 #collection {
   position: relative;
-  height: 500px;
 }
 
 #ui-datepicker-div {
@@ -1043,11 +1046,6 @@ path.candle.down {
     .zero-top-margin;
     .red-text;
     margin-bottom: 0px;
-}
-
-#container-pvchart {
-    height:500px;
-    min-width:310px;
 }
 
 #cse-iframe {
