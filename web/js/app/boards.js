@@ -13,7 +13,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
       maxcount = maxcount + 40;
     }
   });
-
+  
   ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
 
   if (data) {
@@ -41,7 +41,7 @@ function makeTimeSeries (ts, bounds) {
   var TEXT_COLOR = '#ccc';
 
   // Get cell height
-  // var height = Ember.$(div).height();
+  // var height = Ember.$(div).height()
   var height = (margin.top + margin.bottom) * 1.5;
   var width = Ember.$(div).width() - (margin.left + margin.right);
 
@@ -124,18 +124,18 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   function addCrosshair (obj) {
     var _yAnnotation = techan.plot.axisannotation()
       .axis(obj.yAxis)
-      .format(d3.format(',.2fs'));
+      .format(d3.format(',.2fs'))
     var _xAnnotation = techan.plot.axisannotation()
       .axis(obj.xAxis)
       .format(d3.time.format('%Y-%m-%d'))
       .width(65)
-      .translate([0, heights[0]]);
+      .translate([0, heights[0]])
 
     return techan.plot.crosshair()
       .xScale(obj.x)
       .yScale(obj.y)
       .xAnnotation(_xAnnotation)
-      .yAnnotation(_yAnnotation);
+      .yAnnotation(_yAnnotation)
   }
   */
   var margin = {
@@ -151,7 +151,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
 
   var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
   var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-  // var heights = [1, 0.5, 0.5];
+  // var heights = [1, 0.5, 0.5]
   // var widths  = [0.5, 0.5, 0.5]
   // var n_panels = heights.length
   var parseDate = d3.time.format('%Y-%m-%d').parse;
@@ -449,7 +449,7 @@ App.BoardController = Ember.Controller.extend({
 
       _this.set('filtered_data', split.top(10));
 
-        // Time series
+      // Time series
       var topX = _.pluck(splits.top(10), 'key');
       _this.set('topX', topX);
       _this.renderX();
@@ -471,12 +471,12 @@ App.BoardController = Ember.Controller.extend({
         date.filterRange(dateFilter);
         renderAll(_this);
       }
-      );
+    );
 
     renderAll(_this);
   }.observes('model'),
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember(id) {
     var splitByFilter = this.get('splitByFilter');
     var xFilter = this.get(splitByFilter);
 
@@ -487,9 +487,9 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX() {
     var model = this.get('model');
-    // var filteredData = this.get('filtered_data');
+    // var filteredData = this.get('filtered_data')
     var splitBy = this.get('splitBy');
     var topX = this.get('topX');
     var xId = this.get('splitById');
@@ -560,7 +560,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderForumPosts () {
+  renderForumPosts() {
     var mincount = 20;
     var maxcount = 40;
     Ember.$('.list-group li').slice(20).hide();
@@ -573,7 +573,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges() {
     var _this = this;
     var topPreds = this.get('topPreds');
     var topX = this.get('topX');
@@ -597,7 +597,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge(bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
 
@@ -641,27 +641,27 @@ App.BoardController = Ember.Controller.extend({
       .endAngle(90 * (pi / 180));
 
     var arcs = vis.selectAll('g.slice')
-        .data(pie)
-        .enter()
-          .append('svg:g')
-          .attr('class', 'slice')
-          .on('mouseover', tip.show)
-          .on('mouseout', tip.hide);
+      .data(pie)
+      .enter()
+      .append('svg:g')
+      .attr('class', 'slice')
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
 
     arcs.append('svg:path')
-        .attr('fill', function (d, i) { return color[d.data.label]; })
-        .attr('d', arc);
+      .attr('fill', function (d, i) { return color[d.data.label]; })
+      .attr('d', arc);
 
     return arcs;
   },
 
   actions: {
-    topXClicked (id) {
+    topXClicked(id) {
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       this.toggleSplitByFilterMember(id);
     },
 
-    drilldown () {
+    drilldown() {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
   }
