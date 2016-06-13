@@ -1,9 +1,39 @@
 # Penny: Suspicious Activity Explorer
 
-## Grunt
+## Data
 
-##### Registered Tasks
-Configure the grunt tasks in Gruntfile.js.
+Code to construct the Elasticsearch indices referenced by this app is contained in 
+
+    https://github.com/gophronesis/ernest
+
+## Front-end Quick Start
+
+Assuming you have an Elasticsearch instance full of data:
+
+```bash
+
+# Install Dependencies
+cd $PROJECT_ROOT
+npm install
+
+cd $PROJECT_ROOT/server/node
+npm install
+
+# Set up server configuration files (eventually turn into Grunt task)
+cd $PROJECT_ROOT/config
+node configure.js
+
+# Compile static resources 
+cd $PROJECT_ROOT
+./grunt-all.sh
+
+# Launch app!
+cd $PROJECT_ROOT/server/node
+node server.js
+
+```
+
+## Grunt Tasks
 
 ```
 devApp - compiles the nodesec specific js into one file without uglifying it.
@@ -19,33 +49,3 @@ wth    - starts grunt-watch, but you must customize this to handle your tasks.
 ```
 
 All file locations and variables available to grunt tasks are located in ./grunt.config.json.
-
-## Setup
-
-After cloning the repository, run the following commands to get started.
-
-```bash
-
-# Install Dependencies
-npm install
-cd server/node
-npm install
-cd ../..
-
-# Set up server configuration files (eventually turn into Grunt task)
-cd config
-node configure.js
-
-# Connect to elasticsearch
-
-# Go back up to app root directory
-
-# Compile static resources 
-./grunt-all.sh
-
-# Launch app!
-cd server/node
-node server.js
-# App is running at localhost:8090 or whichever port is specified by console
-
-```
