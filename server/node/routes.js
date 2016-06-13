@@ -43,13 +43,6 @@ module.exports = function (app, config, client) {
     'board': function (boardName) {
       return {
         'size': 1000, // This limits the hits to 1000
-        'sort': [
-          {
-            'time': {
-              'order': 'desc'
-            }
-          }
-        ],
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
         'query': {
           'filtered': {
@@ -157,7 +150,6 @@ module.exports = function (app, config, client) {
 
   app.post('/board', function (req, res) {
     var d = req.body;
-
     if (!d.ticker) {
       return res.send({'data': undefined, 'pvData': undefined});
     }
@@ -165,30 +157,29 @@ module.exports = function (app, config, client) {
       function (cb) { getForumdata(d.ticker, cb); },
       function (cb) { getPvData(d.ticker, cb); }
     ], function (err, results) {
-      if (err) {
-        console.error(err);
-      } else {
-        res.send({
-          'data': results[0],
-          'pvData': results[1]
-        });
-      }
+      if (err) { console.log(err); }
+      res.send({
+        'data': results[0],
+        'pvData': results[1]
+      });
     });
   });
 
   function getForumdata (ticker, cb) {
+    console.log('getForumData', ticker);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
       body: pennyQueryBuilder.board(ticker)
-    }).then(function (forumResponse) {
-      cb(null, _.pluck(forumResponse.hits.hits, '_source'));
+    }).then(function (response) {
+      cb(null, _.pluck(response.hits.hits, '_source'));
     });
   }
 
   function getPvData (ticker, cb) {
+    console.log('getPvData', ticker);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'query': {'term': {'symbol': ticker.toLowerCase()}}}
+      body: {'size': 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
     }).then(function (response) {
       cb(null, _.pluck(response.hits.hits, '_source'));
     });

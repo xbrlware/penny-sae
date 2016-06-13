@@ -1,7 +1,7 @@
 {
-  "name": "secNode",
+  "name": "Penny-SAE-server",
   "version": "1.0.0",
-  "description": "server packages",
+  "description": "Penny-SAE server dependencies",
   "main": "server.js",
   "scripts": {
     "test": "grunt server",
@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bkj/nodesec"
+    "url": "https://github.com/gophronesis/penny-sae"
   },
   "author": "Ben",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bkj/nodesec/issues"
+    "url": "https://github.com/gophronesis/penny-sae/issues"
   },
   "dependencies": {
     "async": "~1.5.2",
