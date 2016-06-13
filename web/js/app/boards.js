@@ -13,7 +13,7 @@ Ember.Handlebars.helper('forum-posts', function (data) {
       maxcount = maxcount + 40;
     }
   });
-  
+
   ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
 
   if (data) {
@@ -476,7 +476,7 @@ App.BoardController = Ember.Controller.extend({
     renderAll(_this);
   }.observes('model'),
 
-  toggleSplitByFilterMember(id) {
+  toggleSplitByFilterMember (id) {
     var splitByFilter = this.get('splitByFilter');
     var xFilter = this.get(splitByFilter);
 
@@ -487,7 +487,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX() {
+  renderX () {
     var model = this.get('model');
     // var filteredData = this.get('filtered_data')
     var splitBy = this.get('splitBy');
@@ -560,7 +560,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderForumPosts() {
+  renderForumPosts () {
     var mincount = 20;
     var maxcount = 40;
     Ember.$('.list-group li').slice(20).hide();
@@ -573,7 +573,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges() {
+  renderGauges () {
     var _this = this;
     var topPreds = this.get('topPreds');
     var topX = this.get('topX');
@@ -597,7 +597,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge(bindTo, gaugeData) {
+  drawGauge (bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
 
@@ -656,12 +656,12 @@ App.BoardController = Ember.Controller.extend({
   },
 
   actions: {
-    topXClicked(id) {
+    topXClicked (id) {
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       this.toggleSplitByFilterMember(id);
     },
 
-    drilldown() {
+    drilldown () {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
   }

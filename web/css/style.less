@@ -735,13 +735,31 @@ input {
 
 path {
   &.volume {
-	fill: #049479;
+    fill: red;
   }
   &.line {
     fill: none;
     stroke-width: 2;
 	stroke: red;
   }
+}
+
+path.candle {
+	stroke: #000000;
+}
+
+path.candle.body {
+	stroke-width: 0;
+}
+
+path.candle.up {
+	fill: #00AA00;
+	stroke: #00AA00;
+}
+
+path.candle.down {
+	fill: #FF0000;
+	stroke: #FF0000;
 }
 
 .d3-tip {
@@ -774,7 +792,7 @@ path {
 
 .list-group {
     background : rgba(220, 220, 220, .2);
-    color : @highlight-color;
+    color : black;
 
     a {
         color : @highlight-color !important;

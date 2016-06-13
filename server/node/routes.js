@@ -1,10 +1,11 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  var request = require('request');
+  // var request = require('request');
   var _ = require('underscore')._;
   var async = require('async');
 
+/*
   function rsplit (x, splitBy) {
     try {
       return _.chain([x]).flatten().map(function (x) { return x.split(','); }).flatten().value();
@@ -13,6 +14,7 @@ module.exports = function (app, config, client) {
       return null;
     }
   }
+*/
 
   var pennyQueryBuilder = {
     //    'user': function (ids) {
@@ -47,8 +49,8 @@ module.exports = function (app, config, client) {
             'filter': {
               'range': {
                 'time': {
-                  'gte': '2010-01-01',
-                  'lte': '2016-01-01'
+                  'gte': '2000-01-01 00:00:00',
+                  'lte': '2016-01-01 00:00:00'
                 }
               }
             },
@@ -60,7 +62,7 @@ module.exports = function (app, config, client) {
           }
         }
       };
-    },
+    }
   //    'aggs': function (params) {
   //      var dateClause, boardClause, userClause
   //
@@ -155,7 +157,7 @@ module.exports = function (app, config, client) {
       function (cb) { getForumdata(d.ticker, cb); },
       function (cb) { getPvData(d.ticker, cb); }
     ], function (err, results) {
-      if(err) {console.log(err);}
+      if (err) { console.log(err); }
       res.send({
         'data': results[0],
         'pvData': results[1]
@@ -177,7 +179,7 @@ module.exports = function (app, config, client) {
     console.log('getPvData', ticker);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'size' : 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
+      body: {'size': 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
     }).then(function (response) {
       cb(null, _.pluck(response.hits.hits, '_source'));
     });
@@ -456,6 +458,26 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       res.send({'data': esResponse['_source']});
     });
+  });
+
+  app.post('/board', function (req, res) {
+    var d = req.body;
+    if (true) {
+      client.search({
+        index: config['ES']['INDEX']['CROWDSAR'],
+        body: pennyQueryBuilder.board(d.ticker)
+      }).then(function (forumResponse) {
+        getPvData(d.ticker, function (pvData) {
+          res.send({
+            'data': _.pluck(forumResponse.hits.hits, '_source'),
+            'pvData': pvData
+          });
+        });
+      });
+    } else {
+      console.error('board id not provided :: ', d.id);
+      res.send({'data': null, 'pvData': null});
+    }
   });
 
   // <Penny>
