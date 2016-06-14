@@ -97,7 +97,29 @@ function makeTimeSeries (ts, bounds) {
     .text(function (d) { return d.date + ' : ' + d.value; });
 }
 
-function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
+function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
+  var parseDate = d3.time.format('%Y-%m-%d').parse;
+
+  var pvData = _.chain(pvdata).map(function (d) {
+    return {
+      date: parseDate(d.date),
+      open: +d.open,
+      high: +d.high,
+      low: +d.low,
+      close: +d.close,
+      volume: +d.volume
+    };
+  }).sortBy(function (a) { return a.date; }).value();
+
+  var forumData = _.sortBy(forumdata, function (x) {
+    return x.date;
+  });
+
+  var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
+    _.pluck(forumData, 'date')]));
+
+  var dateSupport = getDates(dateRange);
+
   var includePV = true;
 
   function addDays (currentDate, days) {
@@ -152,7 +174,6 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   // var heights = [1, 0.5, 0.5]
   // var widths  = [0.5, 0.5, 0.5]
   // var n_panels = heights.length
-  var parseDate = d3.time.format('%Y-%m-%d').parse;
 
   var posts = {};
   posts.title = 'Post Volume';
@@ -205,7 +226,7 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
   volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
   volume.position_top = totalHeight * 0.5 + margin.between.y;
   volume.x = price.x;
-  volume.y = d3.scale.linear().range([volume.height, 0]);
+  volume.y = d3.scale.log().range([volume.height, 0]);
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
   volume.xAxis = price.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
@@ -257,41 +278,20 @@ function renderTechan (forumData, pvData, routeId, subjectId, div, cb) {
     volume.div = makeDiv(volume, 'c4');
   }
 
-  pvData = _.chain(pvData).map(function (d) {
-    return {
-      date: parseDate(d.date),
-      open: +d.open,
-      high: +d.high,
-      low: +d.low,
-      close: +d.close,
-      volume: +d.volume
-    };
-  }).sortBy(function (a) { return a.date; }).value();
-
-  forumData = _.sortBy(forumData, function (x) {
-    return x.date;
-  });
-
-  var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-    _.pluck(forumData, 'date')]));
-  var dateSupport = getDates(dateRange);
-
   if (includePV) {
     // var accessor = price.plot.accessor()
     price.x.domain(dateSupport);
-    price.y.domain(techan.scale.plot.ohlc(pvData).domain());
+    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
     price.div.select('g.close').datum(pvData);
 
     volume.x.domain(dateSupport);
-    volume.y.domain(techan.scale.plot.volume(pvData).domain());
+    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
     volume.div.select('g.volume').datum(pvData);
   }
 
   posts.x.domain(dateSupport);
   posts.y.domain(techan.scale.plot.volume(forumData).domain());
-  posts.div.select('g.volume_posts').datum(forumData).call(posts.plot);
-  posts.div.select('g.x.axis').call(posts.xAxis);
-  posts.div.select('g.y.axis').call(posts.yAxis);
+  posts.div.select('g.volume_posts').datum(forumData);
 
   brushChart.x.domain(dateSupport);
   brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
