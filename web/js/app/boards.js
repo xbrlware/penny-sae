@@ -226,7 +226,7 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
   volume.position_top = totalHeight * 0.5 + margin.between.y;
   volume.x = price.x;
-  volume.y = d3.scale.log().range([volume.height, 0]);
+  volume.y = d3.scale.linear().range([volume.height, 0]);
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
   volume.xAxis = price.xAxis;
   volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
