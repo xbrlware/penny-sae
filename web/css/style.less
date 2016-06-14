@@ -363,6 +363,7 @@ body {
     border: 1px solid gray;
     overflow-y: auto;
 }
+
 #div-dropdown-right {
     margin-top: 20%;
 }
@@ -835,6 +836,16 @@ path.candle.down {
 		font-weight: lighter !important;
 	}
 
+}
+
+#volume-posts {
+    .x.axis {
+        .tick:nth-child(odd) {
+            text {
+                display: none;
+            }
+        }
+    }
 }
 
 .msg {

@@ -171,14 +171,11 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
 
   var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
   var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-  // var heights = [1, 0.5, 0.5]
-  // var widths  = [0.5, 0.5, 0.5]
-  // var n_panels = heights.length
 
   var posts = {};
   posts.title = 'Post Volume';
   posts.method = 'volume';
-  posts.class = 'volume_posts';
+  posts.class = 'volume-posts';
   posts.width = totalWidth * 0.5;
   posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
   posts.position_left = margin.left;
@@ -186,13 +183,13 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   posts.x = techan.scale.financetime().range([0, posts.width]);
   posts.y = d3.scale.linear().range([posts.height, 0]);
   posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-  posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom').ticks(5);
+  posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
   posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
 
   var brushChart = {};
   brushChart.title = '';
   brushChart.method = 'volume';
-  brushChart.class = 'brushChart_posts';
+  brushChart.class = 'brush-chart-posts';
   brushChart.width = totalWidth * 0.5;
   brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
   brushChart.position_left = margin.left;
@@ -200,14 +197,14 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
   brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
   brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).orient('bottom').ticks(0);
-  brushChart.yAxis = d3.svg.axis().scale(brushChart.y).orient('left').ticks(0);
+  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).orient('bottom');
+  brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
 
   var price = {};
   price.title = 'Price';
   price.method = 'ohlc';
   price.class = 'close';
-  price.width = includePV ? totalWidth * 0.5 - 2 * margin.between.x : totalWidth;
+  price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
   price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
   price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
   price.position_top = margin.top;
@@ -229,14 +226,14 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   volume.y = d3.scale.linear().range([volume.height, 0]);
   volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
   volume.xAxis = price.xAxis;
-  volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4);
+  volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
 
   var svg = d3.select(div).append('svg')
     .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
     .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
 
   function makeDiv (obj, clip) {
-    var div = svg.append('g').attr('class', 'focus1')
+    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
       .attr('transform',
         'translate(' + obj.position_left + ',' + obj.position_top + ')');
 
@@ -291,11 +288,11 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
 
   posts.x.domain(dateSupport);
   posts.y.domain(techan.scale.plot.volume(forumData).domain());
-  posts.div.select('g.volume_posts').datum(forumData);
+  posts.div.select('g.volume-posts').datum(forumData);
 
   brushChart.x.domain(dateSupport);
   brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
-  brushChart.div.select('g.brushChart_posts').datum(forumData).call(brushChart.plot);
+  brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
   brushChart.div.select('g.x.axis').call(brushChart.xAxis);
   brushChart.div.select('g.y.axis').call(brushChart.yAxis);
 
