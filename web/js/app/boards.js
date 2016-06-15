@@ -164,7 +164,7 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
   brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
   brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).orient('bottom');
+  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
   brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
 
   var price = {};
@@ -178,7 +178,7 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
   price.x = techan.scale.financetime().range([0, price.width]);
   price.y = d3.scale.linear().range([price.height, 0]);
   price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-  price.xAxis = d3.svg.axis().scale(price.x).orient('bottom').ticks(5);
+  price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
   price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
 
   var volume = {};
@@ -464,6 +464,8 @@ App.BoardController = Ember.Controller.extend({
     var topXData = _.filter(model.data, function (x) {
       return _.contains(topX, x[xId]);
     });
+    console.log('TOP X    :: --> ', topX);
+    console.log('TOPXDATA :: --> ', topXData);
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
       return new Date(x);
@@ -630,21 +632,18 @@ App.BoardRoute = Ember.Route.extend({
       con.set('splitBy', 'user');
 
       con.set('routeName', 'board');
-      // Reset both search terms
-      _this.controllerFor('application').set('board_searchterm', '');
-      _this.controllerFor('application').set('user_searchterm', '');
 
-      // Populate appropriate filter
       con.set('selection_ids', params.params[_this.routeName].ids);
       con.set(_this.routeName + '_filter', params.params[_this.routeName].ids);
     });
   }
 });
 
-Ember.Handlebars.helper('forum-posts', function (data, sbf) {
+Ember.Handlebars.helper('forum-posts', function (d, sbf) {
   var mincount = 20;
   var maxcount = 40;
   var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
+  var data = _.sortBy(d, function (x) { return x.date; }).reverse();
 
   Ember.$('.list-group li').slice(20).hide();
   Ember.$('.list-group').scroll(function () {
