@@ -643,7 +643,10 @@ Ember.Handlebars.helper('forum-posts', function (d, sbf) {
   var mincount = 20;
   var maxcount = 40;
   var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
-  var data = _.sortBy(d, function (x) { return x.date; }).reverse();
+
+  if (d) {
+    var data = _.sortBy(d, function (x) { return x.date; }).reverse();
+  }
 
   Ember.$('.list-group li').slice(20).hide();
   Ember.$('.list-group').scroll(function () {

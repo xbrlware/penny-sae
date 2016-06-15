@@ -62,7 +62,34 @@ module.exports = function (app, config, client) {
           }
         }
       };
+    },
+    'timeline': function (ticker) {
+      return {
+        'size': 0,
+        'query': {
+          'match': {
+            'ticker': ticker.toUpperCase()
+          }
+        },
+        'aggs': {
+          'posts': {
+            'terms': {
+              'field': 'user_id',
+              'size': 10
+            },
+            'aggs': {
+              'user_histogram': {
+                'date_histogram': {
+                  'field': 'time',
+                  'interval': 'day'
+                }
+              }
+            }
+          }
+        }
+      };
     }
+
   //    'aggs': function (params) {
   //      var dateClause, boardClause, userClause
   //
@@ -156,15 +183,29 @@ module.exports = function (app, config, client) {
     }
     async.parallel([
       function (cb) { getForumdata(d.ticker, cb); },
-      function (cb) { getPvData(d.ticker, cb); }
+      function (cb) { getPvData(d.ticker, cb); },
+      function (cb) { getTimelineData(d.ticker, cb); }
     ], function (err, results) {
       if (err) { console.log(err); }
       res.send({
         'data': results[0],
-        'pvData': results[1]
+        'pvData': results[1],
+        'tlData': results[2]
       });
     });
   });
+
+  function getTimelineData (ticker, cb) {
+    console.log('getTimelineData', ticker);
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.timeline(ticker)
+    }).then(function (response) {
+      console.log('/getTimelineData :: returning', response);
+      cb(null, response);
+      return;
+    });
+  }
 
   function getForumdata (ticker, cb) {
     console.log('getForumData', ticker);
@@ -174,6 +215,7 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
+      return;
     });
   }
 
@@ -185,6 +227,7 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
+      return;
     });
   }
 
