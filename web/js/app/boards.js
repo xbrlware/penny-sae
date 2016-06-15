@@ -1,37 +1,4 @@
-/* global Ember, App, d3, _, techan, crossfilter, gconfig, reductio, alert */
-
-Ember.Handlebars.helper('forum-posts', function (data) {
-  var mincount = 20;
-  var maxcount = 40;
-  var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
-
-  Ember.$('.list-group li').slice(20).hide();
-  Ember.$('.list-group').scroll(function () {
-    if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
-      Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
-      mincount = mincount + 20;
-      maxcount = maxcount + 40;
-    }
-  });
-
-  ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
-
-  if (data) {
-    for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span>';
-
-      if (data[i].msg.length > 70) {
-        var msg = data[i].msg.substring(0, 70);
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      } else {
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      }
-    }
-  }
-
-  ourString = ourString + '</ul></div></div>';
-  return new Ember.Handlebars.SafeString(ourString);
-});
+/* global Ember, App, d3, _, techan, crossfilter, gconfig, reductio */
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
@@ -355,9 +322,6 @@ App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
   name: Ember.computed.alias('controllers.detail.model'),
   routeName: undefined,
-  board_filter: undefined,
-  user_filter: [],
-  splitBy: 'user',
   selection_ids: undefined,
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -365,26 +329,34 @@ App.BoardController = Ember.Controller.extend({
   }.property(),
 
   // Field names for "splitting" entity (i.e. the user if board, board if user)
-  splitByFilter: 'board_filter',
+  splitByFilter: function () {
+    return [];
+  }.property(),
 
-  filtered_data: [],
-
-  post_filtered_data: function () {
+  postFilteredData: function () {
     var xId = this.get('splitById'); // xId === user_id
+    var data = this.get('filtered_data');
+    var sbf = this.get('splitByFilter');
     var out;
 
-    if (this.splitByFilter.length) { // this.splitByFilter === board_filter
-      out = _.filter(this.get('filtered_data'), function (x) {
-        return _.contains(this.splitByFilter, x[xId]);
+    if (sbf.length > 0) { // this.splitByFilter === board_filter
+      out = _.filter(data, function (x) {
+        return _.contains(sbf, x[xId]);
       });
     } else {
-      out = this.get('filtered_data');
+      out = data;
     }
-    return _.chain(out).filter(function (x, i) {
+
+    var r = _.chain(out).filter(function (x, i) {
       return i < 100;
     }).value();
+    return r;
   //        return _.chain(out).sortBy(function (x) { return x.date }).filter(function (x, i) { return i < 100 }).value()
-  }.property('filtered_data', 'board_filter', 'user_filter'),
+  }.property('filtered_data', 'board_filter', 'user_filter', 'splitByFilter'),
+
+  splitBy: function () {
+    return 'user';
+  }.property(),
 
   splitById: function () {
     return this.get('splitBy') + '_id';
@@ -472,31 +444,26 @@ App.BoardController = Ember.Controller.extend({
   }.observes('model'),
 
   toggleSplitByFilterMember (id) {
-    var splitByFilter = this.get('splitByFilter');
-    var xFilter = this.get(splitByFilter);
+    var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
-      this.set(splitByFilter, _.without(xFilter, id));
+      this.set('splitByFilter', _.without(xFilter, id));
     } else {
-      this.set(splitByFilter, _.union(xFilter, [id]));
+      this.set('splitByFilter', _.union(xFilter, [id]));
     }
   },
 
   renderX () {
     var model = this.get('model');
-    // var filteredData = this.get('filtered_data')
     var splitBy = this.get('splitBy');
     var topX = this.get('topX');
     var xId = this.get('splitById');
-
     var dateFilter = this.get('dateFilter');
 
     // NB: I bet this would scale better if we used crossfilter reduces
-    var topXData = _.filter(model.data,
-      function (x) {
-        return _.contains(topX, x[xId]);
-      }
-    );
+    var topXData = _.filter(model.data, function (x) {
+      return _.contains(topX, x[xId]);
+    });
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
       return new Date(x);
@@ -655,24 +622,17 @@ App.BoardRoute = Ember.Route.extend({
 
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
       con.set('model', response);
-      con.set('routeName', 'board');
-      // Reset both search terms
-      _this.controllerFor('application').set('board_searchterm', '');
-      _this.controllerFor('application').set('user_searchterm', '');
+      con.set('filtered_data', response.data);
 
       // Reset both filters
       con.set('board_filter', []);
       con.set('user_filter', []);
-      con.set('filtered_data', _this.get('model.data'));
+      con.set('splitBy', 'user');
 
-      // Make route aware of splitting variable
-      if (_this.routeName === 'user') {
-        con.set('splitBy', 'board');
-      } else if (_this.routeName === 'board') {
-        con.set('splitBy', 'user');
-      } else {
-        alert('unknown routeName!');
-      }
+      con.set('routeName', 'board');
+      // Reset both search terms
+      _this.controllerFor('application').set('board_searchterm', '');
+      _this.controllerFor('application').set('user_searchterm', '');
 
       // Populate appropriate filter
       con.set('selection_ids', params.params[_this.routeName].ids);
@@ -680,3 +640,35 @@ App.BoardRoute = Ember.Route.extend({
     });
   }
 });
+
+Ember.Handlebars.helper('forum-posts', function (data, sbf) {
+  var mincount = 20;
+  var maxcount = 40;
+  var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
+
+  Ember.$('.list-group li').slice(20).hide();
+  Ember.$('.list-group').scroll(function () {
+    if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
+      Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
+      mincount = mincount + 20;
+      maxcount = maxcount + 40;
+    }
+  });
+
+  ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
+
+  if (data) {
+    for (var i = 0; i < data.length; i++) {
+      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span>';
+
+      if (data[i].msg.length > 70) {
+        var msg = data[i].msg.substring(0, 70);
+        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
+      } else {
+        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
+      }
+    }
+  }
+  ourString = ourString + '</ul></div></div>';
+  return new Ember.Handlebars.SafeString(ourString);
+}, 'sbf');

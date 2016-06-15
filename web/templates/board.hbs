@@ -12,18 +12,18 @@
                 <div class="col-xs-3">
                     <div id='gauge-{{this}}' class="gauge chart"></div>
                 </div>
-
-                    <div class="col-xs-9 ts chart" id="ts-{{this}}">
-                        <span class="title"></span>
-                        <div class="count-wrapper pull-right">
-                            <span class="before"></span> |
-                            <span class="during"></span> |
-                            <span class="after"></span>
-                        </div>
+                <div class="col-xs-9 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
+                    <span class="title"></span>
+                    <div class="count-wrapper pull-right">
+                        <span class="before"></span> |
+                        <span class="during"></span> |
+                        <span class="after"></span>
                     </div>
                 </div>
             {{/each}}
         </div>
     </div>
-	{{forum-posts model.data}}
+    <div id="forum-posts-cell">
+        {{forum-posts postFilteredData splitByFilter}}
+    </div>
 </div>
