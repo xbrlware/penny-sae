@@ -11,19 +11,14 @@ App.DropdownController = Ember.ObjectController.extend({
 
   symbology_select_content: [
     {id: undefined, name: 'Choose Type'},
-    {id: 'company_name', name: 'Company Name'},
-    {id: 'sic', name: 'SIC'},
-    {id: 'state_of_incorporation', name: 'State of Incorporation'}
+    {id: 'name', name: 'Company Name'},
+    {id: 'sic', name: 'SIC Code'},
+    {id: 'ticker', name: 'Ticker'}
   ],
   crowdsar_select_content: [
     {id: undefined, name: 'Choose Metric'},
     {id: 'n_posts', name: 'Number of Posts'}
   // Need to add more
-  ],
-  tout_select_content: [
-    {id: undefined, name: 'Choose Metric'},
-    {id: 'p_toutw', name: 'Proportion of Tout Words'},
-    {id: 'n_toutw', name: 'Number of Tout Words'}
   ],
   otc_neighbors_select_content: [
     {id: undefined, name: 'Choose Type'},
@@ -32,17 +27,11 @@ App.DropdownController = Ember.ObjectController.extend({
   ],
   financials_select_content: [
     {id: undefined, name: 'Choose Type'},
-    {id: 'revenues', name: 'Revenue'},
-    {id: 'netincomeloss', name: 'Income'}
-  ],
-  financials_contemporary_select_content: [
-    {id: undefined, name: 'Choose Type'},
-    {id: 'false', name: 'Any Time'},
-    {id: 'true', name: 'Ongoing'}
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},
-    {id: '10-K', name: '10-K'}
+    {id: '10-K', name: '10-K'},
+    {id: '10-Q', name: '10-Q'}
   ],
 
   empty: true,
