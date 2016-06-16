@@ -30,4 +30,4 @@ App.FinancialsController = Ember.Controller.extend({
   }.property('model.@each')
 });
 
-App.FinancialsView = App.GenericTableView();
+App.FinancialsView = App.GenericTableView.extend();
