@@ -443,7 +443,7 @@ App.BoardController = Ember.Controller.extend({
     renderAll(_this);
   }.observes('model'),
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember(id) {
     var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
@@ -453,7 +453,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX() {
     var model = this.get('model');
     var splitBy = this.get('splitBy');
     var topX = this.get('topX');
@@ -524,7 +524,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges() {
     var _this = this;
     var topPreds = this.get('topPreds');
     var topX = this.get('topX');
@@ -548,7 +548,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge(bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
 
@@ -607,12 +607,12 @@ App.BoardController = Ember.Controller.extend({
   },
 
   actions: {
-    topXClicked (id) {
+    topXClicked(id) {
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       this.toggleSplitByFilterMember(id);
     },
 
-    drilldown () {
+    drilldown() {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
   }

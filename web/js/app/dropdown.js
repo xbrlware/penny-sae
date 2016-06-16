@@ -15,18 +15,26 @@ App.DropdownController = Ember.ObjectController.extend({
     {id: 'sic', name: 'SIC Code'},
     {id: 'ticker', name: 'Ticker'}
   ],
-  crowdsar_select_content: [
-    {id: undefined, name: 'Choose Metric'},
-    {id: 'n_posts', name: 'Number of Posts'}
-  // Need to add more
-  ],
+  crowdsar_select_content: {
+    metric: [
+      {id: undefined, name: 'Choose Metric'},
+      {id: 'sum', name: 'Sum'},
+      {id: 'mean', name: 'Mean'}
+    ],
+    field: [
+      {id: undefined, name: 'Choose Field'},
+      {id: 'n_posts', name: 'Number of Posts'},
+      {id: 'tri_pred_neg', name: 'Dump Sentiment'},
+      {id: 'tri_pred_pos', name: 'Pump Sentiment'}
+    ]
+  },
   otc_neighbors_select_content: [
     {id: undefined, name: 'Choose Type'},
     {id: 'otc_neibs_total', name: '% OTC Affiliated Neighbors'},
     {id: 'otc_neibs_pct', name: 'N OTC Affiliated Neighbors'}
   ],
   financials_select_content: [
-    {id: undefined, name: 'Choose Type'},
+    {id: undefined, name: 'Choose Type'}
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},

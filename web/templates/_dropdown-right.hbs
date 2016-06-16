@@ -108,16 +108,36 @@
             }}
         </div>
         <div class="form-group">
-            <label class="control-label"> Metric </label>
+            <label class="control-label"> Field </label>
             {{
                 view Ember.Select
-                content=crowdsar_select_content
+                content=crowdsar_select_content.field
                 valueBinding=redFlagParams._params.crowdsar.field
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
             }}
         </div>
+        <div class="form-group">
+            <label class="control-label"> Metric </label>
+            {{
+                view Ember.Select
+                content=crowdsar_select_content.metric
+                valueBinding=redFlagParams._params.crowdsar.metric
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Threshold </label>
+            {{
+                input type="number"
+                valueBinding=redFlagParams._params.crowdsar.threshold
+                class="form-control"
+            }}
+        </div>
+
     </form>
 {{/if}}
 
