@@ -1,4 +1,4 @@
-/* global Ember, App, d3, _, techan, crossfilter, gconfig, reductio */
+/* global Ember, App, d3, _, techan, crossfilter, gconfig */
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
@@ -78,9 +78,12 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
     };
   }).sortBy(function (a) { return a.date; }).value();
 
-  var forumData = _.sortBy(forumdata, function (x) {
-    return x.date;
+  /*
+  var forumData = _.map(forumdata, function (x) {
+    return {date: new Date(x.key_as_string), value: x.doc_count};
   });
+  */
+  var forumData = forumdata;
 
   var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
     _.pluck(forumData, 'date')]));
@@ -107,24 +110,6 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
     return dateArray;
   }
 
-  /*
-  function addCrosshair (obj) {
-    var _yAnnotation = techan.plot.axisannotation()
-      .axis(obj.yAxis)
-      .format(d3.format(',.2fs'))
-    var _xAnnotation = techan.plot.axisannotation()
-      .axis(obj.xAxis)
-      .format(d3.time.format('%Y-%m-%d'))
-      .width(65)
-      .translate([0, heights[0]])
-
-    return techan.plot.crosshair()
-      .xScale(obj.x)
-      .yScale(obj.y)
-      .xAnnotation(_xAnnotation)
-      .yAnnotation(_yAnnotation)
-  }
-  */
   var margin = {
     top: 20,
     bottom: 10,
@@ -368,67 +353,35 @@ App.BoardController = Ember.Controller.extend({
 
   draw: function () {
     var _this = this;
-    var data = this.get('model.data');
+    var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
-    var xId = this.get('splitById');
 
     data.forEach(function (d, i) {
       d.index = i;
-      d.date = new Date(d.time);
+      d.date = new Date(d.key_as_string);
+      d.value = d.doc_count;
     });
 
     // For parent filter
-
     var datum = crossfilter(data);
+    // var ptDatum = crossfilter(ptData);
 
     var date = datum.dimension(function (d) {
       return d.date;
     });
 
-    var dates = date.group(d3.time.day);
-
-    // For dependent filters
-    var split = datum.dimension(function (d) {
-      return d[xId];
-    });
-
-    var splits = split.group();
-
-    var preds = {
-      'neg': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || { 'neg': 0 }).neg;
-      })(split.group()),
-      'neut': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || {'neut': 0}).neut;
-      })(split.group()),
-      'pos': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || {'pos': 0}).pos;
-      })(split.group())
-    };
-
-    var forumData = _.map(dates.all(), function (x) {
-      return { 'date': x.key, 'volume': x.value };
+    var forumData = _.map(data, function (x) {
+      return { 'date': x.date, 'volume': x.value };
     });
 
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      // Get all posts
-
-      _this.set('filtered_data', split.top(10));
-
       // Time series
-      var topX = _.pluck(splits.top(10), 'key');
+      var topX = _.pluck(data, 'id');
       _this.set('topX', topX);
+
       _this.renderX();
 
-      // Gauges
-      var topPreds = _.map(preds, function (pred) {
-        return _.filter(pred.all(), function (x) {
-          return _.contains(topX, x.key);
-        });
-      });
-
-      _this.set('topPreds', _.object(_.keys(preds), topPreds));
       _this.renderGauges();
     };
 
@@ -511,10 +464,12 @@ App.BoardController = Ember.Controller.extend({
 
   renderGauges () {
     var _this = this;
-    var topPreds = this.get('topPreds');
-    var topX = this.get('topX');
+    // var topPreds = this.get('topPreds');
+    var data = this.get('model.tlData');
+    // var topX = this.get('topX');
 
     Ember.run.next(function () {
+      /*
       _.map(topX, function (x, i) {
         var predData = _.map(topPreds, function (topPred, k) {
           try {
@@ -531,8 +486,11 @@ App.BoardController = Ember.Controller.extend({
           predData[i] = tmp;
         });
         predData.reverse();
+       */
 
-        return _this.drawGauge('#gauge-' + x, predData);
+      _.map(data, function (x) {
+        var predData = [{label: 'pos', value: x.pos}, {label: 'neut', value: x.neut}, {label: 'neg', value: x.neg}];
+        return _this.drawGauge('#gauge-' + x.id, predData);
       });
     });
   }, // This should really be broken apart
@@ -549,7 +507,7 @@ App.BoardController = Ember.Controller.extend({
     var ir = w / 4;
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.2f');
+    var valueFormat = d3.format('.3f');
 
     var data = gaugeData;
 

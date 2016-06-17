@@ -63,8 +63,27 @@ module.exports = function (app, config, client) {
         }
       };
     },
+    'boardTimeline': function (ticker) {
+      return {
+        'size': 0,
+        'query': {
+          'match': {
+            'ticker': ticker.toLowerCase()
+          }
+        },
+        'aggs': {
+          'board_histogram': {
+            'date_histogram': {
+              'field': 'time',
+              'interval': 'day'
+            }
+          }
+        }
+      };
+    },
     'timeline': function (ticker) {
       return {
+        'size': 0,
         'query': {
           'match': {
             'ticker': ticker.toLowerCase()
@@ -86,6 +105,21 @@ module.exports = function (app, config, client) {
                 'date_histogram': {
                   'field': 'time',
                   'interval': 'day'
+                }
+              },
+              'pos': {
+                'avg': {
+                  'field': '__meta__.tri_pred.pos'
+                }
+              },
+              'neut': {
+                'avg': {
+                  'field': '__meta__.tri_pred.neut'
+                }
+              },
+              'neg': {
+                'avg': {
+                  'field': '__meta__.tri_pred.neg'
                 }
               }
             }
@@ -188,13 +222,15 @@ module.exports = function (app, config, client) {
     async.parallel([
       function (cb) { getForumdata(d.ticker, cb); },
       function (cb) { getPvData(d.ticker, cb); },
+      function (cb) { getPostsTimelineData(d.ticker, cb); },
       function (cb) { getTimelineData(d.ticker, cb); }
     ], function (err, results) {
       if (err) { console.log(err); }
       res.send({
         'data': results[0],
         'pvData': results[1],
-        'tlData': results[2]
+        'ptData': results[2],
+        'tlData': results[3]
       });
     });
   });
@@ -209,12 +245,25 @@ module.exports = function (app, config, client) {
         return {id: x.key,
           user: x.user.buckets[0].key,
           doc_count: x.doc_count,
+          pos: x.pos.value,
+          neut: x.neut.value,
+          neg: x.neg.value,
           timeline: x.user_histogram.buckets};
       });
       console.log('/getTimelineData :: returned', r.length);
-      console.log(r);
       cb(null, r);
       return;
+    });
+  }
+
+  function getPostsTimelineData (ticker, cb) {
+    console.log('getPostsTimelineData', ticker);
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.boardTimeline(ticker)
+    }).then(function (response) {
+      console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
+      cb(null, response.aggregations.board_histogram.buckets);
     });
   }
 
