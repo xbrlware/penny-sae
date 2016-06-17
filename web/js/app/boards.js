@@ -454,59 +454,44 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderX () {
-    var model = this.get('model');
-    var splitBy = this.get('splitBy');
-    var topX = this.get('topX');
-    var xId = this.get('splitById');
+    var model = this.get('model.tlData');
     var dateFilter = this.get('dateFilter');
 
-    // NB: I bet this would scale better if we used crossfilter reduces
-    var topXData = _.filter(model.data, function (x) {
-      return _.contains(topX, x[xId]);
-    });
-    console.log('TOP X    :: --> ', topX);
-    console.log('TOPXDATA :: --> ', topXData);
+    console.log('MODEL :: --> ', model);
 
-    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
       return new Date(x);
     }).min().value();
 
-    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmax = dateFilter ? dateFilter[1] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
       return new Date(x);
     }).max().value();
 
     var roundingFunction = (xmin - xmax) < (86400000 * 30) ? d3.time.hour : d3.time.day;
 
-    var bySplit = _.chain(topXData).groupBy(function (x) {
-      return x[xId];
-    }).value();
+    var topx = [];
 
-    var timeseries = _.chain(bySplit).map(function (v, k) {
+    var timeseries = _.chain(model).map(function (v) {
+      topx.push(v.id);
       return {
-        'id': k,
-        'name': v[0][splitBy],
+        'id': v.id,
+        'name': v.user,
         'count': {
-          'during': v.length,
-          'before': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) < (+xmin);
+          'during': v.timeline.length,
+          'before': _.filter(v.timeline, function (x) {
+            return (+x.key_as_string) < (+xmin);
           }).length,
-          'after': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) > (+xmax);
+          'after': _.filter(v.timeline, function (x) {
+            return (+x.key_as_string) > (+xmax);
           }).length
         },
-        'timeseries': _.chain(v)
-          .pluck('time')
-          .map(function (x) {
-            return roundingFunction(new Date(x));
-          })
-          .countBy(function (x) {
-            return x;
-          })
-          .map(function (v, k) {
-            return {'key': k, 'value': v};
-          }).value()
+        'timeseries': _.map(v.timeline, function (x) {
+          return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
+        })
       };
     }).value();
+
+    this.set('topX', topx);
 
     // Is this redundant?
     var flatVals = _.chain(timeseries).pluck('timeseries').flatten().value();
@@ -532,8 +517,12 @@ App.BoardController = Ember.Controller.extend({
     Ember.run.next(function () {
       _.map(topX, function (x, i) {
         var predData = _.map(topPreds, function (topPred, k) {
-          return [k,
-            100 * _.findWhere(topPred, {'key': x}).value.avg];
+          try {
+            return [k, 100 * _.findWhere(topPred, {'key': x}).value.avg];
+          } catch (e) {
+            console.warn(e);
+            return [k, 0];
+          }
         });
 
         // For gauges, we calculate the cumulative sum
@@ -625,7 +614,6 @@ App.BoardRoute = Ember.Route.extend({
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
       con.set('model', response);
       con.set('filtered_data', response.data);
-
       // Reset both filters
       con.set('board_filter', []);
       con.set('user_filter', []);

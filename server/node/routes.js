@@ -40,7 +40,7 @@ module.exports = function (app, config, client) {
     //        }
     //      }
     //    },
-    'board': function (boardName) {
+    'board': function (ticker) {
       return {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
@@ -56,7 +56,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'board': boardName.toLowerCase()
+                'ticker': ticker.toLowerCase()
               }
             }
           }
@@ -65,10 +65,9 @@ module.exports = function (app, config, client) {
     },
     'timeline': function (ticker) {
       return {
-        'size': 0,
         'query': {
           'match': {
-            'ticker': ticker.toUpperCase()
+            'ticker': ticker.toLowerCase()
           }
         },
         'aggs': {
@@ -78,6 +77,11 @@ module.exports = function (app, config, client) {
               'size': 10
             },
             'aggs': {
+              'user': {
+                'terms': {
+                  'field': 'user'
+                }
+              },
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
@@ -201,8 +205,15 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: pennyQueryBuilder.timeline(ticker)
     }).then(function (response) {
-      console.log('/getTimelineData :: returning', response);
-      cb(null, response);
+      var r = _.map(response.aggregations.posts.buckets, function (x) {
+        return {id: x.key,
+          user: x.user.buckets[0].key,
+          doc_count: x.doc_count,
+          timeline: x.user_histogram.buckets};
+      });
+      console.log('/getTimelineData :: returned', r.length);
+      console.log(r);
+      cb(null, r);
       return;
     });
   }

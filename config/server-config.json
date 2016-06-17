@@ -6,7 +6,7 @@
     "ES" : {
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "CROWDSAR"    : "crowdsar_cat",
+          "CROWDSAR"    : "crowdsar",
           "AUTH"        : "ernest_auth",
           "AGG"         : "ernest_agg_v3",
           "PV"          : "ernest_pv_cat",
