@@ -308,6 +308,7 @@ App.BoardController = Ember.Controller.extend({
   name: Ember.computed.alias('controllers.detail.model'),
   routeName: undefined,
   selection_ids: undefined,
+  isLoading: false,
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -554,7 +555,8 @@ App.BoardController = Ember.Controller.extend({
 
 App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
-    var _this = this;
+    con.set('isLoading', true);
+    con.set('filtered_data', []);
 
     App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
       con.set('model', response);
@@ -567,8 +569,9 @@ App.BoardRoute = Ember.Route.extend({
 
       con.set('routeName', 'board');
 
-      con.set('selection_ids', params.params[_this.routeName].ids);
-      con.set(_this.routeName + '_filter', params.params[_this.routeName].ids);
+      con.set('selection_ids', params.params[con.get('routeName')].ids);
+      con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
+      con.set('isLoading', false);
     });
   }
 });

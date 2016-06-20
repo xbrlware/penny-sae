@@ -1,9 +1,14 @@
 {{!-- web/templates/board.hbs --}}
-
-
-    <div class="col-xs-12" id="techan-wrapper">
-        <div id="time-chart" class="chart"></div>
+{{#if isLoading }}
+    <img id="spinner" src="css/ajax-loader.gif">
+    <div class="data-progress center">
+        <span class="loader-text" >Loading Data...</span>
     </div>
+{{/if }}
+
+<div class="col-xs-12" id="techan-wrapper">
+    <div id="time-chart" class="chart"></div>
+</div>
 
 <div class="charts-wrapper">
     <div class="col-xs-6" id="gauge-timeline-cell">
