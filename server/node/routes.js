@@ -5,7 +5,7 @@ module.exports = function (app, config, client) {
   var async = require('async');
 
   var pennyQueryBuilder = {
-    'user': function (ids, ticker) {
+    'user': function (userIds, ticker) {
       return {
         'size': 1000,
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
@@ -13,7 +13,7 @@ module.exports = function (app, config, client) {
           'bool': {
             'must': [
             {'match': { 'ticker': ticker }},
-            {'terms': { 'user_id': ids }}
+            {'terms': { 'user_id': userIds }}
             ]
           }
         }
@@ -195,7 +195,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/user ::', d);
     if (!d.ticker || !d.users) {
-      return res.send({'data': undefined, 'pvData': undefined});
+      return res.send([]);
     }
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
@@ -209,7 +209,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.ticker) {
-      return res.send({'data': undefined, 'pvData': undefined});
+      return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
     }
     async.parallel([
       function (cb) { getForumdata(d.ticker, cb); },

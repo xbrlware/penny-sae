@@ -534,13 +534,14 @@ App.BoardController = Ember.Controller.extend({
     topXClicked (id) {
       var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
-      var t = window.location.href.split('/')[5];
+      var cik = window.location.href.split('/')[7];
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
-        App.Search.fetch_data('user', {ticker: t, users: this.get('splitByFilter')}).then(function (response) {
-          console.log('RESPONSE :: --> ', response);
-          _this.set('filtered_data', response);
+        App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter')}).then(function (response) {
+            _this.set('filtered_data', response);
+          });
         });
       } else {
         _this.set('filtered_data', this.get('model.data'));
@@ -557,21 +558,24 @@ App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
     con.set('isLoading', true);
     con.set('filtered_data', []);
+    var cik = window.location.href.split('/')[7];
 
-    App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
-      con.set('model', response);
-      con.set('filtered_data', response.data);
-      // Reset both filters
-      con.set('board_filter', []);
-      con.set('user_filter', []);
-      con.set('splitByFilter', []);
-      con.set('splitBy', 'user');
+    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+      App.Search.fetch_data('board', {ticker: cData.ticker}).then(function (response) {
+        con.set('model', response);
+        con.set('filtered_data', response.data);
+        // Reset both filters
+        con.set('board_filter', []);
+        con.set('user_filter', []);
+        con.set('splitByFilter', []);
+        con.set('splitBy', 'user');
 
-      con.set('routeName', 'board');
+        con.set('routeName', 'board');
 
-      con.set('selection_ids', params.params[con.get('routeName')].ids);
-      con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
-      con.set('isLoading', false);
+        con.set('selection_ids', params.params[con.get('routeName')].ids);
+        con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
+        con.set('isLoading', false);
+      });
     });
   }
 });
