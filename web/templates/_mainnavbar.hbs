@@ -3,7 +3,7 @@
 {{#if showNav}}
     <nav class="navbar yamm navbar-fixed-top" id="navbar-bgcolor" role="navigation">
             {{#if session.isAuthenticated}}
-                <a {{action 'invalidateSession'}} id="btn-logout" class="btn btn-link navbar-btn navbar-right">
+                <a {{action 'invalidateSession'}} id="btn-logout" class="btn btn-link glyphicon glyphicon-off navbar-btn navbar-right">
                     <i class="fa fa-sign-out"></i>
                 </a>
             {{/if}}
