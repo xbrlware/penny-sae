@@ -309,6 +309,7 @@ App.BoardController = Ember.Controller.extend({
   routeName: undefined,
   selection_ids: undefined,
   isLoading: false,
+  isData: true,
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -558,6 +559,8 @@ App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
     con.set('isLoading', true);
     con.set('filtered_data', []);
+    con.set('isData', true);
+
     var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
@@ -574,6 +577,8 @@ App.BoardRoute = Ember.Route.extend({
         con.set('selection_ids', params.params[con.get('routeName')].ids);
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
+
+        if (!response.pvData.length) { con.set('isData', false); }
       });
     });
   }
