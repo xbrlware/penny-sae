@@ -534,7 +534,7 @@ App.BoardController = Ember.Controller.extend({
     topXClicked (id) {
       var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
-      var cik = window.location.href.split('/')[7];
+      var cik = this.controllerFor('detail').get('model.cik');
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
@@ -558,13 +558,12 @@ App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
     con.set('isLoading', true);
     con.set('filtered_data', []);
-    var cik = window.location.href.split('/')[7];
+    var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {ticker: cData.ticker}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', response.data);
-        // Reset both filters
         con.set('board_filter', []);
         con.set('user_filter', []);
         con.set('splitByFilter', []);
