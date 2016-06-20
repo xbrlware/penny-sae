@@ -319,12 +319,12 @@ App.BoardController = Ember.Controller.extend({
   }.property(),
 
   postFilteredData: function () {
-    var xId = this.get('splitById'); // xId === user_id
+    var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
     var out;
 
-    if (sbf.length > 0) { // this.splitByFilter === board_filter
+    if (sbf.length > 0) {
       out = _.filter(data, function (x) {
         return _.contains(sbf, x[xId]);
       });
@@ -336,8 +336,7 @@ App.BoardController = Ember.Controller.extend({
       return i < 100;
     }).value();
     return r;
-  //        return _.chain(out).sortBy(function (x) { return x.date }).filter(function (x, i) { return i < 100 }).value()
-  }.property('filtered_data', 'board_filter', 'user_filter', 'splitByFilter'),
+  }.property('filtered_data', 'board_filter', 'user_filter'),
 
   splitBy: function () {
     return 'user';
@@ -410,8 +409,6 @@ App.BoardController = Ember.Controller.extend({
     var model = this.get('model.tlData');
     var dateFilter = this.get('dateFilter');
 
-    console.log('MODEL :: --> ', model);
-
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
       return new Date(x);
     }).min().value();
@@ -464,30 +461,9 @@ App.BoardController = Ember.Controller.extend({
 
   renderGauges () {
     var _this = this;
-    // var topPreds = this.get('topPreds');
     var data = this.get('model.tlData');
-    // var topX = this.get('topX');
 
     Ember.run.next(function () {
-      /*
-      _.map(topX, function (x, i) {
-        var predData = _.map(topPreds, function (topPred, k) {
-          try {
-            return [k, 100 * _.findWhere(topPred, {'key': x}).value.avg];
-          } catch (e) {
-            console.warn(e);
-            return [k, 0];
-          }
-        });
-
-        // For gauges, we calculate the cumulative sum
-        _.map(_.range(0, predData.length), function (i) {
-          var tmp = {label: predData[i][0], value: predData[i][1]};
-          predData[i] = tmp;
-        });
-        predData.reverse();
-       */
-
       _.map(data, function (x) {
         var predData = [{label: 'pos', value: x.pos}, {label: 'neut', value: x.neut}, {label: 'neg', value: x.neg}];
         return _this.drawGauge('#gauge-' + x.id, predData);
@@ -507,7 +483,7 @@ App.BoardController = Ember.Controller.extend({
     var ir = w / 4;
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.3f');
+    var valueFormat = d3.format('.8f');
 
     var data = gaugeData;
 
@@ -555,8 +531,19 @@ App.BoardController = Ember.Controller.extend({
 
   actions: {
     topXClicked (id) {
+      var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
+      var t = window.location.href.split('/')[5];
       this.toggleSplitByFilterMember(id);
+
+      if (this.get('splitByFilter').length) {
+        App.Search.fetch_data('user', {ticker: t, users: this.get('splitByFilter')}).then(function (response) {
+          console.log('RESPONSE :: --> ', response);
+          _this.set('filtered_data', response);
+        });
+      } else {
+        _this.set('filtered_data', this.get('model.data'));
+      }
     },
 
     drilldown () {
@@ -575,6 +562,7 @@ App.BoardRoute = Ember.Route.extend({
       // Reset both filters
       con.set('board_filter', []);
       con.set('user_filter', []);
+      con.set('splitByFilter', []);
       con.set('splitBy', 'user');
 
       con.set('routeName', 'board');
@@ -591,7 +579,7 @@ Ember.Handlebars.helper('forum-posts', function (d, sbf) {
   var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
 
   if (d) {
-    var data = _.sortBy(d, function (x) { return x.date; }).reverse();
+    var data = _.sortBy(d, function (x) { return x.time; }).reverse();
   }
 
   Ember.$('.list-group li').slice(20).hide();

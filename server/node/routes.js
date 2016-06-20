@@ -1,49 +1,28 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  // var request = require('request');
   var _ = require('underscore')._;
   var async = require('async');
 
-/*
-  function rsplit (x, splitBy) {
-    try {
-      return _.chain([x]).flatten().map(function (x) { return x.split(','); }).flatten().value();
-    } catch (e) {
-      console.warn('Error in query builder :: ', e);
-      return null;
-    }
-  }
-*/
-
   var pennyQueryBuilder = {
-    //    'user': function (ids) {
-    //      return {
-    //        'size': 1e6,
-    //        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
-    //        'query': {
-    //          'filtered': {
-    //            'filter': {
-    //              'range': {
-    //                'date': {
-    //                  'gte': '2010-01-01 00:00:00',
-    //                  'lte': '2015-01-01 00:00:00'
-    //                }
-    //              }
-    //            },
-    //            'query': {
-    //              'terms': {
-    //                'user_id': rsplit(ids, ',')
-    //              }
-    //            }
-    //          }
-    //        }
-    //      }
-    //    },
+    'user': function (ids, ticker) {
+      return {
+        'size': 1000,
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        'query': {
+          'bool': {
+            'must': [
+            {'match': { 'ticker': ticker }},
+            {'terms': { 'user_id': ids }}
+            ]
+          }
+        }
+      };
+    },
     'board': function (ticker) {
       return {
         'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
@@ -212,6 +191,19 @@ module.exports = function (app, config, client) {
   //      }
   //    }
   };
+  app.post('/user', function (req, res) {
+    var d = req.body;
+    console.log('/user ::', d);
+    if (!d.ticker || !d.users) {
+      return res.send({'data': undefined, 'pvData': undefined});
+    }
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.user(d.users, d.ticker)
+    }).then(function (response) {
+      res.send(_.pluck(response.hits.hits, '_source'));
+    });
+  });
 
   app.post('/board', function (req, res) {
     var d = req.body;
