@@ -86,14 +86,12 @@ App.BoardController = Ember.Controller.extend({
     var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
-    var dfl = this.get('dateFilter');
+    // var dfl = this.get('dateFilter');
 
     var out;
-    var _data;
+    // var _data;
 
-    console.log('dfl :: --> ', dfl);
-    console.log('data :: --> ', data);
-
+    /*
     if (dfl.length) {
       _data = _.filter(data, function (d) {
         return d.date > dfl[0] & d.date < dfl[1];
@@ -101,9 +99,9 @@ App.BoardController = Ember.Controller.extend({
     } else {
       _data = data;
     }
-
+    */
     if (sbf.length > 0) {
-      out = _.filter(_data, function (x) {
+      out = _.filter(data, function (x) {
         return _.contains(sbf, x[xId]);
       });
     } else {
@@ -115,7 +113,7 @@ App.BoardController = Ember.Controller.extend({
     }).value();
 
     return r;
-  }.property('filtered_data', 'board_filter', 'user_filter', 'dateFilter'),
+  }.property('filtered_data', 'board_filter', 'user_filter'),
 
   splitBy: function () {
     return 'user';
