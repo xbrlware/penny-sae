@@ -101,16 +101,28 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'user': function (userIds, ticker) {
+    'user': function (users) {
       return {
         'size': 1000,
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
-          'bool': {
-            'must': [
-            {'match': { 'ticker': ticker }},
-            {'terms': { 'user_id': userIds }}
-            ]
+          'filtered': {
+            'filter': {
+              'range': {
+                'time': {
+                  'gte': users.date_filter[0],
+                  'lte': users.date_filter[1]
+                }
+              }
+            },
+            'query': {
+              'bool': {
+                'must': [
+                {'match': { 'ticker': users.ticker }},
+                {'terms': { 'user_id': users.users }}
+                ]
+              }
+            }
           }
         }
       };
@@ -218,12 +230,12 @@ module.exports = function (app, config, client) {
   app.post('/user', function (req, res) {
     var d = req.body;
     console.log('/user ::', d);
-    if (!d.ticker || !d.users) {
+    if (!d.ticker || !d.users || !d.date_filter) {
       return res.send([]);
     }
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: pennyQueryBuilder.user(d.users, d.ticker)
+      body: pennyQueryBuilder.user(d)
     }).then(function (response) {
       res.send(_.pluck(response.hits.hits, '_source'));
     });

@@ -86,10 +86,24 @@ App.BoardController = Ember.Controller.extend({
     var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
+    var dfl = this.get('dateFilter');
+
     var out;
+    var _data;
+
+    console.log('dfl :: --> ', dfl);
+    console.log('data :: --> ', data);
+
+    if (dfl.length) {
+      _data = _.filter(data, function (d) {
+        return d.date > dfl[0] & d.date < dfl[1];
+      });
+    } else {
+      _data = data;
+    }
 
     if (sbf.length > 0) {
-      out = _.filter(data, function (x) {
+      out = _.filter(_data, function (x) {
         return _.contains(sbf, x[xId]);
       });
     } else {
@@ -99,8 +113,9 @@ App.BoardController = Ember.Controller.extend({
     var r = _.chain(out).filter(function (x, i) {
       return i < 100;
     }).value();
+
     return r;
-  }.property('filtered_data', 'board_filter', 'user_filter'),
+  }.property('filtered_data', 'board_filter', 'user_filter', 'dateFilter'),
 
   splitBy: function () {
     return 'user';
@@ -538,7 +553,7 @@ App.BoardController = Ember.Controller.extend({
 
       if (this.get('splitByFilter').length) {
         App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter')}).then(function (response) {
+          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
             _this.set('filtered_data', response);
           });
         });
@@ -565,8 +580,8 @@ App.BoardRoute = Ember.Route.extend({
       App.Search.fetch_data('board', {ticker: cData.ticker}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', response.data);
-        con.set('board_filter', []);
-        con.set('user_filter', []);
+        // con.set('board_filter', []);
+        // con.set('user_filter', []);
         con.set('splitByFilter', []);
         con.set('splitBy', 'user');
 
