@@ -5,7 +5,7 @@ module.exports = function (app, config, client) {
   var async = require('async');
 
   var pennyQueryBuilder = {
-    'board': function (ticker) {
+    'board': function (brdData) {
       return {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
@@ -14,26 +14,26 @@ module.exports = function (app, config, client) {
             'filter': {
               'range': {
                 'time': {
-                  'gte': '2000-01-01',
-                  'lte': '2017-01-01'
+                  'gte': brdData.date_filter[0],
+                  'lte': brdData.date_filter[1]
                 }
               }
             },
             'query': {
               'match': {
-                'ticker': ticker.toLowerCase()
+                'ticker': brdData.ticker.toLowerCase()
               }
             }
           }
         }
       };
     },
-    'boardTimeline': function (ticker) {
+    'boardTimeline': function (btData) {
       return {
         'size': 0,
         'query': {
           'match': {
-            'ticker': ticker.toLowerCase()
+            'ticker': btData.ticker.toLowerCase()
           }
         },
         'aggs': {
@@ -55,12 +55,24 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'timeline': function (ticker) {
+    'timeline': function (tData) {
       return {
         'size': 0,
         'query': {
-          'match': {
-            'ticker': ticker.toLowerCase()
+          'filtered': {
+            'filter': {
+              'range': {
+                'time': {
+                  'gte': tData.date_filter[0],
+                  'lte': tData.date_filter[1]
+                }
+              }
+            },
+            'query': {
+              'match': {
+                'ticker': tData.ticker.toLowerCase()
+              }
+            }
           }
         },
         'aggs': {
@@ -244,14 +256,14 @@ module.exports = function (app, config, client) {
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.ticker) {
+    if (!d.ticker || !d.date_filter) {
       return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
     }
     async.parallel([
-      function (cb) { getForumdata(d.ticker, cb); },
-      function (cb) { getPvData(d.ticker, cb); },
-      function (cb) { getPostsTimelineData(d.ticker, cb); },
-      function (cb) { getTimelineData(d.ticker, cb); }
+      function (cb) { getForumdata(d, cb); },
+      function (cb) { getPvData(d, cb); },
+      function (cb) { getPostsTimelineData(d, cb); },
+      function (cb) { getTimelineData(d, cb); }
     ], function (err, results) {
       if (err) { console.log(err); }
       res.send({
@@ -263,11 +275,22 @@ module.exports = function (app, config, client) {
     });
   });
 
-  function getTimelineData (ticker, cb) {
-    console.log('getTimelineData', ticker);
+  app.post('/redrawTimeline', function (req, res) {
+    var d = req.body;
+    console.log('/redrawTimeline ::', d);
+    if (!d.ticker || !d.date_filter) {
+      return res.send([]);
+    }
+    getTimelineData(d, function (n, resp) {
+      res.send(resp);
+    });
+  });
+
+  function getTimelineData (data, cb) {
+    console.log('getTimelineData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: pennyQueryBuilder.timeline(ticker)
+      body: pennyQueryBuilder.timeline(data)
     }).then(function (response) {
       var r = _.map(response.aggregations.posts.buckets, function (x) {
         return {id: x.key,
@@ -284,22 +307,22 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function getPostsTimelineData (ticker, cb) {
-    console.log('getPostsTimelineData', ticker);
+  function getPostsTimelineData (data, cb) {
+    console.log('getPostsTimelineData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: pennyQueryBuilder.boardTimeline(ticker)
+      body: pennyQueryBuilder.boardTimeline(data)
     }).then(function (response) {
       console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
       cb(null, response.aggregations.board_histogram.buckets);
     });
   }
 
-  function getForumdata (ticker, cb) {
-    console.log('getForumData', ticker);
+  function getForumdata (data, cb) {
+    console.log('getForumData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: pennyQueryBuilder.board(ticker)
+      body: pennyQueryBuilder.board(data)
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
@@ -307,11 +330,11 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function getPvData (ticker, cb) {
-    console.log('getPvData', ticker);
+  function getPvData (data, cb) {
+    console.log('getPvData', data);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'size': 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
+      body: {'size': 9999, 'query': {'term': {'symbol': data.ticker.toLowerCase()}}}
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));

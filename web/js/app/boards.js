@@ -69,9 +69,11 @@ App.BoardController = Ember.Controller.extend({
   name: Ember.computed.alias('controllers.detail.model'),
   routeName: undefined,
   selection_ids: undefined,
+  topX: undefined,
   isLoading: false,
   isData: true,
-  dateFilter: [],
+  timelineLoading: false,
+  dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -86,12 +88,11 @@ App.BoardController = Ember.Controller.extend({
     var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
-    // var dfl = this.get('dateFilter');
+    var dfl = this.get('dateFilter');
 
     var out;
-    // var _data;
+    var _data;
 
-    /*
     if (dfl.length) {
       _data = _.filter(data, function (d) {
         return d.date > dfl[0] & d.date < dfl[1];
@@ -99,13 +100,13 @@ App.BoardController = Ember.Controller.extend({
     } else {
       _data = data;
     }
-    */
+
     if (sbf.length > 0) {
-      out = _.filter(data, function (x) {
+      out = _.filter(_data, function (x) {
         return _.contains(sbf, x[xId]);
       });
     } else {
-      out = data;
+      out = _data;
     }
 
     var r = _.chain(out).filter(function (x, i) {
@@ -113,7 +114,7 @@ App.BoardController = Ember.Controller.extend({
     }).value();
 
     return r;
-  }.property('filtered_data', 'board_filter', 'user_filter'),
+  }.property('filtered_data', 'dateFilter'),
 
   splitBy: function () {
     return 'user';
@@ -123,15 +124,26 @@ App.BoardController = Ember.Controller.extend({
     return this.get('splitBy') + '_id';
   }.property(),
 
-  splitByFilter_nonempty: function () {
-    return this.splitByFilter.length > 0;
-  }.property('board_filter', 'user_filter'),
+  redraw: function () {
+    console.log('REDRAW BEING CALLED');
+    var _this = this;
+    var cik = _this.controllerFor('detail').get('model.cik');
+    this.set('timelineLoading', true);
+
+    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+      App.Search.fetch_data('redrawTimeline', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
+        _this.set('model.tlData', response);
+        _this.renderX();
+        _this.renderGauges();
+        _this.set('timelineLoading', false);
+      });
+    });
+  },
 
   draw: function () {
     var _this = this;
     var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
-
     data.forEach(function (d, i) {
       d.index = i;
       d.date = new Date(d.key_as_string);
@@ -140,7 +152,6 @@ App.BoardController = Ember.Controller.extend({
 
     // For parent filter
     var datum = crossfilter(data);
-    // var ptDatum = crossfilter(ptData);
 
     var date = datum.dimension(function (d) {
       return d.date;
@@ -152,13 +163,17 @@ App.BoardController = Ember.Controller.extend({
 
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      // Time series
-      var topX = _.pluck(data, 'id');
-      _this.set('topX', topX);
-
-      _this.renderX();
-
-      _this.renderGauges();
+      console.log('RENDERALL BEING CALLED');
+      if (_this.get('topX') === undefined) {
+        // Time series
+        var topX = _.pluck(data, 'id');
+        _this.set('topX', topX);
+        _this.renderX();
+        _this.renderGauges();
+      } else {
+        console.log('WE ARE IN THE ELSE');
+        _this.redraw();
+      }
     };
 
     this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
@@ -169,7 +184,7 @@ App.BoardController = Ember.Controller.extend({
       }
     );
 
-    renderAll(_this);
+    // renderAll(_this);
   }.observes('model'),
 
   toggleSplitByFilterMember (id) {
@@ -307,7 +322,6 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderTechan: function (forumdata, pvdata, routeId, subjectId, div, cb) {
-    var _this = this;
     var parseDate = d3.time.format('%Y-%m-%d').parse;
 
     var pvData = _.chain(pvdata).map(function (d) {
@@ -525,8 +539,6 @@ App.BoardController = Ember.Controller.extend({
       var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
       var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
 
-      _this.set('dateFilter', dateFilter);
-
       zoomable.domain(brushDomain);
       zoomable2.domain(brushDomain);
 
@@ -552,7 +564,10 @@ App.BoardController = Ember.Controller.extend({
       if (this.get('splitByFilter').length) {
         App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
           App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
-            _this.set('filtered_data', response);
+            _this.set('filtered_data', _.map(response, function (x) {
+              x.date = new Date(x.time);
+              return x;
+            }));
           });
         });
       } else {
@@ -575,11 +590,13 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {ticker: cData.ticker}).then(function (response) {
+      App.Search.fetch_data('board', {ticker: cData.ticker, date_filter: con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
-        con.set('filtered_data', response.data);
-        // con.set('board_filter', []);
-        // con.set('user_filter', []);
+        con.set('filtered_data', _.map(response.data, function (x) {
+          x.date = new Date(x.time);
+          return x;
+        })
+            );
         con.set('splitByFilter', []);
         con.set('splitBy', 'user');
 

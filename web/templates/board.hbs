@@ -13,10 +13,16 @@
 
     <div class="charts-wrapper">
         <div class="col-xs-6" id="gauge-timeline-cell">
-            <div class="timeline-panel" id="timeline">
+            {{#if timelineLoading}}
+                <div class="data-progress centered">
+                    <img id="spinner" src="css/ajax-loader.gif">
+                    <span class="loader-text" >Loading Data...</span>
+                </div>
+            {{else}}
+                <div class="timeline-panel" id="timeline">
                 {{#each topX}}
                     <div class="col-xs-3">
-                    <div id='gauge-{{this}}' class="gauge chart"></div>
+                        <div id='gauge-{{this}}' class="gauge chart"></div>
                     </div>
                     <div class="col-xs-9 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
                         <span class="title"></span>
@@ -27,7 +33,8 @@
                         </div>
                     </div>
                 {{/each}}
-            </div>
+                </div>
+            {{/if}}
         </div>
         <div id="forum-posts-cell">
             {{forum-posts postFilteredData splitByFilter}}
