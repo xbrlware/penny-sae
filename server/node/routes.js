@@ -5,20 +5,6 @@ module.exports = function (app, config, client) {
   var async = require('async');
 
   var pennyQueryBuilder = {
-    'user': function (userIds, ticker) {
-      return {
-        'size': 1000,
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
-        'query': {
-          'bool': {
-            'must': [
-            {'match': { 'ticker': ticker }},
-            {'terms': { 'user_id': userIds }}
-            ]
-          }
-        }
-      };
-    },
     'board': function (ticker) {
       return {
         'size': 1000, // This limits the hits to 1000
@@ -56,6 +42,15 @@ module.exports = function (app, config, client) {
               'field': 'time',
               'interval': 'day'
             }
+          }
+        }
+      };
+    },
+    'financials': function (cik) {
+      return {
+        'query': {
+          'match': {
+            'cik': cik
           }
         }
       };
@@ -102,6 +97,20 @@ module.exports = function (app, config, client) {
                 }
               }
             }
+          }
+        }
+      };
+    },
+    'user': function (userIds, ticker) {
+      return {
+        'size': 1000,
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        'query': {
+          'bool': {
+            'must': [
+            {'match': { 'ticker': ticker }},
+            {'terms': { 'user_id': userIds }}
+            ]
           }
         }
       };
@@ -191,6 +200,21 @@ module.exports = function (app, config, client) {
   //      }
   //    }
   };
+  app.post('/financials', function (req, res) {
+    var d = req.body;
+    console.log('/financials ::', d);
+    if (!d.cik) {
+      return res.send([]);
+    }
+    client.search({
+      index: config['ES']['INDEX']['FINANCIALS'],
+      body: pennyQueryBuilder.financials(parseInt(d.cik))
+    }).then(function (response) {
+      console.log(response.hits.hits);
+      res.send(_.pluck(response.hits.hits, '_source'));
+    });
+  });
+
   app.post('/user', function (req, res) {
     var d = req.body;
     console.log('/user ::', d);

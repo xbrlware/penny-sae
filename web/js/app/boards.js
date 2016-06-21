@@ -287,6 +287,8 @@ function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
     var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
     var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
 
+    console.log(dateFilter);
+
     zoomable.domain(brushDomain);
     zoomable2.domain(brushDomain);
 
