@@ -16,14 +16,15 @@ App.FinancialsController = Ember.Controller.extend({
   name: Ember.computed.alias('controllers.detail.model'),
   tableDiv: '#financials-table',
   tableColumns: [
-    {title: 'Company', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Filing', defaultContent: '', className: 'dt-body-right'},
+    {title: 'Company', className: 'dt-body-right'},
+    {title: 'Filing', className: 'dt-body-right'},
+    {title: 'Date'},
     {title: 'URL', defaultContent: '', className: 'dt-body-right'}
   ],
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [n.name, n.form, n.url];
+      return [n.name, n.form, n.date, n.url];
     });
   }.property('model')
 });

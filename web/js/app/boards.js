@@ -2,7 +2,7 @@
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 30, bottom: 20, left: 30};
+  var margin = {top: 10, right: 10, bottom: 20, left: 30};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
@@ -64,247 +64,6 @@ function makeTimeSeries (ts, bounds) {
     .text(function (d) { return d.date + ' : ' + d.value; });
 }
 
-function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
-  var parseDate = d3.time.format('%Y-%m-%d').parse;
-
-  var pvData = _.chain(pvdata).map(function (d) {
-    return {
-      date: parseDate(d.date),
-      open: +d.open,
-      high: +d.high,
-      low: +d.low,
-      close: +d.close,
-      volume: +d.volume
-    };
-  }).sortBy(function (a) { return a.date; }).value();
-
-  /*
-  var forumData = _.map(forumdata, function (x) {
-    return {date: new Date(x.key_as_string), value: x.doc_count};
-  });
-  */
-  var forumData = forumdata;
-
-  var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-    _.pluck(forumData, 'date')]));
-
-  var dateSupport = getDates(dateRange);
-
-  var includePV = true;
-
-  function addDays (currentDate, days) {
-    var dat = new Date(currentDate);
-    dat.setDate(dat.getDate() + days);
-    return dat;
-  }
-
-  function getDates (dateRange) {
-    var dateArray = [];
-    var currentDate = dateRange[0];
-
-    while (currentDate <= dateRange[1]) {
-      dateArray.push(new Date(currentDate));
-      currentDate = addDays(currentDate, 1);
-    }
-
-    return dateArray;
-  }
-
-  var margin = {
-    top: 20,
-    bottom: 10,
-    between: {
-      y: 40,
-      x: 40
-    },
-    left: 25,
-    right: 5
-  };
-
-  var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
-  var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-
-  var posts = {};
-  posts.title = 'Post Volume';
-  posts.method = 'volume';
-  posts.class = 'volume-posts';
-  posts.width = totalWidth * 0.5;
-  posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
-  posts.position_left = margin.left;
-  posts.position_top = margin.top;
-  posts.x = techan.scale.financetime().range([0, posts.width]);
-  posts.y = d3.scale.linear().range([posts.height, 0]);
-  posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-  posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
-  posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
-
-  var brushChart = {};
-  brushChart.title = '';
-  brushChart.method = 'volume';
-  brushChart.class = 'brush-chart-posts';
-  brushChart.width = totalWidth * 0.5;
-  brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
-  brushChart.position_left = margin.left;
-  brushChart.position_top = totalHeight * 0.8 + margin.between.y;
-  brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
-  brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
-  brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
-  brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
-
-  var price = {};
-  price.title = 'Price';
-  price.method = 'ohlc';
-  price.class = 'close';
-  price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
-  price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-  price.position_top = margin.top;
-  price.x = techan.scale.financetime().range([0, price.width]);
-  price.y = d3.scale.linear().range([price.height, 0]);
-  price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-  price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
-  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-
-  var volume = {};
-  volume.title = 'Volume';
-  volume.method = 'volume';
-  volume.class = 'volume';
-  volume.width = totalWidth * 0.5 - 2 * margin.between.x;
-  volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-  volume.position_top = totalHeight * 0.5 + margin.between.y;
-  volume.x = price.x;
-  volume.y = d3.scale.linear().range([volume.height, 0]);
-  volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
-  volume.xAxis = price.xAxis;
-  volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-
-  var svg = d3.select(div).append('svg')
-    .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
-    .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
-
-  function makeDiv (obj, clip) {
-    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-      .attr('transform',
-        'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-    div.append('svg:clipPath')
-      .attr('id', clip)
-      .append('svg:rect')
-      .attr('x', 0)
-      .attr('y', obj.y(1))
-      .attr('width', obj.width)
-      .attr('height', obj.y(0) - obj.y(1));
-
-    div.append('g')
-      .attr('class', obj.class)
-      .attr('clip-path', 'url(#' + clip + ')');
-
-    div.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + obj.height + ')');
-
-    div.append('g')
-      .attr('class', 'y axis')
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '.71em')
-      .style('text-anchor', 'end')
-      .text(obj.title);
-
-    return div;
-  }
-
-  posts.div = makeDiv(posts, 'c1');
-
-  brushChart.div = makeDiv(brushChart, 'c2');
-  brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
-
-  if (includePV) {
-    price.div = makeDiv(price, 'c3');
-    volume.div = makeDiv(volume, 'c4');
-  }
-
-  if (includePV) {
-    // var accessor = price.plot.accessor()
-    price.x.domain(dateSupport);
-    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
-    price.div.select('g.close').datum(pvData);
-
-    volume.x.domain(dateSupport);
-    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
-    volume.div.select('g.volume').datum(pvData);
-  }
-
-  posts.x.domain(dateSupport);
-  posts.y.domain(techan.scale.plot.volume(forumData).domain());
-  posts.div.select('g.volume-posts').datum(forumData);
-
-  brushChart.x.domain(dateSupport);
-  brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
-  brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
-  brushChart.div.select('g.x.axis').call(brushChart.xAxis);
-  brushChart.div.select('g.y.axis').call(brushChart.yAxis);
-
-  // Associate the brush with the scale and render the brush
-  // only AFTER a domain has been applied
-  var brushZoom = brushChart.x.zoomable();
-  var zoomable = price.x.zoomable();
-  var zoomable2 = posts.x.zoomable();
-
-  var brush = d3.svg.brush()
-    .x(brushZoom)
-    .on('brushend', draw);
-
-  brushChart.div.select('g.pane')
-    .call(brush)
-    .selectAll('rect')
-    .attr('height', brushChart.height);
-
-  function _draw (obj, dateFilter) {
-    var data = obj.div.select('g.' + obj.class).datum();
-
-    var _data = _.filter(data, function (d) {
-      return d.date > dateFilter[0] & d.date < dateFilter[1];
-    });
-
-    if (_data.length > 0) {
-      obj.y.domain(techan.scale.plot[obj.method](_data).domain());
-    } else {
-      obj.y.domain([0, 1]);
-    }
-
-    // plot the data
-    obj.div.select('g.' + obj.class).call(obj.plot);
-    // draw the x / y axis for c2
-    obj.div.select('g.x.axis').call(obj.xAxis);
-    obj.div.select('g.y.axis').call(obj.yAxis);
-  }
-
-  function draw () {
-    var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
-    var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
-
-    console.log(dateFilter);
-
-    zoomable.domain(brushDomain);
-    zoomable2.domain(brushDomain);
-
-    if (includePV) {
-      _draw(price, dateFilter);
-      _draw(volume, dateFilter);
-    }
-
-    _draw(posts, dateFilter);
-
-    cb(dateFilter);
-  }
-
-  draw();
-}
-
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
   name: Ember.computed.alias('controllers.detail.model'),
@@ -312,6 +71,7 @@ App.BoardController = Ember.Controller.extend({
   selection_ids: undefined,
   isLoading: false,
   isData: true,
+  dateFilter: [],
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -388,7 +148,7 @@ App.BoardController = Ember.Controller.extend({
       _this.renderGauges();
     };
 
-    renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
+    this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
       function (dateFilter) {
         _this.set('dateFilter', dateFilter);
         date.filterRange(dateFilter);
@@ -533,6 +293,242 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
+  renderTechan: function (forumdata, pvdata, routeId, subjectId, div, cb) {
+    var _this = this;
+    var parseDate = d3.time.format('%Y-%m-%d').parse;
+
+    var pvData = _.chain(pvdata).map(function (d) {
+      return {
+        date: parseDate(d.date),
+        open: +d.open,
+        high: +d.high,
+        low: +d.low,
+        close: +d.close,
+        volume: +d.volume
+      };
+    }).sortBy(function (a) { return a.date; }).value();
+
+    var forumData = forumdata;
+
+    var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
+          _.pluck(forumData, 'date')]));
+
+    var dateSupport = getDates(dateRange);
+
+    var includePV = true;
+
+    function addDays (currentDate, days) {
+      var dat = new Date(currentDate);
+      dat.setDate(dat.getDate() + days);
+      return dat;
+    }
+
+    function getDates (dateRange) {
+      var dateArray = [];
+      var currentDate = dateRange[0];
+
+      while (currentDate <= dateRange[1]) {
+        dateArray.push(new Date(currentDate));
+        currentDate = addDays(currentDate, 1);
+      }
+
+      return dateArray;
+    }
+
+    var margin = {
+      top: 20,
+      bottom: 10,
+      between: {
+        y: 40,
+        x: 40
+      },
+      left: 35,
+      right: 5
+    };
+
+    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
+    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
+
+    var posts = {};
+    posts.title = 'Post Volume';
+    posts.method = 'volume';
+    posts.class = 'volume-posts';
+    posts.width = totalWidth * 0.5;
+    posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
+    posts.position_left = margin.left;
+    posts.position_top = margin.top;
+    posts.x = techan.scale.financetime().range([0, posts.width]);
+    posts.y = d3.scale.linear().range([posts.height, 0]);
+    posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
+    posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
+    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
+
+    var brushChart = {};
+    brushChart.title = '';
+    brushChart.method = 'volume';
+    brushChart.class = 'brush-chart-posts';
+    brushChart.width = totalWidth * 0.5;
+    brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
+    brushChart.position_left = margin.left;
+    brushChart.position_top = totalHeight * 0.8 + margin.between.y;
+    brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
+    brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
+    brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
+    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
+    brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
+
+    var price = {};
+    price.title = 'Price';
+    price.method = 'ohlc';
+    price.class = 'close';
+    price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
+    price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+    price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+    price.position_top = margin.top;
+    price.x = techan.scale.financetime().range([0, price.width]);
+    price.y = d3.scale.linear().range([price.height, 0]);
+    price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
+    price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
+    price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
+
+    var volume = {};
+    volume.title = 'Volume';
+    volume.method = 'volume';
+    volume.class = 'volume';
+    volume.width = totalWidth * 0.5 - 2 * margin.between.x;
+    volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+    volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+    volume.position_top = totalHeight * 0.5 + margin.between.y;
+    volume.x = price.x;
+    volume.y = d3.scale.linear().range([volume.height, 0]);
+    volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
+    volume.xAxis = price.xAxis;
+    volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+
+    var svg = d3.select(div).append('svg')
+      .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
+      .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
+
+    function makeDiv (obj, clip) {
+      var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
+        .attr('transform',
+            'translate(' + obj.position_left + ',' + obj.position_top + ')');
+
+      div.append('svg:clipPath')
+        .attr('id', clip)
+        .append('svg:rect')
+        .attr('x', 0)
+        .attr('y', obj.y(1))
+        .attr('width', obj.width)
+        .attr('height', obj.y(0) - obj.y(1));
+
+      div.append('g')
+        .attr('class', obj.class)
+        .attr('clip-path', 'url(#' + clip + ')');
+
+      div.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + obj.height + ')');
+
+      div.append('g')
+        .attr('class', 'y axis')
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '.71em')
+        .style('text-anchor', 'end')
+        .text(obj.title);
+
+      return div;
+    }
+
+    posts.div = makeDiv(posts, 'c1');
+
+    brushChart.div = makeDiv(brushChart, 'c2');
+    brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
+
+    if (includePV) {
+      price.div = makeDiv(price, 'c3');
+      volume.div = makeDiv(volume, 'c4');
+    }
+
+    if (includePV) {
+      // var accessor = price.plot.accessor()
+      price.x.domain(dateSupport);
+      price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
+      price.div.select('g.close').datum(pvData);
+
+      volume.x.domain(dateSupport);
+      volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
+      volume.div.select('g.volume').datum(pvData);
+    }
+
+    posts.x.domain(dateSupport);
+    posts.y.domain(techan.scale.plot.volume(forumData).domain());
+    posts.div.select('g.volume-posts').datum(forumData);
+
+    brushChart.x.domain(dateSupport);
+    brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
+    brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
+    brushChart.div.select('g.x.axis').call(brushChart.xAxis);
+    brushChart.div.select('g.y.axis').call(brushChart.yAxis);
+
+    // Associate the brush with the scale and render the brush
+    // only AFTER a domain has been applied
+    var brushZoom = brushChart.x.zoomable();
+    var zoomable = price.x.zoomable();
+    var zoomable2 = posts.x.zoomable();
+
+    var brush = d3.svg.brush()
+      .x(brushZoom)
+      .on('brushend', draw);
+
+    brushChart.div.select('g.pane')
+      .call(brush)
+      .selectAll('rect')
+      .attr('height', brushChart.height);
+
+    function _draw (obj, dateFilter) {
+      var data = obj.div.select('g.' + obj.class).datum();
+
+      var _data = _.filter(data, function (d) {
+        return d.date > dateFilter[0] & d.date < dateFilter[1];
+      });
+
+      if (_data.length > 0) {
+        obj.y.domain(techan.scale.plot[obj.method](_data).domain());
+      } else {
+        obj.y.domain([0, 1]);
+      }
+
+      // plot the data
+      obj.div.select('g.' + obj.class).call(obj.plot);
+      // draw the x / y axis for c2
+      obj.div.select('g.x.axis').call(obj.xAxis);
+      obj.div.select('g.y.axis').call(obj.yAxis);
+    }
+
+    function draw () {
+      var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
+      var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
+
+      _this.set('dateFilter', dateFilter);
+
+      zoomable.domain(brushDomain);
+      zoomable2.domain(brushDomain);
+
+      if (includePV) {
+        _draw(price, dateFilter);
+        _draw(volume, dateFilter);
+      }
+
+      _draw(posts, dateFilter);
+
+      cb(dateFilter);
+    }
+
+    draw();
+  },
   actions: {
     topXClicked (id) {
       var _this = this;
