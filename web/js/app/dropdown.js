@@ -28,11 +28,6 @@ App.DropdownController = Ember.ObjectController.extend({
       {id: 'tri_pred_pos', name: 'Pump Sentiment'}
     ]
   },
-  otc_neighbors_select_content: [
-    {id: undefined, name: 'Choose Type'},
-    {id: 'otc_neibs_total', name: '% OTC Affiliated Neighbors'},
-    {id: 'otc_neibs_pct', name: 'N OTC Affiliated Neighbors'}
-  ],
   financials_select_content: [
     {id: undefined, name: 'Choose Type'}
   ],
