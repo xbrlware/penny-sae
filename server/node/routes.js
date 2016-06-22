@@ -48,9 +48,19 @@ module.exports = function (app, config, client) {
     },
     'financials': function (cik) {
       return {
+        '_source': ['name', 'form', 'date', 'url', '__meta__'],
         'query': {
-          'match': {
-            'cik': cik
+          'filtered': {
+            'filter': {
+              'exists': {
+                'field': '__meta__.financials'
+              }
+            },
+            'query': {
+              'match': {
+                'cik': cik
+              }
+            }
           }
         }
       };
@@ -234,7 +244,15 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['FINANCIALS'],
       body: pennyQueryBuilder.financials(parseInt(d.cik))
     }).then(function (response) {
-      console.log(response.hits.hits);
+      _.map(response.hits.hits, function (x) {
+        _.mapObject(x._source.__meta__.financials, function (field, key) {
+          if (!field) {
+            field = {'value': null};
+          }
+          x._source[key] = field;
+        });
+        delete x._source.__meta__;
+      });
       res.send(_.pluck(response.hits.hits, '_source'));
     });
   });
