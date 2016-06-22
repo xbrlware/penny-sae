@@ -2,7 +2,7 @@
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 5, bottom: 20, left: 20};
+  var margin = {top: 10, right: 15, bottom: 20, left: 20};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
@@ -90,6 +90,8 @@ App.BoardController = Ember.Controller.extend({
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
 
+    console.log('filtered_data :: --> ', data);
+
     var out;
     var _data;
 
@@ -113,6 +115,7 @@ App.BoardController = Ember.Controller.extend({
       return i < 100;
     }).value();
 
+    console.log('RRRR :: --> ', r);
     return r;
   }.property('filtered_data', 'dateFilter'),
 
@@ -130,7 +133,7 @@ App.BoardController = Ember.Controller.extend({
     this.set('timelineLoading', true);
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('redrawTimeline', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('redraw', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
         _this.set('model.tlData', response);
         _this.renderX();
         _this.renderGauges();
@@ -385,7 +388,7 @@ App.BoardController = Ember.Controller.extend({
     posts.y = d3.scale.linear().range([posts.height, 0]);
     posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
     posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
-    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
+    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
 
     var brushChart = {};
     brushChart.title = '';

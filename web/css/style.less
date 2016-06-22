@@ -354,7 +354,6 @@ body {
 
 #gauge-timeline-cell {
     max-height: 1020px;
-    overflow-y: auto;
 }
 
 #forum-div {
@@ -608,12 +607,14 @@ input {
     color: red;
     font-size: 24px;
     margin: auto;
+    top: 0.25em;
+    left: 0.5em;
     transition: all .2s ease-in-out; // smoother transitions
 }
 
 .loader-text { // text next to spinner
-    padding-left: 45px;  // magic numbers to position loader text in navbar
-    top:7px;
+    left: 0.8em;  // magic numbers to position loader text in navbar
+    top: 0.45em;
     font-size: 1.4em; 
     position: relative;
     transition: all .2s ease-in-out; // smoother transitions
@@ -846,6 +847,26 @@ path.candle.down {
     }
 }
 
+#close {
+    .x.axis {
+        .tick:nth-child(even) {
+            text {
+                display: none;
+            }
+        }
+    }
+}
+
+#volume {
+    .x.axis {
+        .tick:nth-child(odd) {
+            text {
+                display: none;
+            }
+        }
+    }
+}
+
 .msg {
     width      : 300px !important;
     overflow   : auto;
@@ -867,7 +888,6 @@ path.candle.down {
 .charts-wrapper {
 	display: table;
 	height: 100%;
-	overflow-y: hidden;
 }
 
 #forum-item {

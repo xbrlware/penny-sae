@@ -6,7 +6,7 @@ App.FinancialsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('financials', this.get('controller.name')).then(function (response) {
       controller.set('model', response);
-      console.log(response);
+      console.log('RESPONSE', response);
     });
   }
 });
@@ -29,8 +29,7 @@ App.FinancialsController = Ember.Controller.extend({
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      console.log('NNN :: --> ', n);
-      return [n.name, n.date, n.form, n.assets.value, n.liabilitiesAndStockholdersEquity.value, n.netIncome.value, n.profit.value, n.revenues.value, n.earnings.value];
+      return [n.name, n.date, n.form, n.assets, n.liabilitiesAndStockholdersEquity, n.netIncome, n.profit, n.revenues, n.earnings];
     });
   }.property('model')
 });

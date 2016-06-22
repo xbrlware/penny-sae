@@ -247,9 +247,10 @@ module.exports = function (app, config, client) {
       _.map(response.hits.hits, function (x) {
         _.mapObject(x._source.__meta__.financials, function (field, key) {
           if (!field) {
-            field = {'value': null};
+            x._source[key] = 0;
+          } else {
+            x._source[key] = field.value ? field.value.toLocaleString() : 0;
           }
-          x._source[key] = field;
         });
         delete x._source.__meta__;
       });
@@ -293,9 +294,9 @@ module.exports = function (app, config, client) {
     });
   });
 
-  app.post('/redrawTimeline', function (req, res) {
+  app.post('/redraw', function (req, res) {
     var d = req.body;
-    console.log('/redrawTimeline ::', d);
+    console.log('/redraw ::', d);
     if (!d.ticker || !d.date_filter) {
       return res.send([]);
     }
