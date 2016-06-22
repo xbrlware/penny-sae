@@ -19,12 +19,12 @@ App.FinancialsController = Ember.Controller.extend({
     {title: 'Company', className: 'dt-body-right', defaultContent: 'NA'},
     {title: 'Date', defaultContent: 'NA'},
     {title: 'Filing', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Assets', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Liabilities & Stockholders Equity', defaultContent: 'NA'},
-    {title: 'Net Income', defaultContent: 'NA'},
-    {title: 'Profit', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Revenues', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Earnings', defaultContent: 'NA'}
+    {title: 'Assets', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
+    {title: 'Liabilities & Stockholders Equity', render: function (x) { return x < 1 ? 'NA' : x; }},
+    {title: 'Net Income', render: function (x) { return x < 1 ? 'NA' : x; }},
+    {title: 'Profit', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
+    {title: 'Revenues', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
+    {title: 'Earnings', render: function (x) { return x < 1 ? 'NA' : x; }}
   ],
 
   tableContent: function () {
