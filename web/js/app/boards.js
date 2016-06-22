@@ -2,13 +2,9 @@
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 10, bottom: 20, left: 30};
+  var margin = {top: 10, right: 5, bottom: 20, left: 20};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
-
-  // Get cell height
-  var height = (margin.top + margin.bottom) * 1.5;
-  var width = Ember.$(div).width() - (margin.left + margin.right);
 
   // Calculate bar width
   var BAR_WIDTH = 2;
@@ -20,12 +16,6 @@ function makeTimeSeries (ts, bounds) {
     };
   }).value();
 
-  var x = d3.time.scale().range([0, width + (margin.left + margin.right)]);
-  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
-
-  var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, bounds.ymax]);
-
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
 
@@ -33,6 +23,16 @@ function makeTimeSeries (ts, bounds) {
   d3.select(div + ' .before').text(ts.count.before);
   d3.select(div + ' .during').text(ts.count.during);
   d3.select(div + ' .after').text(ts.count.after);
+
+  // Get cell height
+  var height = (margin.top + margin.bottom) * 1.5;
+  var width = (Ember.$('#techan-wrapper').width() * 0.3222) - (margin.left + margin.right);
+
+  var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
+  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
+
+  var y = d3.scale.linear().range([height, 0]);
+  y.domain([0, bounds.ymax]);
 
   var svg = d3.select(div).append('svg:svg')
     .attr('width', width + margin.left + margin.right)
@@ -43,11 +43,11 @@ function makeTimeSeries (ts, bounds) {
   var xaxis = d3.svg.axis()
     .scale(x)
     .orient('bottom')
-    .ticks(3)
-    .tickFormat(d3.time.format('%b-%d-%y'));
+    .ticks(2)
+    .tickFormat(d3.time.format('%b-%y'));
 
   svg.append('g')
-    .attr('class', 'axis')
+    .attr('class', 'x axis')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xaxis)
     .attr('stroke', TEXT_COLOR);
@@ -125,7 +125,6 @@ App.BoardController = Ember.Controller.extend({
   }.property(),
 
   redraw: function () {
-    console.log('REDRAW BEING CALLED');
     var _this = this;
     var cik = _this.controllerFor('detail').get('model.cik');
     this.set('timelineLoading', true);
@@ -163,7 +162,6 @@ App.BoardController = Ember.Controller.extend({
 
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      console.log('RENDERALL BEING CALLED');
       if (_this.get('topX') === undefined) {
         // Time series
         var topX = _.pluck(data, 'id');
@@ -171,7 +169,6 @@ App.BoardController = Ember.Controller.extend({
         _this.renderX();
         _this.renderGauges();
       } else {
-        console.log('WE ARE IN THE ELSE');
         _this.redraw();
       }
     };
@@ -240,8 +237,8 @@ App.BoardController = Ember.Controller.extend({
     var ymax = _.chain(flatVals).pluck('value').max().value();
 
     Ember.run.next(function () {
-      _.map(timeseries, function (ts) {
-        makeTimeSeries(ts, {
+      _.map(timeseries, function (t) {
+        makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
           'ymax': ymax,
@@ -275,7 +272,7 @@ App.BoardController = Ember.Controller.extend({
     var ir = w / 4;
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.8f');
+    var valueFormat = d3.format('.4p');
 
     var data = gaugeData;
 

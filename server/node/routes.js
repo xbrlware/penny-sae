@@ -310,7 +310,7 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: pennyQueryBuilder.timeline(data)
     }).then(function (response) {
-      var r = _.map(response.aggregations.posts.buckets, function (x) {
+      var q = _.map(response.aggregations.posts.buckets, function (x) {
         return {id: x.key,
           user: x.user.buckets[0].key,
           doc_count: x.doc_count,
@@ -319,6 +319,8 @@ module.exports = function (app, config, client) {
           neg: x.neg.value,
           timeline: x.user_histogram.buckets};
       });
+      // this orders the top 10 users by posts in penny
+      var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
       console.log('/getTimelineData :: returned', r.length);
       cb(null, r);
       return;
