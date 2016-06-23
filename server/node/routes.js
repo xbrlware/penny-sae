@@ -46,25 +46,6 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'financials': function (cik) {
-      return {
-        '_source': ['name', 'form', 'date', 'url', '__meta__'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'exists': {
-                'field': '__meta__.financials'
-              }
-            },
-            'query': {
-              'match': {
-                'cik': cik
-              }
-            }
-          }
-        }
-      };
-    },
     'timeline': function (tData) {
       return {
         'size': 0,
@@ -234,29 +215,6 @@ module.exports = function (app, config, client) {
   //      }
   //    }
   };
-  app.post('/financials', function (req, res) {
-    var d = req.body;
-    console.log('/financials ::', d);
-    if (!d.cik) {
-      return res.send([]);
-    }
-    client.search({
-      index: config['ES']['INDEX']['FINANCIALS'],
-      body: pennyQueryBuilder.financials(parseInt(d.cik))
-    }).then(function (response) {
-      _.map(response.hits.hits, function (x) {
-        _.mapObject(x._source.__meta__.financials, function (field, key) {
-          if (!field) {
-            x._source[key] = 0;
-          } else {
-            x._source[key] = field.value ? field.value.toLocaleString() : 0;
-          }
-        });
-        delete x._source.__meta__;
-      });
-      res.send(_.pluck(response.hits.hits, '_source'));
-    });
-  });
 
   app.post('/user', function (req, res) {
     var d = req.body;
@@ -465,13 +423,32 @@ module.exports = function (app, config, client) {
         'sort': [
           {
             'date': {
-              'order': 'asc'
+              'order': 'desc'
             }
           }
         ],
         'query': {
           'terms': {
             'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+          }
+        }
+      };
+    },
+    'financials': function (cik) {
+      return {
+        '_source': ['name', 'form', 'date', 'url', '__meta__'],
+        'query': {
+          'filtered': {
+            'filter': {
+              'exists': {
+                'field': '__meta__.financials'
+              }
+            },
+            'query': {
+              'terms': {
+                'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+              }
+            }
           }
         }
       };
@@ -575,8 +552,7 @@ module.exports = function (app, config, client) {
       res.send({'tickers': _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
     });
   });
-
-  // *** Need to change width of CIKs in delinquency index ***
+  
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -587,6 +563,19 @@ module.exports = function (app, config, client) {
       'size': 10000
     }).then(function (esResponse) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+
+  app.post('/financials', function (req, res) {
+    var d = req.body;
+    console.log('financials <<', d);
+    client.search({
+      'index': config['ES']['INDEX']['FINANCIALS'],
+      'body' : queryBuilder.financials(d.cik),
+      'from' : 0,
+      'size' : 10000
+    }).then(function (response) {
+      res.send({"data" : _.pluck(response.hits.hits, '_source')});
     });
   });
 

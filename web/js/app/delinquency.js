@@ -6,7 +6,6 @@
 App.DelinquencyRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('delinquency', this.get('controller.name')).then(function (response) {
-      console.log('delinquency data', response);
       controller.set('model', response.data);
     });
   }
@@ -26,21 +25,9 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [n.date, n._enrich.deadline || 'missing', n.form, n._enrich.is_late || 'missing'];
+      return [n.date, n._enrich.deadline || 'missing', n.form, n._enrich.is_late];
     });
   }.property('model'),
-
-  // *** What is this doing ***
-  actions: {
-    sortBy: function (property) {
-      if (property === this.get('sortProperties')[0]) {
-        this.toggleProperty('sortAscending');
-      } else {
-        this.set('sortAscending', true);
-      }
-      this.set('sortProperties', [property]);
-    }
-  }
 });
 
 App.DelinquencyView = App.GenericTableView.extend();
