@@ -591,7 +591,8 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {ticker: cData.ticker, date_filter: con.get('dateFilter')}).then(function (response) {
+      console.log('cData', cData);
+      App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.time);

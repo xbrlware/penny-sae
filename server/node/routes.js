@@ -1,5 +1,11 @@
 // server/node/routes.js
 
+// Helpers
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var async = require('async');
@@ -121,8 +127,8 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                {'match': { 'ticker': users.ticker }},
-                {'terms': { 'user_id': users.users }}
+                    {'match': { 'ticker': users.ticker }},
+                    {'terms': { 'user_id': users.users }}
                 ]
               }
             }
@@ -234,6 +240,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.ticker || !d.date_filter) {
+      console.log('null ticker');
       return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
     }
     async.parallel([
@@ -336,13 +343,48 @@ module.exports = function (app, config, client) {
     };
   }
 
+  // Redflag helpers
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
+  function default_redFlags () {
+      return _.chain(_.keys(config.DEFAULT_TOGGLES))
+          .map(function (k) { return [k, DEFAULT_]; })
+          .object()
+  }
+  
+  function prettify(x) {
+    if(x.length > 12) {
+        x = x.slice(0, 12) + '...'
+    }
+    return x.capitalizeFirstLetter()
+  }
+  
+  redflagLabel_ = {
+    "financials"    : function(params) {return 'Low ' + prettify(params.field) },
+    "symbology"     : function(params) {return prettify(params.field) + ' Change' },
+    "suspensions"   : function(params) {return 'Trading Suspensions' },
+    "delinquency"   : function(params) {return 'Late Filings' },
+    "otc_neighbors" : function(params) {return 'OTC Neighbors' },
+//    "pv"            : function(params) {return 'No Revenues' },
+    "crowdsar"      : function(params) {return 'Forum Activity' },
+  }
+  
+  function redflagLabel(redFlags, redFlagParams) {
+    return _.chain(redFlags)
+      .map(function(v, k) {
+        console.log('-- ', redflagLabel_[k](redFlagParams[k]));
+        return [k, _.extend(v, {"label" : redflagLabel_[k](redFlagParams[k])})]
+      })
+      .object()
+      .value()
+  }
 
   function redflagPostprocess (redFlags, redFlagParams) {
-    return _.chain(_.keys(config.DEFAULT_TOGGLES)).map(function (k) { return [k, DEFAULT_]; }).object().extend({
-      'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
-      'possible': _.keys(redFlagParams).length
-    }).extend(redFlags).value();
+    return default_redFlags().extend({
+        'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
+        'possible': _.keys(redFlagParams).length
+      })
+      .extend(redflagLabel(redFlags, redFlagParams))
+      .value();
   }
 
   var queryBuilder = {
