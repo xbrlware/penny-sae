@@ -85,7 +85,7 @@ App.DropdownView = Ember.View.extend({
     });
 
     Ember.$('#big-dropdown-button').on('click', function (event) {
-          $(this).parent().toggleClass('open');
+      $(this).parent().toggleClass('open');
     });
 
     Ember.$('fa').click(function (e) {

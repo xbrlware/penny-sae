@@ -13,12 +13,12 @@
          "web/css/yamm.css",
          "web/css/gafata.css",
          "web/css/base.css",
-         "web/css/font-awesome.css",
          "web/css/cal-heatmap.css",
          "web/css/ember-toggle-switch.css",
          "web/css/jquery.dataTables.min.css",
          "web/css/jquery-ui.css",
          "web/css/techan.css",
+         "web/css/font-awesome.min.css",
          "web/css/style.less.css"
      ],
 
@@ -70,8 +70,6 @@
 	       "web/js/app/previous-reg.js",
 	       "web/js/app/promotions.js",
 	       "web/js/app/boards.js",
-           "web/js/app/pva-charts.js",
-	       "web/js/app/red-flag_query.js",
 	       "web/js/app/sar-generator.js",
 	       "web/js/app/sic-piechart.js",
 	       "web/js/app/sidebar.js",

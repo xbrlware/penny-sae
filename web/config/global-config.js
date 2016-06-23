@@ -7,6 +7,10 @@ var gconfig = {
  "DRAG_NODE_SIZE": 12,
  "DEFAULT_HIDE_TERMINAL": false,
  "DEFAULT_HIDE_NER": true,
+ "DEFAULT_DATE_FILTER": [
+  "2000-01-01",
+  "2017-01-01"
+ ],
  "DEFAULT_REDFLAG_PARAMS": {
   "symbology": {
    "field": "name",

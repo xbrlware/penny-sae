@@ -18,18 +18,20 @@
             </div>
             <br />
             <ul class="nav navbar-nav" id="view-selector">
-                <li>{{#link-to 'board'     }} Price / Volume Anomalies + <br /> CROWDSAR {{/link-to}}</li>
+                <li>{{#link-to 'board'     }} Price/Volume + Message Board {{/link-to}}</li>
                 <li>{{#link-to 'topNews'  }} News                                     {{/link-to}}</li>
                 <li>{{#link-to 'financials'  }} Financials                               {{/link-to}}</li>
                 <li>{{#link-to 'delinquency' }} Late <br /> Filings                        {{/link-to}}</li>
                 <li>{{#link-to 'previousReg' }} Regulatory <br /> Actions                  {{/link-to}}</li>
                 <li>{{#link-to 'associates'  }} Network <br /> Analysis                    {{/link-to}}</li>
+{{!--
                 <li>{{#link-to 'promotions'  }} Stock Promotions                         {{/link-to}}</li>
                 <li>{{#link-to 'leadership'  }} Leadership                               {{/link-to}}</li>
+--}}
             </ul>
         </nav>
     </div>
-    <div class="col-sm-12 col-sm-12-no-padding">
-        {{outlet}}
-    </div>
+</div>
+<div class="col-sm-12 col-sm-12-no-padding">
+    {{outlet}}
 </div>

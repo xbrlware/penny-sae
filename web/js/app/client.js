@@ -48,7 +48,7 @@ App.SearchResultsView = Ember.View.extend({
     App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
       Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
-          if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+          if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {
             Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
           }
         },
@@ -79,22 +79,6 @@ App.Search.reopenClass({
         },
         error: function (xhr, status, error) {
           console.log('Error: ' + error.message);
-        }
-      });
-    });
-  },
-
-  fetch_boards: function (detailName, boardIds) {
-    console.log('board ids :: ', boardIds);
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      Ember.$.ajax({
-        type: 'POST',
-        contentType: 'application/json',
-        dataType: 'json',
-        url: detailName,
-        data: boardIds,
-        success: function (response) {
-          resolve(response);
         }
       });
     });

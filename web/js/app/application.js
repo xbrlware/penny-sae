@@ -85,7 +85,6 @@ App.Router.map(function () {
 App.RedFlagParams = Ember.Object.extend({
   _params: gconfig.DEFAULT_REDFLAG_PARAMS,
   _toggles: gconfig.DEFAULT_TOGGLES,
-  stupid: '1976-01-27',
   get_params: function () { return this.get('_params'); },
   get_toggles: function () { return this.get('_toggles'); },
   get_toggled_params: function () {

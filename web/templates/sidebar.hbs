@@ -10,8 +10,7 @@
         {{#unless total_hits}}
             No companies in our database match your search criteria.
         {{else}}
-            {{total_hits}} &nbsp; companies in our database
-			match your search criteria.
+            {{total_hits}} companies in our database match your search criteria. (Query took {{query_time}}s)
             <div class="list-group square">
                 {{#each h in hits}}
                     {{#if h.name}}
@@ -20,10 +19,10 @@
                 {{/each}}
             </div>
         {{/unless}}
-    {{else}}
+
     {{/unless}}
 </div>
 
-<div class="col-md-8 outlet-min-width">
+<div class="col-sm-8 outlet-min-width">
     {{outlet}}
 </div>

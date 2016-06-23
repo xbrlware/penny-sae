@@ -352,12 +352,17 @@ body {
     color: red;
 }
 
+#gauge-timeline-cell {
+    max-height: 1020px;
+}
+
 #forum-div {
-    height: 800px;
+    max-height: 1020px;
     padding: 0px;
     border: 1px solid gray;
     overflow-y: auto;
 }
+
 #div-dropdown-right {
     margin-top: 20%;
 }
@@ -599,17 +604,17 @@ input {
 /* Loading Spinner */
 #spinner {  // indicates whether page is loading
     position: relative;
+    color: red;
+    font-size: 24px;
     margin: auto;
-    left: 25px; // magic numbers to relocate the spinner
-    height: 35px; // resize to align with search box
-    width:35px;
-    top: 2px;
+    top: 0.25em;
+    left: 0.5em;
     transition: all .2s ease-in-out; // smoother transitions
 }
 
 .loader-text { // text next to spinner
-    padding-left: 45px;  // magic numbers to position loader text in navbar
-    top:7px;
+    left: 0.8em;  // magic numbers to position loader text in navbar
+    top: 0.45em;
     font-size: 1.4em; 
     position: relative;
     transition: all .2s ease-in-out; // smoother transitions
@@ -735,13 +740,31 @@ input {
 
 path {
   &.volume {
-	fill: #049479;
+    fill: red;
   }
   &.line {
     fill: none;
     stroke-width: 2;
 	stroke: red;
   }
+}
+
+path.candle {
+	stroke: #000000;
+}
+
+path.candle.body {
+	stroke-width: 0;
+}
+
+path.candle.up {
+	fill: #00AA00;
+	stroke: #00AA00;
+}
+
+path.candle.down {
+	fill: #FF0000;
+	stroke: #FF0000;
 }
 
 .d3-tip {
@@ -774,7 +797,7 @@ path {
 
 .list-group {
     background : rgba(220, 220, 220, .2);
-    color : @highlight-color;
+    color : black;
 
     a {
         color : @highlight-color !important;
@@ -793,7 +816,6 @@ path {
 
     }
     .comments-group-item {
-      height: 110px;
 	  overflow: auto;
     }
     &.potential-results-wrapper {
@@ -815,6 +837,36 @@ path {
 
 }
 
+#volume-posts {
+    .x.axis {
+        .tick:nth-child(odd) {
+            text {
+                display: none;
+            }
+        }
+    }
+}
+
+#close {
+    .x.axis {
+        .tick:nth-child(even) {
+            text {
+                display: none;
+            }
+        }
+    }
+}
+
+#volume {
+    .x.axis {
+        .tick:nth-child(odd) {
+            text {
+                display: none;
+            }
+        }
+    }
+}
+
 .msg {
     width      : 300px !important;
     overflow   : auto;
@@ -831,6 +883,11 @@ path {
 
 .chart-selected {
     border : 1px solid orange;
+}
+
+.charts-wrapper {
+	display: table;
+	height: 100%;
 }
 
 #forum-item {
@@ -852,7 +909,6 @@ path {
 
 #collection {
   position: relative;
-  height: 500px;
 }
 
 #ui-datepicker-div {
@@ -1025,11 +1081,6 @@ path {
     .zero-top-margin;
     .red-text;
     margin-bottom: 0px;
-}
-
-#container-pvchart {
-    height:500px;
-    min-width:310px;
 }
 
 #cse-iframe {
