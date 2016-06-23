@@ -10,7 +10,7 @@ function delinquency (data, params) {
   }
   return {
     'value': n,
-    'is_flag': n > 0,
+    'is_flag': n >= params.threshold,
     'have': have
   };
 }
