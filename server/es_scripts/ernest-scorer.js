@@ -14,7 +14,8 @@ var functions = {
   'delinquency': delinquency,
   'otc_neighbors': otc_neighbors,
   'crowdsar': crowdsar,
-  'suspensions' : suspensions
+  'suspensions': suspensions,
+  'financials': financials
 };
 
 function run () {
@@ -24,7 +25,7 @@ function run () {
     kscore = functions[k](_source[k], params[k]);
     if (kscore.have) {scores[k] = kscore;}
   }
-  
+
   return score ? combine_scores(scores, params) : scores;
 }
 

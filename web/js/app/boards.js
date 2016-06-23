@@ -597,8 +597,8 @@ App.BoardRoute = Ember.Route.extend({
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.time);
           return x;
-        })
-        );
+        }));
+
         con.set('splitByFilter', []);
         con.set('splitBy', 'user');
 
@@ -632,7 +632,7 @@ Ember.Handlebars.helper('forum-posts', function (d, sbf) {
     }
   });
 
-  ourString = ourString + '<div class="col-xs-12" id="forum-div""><ul class="list-group" id="collection">';
+  ourString = ourString + '<div id="forum-div""><ul class="list-group" id="collection">';
 
   if (data) {
     for (var i = 0; i < data.length; i++) {

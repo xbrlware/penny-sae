@@ -19,16 +19,16 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
   tableColumns: [
     {title: 'Form'},
     {title: 'Period of Filing', className: 'dt-body-right'},
-    {title: 'Deadline', className: 'dt-body-right'},
+    {title: 'Deadline', className: 'dt-body-right', defaultContent: 'NA'},
     {title: 'Date of Filing', className: 'dt-body-right'},
-    {title: 'Late Filing'}
+    {title: 'Late Filing', defaultContent: 'NA'}
   ],
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
       return [n.form, n._enrich.period, n.date, n._enrich.deadline || 'missing', n._enrich.is_late ? 'Late' : ''];
     });
-  }.property('model'),
+  }.property('model')
 });
 
 App.DelinquencyView = App.GenericTableView.extend();

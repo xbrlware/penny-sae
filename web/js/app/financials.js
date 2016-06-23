@@ -10,9 +10,9 @@ App.FinancialsRoute = Ember.Route.extend({
   }
 });
 
-var niceNumber = function(x) {
-    return x === undefined ? 'NA' : x.toLocaleString()
-}
+var niceNumber = function (x) {
+  return x === undefined ? 'NA' : x.toLocaleString();
+};
 
 App.FinancialsController = Ember.Controller.extend({
   needs: ['detail'],
@@ -27,19 +27,25 @@ App.FinancialsController = Ember.Controller.extend({
     {title: 'Net Income', render: niceNumber},
     {title: 'Profit', className: 'dt-body-right', render: niceNumber},
     {title: 'Revenues', className: 'dt-body-right', render: niceNumber},
-    {title: 'Earnings', render: niceNumber},
+    {title: 'Earnings', render: niceNumber}
   ],
-  
-  smartGet: function(obj, key) {
-    if(!obj[key]) {
-        return undefined
+
+  smartGet: function (obj, key) {
+    if (!obj[key]) {
+      return undefined;
     }
-    if(!obj[key].value) {
-        return undefined
+    if (!obj[key].value) {
+      return undefined;
     }
-    return obj[key].value
+    return obj[key].value;
   },
-  
+
+  rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData['column2'] !== 'NA') {
+      Ember.$(nRow).css('color', 'red');
+    }
+  },
+
   tableContent: function () {
     var this_ = this;
     return _.map(this.get('model'), function (n) {
@@ -50,7 +56,7 @@ App.FinancialsController = Ember.Controller.extend({
         this_.smartGet(n.__meta__.financials, 'profit'),
         this_.smartGet(n.__meta__.financials, 'revenues'),
         this_.smartGet(n.__meta__.financials, 'earnings')
-      ]
+      ];
     });
   }.property('model')
 });
