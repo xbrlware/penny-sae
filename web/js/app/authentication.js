@@ -2,8 +2,8 @@
 /* global Ember, App, SimpleAuth, config */
 
 App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
-  tokenEndpoint: (config.TESTING ? config.TESTING_DOMAIN : '') + '/login', // *** TEST ***
-  verifyEndpoint: (config.TESTING ? config.TESTING_DOMAIN : '') + '/check_token',
+  tokenEndpoint: '/login', // *** TEST ***
+  verifyEndpoint: '/check_token',
   restore: function (data) {
     var _this = this;
     if (!Ember.isEmpty(data.token)) {

@@ -375,7 +375,7 @@ module.exports = function (app, config, client) {
     },
     'company_table': function (cik) {
       return {
-        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic'],
+        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic', '__meta__'],
         'query': { 'term': { 'cik': cik } }
       };
     },
@@ -504,6 +504,7 @@ module.exports = function (app, config, client) {
 
   app.post('/company_table', function (req, res) {
     var d = req.body;
+    console.log('d >> ', d);
     client.search({
       'index': config['ES']['INDEX']['SYMBOLOGY'],
       'body': queryBuilder.company_table(d.cik),
@@ -512,12 +513,20 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       res.send({
         'table': _.chain(esResponse.hits.hits).sortBy(function (hit) { return hit._source.min_date; }).map(function (hit) {
+          // Use SIC code unless description is available
+          var sic = hit._source.sic;
+          if(hit._source.__meta__) {
+            if(hit._source.__meta__.sic_lab) {
+                sic = hit._source.__meta__.sic_lab;
+            }
+          }
+          
           return [
             hit._source.min_date,
             hit._source.max_date,
             hit._source.name,
             hit._source.ticker,
-            hit._source.sic
+            sic
           ];
         }).value()
       });

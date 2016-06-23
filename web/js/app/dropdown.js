@@ -29,7 +29,13 @@ App.DropdownController = Ember.ObjectController.extend({
     ]
   },
   financials_select_content: [
-    {id: undefined, name: 'Choose Type'}
+    {id: undefined, name: 'Choose Type'},
+    {id : 'assets', name: 'Assets'},
+    {id : 'liabilitiesAndStockholdersEquity', name: 'Liabilities and Stockholders Equity'},
+    {id : 'netIncome', name: 'Net Income'},
+    {id : 'profit', name: 'Profit'},
+    {id : 'revenues', name: 'Revenues'},
+    {id : 'earnings', name: 'Earnings' }
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},

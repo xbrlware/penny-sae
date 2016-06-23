@@ -53,10 +53,10 @@ var gconfig = {
  },
  "DEFAULT_TOGGLES": {
   "symbology": false,
-  "suspensions": true,
+  "suspensions": false,
   "delinquency": false,
-  "crowdsar": true,
-  "otc_neighbors": false,
+  "crowdsar": false,
+  "otc_neighbors": true,
   "financials": false,
   "pv": false
  },

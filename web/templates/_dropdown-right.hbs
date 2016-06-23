@@ -242,15 +242,6 @@
             }}
         </div>
         <div class="form-group">
-            <label class="control-label"> Threshold </label>
-            {{
-                input
-                type="number"
-                valueBinding=redFlagParams._params.financials.threshold
-                class="form-control"
-            }}
-        </div>
-        <div class="form-group">
             <label class="control-label"> Financial Measure </label>
             {{
                 view Ember.Select
@@ -275,6 +266,15 @@
                 step=100
                 valueBinding=redFlagParams._params.financials.value
                 class="input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Number of Filings Below Value </label>
+            {{
+                input
+                type="number"
+                valueBinding=redFlagParams._params.financials.threshold
+                class="form-control"
             }}
         </div>
     </form>
@@ -372,7 +372,7 @@
             }}
         </div>
         <div class="form-group">
-            <label class="control-label"> Percent OTC </label>
+            <label class="control-label"> Minimum Percent OTC </label>
             {{
                 input type="text"
                 valueBinding=redFlagParams._params.otc_neighbors.threshold
