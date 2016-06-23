@@ -1,68 +1,136 @@
 // server/node/routes.js
 
 module.exports = function (app, config, client) {
-  // var request = require('request');
   var _ = require('underscore')._;
   var async = require('async');
 
-/*
-  function rsplit (x, splitBy) {
-    try {
-      return _.chain([x]).flatten().map(function (x) { return x.split(','); }).flatten().value();
-    } catch (e) {
-      console.warn('Error in query builder :: ', e);
-      return null;
-    }
-  }
-*/
-
   var pennyQueryBuilder = {
-    //    'user': function (ids) {
-    //      return {
-    //        'size': 1e6,
-    //        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'tri_pred', 'ticker'],
-    //        'query': {
-    //          'filtered': {
-    //            'filter': {
-    //              'range': {
-    //                'date': {
-    //                  'gte': '2010-01-01 00:00:00',
-    //                  'lte': '2015-01-01 00:00:00'
-    //                }
-    //              }
-    //            },
-    //            'query': {
-    //              'terms': {
-    //                'user_id': rsplit(ids, ',')
-    //              }
-    //            }
-    //          }
-    //        }
-    //      }
-    //    },
-    'board': function (boardName) {
+    'board': function (brdData) {
       return {
         'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', '__meta__', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
               'range': {
                 'time': {
-                  'gte': '2000-01-01',
-                  'lte': '2017-01-01'
+                  'gte': brdData.date_filter[0],
+                  'lte': brdData.date_filter[1]
                 }
               }
             },
             'query': {
               'match': {
-                'board': boardName.toLowerCase()
+                'ticker': brdData.ticker.toLowerCase()
+              }
+            }
+          }
+        }
+      };
+    },
+    'boardTimeline': function (btData) {
+      return {
+        'size': 0,
+        'query': {
+          'match': {
+            'ticker': btData.ticker.toLowerCase()
+          }
+        },
+        'aggs': {
+          'board_histogram': {
+            'date_histogram': {
+              'field': 'time',
+              'interval': 'day'
+            }
+          }
+        }
+      };
+    },
+    'timeline': function (tData) {
+      return {
+        'size': 0,
+        'query': {
+          'filtered': {
+            'filter': {
+              'range': {
+                'time': {
+                  'gte': tData.date_filter[0],
+                  'lte': tData.date_filter[1]
+                }
+              }
+            },
+            'query': {
+              'match': {
+                'ticker': tData.ticker.toLowerCase()
+              }
+            }
+          }
+        },
+        'aggs': {
+          'posts': {
+            'terms': {
+              'field': 'user_id',
+              'size': 10
+            },
+            'aggs': {
+              'user': {
+                'terms': {
+                  'field': 'user'
+                }
+              },
+              'user_histogram': {
+                'date_histogram': {
+                  'field': 'time',
+                  'interval': 'day'
+                }
+              },
+              'pos': {
+                'avg': {
+                  'field': '__meta__.tri_pred.pos'
+                }
+              },
+              'neut': {
+                'avg': {
+                  'field': '__meta__.tri_pred.neut'
+                }
+              },
+              'neg': {
+                'avg': {
+                  'field': '__meta__.tri_pred.neg'
+                }
+              }
+            }
+          }
+        }
+      };
+    },
+    'user': function (users) {
+      return {
+        'size': 1000,
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        'query': {
+          'filtered': {
+            'filter': {
+              'range': {
+                'time': {
+                  'gte': users.date_filter[0],
+                  'lte': users.date_filter[1]
+                }
+              }
+            },
+            'query': {
+              'bool': {
+                'must': [
+                {'match': { 'ticker': users.ticker }},
+                {'terms': { 'user_id': users.users }}
+                ]
               }
             }
           }
         }
       };
     }
+
   //    'aggs': function (params) {
   //      var dateClause, boardClause, userClause
   //
@@ -148,43 +216,108 @@ module.exports = function (app, config, client) {
   //    }
   };
 
+  app.post('/user', function (req, res) {
+    var d = req.body;
+    console.log('/user ::', d);
+    if (!d.ticker || !d.users || !d.date_filter) {
+      return res.send([]);
+    }
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.user(d)
+    }).then(function (response) {
+      res.send(_.pluck(response.hits.hits, '_source'));
+    });
+  });
+
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.ticker) {
-      return res.send({'data': undefined, 'pvData': undefined});
+    if (!d.ticker || !d.date_filter) {
+      return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
     }
     async.parallel([
-      function (cb) { getForumdata(d.ticker, cb); },
-      function (cb) { getPvData(d.ticker, cb); }
+      function (cb) { getForumdata(d, cb); },
+      function (cb) { getPvData(d, cb); },
+      function (cb) { getPostsTimelineData(d, cb); },
+      function (cb) { getTimelineData(d, cb); }
     ], function (err, results) {
       if (err) { console.log(err); }
       res.send({
         'data': results[0],
-        'pvData': results[1]
+        'pvData': results[1],
+        'ptData': results[2],
+        'tlData': results[3]
       });
     });
   });
 
-  function getForumdata (ticker, cb) {
-    console.log('getForumData', ticker);
+  app.post('/redraw', function (req, res) {
+    var d = req.body;
+    console.log('/redraw ::', d);
+    if (!d.ticker || !d.date_filter) {
+      return res.send([]);
+    }
+    getTimelineData(d, function (n, resp) {
+      res.send(resp);
+    });
+  });
+
+  function getTimelineData (data, cb) {
+    console.log('getTimelineData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: pennyQueryBuilder.board(ticker)
+      body: pennyQueryBuilder.timeline(data)
     }).then(function (response) {
-      console.log('/forumData :: returning', response.hits.hits.length);
-      cb(null, _.pluck(response.hits.hits, '_source'));
+      var q = _.map(response.aggregations.posts.buckets, function (x) {
+        return {id: x.key,
+          user: x.user.buckets[0].key,
+          doc_count: x.doc_count,
+          pos: x.pos.value,
+          neut: x.neut.value,
+          neg: x.neg.value,
+          timeline: x.user_histogram.buckets};
+      });
+      // this orders the top 10 users by posts in penny
+      var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
+      console.log('/getTimelineData :: returned', r.length);
+      cb(null, r);
+      return;
     });
   }
 
-  function getPvData (ticker, cb) {
-    console.log('getPvData', ticker);
+  function getPostsTimelineData (data, cb) {
+    console.log('getPostsTimelineData', data);
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.boardTimeline(data)
+    }).then(function (response) {
+      console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
+      cb(null, response.aggregations.board_histogram.buckets);
+    });
+  }
+
+  function getForumdata (data, cb) {
+    console.log('getForumData', data);
+    client.search({
+      index: config['ES']['INDEX']['CROWDSAR'],
+      body: pennyQueryBuilder.board(data)
+    }).then(function (response) {
+      console.log('/forumData :: returning', response.hits.hits.length);
+      cb(null, _.pluck(response.hits.hits, '_source'));
+      return;
+    });
+  }
+
+  function getPvData (data, cb) {
+    console.log('getPvData', data);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'size': 9999, 'query': {'term': {'symbol': ticker.toLowerCase()}}}
+      body: {'size': 9999, 'query': {'term': {'symbol': data.ticker.toLowerCase()}}}
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
+      return;
     });
   }
 
@@ -290,13 +423,32 @@ module.exports = function (app, config, client) {
         'sort': [
           {
             'date': {
-              'order': 'asc'
+              'order': 'desc'
             }
           }
         ],
         'query': {
           'terms': {
             'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+          }
+        }
+      };
+    },
+    'financials': function (cik) {
+      return {
+        '_source': ['name', 'form', 'date', 'url', '__meta__'],
+        'query': {
+          'filtered': {
+            'filter': {
+              'exists': {
+                'field': '__meta__.financials'
+              }
+            },
+            'query': {
+              'terms': {
+                'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+              }
+            }
           }
         }
       };
@@ -400,8 +552,7 @@ module.exports = function (app, config, client) {
       res.send({'tickers': _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
     });
   });
-
-  // *** Need to change width of CIKs in delinquency index ***
+  
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -412,6 +563,19 @@ module.exports = function (app, config, client) {
       'size': 10000
     }).then(function (esResponse) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+
+  app.post('/financials', function (req, res) {
+    var d = req.body;
+    console.log('financials <<', d);
+    client.search({
+      'index': config['ES']['INDEX']['FINANCIALS'],
+      'body' : queryBuilder.financials(d.cik),
+      'from' : 0,
+      'size' : 10000
+    }).then(function (response) {
+      res.send({"data" : _.pluck(response.hits.hits, '_source')});
     });
   });
 

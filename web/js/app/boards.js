@@ -1,14 +1,10 @@
-/* global Ember, App, d3, _, techan, crossfilter, gconfig, reductio */
+/* global Ember, App, d3, _, techan, crossfilter, gconfig */
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 30, bottom: 20, left: 30};
+  var margin = {top: 10, right: 15, bottom: 20, left: 20};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
-
-  // Get cell height
-  var height = (margin.top + margin.bottom) * 1.5;
-  var width = Ember.$(div).width() - (margin.left + margin.right);
 
   // Calculate bar width
   var BAR_WIDTH = 2;
@@ -20,12 +16,6 @@ function makeTimeSeries (ts, bounds) {
     };
   }).value();
 
-  var x = d3.time.scale().range([0, width + (margin.left + margin.right)]);
-  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
-
-  var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, bounds.ymax]);
-
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
 
@@ -33,6 +23,16 @@ function makeTimeSeries (ts, bounds) {
   d3.select(div + ' .before').text(ts.count.before);
   d3.select(div + ' .during').text(ts.count.during);
   d3.select(div + ' .after').text(ts.count.after);
+
+  // Get cell height
+  var height = (margin.top + margin.bottom) * 1.5;
+  var width = (Ember.$('#techan-wrapper').width() * 0.3222) - (margin.left + margin.right);
+
+  var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
+  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
+
+  var y = d3.scale.linear().range([height, 0]);
+  y.domain([0, bounds.ymax]);
 
   var svg = d3.select(div).append('svg:svg')
     .attr('width', width + margin.left + margin.right)
@@ -43,11 +43,11 @@ function makeTimeSeries (ts, bounds) {
   var xaxis = d3.svg.axis()
     .scale(x)
     .orient('bottom')
-    .ticks(3)
-    .tickFormat(d3.time.format('%b-%d-%y'));
+    .ticks(2)
+    .tickFormat(d3.time.format('%b-%y'));
 
   svg.append('g')
-    .attr('class', 'axis')
+    .attr('class', 'x axis')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xaxis)
     .attr('stroke', TEXT_COLOR);
@@ -64,265 +64,16 @@ function makeTimeSeries (ts, bounds) {
     .text(function (d) { return d.date + ' : ' + d.value; });
 }
 
-function renderTechan (forumdata, pvdata, routeId, subjectId, div, cb) {
-  var parseDate = d3.time.format('%Y-%m-%d').parse;
-
-  var pvData = _.chain(pvdata).map(function (d) {
-    return {
-      date: parseDate(d.date),
-      open: +d.open,
-      high: +d.high,
-      low: +d.low,
-      close: +d.close,
-      volume: +d.volume
-    };
-  }).sortBy(function (a) { return a.date; }).value();
-
-  var forumData = _.sortBy(forumdata, function (x) {
-    return x.date;
-  });
-
-  var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-    _.pluck(forumData, 'date')]));
-
-  var dateSupport = getDates(dateRange);
-
-  var includePV = true;
-
-  function addDays (currentDate, days) {
-    var dat = new Date(currentDate);
-    dat.setDate(dat.getDate() + days);
-    return dat;
-  }
-
-  function getDates (dateRange) {
-    var dateArray = [];
-    var currentDate = dateRange[0];
-
-    while (currentDate <= dateRange[1]) {
-      dateArray.push(new Date(currentDate));
-      currentDate = addDays(currentDate, 1);
-    }
-
-    return dateArray;
-  }
-
-  /*
-  function addCrosshair (obj) {
-    var _yAnnotation = techan.plot.axisannotation()
-      .axis(obj.yAxis)
-      .format(d3.format(',.2fs'))
-    var _xAnnotation = techan.plot.axisannotation()
-      .axis(obj.xAxis)
-      .format(d3.time.format('%Y-%m-%d'))
-      .width(65)
-      .translate([0, heights[0]])
-
-    return techan.plot.crosshair()
-      .xScale(obj.x)
-      .yScale(obj.y)
-      .xAnnotation(_xAnnotation)
-      .yAnnotation(_yAnnotation)
-  }
-  */
-  var margin = {
-    top: 20,
-    bottom: 10,
-    between: {
-      y: 40,
-      x: 40
-    },
-    left: 25,
-    right: 5
-  };
-
-  var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
-  var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-
-  var posts = {};
-  posts.title = 'Post Volume';
-  posts.method = 'volume';
-  posts.class = 'volume-posts';
-  posts.width = totalWidth * 0.5;
-  posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
-  posts.position_left = margin.left;
-  posts.position_top = margin.top;
-  posts.x = techan.scale.financetime().range([0, posts.width]);
-  posts.y = d3.scale.linear().range([posts.height, 0]);
-  posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-  posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
-  posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4);
-
-  var brushChart = {};
-  brushChart.title = '';
-  brushChart.method = 'volume';
-  brushChart.class = 'brush-chart-posts';
-  brushChart.width = totalWidth * 0.5;
-  brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
-  brushChart.position_left = margin.left;
-  brushChart.position_top = totalHeight * 0.8 + margin.between.y;
-  brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
-  brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
-  brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-  brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
-  brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
-
-  var price = {};
-  price.title = 'Price';
-  price.method = 'ohlc';
-  price.class = 'close';
-  price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
-  price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-  price.position_top = margin.top;
-  price.x = techan.scale.financetime().range([0, price.width]);
-  price.y = d3.scale.linear().range([price.height, 0]);
-  price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-  price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
-  price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-
-  var volume = {};
-  volume.title = 'Volume';
-  volume.method = 'volume';
-  volume.class = 'volume';
-  volume.width = totalWidth * 0.5 - 2 * margin.between.x;
-  volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-  volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-  volume.position_top = totalHeight * 0.5 + margin.between.y;
-  volume.x = price.x;
-  volume.y = d3.scale.linear().range([volume.height, 0]);
-  volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
-  volume.xAxis = price.xAxis;
-  volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-
-  var svg = d3.select(div).append('svg')
-    .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
-    .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
-
-  function makeDiv (obj, clip) {
-    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-      .attr('transform',
-        'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-    div.append('svg:clipPath')
-      .attr('id', clip)
-      .append('svg:rect')
-      .attr('x', 0)
-      .attr('y', obj.y(1))
-      .attr('width', obj.width)
-      .attr('height', obj.y(0) - obj.y(1));
-
-    div.append('g')
-      .attr('class', obj.class)
-      .attr('clip-path', 'url(#' + clip + ')');
-
-    div.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + obj.height + ')');
-
-    div.append('g')
-      .attr('class', 'y axis')
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '.71em')
-      .style('text-anchor', 'end')
-      .text(obj.title);
-
-    return div;
-  }
-
-  posts.div = makeDiv(posts, 'c1');
-
-  brushChart.div = makeDiv(brushChart, 'c2');
-  brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
-
-  if (includePV) {
-    price.div = makeDiv(price, 'c3');
-    volume.div = makeDiv(volume, 'c4');
-  }
-
-  if (includePV) {
-    // var accessor = price.plot.accessor()
-    price.x.domain(dateSupport);
-    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
-    price.div.select('g.close').datum(pvData);
-
-    volume.x.domain(dateSupport);
-    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
-    volume.div.select('g.volume').datum(pvData);
-  }
-
-  posts.x.domain(dateSupport);
-  posts.y.domain(techan.scale.plot.volume(forumData).domain());
-  posts.div.select('g.volume-posts').datum(forumData);
-
-  brushChart.x.domain(dateSupport);
-  brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
-  brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
-  brushChart.div.select('g.x.axis').call(brushChart.xAxis);
-  brushChart.div.select('g.y.axis').call(brushChart.yAxis);
-
-  // Associate the brush with the scale and render the brush
-  // only AFTER a domain has been applied
-  var brushZoom = brushChart.x.zoomable();
-  var zoomable = price.x.zoomable();
-  var zoomable2 = posts.x.zoomable();
-
-  var brush = d3.svg.brush()
-    .x(brushZoom)
-    .on('brushend', draw);
-
-  brushChart.div.select('g.pane')
-    .call(brush)
-    .selectAll('rect')
-    .attr('height', brushChart.height);
-
-  function _draw (obj, dateFilter) {
-    var data = obj.div.select('g.' + obj.class).datum();
-
-    var _data = _.filter(data, function (d) {
-      return d.date > dateFilter[0] & d.date < dateFilter[1];
-    });
-
-    if (_data.length > 0) {
-      obj.y.domain(techan.scale.plot[obj.method](_data).domain());
-    } else {
-      obj.y.domain([0, 1]);
-    }
-
-    // plot the data
-    obj.div.select('g.' + obj.class).call(obj.plot);
-    // draw the x / y axis for c2
-    obj.div.select('g.x.axis').call(obj.xAxis);
-    obj.div.select('g.y.axis').call(obj.yAxis);
-  }
-
-  function draw () {
-    var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
-    var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
-
-    zoomable.domain(brushDomain);
-    zoomable2.domain(brushDomain);
-
-    if (includePV) {
-      _draw(price, dateFilter);
-      _draw(volume, dateFilter);
-    }
-
-    _draw(posts, dateFilter);
-
-    cb(dateFilter);
-  }
-
-  draw();
-}
-
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
   name: Ember.computed.alias('controllers.detail.model'),
   routeName: undefined,
   selection_ids: undefined,
+  topX: undefined,
+  isLoading: false,
+  isData: true,
+  timelineLoading: false,
+  dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -334,25 +85,39 @@ App.BoardController = Ember.Controller.extend({
   }.property(),
 
   postFilteredData: function () {
-    var xId = this.get('splitById'); // xId === user_id
+    var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
-    var out;
+    var dfl = this.get('dateFilter');
 
-    if (sbf.length > 0) { // this.splitByFilter === board_filter
-      out = _.filter(data, function (x) {
+    console.log('filtered_data :: --> ', data);
+
+    var out;
+    var _data;
+
+    if (dfl.length) {
+      _data = _.filter(data, function (d) {
+        return d.date > dfl[0] & d.date < dfl[1];
+      });
+    } else {
+      _data = data;
+    }
+
+    if (sbf.length > 0) {
+      out = _.filter(_data, function (x) {
         return _.contains(sbf, x[xId]);
       });
     } else {
-      out = data;
+      out = _data;
     }
 
     var r = _.chain(out).filter(function (x, i) {
       return i < 100;
     }).value();
+
+    console.log('RRRR :: --> ', r);
     return r;
-  //        return _.chain(out).sortBy(function (x) { return x.date }).filter(function (x, i) { return i < 100 }).value()
-  }.property('filtered_data', 'board_filter', 'user_filter', 'splitByFilter'),
+  }.property('filtered_data', 'dateFilter'),
 
   splitBy: function () {
     return 'user';
@@ -362,77 +127,56 @@ App.BoardController = Ember.Controller.extend({
     return this.get('splitBy') + '_id';
   }.property(),
 
-  splitByFilter_nonempty: function () {
-    return this.splitByFilter.length > 0;
-  }.property('board_filter', 'user_filter'),
+  redraw: function () {
+    var _this = this;
+    var cik = _this.controllerFor('detail').get('model.cik');
+    this.set('timelineLoading', true);
+
+    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+      App.Search.fetch_data('redraw', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
+        _this.set('model.tlData', response);
+        _this.renderX();
+        _this.renderGauges();
+        _this.set('timelineLoading', false);
+      });
+    });
+  },
 
   draw: function () {
     var _this = this;
-    var data = this.get('model.data');
+    var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
-    var xId = this.get('splitById');
-
     data.forEach(function (d, i) {
       d.index = i;
-      d.date = new Date(d.time);
+      d.date = new Date(d.key_as_string);
+      d.value = d.doc_count;
     });
 
     // For parent filter
-
     var datum = crossfilter(data);
 
     var date = datum.dimension(function (d) {
       return d.date;
     });
 
-    var dates = date.group(d3.time.day);
-
-    // For dependent filters
-    var split = datum.dimension(function (d) {
-      return d[xId];
-    });
-
-    var splits = split.group();
-
-    var preds = {
-      'neg': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || { 'neg': 0 }).neg;
-      })(split.group()),
-      'neut': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || {'neut': 0}).neut;
-      })(split.group()),
-      'pos': reductio().avg(function (d) {
-        return (d.__meta__.tri_pred || {'pos': 0}).pos;
-      })(split.group())
-    };
-
-    var forumData = _.map(dates.all(), function (x) {
-      return { 'date': x.key, 'volume': x.value };
+    var forumData = _.map(data, function (x) {
+      return { 'date': x.date, 'volume': x.value };
     });
 
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      // Get all posts
-
-      _this.set('filtered_data', split.top(10));
-
-      // Time series
-      var topX = _.pluck(splits.top(10), 'key');
-      _this.set('topX', topX);
-      _this.renderX();
-
-      // Gauges
-      var topPreds = _.map(preds, function (pred) {
-        return _.filter(pred.all(), function (x) {
-          return _.contains(topX, x.key);
-        });
-      });
-
-      _this.set('topPreds', _.object(_.keys(preds), topPreds));
-      _this.renderGauges();
+      if (_this.get('topX') === undefined) {
+        // Time series
+        var topX = _.pluck(data, 'id');
+        _this.set('topX', topX);
+        _this.renderX();
+        _this.renderGauges();
+      } else {
+        _this.redraw();
+      }
     };
 
-    renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
+    this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
       function (dateFilter) {
         _this.set('dateFilter', dateFilter);
         date.filterRange(dateFilter);
@@ -440,7 +184,7 @@ App.BoardController = Ember.Controller.extend({
       }
     );
 
-    renderAll(_this);
+  // renderAll(_this)
   }.observes('model'),
 
   toggleSplitByFilterMember(id) {
@@ -454,67 +198,51 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderX() {
-    var model = this.get('model');
-    var splitBy = this.get('splitBy');
-    var topX = this.get('topX');
-    var xId = this.get('splitById');
+    var model = this.get('model.tlData');
+
     var dateFilter = this.get('dateFilter');
 
-    // NB: I bet this would scale better if we used crossfilter reduces
-    var topXData = _.filter(model.data, function (x) {
-      return _.contains(topX, x[xId]);
-    });
-    console.log('TOP X    :: --> ', topX);
-    console.log('TOPXDATA :: --> ', topXData);
-
-    var xmin = dateFilter ? dateFilter[0] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
       return new Date(x);
     }).min().value();
 
-    var xmax = dateFilter ? dateFilter[1] : _.chain(topXData).pluck('date').map(function (x) {
+    var xmax = dateFilter ? dateFilter[1] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
       return new Date(x);
     }).max().value();
 
     var roundingFunction = (xmin - xmax) < (86400000 * 30) ? d3.time.hour : d3.time.day;
 
-    var bySplit = _.chain(topXData).groupBy(function (x) {
-      return x[xId];
-    }).value();
+    var topx = [];
 
-    var timeseries = _.chain(bySplit).map(function (v, k) {
+    var timeseries = _.chain(model).map(function (v) {
+      topx.push(v.id);
       return {
-        'id': k,
-        'name': v[0][splitBy],
+        'id': v.id,
+        'name': v.user,
         'count': {
-          'during': v.length,
-          'before': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) < (+xmin);
+          'during': v.timeline.length,
+          'before': _.filter(v.timeline, function (x) {
+            return (+x.key_as_string) < (+xmin);
           }).length,
-          'after': _.filter(model.data, function (x) {
-            return x[xId] === k & (+x.date) > (+xmax);
+          'after': _.filter(v.timeline, function (x) {
+            return (+x.key_as_string) > (+xmax);
           }).length
         },
-        'timeseries': _.chain(v)
-          .pluck('time')
-          .map(function (x) {
-            return roundingFunction(new Date(x));
-          })
-          .countBy(function (x) {
-            return x;
-          })
-          .map(function (v, k) {
-            return {'key': k, 'value': v};
-          }).value()
+        'timeseries': _.map(v.timeline, function (x) {
+          return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
+        })
       };
     }).value();
+
+    this.set('topX', topx);
 
     // Is this redundant?
     var flatVals = _.chain(timeseries).pluck('timeseries').flatten().value();
     var ymax = _.chain(flatVals).pluck('value').max().value();
 
     Ember.run.next(function () {
-      _.map(timeseries, function (ts) {
-        makeTimeSeries(ts, {
+      _.map(timeseries, function (t) {
+        makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
           'ymax': ymax,
@@ -526,24 +254,12 @@ App.BoardController = Ember.Controller.extend({
 
   renderGauges() {
     var _this = this;
-    var topPreds = this.get('topPreds');
-    var topX = this.get('topX');
+    var data = this.get('model.tlData');
 
     Ember.run.next(function () {
-      _.map(topX, function (x, i) {
-        var predData = _.map(topPreds, function (topPred, k) {
-          return [k,
-            100 * _.findWhere(topPred, {'key': x}).value.avg];
-        });
-
-        // For gauges, we calculate the cumulative sum
-        _.map(_.range(0, predData.length), function (i) {
-          var tmp = {label: predData[i][0], value: predData[i][1]};
-          predData[i] = tmp;
-        });
-        predData.reverse();
-
-        return _this.drawGauge('#gauge-' + x, predData);
+      _.map(data, function (x) {
+        var predData = [{label: 'pos', value: x.pos}, {label: 'neut', value: x.neut}, {label: 'neg', value: x.neg}];
+        return _this.drawGauge('#gauge-' + x.id, predData);
       });
     });
   }, // This should really be broken apart
@@ -560,7 +276,7 @@ App.BoardController = Ember.Controller.extend({
     var ir = w / 4;
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.2f');
+    var valueFormat = d3.format('.4p');
 
     var data = gaugeData;
 
@@ -606,10 +322,258 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
+  renderTechan: function (forumdata, pvdata, routeId, subjectId, div, cb) {
+    var parseDate = d3.time.format('%Y-%m-%d').parse;
+
+    var pvData = _.chain(pvdata).map(function (d) {
+      return {
+        date: parseDate(d.date),
+        open: +d.open,
+        high: +d.high,
+        low: +d.low,
+        close: +d.close,
+        volume: +d.volume
+      };
+    }).sortBy(function (a) { return a.date; }).value();
+
+    var forumData = forumdata;
+
+    var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
+      _.pluck(forumData, 'date')]));
+
+    var dateSupport = getDates(dateRange);
+
+    var includePV = true;
+
+    function addDays (currentDate, days) {
+      var dat = new Date(currentDate);
+      dat.setDate(dat.getDate() + days);
+      return dat;
+    }
+
+    function getDates (dateRange) {
+      var dateArray = [];
+      var currentDate = dateRange[0];
+
+      while (currentDate <= dateRange[1]) {
+        dateArray.push(new Date(currentDate));
+        currentDate = addDays(currentDate, 1);
+      }
+
+      return dateArray;
+    }
+
+    var margin = {
+      top: 20,
+      bottom: 10,
+      between: {
+        y: 40,
+        x: 40
+      },
+      left: 35,
+      right: 5
+    };
+
+    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
+    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
+
+    var posts = {};
+    posts.title = 'Post Volume';
+    posts.method = 'volume';
+    posts.class = 'volume-posts';
+    posts.width = totalWidth * 0.5;
+    posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
+    posts.position_left = margin.left;
+    posts.position_top = margin.top;
+    posts.x = techan.scale.financetime().range([0, posts.width]);
+    posts.y = d3.scale.linear().range([posts.height, 0]);
+    posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
+    posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
+    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+
+    var brushChart = {};
+    brushChart.title = '';
+    brushChart.method = 'volume';
+    brushChart.class = 'brush-chart-posts';
+    brushChart.width = totalWidth * 0.5;
+    brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
+    brushChart.position_left = margin.left;
+    brushChart.position_top = totalHeight * 0.8 + margin.between.y;
+    brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
+    brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
+    brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
+    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
+    brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
+
+    var price = {};
+    price.title = 'Price';
+    price.method = 'ohlc';
+    price.class = 'close';
+    price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
+    price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+    price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+    price.position_top = margin.top;
+    price.x = techan.scale.financetime().range([0, price.width]);
+    price.y = d3.scale.linear().range([price.height, 0]);
+    price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
+    price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
+    price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
+
+    var volume = {};
+    volume.title = 'Volume';
+    volume.method = 'volume';
+    volume.class = 'volume';
+    volume.width = totalWidth * 0.5 - 2 * margin.between.x;
+    volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
+    volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
+    volume.position_top = totalHeight * 0.5 + margin.between.y;
+    volume.x = price.x;
+    volume.y = d3.scale.linear().range([volume.height, 0]);
+    volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
+    volume.xAxis = price.xAxis;
+    volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+
+    var svg = d3.select(div).append('svg')
+      .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
+      .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
+
+    function makeDiv (obj, clip) {
+      var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
+        .attr('transform',
+          'translate(' + obj.position_left + ',' + obj.position_top + ')');
+
+      div.append('svg:clipPath')
+        .attr('id', clip)
+        .append('svg:rect')
+        .attr('x', 0)
+        .attr('y', obj.y(1))
+        .attr('width', obj.width)
+        .attr('height', obj.y(0) - obj.y(1));
+
+      div.append('g')
+        .attr('class', obj.class)
+        .attr('clip-path', 'url(#' + clip + ')');
+
+      div.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + obj.height + ')');
+
+      div.append('g')
+        .attr('class', 'y axis')
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '.71em')
+        .style('text-anchor', 'end')
+        .text(obj.title);
+
+      return div;
+    }
+
+    posts.div = makeDiv(posts, 'c1');
+
+    brushChart.div = makeDiv(brushChart, 'c2');
+    brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
+
+    if (includePV) {
+      price.div = makeDiv(price, 'c3');
+      volume.div = makeDiv(volume, 'c4');
+    }
+
+    if (includePV) {
+      // var accessor = price.plot.accessor()
+      price.x.domain(dateSupport);
+      price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
+      price.div.select('g.close').datum(pvData);
+
+      volume.x.domain(dateSupport);
+      volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
+      volume.div.select('g.volume').datum(pvData);
+    }
+
+    posts.x.domain(dateSupport);
+    posts.y.domain(techan.scale.plot.volume(forumData).domain());
+    posts.div.select('g.volume-posts').datum(forumData);
+
+    brushChart.x.domain(dateSupport);
+    brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
+    brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
+    brushChart.div.select('g.x.axis').call(brushChart.xAxis);
+    brushChart.div.select('g.y.axis').call(brushChart.yAxis);
+
+    // Associate the brush with the scale and render the brush
+    // only AFTER a domain has been applied
+    var brushZoom = brushChart.x.zoomable();
+    var zoomable = price.x.zoomable();
+    var zoomable2 = posts.x.zoomable();
+
+    var brush = d3.svg.brush()
+      .x(brushZoom)
+      .on('brushend', draw);
+
+    brushChart.div.select('g.pane')
+      .call(brush)
+      .selectAll('rect')
+      .attr('height', brushChart.height);
+
+    function _draw (obj, dateFilter) {
+      var data = obj.div.select('g.' + obj.class).datum();
+
+      var _data = _.filter(data, function (d) {
+        return d.date > dateFilter[0] & d.date < dateFilter[1];
+      });
+
+      if (_data.length > 0) {
+        obj.y.domain(techan.scale.plot[obj.method](_data).domain());
+      } else {
+        obj.y.domain([0, 1]);
+      }
+
+      // plot the data
+      obj.div.select('g.' + obj.class).call(obj.plot);
+      // draw the x / y axis for c2
+      obj.div.select('g.x.axis').call(obj.xAxis);
+      obj.div.select('g.y.axis').call(obj.yAxis);
+    }
+
+    function draw () {
+      var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
+      var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
+
+      zoomable.domain(brushDomain);
+      zoomable2.domain(brushDomain);
+
+      if (includePV) {
+        _draw(price, dateFilter);
+        _draw(volume, dateFilter);
+      }
+
+      _draw(posts, dateFilter);
+
+      cb(dateFilter);
+    }
+
+    draw();
+  },
   actions: {
     topXClicked(id) {
+      var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
+      var cik = this.controllerFor('detail').get('model.cik');
       this.toggleSplitByFilterMember(id);
+
+      if (this.get('splitByFilter').length) {
+        App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+            _this.set('filtered_data', _.map(response, function (x) {
+              x.date = new Date(x.time);
+              return x;
+            }));
+          });
+        });
+      } else {
+        _this.set('filtered_data', this.get('model.data'));
+      }
     },
 
     drilldown() {
@@ -620,21 +584,31 @@ App.BoardController = Ember.Controller.extend({
 
 App.BoardRoute = Ember.Route.extend({
   setupController: function (con, model, params) {
-    var _this = this;
+    con.set('isLoading', true);
+    con.set('filtered_data', []);
+    con.set('isData', true);
 
-    App.Search.fetch_data('board', this.get('controller.name')).then(function (response) {
-      con.set('model', response);
-      con.set('filtered_data', response.data);
+    var cik = this.controllerFor('detail').get('model.cik');
 
-      // Reset both filters
-      con.set('board_filter', []);
-      con.set('user_filter', []);
-      con.set('splitBy', 'user');
+    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+      App.Search.fetch_data('board', {ticker: cData.ticker, date_filter: con.get('dateFilter')}).then(function (response) {
+        con.set('model', response);
+        con.set('filtered_data', _.map(response.data, function (x) {
+          x.date = new Date(x.time);
+          return x;
+        })
+        );
+        con.set('splitByFilter', []);
+        con.set('splitBy', 'user');
 
-      con.set('routeName', 'board');
+        con.set('routeName', 'board');
 
-      con.set('selection_ids', params.params[_this.routeName].ids);
-      con.set(_this.routeName + '_filter', params.params[_this.routeName].ids);
+        con.set('selection_ids', params.params[con.get('routeName')].ids);
+        con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
+        con.set('isLoading', false);
+
+        if (!response.pvData.length) { con.set('isData', false); }
+      });
     });
   }
 });
@@ -643,7 +617,10 @@ Ember.Handlebars.helper('forum-posts', function (d, sbf) {
   var mincount = 20;
   var maxcount = 40;
   var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
-  var data = _.sortBy(d, function (x) { return x.date; }).reverse();
+
+  if (d) {
+    var data = _.sortBy(d, function (x) { return x.time; }).reverse();
+  }
 
   Ember.$('.list-group li').slice(20).hide();
   Ember.$('.list-group').scroll(function () {

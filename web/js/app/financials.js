@@ -10,24 +10,49 @@ App.FinancialsRoute = Ember.Route.extend({
   }
 });
 
+var niceNumber = function(x) {
+    return x === undefined ? 'NA' : x.toLocaleString()
+}
+
 App.FinancialsController = Ember.Controller.extend({
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
-
+  tableDiv: '#financials-table',
   tableColumns: [
-    {title: 'Balance Sheet', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Filing', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Fiscal Year End', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Revenues', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Net Income', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Assets', defaultContent: '', className: 'dt-body-right'}
+    {title: 'Company', className: 'dt-body-right', defaultContent: 'NA'},
+    {title: 'Date', defaultContent: 'NA'},
+    {title: 'Filing', className: 'dt-body-right', defaultContent: 'NA'},
+    {title: 'Assets', className: 'dt-body-right', render: niceNumber},
+    {title: 'Liabilities & Stockholders Equity', render: niceNumber},
+    {title: 'Net Income', render: niceNumber},
+    {title: 'Profit', className: 'dt-body-right', render: niceNumber},
+    {title: 'Revenues', className: 'dt-body-right', render: niceNumber},
+    {title: 'Earnings', render: niceNumber},
   ],
-
+  
+  smartGet: function(obj, key) {
+    if(!obj[key]) {
+        return undefined
+    }
+    if(!obj[key].value) {
+        return undefined
+    }
+    return obj[key].value
+  },
+  
   tableContent: function () {
+    var this_ = this;
     return _.map(this.get('model'), function (n) {
-      return [n.bsd, n.type, n.fy, n.revenues_pretty, n.netincome_pretty, n.assets_pretty];
+      return [n.name, n.date, n.form,
+        this_.smartGet(n.__meta__.financials, 'assets'),
+        this_.smartGet(n.__meta__.financials, 'liabilitiesAndStockholdersEquity'),
+        this_.smartGet(n.__meta__.financials, 'netIncome'),
+        this_.smartGet(n.__meta__.financials, 'profit'),
+        this_.smartGet(n.__meta__.financials, 'revenues'),
+        this_.smartGet(n.__meta__.financials, 'earnings')
+      ]
     });
-  }.property('model.@each')
+  }.property('model')
 });
 
 App.FinancialsView = App.GenericTableView.extend();

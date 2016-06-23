@@ -6,15 +6,16 @@
     "ES" : {
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "CROWDSAR"    : "crowdsar_cat",
+          "CROWDSAR"    : "crowdsar",
           "AUTH"        : "ernest_auth",
           "AGG"         : "ernest_agg_v3",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_v2",
-          "DELINQUENCY" : "ernest_delinquency_cat",
+          "DELINQUENCY" : "ernest_aq_forms_enrich_cat",
           "SUSPENSIONS" : "ernest_suspensions_cat",
           "OWNERSHIP"   : "ernest_ownership_cat",
-          "OMX"         : "ernest_omx_cat"
+          "OMX"         : "ernest_omx_cat",
+          "FINANCIALS"  : "ernest_aq_forms_enrich_cat"
         }
     },
     "HTTPS":{
