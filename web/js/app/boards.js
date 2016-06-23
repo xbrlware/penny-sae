@@ -184,10 +184,10 @@ App.BoardController = Ember.Controller.extend({
       }
     );
 
-    // renderAll(_this);
+  // renderAll(_this)
   }.observes('model'),
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember(id) {
     var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
@@ -197,8 +197,9 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX() {
     var model = this.get('model.tlData');
+
     var dateFilter = this.get('dateFilter');
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
@@ -251,7 +252,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges() {
     var _this = this;
     var data = this.get('model.tlData');
 
@@ -263,7 +264,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge(bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
 
@@ -338,7 +339,7 @@ App.BoardController = Ember.Controller.extend({
     var forumData = forumdata;
 
     var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-          _.pluck(forumData, 'date')]));
+      _.pluck(forumData, 'date')]));
 
     var dateSupport = getDates(dateRange);
 
@@ -439,7 +440,7 @@ App.BoardController = Ember.Controller.extend({
     function makeDiv (obj, clip) {
       var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
         .attr('transform',
-            'translate(' + obj.position_left + ',' + obj.position_top + ')');
+          'translate(' + obj.position_left + ',' + obj.position_top + ')');
 
       div.append('svg:clipPath')
         .attr('id', clip)
@@ -555,7 +556,7 @@ App.BoardController = Ember.Controller.extend({
     draw();
   },
   actions: {
-    topXClicked (id) {
+    topXClicked(id) {
       var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       var cik = this.controllerFor('detail').get('model.cik');
@@ -575,7 +576,7 @@ App.BoardController = Ember.Controller.extend({
       }
     },
 
-    drilldown () {
+    drilldown() {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
   }
@@ -590,7 +591,8 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {ticker: cData.ticker, date_filter: con.get('dateFilter')}).then(function (response) {
+      console.log('cData', cData);
+      App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.time);

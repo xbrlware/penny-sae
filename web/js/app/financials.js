@@ -5,11 +5,14 @@
 App.FinancialsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('financials', this.get('controller.name')).then(function (response) {
-      controller.set('model', response);
-      console.log('RESPONSE', response);
+      controller.set('model', response.data);
     });
   }
 });
+
+var niceNumber = function (x) {
+  return x === undefined ? 'NA' : x.toLocaleString();
+};
 
 App.FinancialsController = Ember.Controller.extend({
   needs: ['detail'],
@@ -19,17 +22,41 @@ App.FinancialsController = Ember.Controller.extend({
     {title: 'Company', className: 'dt-body-right', defaultContent: 'NA'},
     {title: 'Date', defaultContent: 'NA'},
     {title: 'Filing', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Assets', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
-    {title: 'Liabilities & Stockholders Equity', render: function (x) { return x < 1 ? 'NA' : x; }},
-    {title: 'Net Income', render: function (x) { return x < 1 ? 'NA' : x; }},
-    {title: 'Profit', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
-    {title: 'Revenues', className: 'dt-body-right', render: function (x) { return x < 1 ? 'NA' : x; }},
-    {title: 'Earnings', render: function (x) { return x < 1 ? 'NA' : x; }}
+    {title: 'Assets', className: 'dt-body-right', render: niceNumber},
+    {title: 'Liabilities & Stockholders Equity', render: niceNumber},
+    {title: 'Net Income', render: niceNumber},
+    {title: 'Profit', className: 'dt-body-right', render: niceNumber},
+    {title: 'Revenues', className: 'dt-body-right', render: niceNumber},
+    {title: 'Earnings', render: niceNumber}
   ],
 
+  smartGet: function (obj, key) {
+    if (!obj[key]) {
+      return undefined;
+    }
+    if (!obj[key].value) {
+      return undefined;
+    }
+    return obj[key].value;
+  },
+
+  rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData['column2'] !== 'NA') {
+      Ember.$(nRow).css('color', 'red');
+    }
+  },
+
   tableContent: function () {
+    var this_ = this;
     return _.map(this.get('model'), function (n) {
-      return [n.name, n.date, n.form, n.assets, n.liabilitiesAndStockholdersEquity, n.netIncome, n.profit, n.revenues, n.earnings];
+      return [n.name, n.date, n.form,
+        this_.smartGet(n.__meta__.financials, 'assets'),
+        this_.smartGet(n.__meta__.financials, 'liabilitiesAndStockholdersEquity'),
+        this_.smartGet(n.__meta__.financials, 'netIncome'),
+        this_.smartGet(n.__meta__.financials, 'profit'),
+        this_.smartGet(n.__meta__.financials, 'revenues'),
+        this_.smartGet(n.__meta__.financials, 'earnings')
+      ];
     });
   }.property('model')
 });

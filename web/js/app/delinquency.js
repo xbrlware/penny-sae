@@ -6,7 +6,6 @@
 App.DelinquencyRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('delinquency', this.get('controller.name')).then(function (response) {
-      console.log('delinquency data', response);
       controller.set('model', response.data);
     });
   }
@@ -18,29 +17,18 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 
   tableDiv: '#delinquency-table',
   tableColumns: [
-    {title: 'Date of Filing', className: 'dt-body-right'},
-    {title: 'Deadline', className: 'dt-body-right'},
     {title: 'Form'},
-    {title: 'Late Filing'}
+    {title: 'Period of Filing', className: 'dt-body-right'},
+    {title: 'Deadline', className: 'dt-body-right', defaultContent: 'NA'},
+    {title: 'Date of Filing', className: 'dt-body-right'},
+    {title: 'Late Filing', defaultContent: 'NA'}
   ],
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [n.date, n._enrich.deadline || 'missing', n.form, n._enrich.is_late || 'missing'];
+      return [n.form, n._enrich.period, n.date, n._enrich.deadline || 'missing', n._enrich.is_late ? 'Late' : ''];
     });
-  }.property('model'),
-
-  // *** What is this doing ***
-  actions: {
-    sortBy: function (property) {
-      if (property === this.get('sortProperties')[0]) {
-        this.toggleProperty('sortAscending');
-      } else {
-        this.set('sortAscending', true);
-      }
-      this.set('sortProperties', [property]);
-    }
-  }
+  }.property('model')
 });
 
 App.DelinquencyView = App.GenericTableView.extend();
