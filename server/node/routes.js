@@ -94,7 +94,7 @@ module.exports = function (app, config, client) {
             'aggs': {
               'user': {
                 'terms': {
-                  'field': 'user'
+                  'field': 'user.cat'
                 }
               },
               'user_histogram': {

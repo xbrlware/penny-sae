@@ -11,7 +11,7 @@
         <div id="time-chart" class="chart"></div>
     </div>
 
-    <div class="charts-wrapper">
+    <div class="col-xs-12 charts-wrapper">
         <div class="col-xs-6" id="gauge-timeline-cell">
             {{#if timelineLoading}}
                 <div class="data-progress centered">
@@ -38,9 +38,7 @@
                 </div>
             {{/if}}
         </div>
-        <div id="forum-posts-cell">
-            {{forum-posts postFilteredData splitByFilter}}
-        </div>
+        {{forum-posts postFilteredData splitByFilter}}
     </div>
 {{else}}
     <span class="centered">
