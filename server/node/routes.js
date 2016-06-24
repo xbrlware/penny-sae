@@ -1,10 +1,9 @@
 // server/node/routes.js
 
 // Helpers
-String.prototype.capitalizeFirstLetter = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+function capitalizeFirstLetter (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
 
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
@@ -127,8 +126,8 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                    {'match': { 'ticker': users.ticker }},
-                    {'terms': { 'user_id': users.users }}
+                  {'match': { 'ticker': users.ticker }},
+                  {'terms': { 'user_id': users.users }}
                 ]
               }
             }
@@ -240,8 +239,8 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.ticker || !d.date_filter) {
-      console.log('null ticker');
-      return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
+      console.log('/board :: null ticker');
+      return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }
     async.parallel([
       function (cb) { getForumdata(d, cb); },
@@ -283,7 +282,7 @@ module.exports = function (app, config, client) {
           pos: x.pos.value,
           neut: x.neut.value,
           neg: x.neg.value,
-          timeline: x.user_histogram.buckets};
+        timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
       var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
@@ -345,44 +344,44 @@ module.exports = function (app, config, client) {
 
   // Redflag helpers
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
-  function default_redFlags () {
-      return _.chain(_.keys(config.DEFAULT_TOGGLES))
-          .map(function (k) { return [k, DEFAULT_]; })
-          .object()
+  function defaultRedFlags () {
+    return _.chain(_.keys(config.DEFAULT_TOGGLES))
+      .map(function (k) { return [k, DEFAULT_]; })
+      .object();
   }
-  
-  function prettify(x) {
-    if(x.length > 12) {
-        x = x.slice(0, 12) + '...'
+
+  function prettify (x) {
+    if (x.length > 12) {
+      x = x.slice(0, 12) + '...';
     }
-    return x.capitalizeFirstLetter()
+    return capitalizeFirstLetter(x);
   }
-  
-  redflagLabel_ = {
-    "financials"    : function(params) {return 'Low ' + prettify(params.field) },
-    "symbology"     : function(params) {return prettify(params.field) + ' Change' },
-    "suspensions"   : function(params) {return 'Trading Suspensions' },
-    "delinquency"   : function(params) {return 'Late Filings' },
-    "otc_neighbors" : function(params) {return 'OTC Neighbors' },
-//    "pv"            : function(params) {return 'No Revenues' },
-    "crowdsar"      : function(params) {return 'Forum Activity' },
-  }
-  
-  function redflagLabel(redFlags, redFlagParams) {
+
+  var redflagLabel_ = {
+    'financials': function (params) { return 'Low ' + prettify(params.field); },
+    'symbology': function (params) { return prettify(params.field) + ' Change'; },
+    'suspensions': function (params) { return 'Trading Suspensions'; },
+    'delinquency': function (params) { return 'Late Filings'; },
+    'otc_neighbors': function (params) { return 'OTC Neighbors'; },
+    //    "pv"            : function(params) {return 'No Revenues' },
+    'crowdsar': function (params) { return 'Forum Activity'; }
+  };
+
+  function redflagLabel (redFlags, redFlagParams) {
     return _.chain(redFlags)
-      .map(function(v, k) {
+      .map(function (v, k) {
         console.log('-- ', redflagLabel_[k](redFlagParams[k]));
-        return [k, _.extend(v, {"label" : redflagLabel_[k](redFlagParams[k])})]
+        return [k, _.extend(v, {'label': redflagLabel_[k](redFlagParams[k])})];
       })
       .object()
-      .value()
+      .value();
   }
 
   function redflagPostprocess (redFlags, redFlagParams) {
-    return default_redFlags().extend({
-        'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
-        'possible': _.keys(redFlagParams).length
-      })
+    return defaultRedFlags().extend({
+      'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
+      'possible': _.keys(redFlagParams).length
+    })
       .extend(redflagLabel(redFlags, redFlagParams))
       .value();
   }
@@ -557,12 +556,12 @@ module.exports = function (app, config, client) {
         'table': _.chain(esResponse.hits.hits).sortBy(function (hit) { return hit._source.min_date; }).map(function (hit) {
           // Use SIC code unless description is available
           var sic = hit._source.sic;
-          if(hit._source.__meta__) {
-            if(hit._source.__meta__.sic_lab) {
-                sic = hit._source.__meta__.sic_lab;
+          if (hit._source.__meta__) {
+            if (hit._source.__meta__.sic_lab) {
+              sic = hit._source.__meta__.sic_lab;
             }
           }
-          
+
           return [
             hit._source.min_date,
             hit._source.max_date,
@@ -603,7 +602,7 @@ module.exports = function (app, config, client) {
       res.send({'tickers': _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
     });
   });
-  
+
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -622,11 +621,11 @@ module.exports = function (app, config, client) {
     console.log('financials <<', d);
     client.search({
       'index': config['ES']['INDEX']['FINANCIALS'],
-      'body' : queryBuilder.financials(d.cik),
-      'from' : 0,
-      'size' : 10000
+      'body': queryBuilder.financials(d.cik),
+      'from': 0,
+      'size': 10000
     }).then(function (response) {
-      res.send({"data" : _.pluck(response.hits.hits, '_source')});
+      res.send({'data': _.pluck(response.hits.hits, '_source')});
     });
   });
 

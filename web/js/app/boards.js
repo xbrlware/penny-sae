@@ -40,7 +40,7 @@ function makeTimeSeries (ts, bounds) {
   var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
-  var y = d3.scale.linear().range([(height - (margin.top + margin.bottom)), 0]);
+  var y = d3.scale.linear().range([height, 0]);
   y.domain([0, bounds.ymax]);
 
   var svg = d3.select(div).append('svg:svg')
@@ -228,13 +228,11 @@ App.BoardController = Ember.Controller.extend({
         'id': v.id,
         'name': v.user,
         'count': {
-          'during': v.timeline.length,
-          'before': _.filter(v.timeline, function (x) {
-            return (+x.key_as_string) < (+xmin);
-          }).length,
-          'after': _.filter(v.timeline, function (x) {
-            return (+x.key_as_string) > (+xmax);
-          }).length
+          'during': _.reduce(v.timeline, function (x, y) {
+            return x + y.doc_count;
+          }, 0),
+          'before': 0,
+          'after': 0
         },
         'timeseries': _.map(v.timeline, function (x) {
           return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
@@ -596,7 +594,7 @@ App.BoardRoute = Ember.Route.extend({
     con.set('isData', true);
 
     var cik = this.controllerFor('detail').get('model.cik');
-
+    console.log('CIK :: ', cik);
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);

@@ -82,8 +82,8 @@ module.exports = function (app, config, client) {
     var raw = _.reduce(redFlags, (a, b) => {
       _.map(a, (v, k) => {
         _.map(v, (vv, kk) => {
-          if(!b[k]) {
-            b[k] = {}
+          if (!b[k]) {
+            b[k] = {};
             b[k][kk] = vv;
           } else {
             b[k][kk] += vv;
@@ -92,7 +92,7 @@ module.exports = function (app, config, client) {
       });
       return b;
     }, {});
-    
+
     var n_neighbors = redFlags.length;
     var n_redFlags_computed = _.keys(redFlags[0]).length;
     var total_redFlags_hit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
