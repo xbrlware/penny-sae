@@ -90,8 +90,6 @@ App.BoardController = Ember.Controller.extend({
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
 
-    console.log('filtered_data :: --> ', data);
-
     var out;
     var _data;
 
@@ -115,7 +113,6 @@ App.BoardController = Ember.Controller.extend({
       return i < 100;
     }).value();
 
-    console.log('RRRR :: --> ', r);
     return r;
   }.property('filtered_data', 'dateFilter'),
 
@@ -187,7 +184,7 @@ App.BoardController = Ember.Controller.extend({
   // renderAll(_this)
   }.observes('model'),
 
-  toggleSplitByFilterMember(id) {
+  toggleSplitByFilterMember (id) {
     var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
@@ -197,7 +194,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX() {
+  renderX () {
     var model = this.get('model.tlData');
 
     var dateFilter = this.get('dateFilter');
@@ -252,7 +249,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges() {
+  renderGauges () {
     var _this = this;
     var data = this.get('model.tlData');
 
@@ -264,7 +261,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge(bindTo, gaugeData) {
+  drawGauge (bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
 
@@ -556,7 +553,7 @@ App.BoardController = Ember.Controller.extend({
     draw();
   },
   actions: {
-    topXClicked(id) {
+    topXClicked (id) {
       var _this = this;
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       var cik = this.controllerFor('detail').get('model.cik');
@@ -576,7 +573,7 @@ App.BoardController = Ember.Controller.extend({
       }
     },
 
-    drilldown() {
+    drilldown () {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
   }
@@ -591,7 +588,6 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      console.log('cData', cData);
       App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
