@@ -16,6 +16,8 @@ function makeTimeSeries (ts, bounds) {
     };
   }).value();
 
+  var parseDate = d3.time.format('%b-%d');
+
   // Clear previous values
   d3.select(div).selectAll('svg').remove();
 
@@ -24,14 +26,21 @@ function makeTimeSeries (ts, bounds) {
   d3.select(div + ' .during').text(ts.count.during);
   d3.select(div + ' .after').text(ts.count.after);
 
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-5, 0])
+    .html(function (d) {
+      return '<center><span>' + parseDate(d.date) + '</span><br /><span>' + d.value + '</span></center>';
+    });
+
   // Get cell height
   var height = (margin.top + margin.bottom) * 1.5;
-  var width = (Ember.$('#techan-wrapper').width() * 0.3222) - (margin.left + margin.right);
+  var width = (Ember.$('#techan-wrapper').width() * 0.4) - (margin.left + margin.right);
 
   var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
-  var y = d3.scale.linear().range([height, 0]);
+  var y = d3.scale.linear().range([(height - (margin.top + margin.bottom)), 0]);
   y.domain([0, bounds.ymax]);
 
   var svg = d3.select(div).append('svg:svg')
@@ -55,13 +64,15 @@ function makeTimeSeries (ts, bounds) {
   svg.selectAll('bar')
     .data(data)
     .enter().append('rect')
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide)
     .style('fill', FILL_COLOR)
     .attr('x', function (d) { return x(d.date); })
     .attr('width', BAR_WIDTH)
     .attr('y', function (d) { return y(d.value); })
-    .attr('height', function (d) { return height - y(d.value); })
-    .append('title')
-    .text(function (d) { return d.date + ' : ' + d.value; });
+    .attr('height', function (d) { return height - y(d.value); });
+
+  svg.call(tip);
 }
 
 App.BoardController = Ember.Controller.extend({
@@ -370,7 +381,6 @@ App.BoardController = Ember.Controller.extend({
       left: 35,
       right: 5
     };
-
     var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
     var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
 
