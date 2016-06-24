@@ -1,8 +1,6 @@
 // web/js/app/delinquency.js
 /* global Ember, App, _ */
 
-// Delinquency
-
 App.DelinquencyRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('delinquency', this.get('controller.name')).then(function (response) {
@@ -24,12 +22,6 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
     {title: 'Late Filing', defaultContent: 'NA'}
   ],
 
-  rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    if (aData['column4']) {
-      Ember.$(nRow).css('color', 'red');
-    }
-  },
-
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
       return [n.form, n._enrich.period, n.date, n._enrich.deadline || 'missing', n._enrich.is_late ? 'Late' : ''];
@@ -38,3 +30,4 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 });
 
 App.DelinquencyView = App.GenericTableView.extend();
+

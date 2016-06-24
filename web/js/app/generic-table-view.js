@@ -18,6 +18,11 @@ App.GenericTableView = Ember.View.extend({
           Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
         }
       },
+      fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+        if (aData[4] === 'Late' && con.get('tableDiv') === '#delinquency-table') {
+          Ember.$(nRow).css('color', 'red');
+        }
+      },
       destroy: true,
       data: con.get('tableContent'),
       columns: con.tableColumns,
