@@ -24,6 +24,12 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
     {title: 'Late Filing', defaultContent: 'NA'}
   ],
 
+  rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData['column4']) {
+      Ember.$(nRow).css('color', 'red');
+    }
+  },
+
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
       return [n.date, n._enrich.deadline, n.form, n._enrich.is_late];

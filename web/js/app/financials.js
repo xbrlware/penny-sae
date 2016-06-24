@@ -27,12 +27,6 @@ App.FinancialsController = Ember.Controller.extend({
     {title: 'Earnings', render: function (x) { return x < 1 ? 'NA' : x; }}
   ],
 
-  rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    if (aData['column2'] !== 'NA') {
-      Ember.$(nRow).css('color', 'red');
-    }
-  },
-
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
       return [n.name, n.date, n.form, n.assets, n.liabilitiesAndStockholdersEquity, n.netIncome, n.profit, n.revenues, n.earnings];
