@@ -13,7 +13,6 @@ try {
  */
 var configPath = {
   'global': 'global-config.json',
-  'local': 'local-config.json',
   'server': 'server-config.json'
 };
 
@@ -53,9 +52,6 @@ function setupConfig (readInFile, logString, writeToPath, writeToName, varType) 
     fs.writeFileSync(writeToPath + writeToName, varType + JSON.stringify(config, null, ' '));
   });
 }
-
-/* Setup local config */
-setupConfig(configPath.local, 'local', filePath.web, 'local-config.js', 'var config = ');
 
 /* Setup global config */
 setupConfig(configPath.global, 'global', filePath.web, 'global-config.js', 'var gconfig = ');

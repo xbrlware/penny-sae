@@ -11,38 +11,36 @@ App.DropdownController = Ember.ObjectController.extend({
 
   symbology_select_content: [
     {id: undefined, name: 'Choose Type'},
-    {id: 'company_name', name: 'Company Name'},
-    {id: 'sic', name: 'SIC'},
-    {id: 'state_of_incorporation', name: 'State of Incorporation'}
+    {id: 'name', name: 'Company Name'},
+    {id: 'sic', name: 'SIC Code'},
+    {id: 'ticker', name: 'Ticker'}
   ],
-  crowdsar_select_content: [
-    {id: undefined, name: 'Choose Metric'},
-    {id: 'n_posts', name: 'Number of Posts'}
-  // Need to add more
-  ],
-  tout_select_content: [
-    {id: undefined, name: 'Choose Metric'},
-    {id: 'p_toutw', name: 'Proportion of Tout Words'},
-    {id: 'n_toutw', name: 'Number of Tout Words'}
-  ],
-  otc_neighbors_select_content: [
-    {id: undefined, name: 'Choose Type'},
-    {id: 'otc_neibs_total', name: '% OTC Affiliated Neighbors'},
-    {id: 'otc_neibs_pct', name: 'N OTC Affiliated Neighbors'}
-  ],
+  crowdsar_select_content: {
+    metric: [
+      {id: undefined, name: 'Choose Metric'},
+      {id: 'sum', name: 'Sum'},
+      {id: 'mean', name: 'Mean'}
+    ],
+    field: [
+      {id: undefined, name: 'Choose Field'},
+      {id: 'n_posts', name: 'Number of Posts'},
+      {id: 'tri_pred_neg', name: 'Dump Sentiment'},
+      {id: 'tri_pred_pos', name: 'Pump Sentiment'}
+    ]
+  },
   financials_select_content: [
     {id: undefined, name: 'Choose Type'},
-    {id: 'revenues', name: 'Revenue'},
-    {id: 'netincomeloss', name: 'Income'}
-  ],
-  financials_contemporary_select_content: [
-    {id: undefined, name: 'Choose Type'},
-    {id: 'false', name: 'Any Time'},
-    {id: 'true', name: 'Ongoing'}
+    {id : 'assets', name: 'Assets'},
+    {id : 'liabilitiesAndStockholdersEquity', name: 'Liabilities and Stockholders Equity'},
+    {id : 'netIncome', name: 'Net Income'},
+    {id : 'profit', name: 'Profit'},
+    {id : 'revenues', name: 'Revenues'},
+    {id : 'earnings', name: 'Earnings' }
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},
-    {id: '10-K', name: '10-K'}
+    {id: '10-K', name: '10-K'},
+    {id: '10-Q', name: '10-Q'}
   ],
 
   empty: true,

@@ -29,13 +29,6 @@ App.LoginController = Ember.Controller.extend(SimpleAuth.LoginControllerMixin, {
 });
 
 App.LoginView = Ember.View.extend({
-  willInsertElement: function () {
-    if (config.AUTHENTICATION.STRATEGY === 'gated') {
-      console.log('$$$ auth: -- gated authentication enabled --- ');
-      this.set('controller.show_login', false);
-      this.get('controller').send('authenticate');
-    }
-  },
   didInsertElement: function () {
     Ember.$('#input-username').focus();
   }

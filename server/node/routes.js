@@ -1,5 +1,11 @@
 // server/node/routes.js
 
+// Helpers
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var async = require('async');
@@ -41,25 +47,6 @@ module.exports = function (app, config, client) {
             'date_histogram': {
               'field': 'time',
               'interval': 'day'
-            }
-          }
-        }
-      };
-    },
-    'financials': function (cik) {
-      return {
-        '_source': ['name', 'form', 'date', 'url', '__meta__'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'exists': {
-                'field': '__meta__.financials'
-              }
-            },
-            'query': {
-              'match': {
-                'cik': cik
-              }
             }
           }
         }
@@ -140,8 +127,8 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                {'match': { 'ticker': users.ticker }},
-                {'terms': { 'user_id': users.users }}
+                    {'match': { 'ticker': users.ticker }},
+                    {'terms': { 'user_id': users.users }}
                 ]
               }
             }
@@ -234,29 +221,6 @@ module.exports = function (app, config, client) {
   //      }
   //    }
   };
-  app.post('/financials', function (req, res) {
-    var d = req.body;
-    console.log('/financials ::', d);
-    if (!d.cik) {
-      return res.send([]);
-    }
-    client.search({
-      index: config['ES']['INDEX']['FINANCIALS'],
-      body: pennyQueryBuilder.financials(parseInt(d.cik))
-    }).then(function (response) {
-      _.map(response.hits.hits, function (x) {
-        _.mapObject(x._source.__meta__.financials, function (field, key) {
-          if (!field) {
-            x._source[key] = 0;
-          } else {
-            x._source[key] = field.value ? field.value.toLocaleString() : 0;
-          }
-        });
-        delete x._source.__meta__;
-      });
-      res.send(_.pluck(response.hits.hits, '_source'));
-    });
-  });
 
   app.post('/user', function (req, res) {
     var d = req.body;
@@ -276,6 +240,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.ticker || !d.date_filter) {
+      console.log('null ticker');
       return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
     }
     async.parallel([
@@ -378,13 +343,48 @@ module.exports = function (app, config, client) {
     };
   }
 
+  // Redflag helpers
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
+  function default_redFlags () {
+      return _.chain(_.keys(config.DEFAULT_TOGGLES))
+          .map(function (k) { return [k, DEFAULT_]; })
+          .object()
+  }
+  
+  function prettify(x) {
+    if(x.length > 12) {
+        x = x.slice(0, 12) + '...'
+    }
+    return x.capitalizeFirstLetter()
+  }
+  
+  redflagLabel_ = {
+    "financials"    : function(params) {return 'Low ' + prettify(params.field) },
+    "symbology"     : function(params) {return prettify(params.field) + ' Change' },
+    "suspensions"   : function(params) {return 'Trading Suspensions' },
+    "delinquency"   : function(params) {return 'Late Filings' },
+    "otc_neighbors" : function(params) {return 'OTC Neighbors' },
+//    "pv"            : function(params) {return 'No Revenues' },
+    "crowdsar"      : function(params) {return 'Forum Activity' },
+  }
+  
+  function redflagLabel(redFlags, redFlagParams) {
+    return _.chain(redFlags)
+      .map(function(v, k) {
+        console.log('-- ', redflagLabel_[k](redFlagParams[k]));
+        return [k, _.extend(v, {"label" : redflagLabel_[k](redFlagParams[k])})]
+      })
+      .object()
+      .value()
+  }
 
   function redflagPostprocess (redFlags, redFlagParams) {
-    return _.chain(_.keys(config.DEFAULT_TOGGLES)).map(function (k) { return [k, DEFAULT_]; }).object().extend({
-      'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
-      'possible': _.keys(redFlagParams).length
-    }).extend(redFlags).value();
+    return default_redFlags().extend({
+        'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
+        'possible': _.keys(redFlagParams).length
+      })
+      .extend(redflagLabel(redFlags, redFlagParams))
+      .value();
   }
 
   var queryBuilder = {
@@ -417,7 +417,7 @@ module.exports = function (app, config, client) {
     },
     'company_table': function (cik) {
       return {
-        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic'],
+        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic', '__meta__'],
         'query': { 'term': { 'cik': cik } }
       };
     },
@@ -465,13 +465,32 @@ module.exports = function (app, config, client) {
         'sort': [
           {
             'date': {
-              'order': 'asc'
+              'order': 'desc'
             }
           }
         ],
         'query': {
           'terms': {
             'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+          }
+        }
+      };
+    },
+    'financials': function (cik) {
+      return {
+        '_source': ['name', 'form', 'date', 'url', '__meta__'],
+        'query': {
+          'filtered': {
+            'filter': {
+              'exists': {
+                'field': '__meta__.financials'
+              }
+            },
+            'query': {
+              'terms': {
+                'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+              }
+            }
           }
         }
       };
@@ -527,6 +546,7 @@ module.exports = function (app, config, client) {
 
   app.post('/company_table', function (req, res) {
     var d = req.body;
+    console.log('d >> ', d);
     client.search({
       'index': config['ES']['INDEX']['SYMBOLOGY'],
       'body': queryBuilder.company_table(d.cik),
@@ -535,12 +555,20 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       res.send({
         'table': _.chain(esResponse.hits.hits).sortBy(function (hit) { return hit._source.min_date; }).map(function (hit) {
+          // Use SIC code unless description is available
+          var sic = hit._source.sic;
+          if(hit._source.__meta__) {
+            if(hit._source.__meta__.sic_lab) {
+                sic = hit._source.__meta__.sic_lab;
+            }
+          }
+          
           return [
             hit._source.min_date,
             hit._source.max_date,
             hit._source.name,
             hit._source.ticker,
-            hit._source.sic
+            sic
           ];
         }).value()
       });
@@ -575,8 +603,7 @@ module.exports = function (app, config, client) {
       res.send({'tickers': _.pluck(esResponse.aggregations.tickers.buckets, 'key')});
     });
   });
-
-  // *** Need to change width of CIKs in delinquency index ***
+  
   app.post('/delinquency', function (req, res) {
     console.log('querying delinquency');
     var d = req.body;
@@ -587,6 +614,19 @@ module.exports = function (app, config, client) {
       'size': 10000
     }).then(function (esResponse) {
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
+    });
+  });
+
+  app.post('/financials', function (req, res) {
+    var d = req.body;
+    console.log('financials <<', d);
+    client.search({
+      'index': config['ES']['INDEX']['FINANCIALS'],
+      'body' : queryBuilder.financials(d.cik),
+      'from' : 0,
+      'size' : 10000
+    }).then(function (response) {
+      res.send({"data" : _.pluck(response.hits.hits, '_source')});
     });
   });
 

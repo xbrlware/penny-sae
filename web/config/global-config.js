@@ -12,10 +12,24 @@ var gconfig = {
   "2017-01-01"
  ],
  "DEFAULT_REDFLAG_PARAMS": {
-  "symbology": {
-   "field": "name",
+  "crowdsar": {
    "min_date": "2000-01-01",
    "max_date": "2017-01-01",
+   "metric": "sum",
+   "field": "n_posts",
+   "threshold": 10
+  },
+  "delinquency": {
+   "min_date": "2000-01-01",
+   "max_date": "2017-01-01",
+   "form": "10-K",
+   "threshold": 3
+  },
+  "financials": {
+   "min_date": "2000-01-01",
+   "max_date": "2017-01-01",
+   "field": "profit",
+   "value": 1000,
    "threshold": 1
   },
   "otc_neighbors": {
@@ -25,37 +39,23 @@ var gconfig = {
    ],
    "threshold": 50
   },
-  "financials": {
-   "type": "revenues",
-   "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
-   "value": 1000,
-   "threshold": 10
-  },
   "suspensions": {
    "min_date": "2000-01-01",
    "max_date": "2017-01-01",
    "threshold": 1
   },
-  "delinquency": {
-   "form": "10-K",
+  "symbology": {
    "min_date": "2000-01-01",
    "max_date": "2017-01-01",
-   "threshold": 3
-  },
-  "crowdsar": {
-   "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
-   "metric": "sum",
-   "field": "n_posts",
-   "threshold": 10
+   "field": "name",
+   "threshold": 1
   }
  },
  "DEFAULT_TOGGLES": {
   "symbology": false,
   "suspensions": true,
   "delinquency": false,
-  "crowdsar": true,
+  "crowdsar": false,
   "otc_neighbors": false,
   "financials": false,
   "pv": false

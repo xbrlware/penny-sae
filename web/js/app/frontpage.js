@@ -52,12 +52,12 @@ App.DisabledToggleRowView = Ember.View.extend({
 App.HitTextView = Ember.View.extend({
   templateName: 'hittextview',
   didInsertElement: function () {
-    var type = this.get('type');
-    var redFlags = this.get('redFlags');
+    var redFlag = this.get('redFlags');
 
-    this.set('mid', 'badge-' + type);
-    this.set('have', redFlags[type]['have']);
-    this.set('flagged', redFlags[type]['is_flag']);
-    this.set('value', redFlags[type]['value']);
+    this.set('mid', 'badge-' + this.get('type'));
+    this.set('have', redFlag['have']);
+    this.set('flagged', redFlag['is_flag']);
+    this.set('value', redFlag['value']);
+    this.set('label', redFlag['label']);
   }
 });

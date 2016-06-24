@@ -1,5 +1,6 @@
 {{!-- web/templates/dropdown-right.hbs --}}
 
+{{!--
 {{#if pv}}
     <span class="centered"><h4>Price/Volume Anomaly Definition</h4></span>
     <form class="form-horizontal">
@@ -85,21 +86,11 @@
         </div>
     </form>
 {{/if}}
-        
+--}}
+
 {{#if crowdsar}}
     <span class="centered"><h4>CROWDSAR Definition</h4></span>
     <form class="form-horizontal">
-        <div class="form-group">
-            <label class="control-label"> Metric </label>
-            {{
-                view Ember.Select
-                content=crowdsar_select_content
-                valueBinding=redFlagParams._params.crowdsar.field
-                optionValuePath="content.id"
-                optionLabelPath="content.name"
-                class="form-control"
-            }}
-        </div>
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
@@ -116,6 +107,37 @@
                 class="form-control"
             }}
         </div>
+        <div class="form-group">
+            <label class="control-label"> Field </label>
+            {{
+                view Ember.Select
+                content=crowdsar_select_content.field
+                valueBinding=redFlagParams._params.crowdsar.field
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Metric </label>
+            {{
+                view Ember.Select
+                content=crowdsar_select_content.metric
+                valueBinding=redFlagParams._params.crowdsar.metric
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Threshold </label>
+            {{
+                input type="number"
+                valueBinding=redFlagParams._params.crowdsar.threshold
+                class="form-control"
+            }}
+        </div>
+
     </form>
 {{/if}}
 
@@ -162,14 +184,6 @@
     <span class="centered"><h4>Change in Business Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="control-label"> Name Field </label>
-            {{
-                input type="text"
-                valueBinding=redFlagParams._params.symbology.field
-                class="form-control"
-            }}
-        </div>
-        <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
                 view App.DatepickerView
@@ -182,6 +196,17 @@
                 view App.DatepickerView
                 defaultDate=redFlagParams._params.symbology.max_date
                 valueBinding=redFlagParams._params.symbology.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Name Field </label>
+            {{
+                view Ember.Select
+                content=symbology_select_content
+                valueBinding=redFlagParams._params.symbology.field
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
                 class="form-control"
             }}
         </div>
@@ -200,11 +225,28 @@
     <span class="centered"><h4>No Revenues Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view App.DatepickerView
+                defaultDate=redFlagParams._params.financials.min_date
+                valueBinding=redFlagParams._params.financials.min_date
+                class="form-control"
+            }}
+                    
+            <label class="control-label">To Date:</label>
+            {{
+                view App.DatepickerView
+                defaultDate=redFlagParams._params.financials.max_date
+                valueBinding=redFlagParams._params.financials.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
             <label class="control-label"> Financial Measure </label>
             {{
                 view Ember.Select
                 content=financials_select_content
-                valueBinding=redFlagParams._params.financials.type
+                valueBinding=redFlagParams._params.financials.field
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -227,24 +269,7 @@
             }}
         </div>
         <div class="form-group">
-            <label class="control-label">From Date:</label>
-            {{
-                view App.DatepickerView
-                defaultDate=redFlagParams._params.financials.min_date
-                valueBinding=redFlagParams._params.financials.min_date
-                class="form-control"
-            }}
-                    
-            <label class="control-label">To Date:</label>
-            {{
-                view App.DatepickerView
-                defaultDate=redFlagParams._params.financials.max_date
-                valueBinding=redFlagParams._params.financials.max_date
-                class="form-control"
-            }}
-        </div>
-        <div class="form-group">
-            <label class="control-label"> Threshold </label>
+            <label class="control-label"> Number of Filings Below Value </label>
             {{
                 input
                 type="number"
@@ -259,17 +284,6 @@
     <span class="centered"><h4>Late Filings Definition</h4></span>
     <form class="form-horizontal">
         <div class="form-group">
-            <label class="control-label"> Form </label>
-            {{
-                view Ember.Select
-                content=late_filings_content
-                valueBinding=redFlagParams._params.delinquency.form
-                optionValuePath="content.id"
-                optionLabelPath="content.name"
-                class="form-control"
-            }}
-        </div>
-        <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
                 view App.DatepickerView
@@ -282,6 +296,17 @@
                 view App.DatepickerView
                 defaultDate=redFlagParams._params.delinquency.max_date
                 valueBinding=redFlagParams._params.delinquency.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Form </label>
+            {{
+                view Ember.Select
+                content=late_filings_content
+                valueBinding=redFlagParams._params.delinquency.form
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
                 class="form-control"
             }}
         </div>
@@ -347,7 +372,7 @@
             }}
         </div>
         <div class="form-group">
-            <label class="control-label"> Percent OTC </label>
+            <label class="control-label"> Minimum Percent OTC </label>
             {{
                 input type="text"
                 valueBinding=redFlagParams._params.otc_neighbors.threshold
