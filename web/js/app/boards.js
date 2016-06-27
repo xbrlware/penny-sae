@@ -393,7 +393,7 @@ App.BoardController = Ember.Controller.extend({
     posts.x = techan.scale.financetime().range([0, posts.width]);
     posts.y = d3.scale.linear().range([posts.height, 0]);
     posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-    posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
+    posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom');
     posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
 
     var brushChart = {};
@@ -407,7 +407,7 @@ App.BoardController = Ember.Controller.extend({
     brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
     brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
     brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
+    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
 
     var price = {};
@@ -421,7 +421,7 @@ App.BoardController = Ember.Controller.extend({
     price.x = techan.scale.financetime().range([0, price.width]);
     price.y = d3.scale.linear().range([price.height, 0]);
     price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-    price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
+    price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom');
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
 
     var volume = {};
