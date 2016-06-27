@@ -45,7 +45,8 @@ module.exports = function (app, config, client) {
           'board_histogram': {
             'date_histogram': {
               'field': 'time',
-              'interval': 'day'
+              'interval': 'day',
+              'min_doc_count': 1
             }
           }
         }
@@ -86,7 +87,8 @@ module.exports = function (app, config, client) {
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
-                  'interval': 'day'
+                  'interval': 'day',
+                  'min_doc_count': 1
                 }
               },
               'pos': {
