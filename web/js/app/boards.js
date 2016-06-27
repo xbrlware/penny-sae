@@ -558,6 +558,11 @@ App.BoardController = Ember.Controller.extend({
       cb(dateFilter);
     }
 
+    var mn = brushChart.x(forumData[0].date) / brushChart.width;
+
+    brush.extent([brushZoom.domain()[1] * mn, brushZoom.domain()[1]]);
+    brushChart.div.select('.pane').call(brush);
+
     draw();
   },
   actions: {
