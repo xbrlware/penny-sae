@@ -1,9 +1,9 @@
 // server/node/routes.js
 
 // Helpers
-String.prototype.capitalizeFirstLetter = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
+function capitalizeFirstLetter (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
@@ -45,7 +45,8 @@ module.exports = function (app, config, client) {
           'board_histogram': {
             'date_histogram': {
               'field': 'time',
-              'interval': 'day'
+              'interval': 'day',
+              'min_doc_count': 1
             }
           }
         }
@@ -86,7 +87,8 @@ module.exports = function (app, config, client) {
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
-                  'interval': 'day'
+                  'interval': 'day',
+                  'min_doc_count': 1
                 }
               },
               'pos': {
@@ -239,8 +241,8 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.ticker || !d.date_filter) {
-      console.log('null ticker');
-      return res.send({'data': undefined, 'pvData': undefined, 'ptData': undefined, 'tlData': undefined});
+      console.log('/board :: null ticker');
+      return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }
     async.parallel([
       function (cb) { getForumdata(d, cb); },
@@ -344,7 +346,7 @@ module.exports = function (app, config, client) {
 
   // Redflag helpers
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
-  function default_redFlags () {
+  function defaultRedFlags () {
     return _.chain(_.keys(config.DEFAULT_TOGGLES))
       .map(function (k) { return [k, DEFAULT_]; })
       .object();
@@ -354,17 +356,17 @@ module.exports = function (app, config, client) {
     if (x.length > 12) {
       x = x.slice(0, 12) + '...';
     }
-    return x.capitalizeFirstLetter();
+    return capitalizeFirstLetter(x);
   }
 
-  redflagLabel_ = {
-    'financials': function (params) {return 'Low ' + prettify(params.field); },
-    'symbology': function (params) {return prettify(params.field) + ' Change'; },
-    'suspensions': function (params) {return 'Trading Suspensions'; },
-    'delinquency': function (params) {return 'Late Filings'; },
-    'otc_neighbors': function (params) {return 'OTC Neighbors'; },
+  var redflagLabel_ = {
+    'financials': function (params) { return 'Low ' + prettify(params.field); },
+    'symbology': function (params) { return prettify(params.field) + ' Change'; },
+    'suspensions': function (params) { return 'Trading Suspensions'; },
+    'delinquency': function (params) { return 'Late Filings'; },
+    'otc_neighbors': function (params) { return 'OTC Neighbors'; },
     //    "pv"            : function(params) {return 'No Revenues' },
-    'crowdsar': function (params) {return 'Forum Activity'; }
+    'crowdsar': function (params) { return 'Forum Activity'; }
   };
 
   function redflagLabel (redFlags, redFlagParams) {
@@ -378,7 +380,7 @@ module.exports = function (app, config, client) {
   }
 
   function redflagPostprocess (redFlags, redFlagParams) {
-    return default_redFlags().extend({
+    return defaultRedFlags().extend({
       'total': _.filter(redFlags, function (x) { return x.is_flag; }).length,
       'possible': _.keys(redFlagParams).length
     })
