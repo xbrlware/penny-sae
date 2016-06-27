@@ -5,20 +5,15 @@ function financials (data, params) {
   if (data != null) {
     for (i = 0; i < data.length; i++) {
       var field = data[i].field == params.field;
-      var tf = time_filter(data[i].new_date, params.min_date, params.max_date);
-      // n += field & tf & (data[i].value < params.value)
-      n += field;
+      var tf = time_filter(data[i].date, params.min_date, params.max_date);
+      var low = data[i].value < params.value;
+      n += field & tf & low;
     }
   }
 
-  // return {
-  //   'value': n,
-  //   'is_flag': n >= params.threshold,
-  //   'have': have
-  // }
   return {
     'value': n,
-    'is_flag': have,
+    'is_flag': n > params.threshold,
     'have': have
   };
 }
