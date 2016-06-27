@@ -3,7 +3,7 @@ function combine_scores (scores, params) {
   // ... Need to actually determine how to combine these things...
   var out = 0;
   for (s in scores) {
-    out += scores[s]['is_flag'] + 0.01 * scores[s]['value'];
+    out += scores[s]['is_flag'] * (1 + 0.01 * scores[s]['value']);
   }
   return out;
 }
