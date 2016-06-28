@@ -1,5 +1,7 @@
 // web/js/app/network.js
 
+/* global App, Ember, gconfig, $jit, _, implementIcons */
+
 App.NetController = Ember.Controller.extend({
   isLoading: true,
   noData: false
@@ -119,7 +121,7 @@ App.RGraph.reopenClass({
         overridable: true,
         color: gconfig.NETWORK_EDGE_COLOR,
         lineWidth: gconfig.NETWORK_EDGE_WIDTH,
-        alpha: .9
+        alpha: 0.9
       },
       Events: {
         enable: true,
@@ -216,16 +218,16 @@ App.RGraph.reopenClass({
   //    }
   //  },
 
-  computeColor: function (redFlags_total) {
-    if (redFlags_total === undefined) { return 'grey'; }
+  computeColor: function (redFlagsTotal) {
+    if (redFlagsTotal === undefined) { return 'grey'; }
 
-    if (redFlags_total < 1) {
+    if (redFlagsTotal < 1) {
       return 'green';
-    } else if (redFlags_total >= 1 & redFlags_total < 2) {
+    } else if (redFlagsTotal >= 1 & redFlagsTotal < 2) {
       return 'yellow';
-    } else if (redFlags_total >= 2 & redFlags_total < 4) {
+    } else if (redFlagsTotal >= 2 & redFlagsTotal < 4) {
       return 'orange';
-    } else if (redFlags_total >= 4) {
+    } else if (redFlagsTotal >= 4) {
       return 'red';
     }
   }
