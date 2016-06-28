@@ -559,7 +559,7 @@ App.BoardController = Ember.Controller.extend({
     /* set the initial size of the brush. The brush works on pixels, not on dates */
     if (forumData.length) {
       var mn = brushChart.x(forumData[0].date) / brushChart.width;
-      brush.extent([brushZoom.domain()[1] * mn, brushZoom.domain()[1]]);
+      brush.extent([(brushZoom.domain()[1] * mn) - 8, brushZoom.domain()[1]]);
       brushChart.div.select('.pane').call(brush);
     }
 
