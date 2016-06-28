@@ -347,8 +347,6 @@ App.BoardController = Ember.Controller.extend({
 
     var dateSupport = getDates(dateRange);
 
-    var includePV = true;
-
     function addDays (currentDate, days) {
       var dat = new Date(currentDate);
       dat.setDate(dat.getDate() + days);
@@ -478,21 +476,16 @@ App.BoardController = Ember.Controller.extend({
     brushChart.div = makeDiv(brushChart, 'c2');
     brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
 
-    if (includePV) {
-      price.div = makeDiv(price, 'c3');
-      volume.div = makeDiv(volume, 'c4');
-    }
+    price.div = makeDiv(price, 'c3');
+    volume.div = makeDiv(volume, 'c4');
 
-    if (includePV) {
-      // var accessor = price.plot.accessor()
-      price.x.domain(dateSupport);
-      price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
-      price.div.select('g.close').datum(pvData);
+    price.x.domain(dateSupport);
+    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
+    price.div.select('g.close').datum(pvData);
 
-      volume.x.domain(dateSupport);
-      volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
-      volume.div.select('g.volume').datum(pvData);
-    }
+    volume.x.domain(dateSupport);
+    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
+    volume.div.select('g.volume').datum(pvData);
 
     posts.x.domain(dateSupport);
     posts.y.domain(techan.scale.plot.volume(forumData).domain());
@@ -546,10 +539,8 @@ App.BoardController = Ember.Controller.extend({
       zoomable.domain(brushDomain);
       zoomable2.domain(brushDomain);
 
-      if (includePV) {
-        _draw(price, dateFilter);
-        _draw(volume, dateFilter);
-      }
+      _draw(price, dateFilter);
+      _draw(volume, dateFilter);
 
       _draw(posts, dateFilter);
 
@@ -559,7 +550,7 @@ App.BoardController = Ember.Controller.extend({
     /* set the initial size of the brush. The brush works on pixels, not on dates */
     if (forumData.length) {
       var mn = brushChart.x(forumData[0].date) / brushChart.width;
-      brush.extent([(brushZoom.domain()[1] * mn) - 8, brushZoom.domain()[1]]);
+      brush.extent([(brushZoom.domain()[1] * mn), brushZoom.domain()[1]]);
       brushChart.div.select('.pane').call(brush);
     }
 
@@ -617,7 +608,7 @@ App.BoardRoute = Ember.Route.extend({
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
 
-        if (!response.pvData.length) { con.set('isData', false); }
+        if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
       });
     });
   }

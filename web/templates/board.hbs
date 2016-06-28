@@ -10,6 +10,11 @@
     <div class="col-xs-12" id="techan-wrapper">
         <div id="time-chart" class="chart"></div>
     </div>
+{{else}}
+    <span class="centered">
+    <h4> There is no data available. </h4>
+    </span>
+{{/if}}
 
     <div class="col-xs-12 charts-wrapper">
         <div class="col-xs-6" id="gauge-timeline-cell">
@@ -36,8 +41,3 @@
         </div>
         {{forum-posts postFilteredData splitByFilter}}
     </div>
-{{else}}
-    <span class="centered">
-    <h4> There is no data available. </h4>
-    </span>
-{{/if}}
