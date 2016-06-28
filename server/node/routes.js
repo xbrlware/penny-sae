@@ -26,7 +26,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': brdData.ticker.toLowerCase()
+                '__meta__.sym.cik': brdData.cik
               }
             }
           }
@@ -38,7 +38,7 @@ module.exports = function (app, config, client) {
         'size': 0,
         'query': {
           'match': {
-            'ticker': btData.ticker.toLowerCase()
+            '__meta__.sym.cik': btData.cik
           }
         },
         'aggs': {
@@ -67,7 +67,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': tData.ticker.toLowerCase()
+                '__meta__.sym.cik': tData.cik
               }
             }
           }
@@ -240,7 +240,7 @@ module.exports = function (app, config, client) {
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter) {
       console.log('/board :: null ticker');
       return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }

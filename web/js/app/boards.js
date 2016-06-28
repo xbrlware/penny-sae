@@ -139,7 +139,7 @@ App.BoardController = Ember.Controller.extend({
     this.set('timelineLoading', true);
 
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('redraw', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('redraw', {cik: cik, ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
         _this.set('model.tlData', response);
         _this.renderX();
         _this.renderGauges();
@@ -565,7 +565,7 @@ App.BoardController = Ember.Controller.extend({
 
       if (this.get('splitByFilter').length) {
         App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+          App.Search.fetch_data('user', {cik: cik, ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
             _this.set('filtered_data', _.map(response, function (x) {
               x.date = new Date(x.time);
               return x;
@@ -592,7 +592,7 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
     console.log('CIK :: ', cik);
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.time);
