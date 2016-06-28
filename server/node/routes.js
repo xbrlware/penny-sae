@@ -128,11 +128,16 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                  {'match': { 'ticker': users.ticker }},
+                  {'match': { '__meta__.sym.cik': users.cik }},
                   {'terms': { 'user_id': users.users }}
                 ]
               }
             }
+          }
+        },
+        'sort': {
+          'time': {
+            'order': 'desc'
           }
         }
       };
@@ -226,7 +231,7 @@ module.exports = function (app, config, client) {
   app.post('/user', function (req, res) {
     var d = req.body;
     console.log('/user ::', d);
-    if (!d.ticker || !d.users || !d.date_filter) {
+    if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
     client.search({
