@@ -268,7 +268,7 @@ module.exports = function (app, config, client) {
   app.post('/redraw', function (req, res) {
     var d = req.body;
     console.log('/redraw ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
     getTimelineData(d, function (n, resp) {

@@ -138,13 +138,11 @@ App.BoardController = Ember.Controller.extend({
     var cik = _this.controllerFor('detail').get('model.cik');
     this.set('timelineLoading', true);
 
-    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('redraw', {cik: cik, ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
-        _this.set('model.tlData', response);
-        _this.renderX();
-        _this.renderGauges();
-        _this.set('timelineLoading', false);
-      });
+    App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
+      _this.set('model.tlData', response);
+      _this.renderX();
+      _this.renderGauges();
+      _this.set('timelineLoading', false);
     });
   },
 
@@ -564,13 +562,11 @@ App.BoardController = Ember.Controller.extend({
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
-        App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-          App.Search.fetch_data('user', {cik: cik, ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
-            _this.set('filtered_data', _.map(response, function (x) {
-              x.date = new Date(x.time);
-              return x;
-            }));
-          });
+        App.Search.fetch_data('user', {cik: cik, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+          _this.set('filtered_data', _.map(response, function (x) {
+            x.date = new Date(x.time);
+            return x;
+          }));
         });
       } else {
         _this.set('filtered_data', this.get('model.data'));
