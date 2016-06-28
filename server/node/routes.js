@@ -287,7 +287,7 @@ module.exports = function (app, config, client) {
         timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
-      var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
+      var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
       console.log('/getTimelineData :: returned', r.length);
       cb(null, r);
       return;
