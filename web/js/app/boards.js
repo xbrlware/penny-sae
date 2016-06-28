@@ -22,9 +22,7 @@ function makeTimeSeries (ts, bounds) {
   d3.select(div).selectAll('svg').remove();
 
   d3.select(div + ' .title').text(ts.name);
-  d3.select(div + ' .before').text(ts.count.before);
-  d3.select(div + ' .during').text(ts.count.during);
-  d3.select(div + ' .after').text(ts.count.after);
+  d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
 
   var tip = d3.tip()
     .attr('class', 'd3-tip')
