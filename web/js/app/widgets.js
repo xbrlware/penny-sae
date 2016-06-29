@@ -98,7 +98,7 @@ JQ.DatepickerView = Ember.View.extend(JQ.Widget, {
     'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader',
     'yearRange', 'yearSuffix'],
   uiEvents: ['create', 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect', 'setDate'],
-  yearRange: '-20:+0'
+  yearRange: '-20:+1'
 });
 
 App.SliderView = JQ.SliderView.extend({

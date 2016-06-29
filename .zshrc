@@ -1,3 +1,0 @@
-utoload -Uz promptinit
-promptinit
-

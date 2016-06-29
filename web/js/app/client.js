@@ -30,7 +30,6 @@ App.SearchResults = Ember.Object.extend({
 App.SearchResultsView = Ember.View.extend({
   columns: [
     {title: 'Min Date', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Max Date', defaultContent: '', className: 'dt-body-right'},
     {title: 'Name', defaultContent: ''},
     {title: 'Ticker', defaultContent: ''},
     {title: 'SIC', defaultContent: ''}
@@ -55,7 +54,7 @@ App.SearchResultsView = Ember.View.extend({
         },
         columns: columns,
         data: _.map(response['table'], function (x) {
-          return [_this.dateConversion(x.min_date), _this.dateConversion(x.max_date), x.name, x.ticker, x.sic];
+          return [_this.dateConversion(x.min_date), x.name, x.ticker, x.sic];
         }),
         bFilter: false,
         bInfo: false
