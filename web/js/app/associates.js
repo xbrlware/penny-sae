@@ -17,17 +17,17 @@ App.AssociatesController = Ember.ObjectController.extend({
 
   // >>
   // For table
-  
+
   rgraph_edges: [],
-  update_data: function(rgraph) {
-    var rgraph_edges = _.chain(rgraph.graph.edges).map(function(v1, source) {
-      return _.chain(v1).map(function(edge, target) {
-        return {"source":source, "target":target, "data":edge.data}
-      }).filter(function(x) {return x.source == x.data.ownerCik}).value()
-    }).flatten().value()
+  update_data: function (rgraph) {
+    var rgraph_edges = _.chain(rgraph.graph.edges).map(function (v1, source) {
+      return _.chain(v1).map(function (edge, target) {
+        return {'source': source, 'target': target, 'data': edge.data};
+      }).filter(function (x) {return x.source == x.data.ownerCik;}).value();
+    }).flatten().value();
     this.set('rgraph_edges', rgraph_edges);
   },
-  
+
   tableDiv: '#associates-table',
   tableContent: function () {
     var this_ = this;
@@ -39,13 +39,13 @@ App.AssociatesController = Ember.ObjectController.extend({
         x.data.ownerCik,
         x.data.min_date.split('-').join('/'),
         x.data.max_date.split('-').join('/'),
-        x.data.isDirecto === 1  ? 'X' : '',
-        x.data.isOfficer === 1  ? 'X' : '',
+        x.data.isDirecto === 1 ? 'X' : '',
+        x.data.isOfficer === 1 ? 'X' : '',
         x.data.isTenPercentOwner === 1 ? 'X' : ''
       ];
     });
   }.property('rgraph_edges'),
-  
+
   tableColumns: [
     {title: 'Issuer Name'},
     {title: 'Owner Name'},
@@ -55,7 +55,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     {title: 'To'},
     {title: 'Director'},
     {title: 'Officer'},
-    {title: '10% Owner'},
+    {title: '10% Owner'}
   ]
 });
 
@@ -86,64 +86,64 @@ App.AssociatesView = App.GenericTableView.extend();
 //      data: JSON.stringify({'cik': args.cik, 'updates': args.updates}),
 //      success: args.callback,
 //      error: function (xhr, status, error) {
-//        console.log('Error: ' + error.message);
+//        console.log('Error: ' + error.message)
 //      }
-//    });
+//    })
 //  },
 //
 //  update_networkAssociates: function (updates) {
-//    var self = this;
+//    var self = this
 //    return new Ember.RSVP.Promise(function (resolve, reject) {
 //      self.set_ner({
 //        'cik': self.get('model.cik'),
 //        'updates': updates,
 //        'callback': function (response) {
-//          self.transitionToRoute('previousReg');
+//          self.transitionToRoute('previousReg')
 //          setTimeout(function () {
-//            self.transitionToRoute('associates');
-//          }, 50);
-//          alert('Changes saved successfully!');
-//          resolve();
+//            self.transitionToRoute('associates')
+//          }, 50)
+//          alert('Changes saved successfully!')
+//          resolve()
 //        }
-//      });
-//    });
+//      })
+//    })
 //  },
 //  actions: {
 //    toggle_ner: function (ner) {
-//      var networkAssociates = this.get('networkAssociates');
-//      var ind = _.indexOf(networkAssociates, ner);
-//      var associate = networkAssociates[ind];
+//      var networkAssociates = this.get('networkAssociates')
+//      var ind = _.indexOf(networkAssociates, ner)
+//      var associate = networkAssociates[ind]
 //
-//      associate.toggleProperty('hidden');
+//      associate.toggleProperty('hidden')
 //    },
 //    save_toggles: function () {
-//      var networkAssociates = this.get('networkAssociates');
+//      var networkAssociates = this.get('networkAssociates')
 //      var updates = _.map(networkAssociates, function (associate) {
-//        return {'nodeTo': associate.id, 'hidden': associate.hidden};
-//      });
-//      this.update_networkAssociates(updates);
+//        return {'nodeTo': associate.id, 'hidden': associate.hidden}
+//      })
+//      this.update_networkAssociates(updates)
 //    },
 //    filter_er: function () {
-//      var searchTermEr = this.get('searchTermEr');
-//      var origNetworkAssociates = this.get('origNetworkAssociates');
+//      var searchTermEr = this.get('searchTermEr')
+//      var origNetworkAssociates = this.get('origNetworkAssociates')
 //      if (searchTermEr === '') {
-//        this.set('networkAssociates', origNetworkAssociates);
+//        this.set('networkAssociates', origNetworkAssociates)
 //      } else {
 //        this.set('networkAssociates', _.filter(origNetworkAssociates, function (associate) {
-//          var name = associate.name;
-//          return name.match(new RegExp(searchTermEr, 'i')) != null;
-//        }));
+//          var name = associate.name
+//          return name.match(new RegExp(searchTermEr, 'i')) != null
+//        }))
 //      }
 //    },
 //
 //    show_links_ner: function (ner) {
-//      var origAdj = this.get('origAdj');
-//      var cik = this.get('model.cik');
-//      var edge = _.where(origAdj, {'nodeTo': ner.id})[0];
+//      var origAdj = this.get('origAdj')
+//      var cik = this.get('model.cik')
+//      var edge = _.where(origAdj, {'nodeTo': ner.id})[0]
 //      this.set('links', _.map(edge.data.an, function (x) {
-//        var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm';
-//        return {link: link};
-//      }));
+//        var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm'
+//        return {link: link}
+//      }))
 //    }
 //  }
-//});
+// })

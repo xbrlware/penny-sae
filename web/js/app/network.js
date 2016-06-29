@@ -74,10 +74,10 @@ App.NetworkAPI.reopenClass({
         App.NetworkAPI._add_nodes(rgraph, data.nodes);
       }
       App.NetworkAPI._add_edges(rgraph, data.edges);
-      
+
       // Add edges for table
       con.update_data(rgraph);
-      
+
       rgraph.refresh();
     });
   }
