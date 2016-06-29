@@ -1,5 +1,5 @@
 // web/js/app/client.js
-/* global Ember, App */
+/* global Ember, App, _ */
 
 function fetch (args) { // eslint-disable-line no-unused-vars
   Ember.$.ajax({
@@ -42,6 +42,7 @@ App.SearchResultsView = Ember.View.extend({
   },
 
   afterRenderEvent: function () {
+    var _this = this;
     var cik = this.get('cik');
     var columns = this.get('columns');
 
@@ -53,11 +54,18 @@ App.SearchResultsView = Ember.View.extend({
           }
         },
         columns: columns,
-        data: response['table'],
+        data: _.map(response['table'], function (x) {
+          return [_this.dateConversion(x.min_date), _this.dateConversion(x.max_date), x.name, x.ticker, x.sic];
+        }),
         bFilter: false,
         bInfo: false
       });
     });
+  },
+
+  dateConversion: function (d) {
+    var date = new Date(d);
+    return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
   }
 });
 

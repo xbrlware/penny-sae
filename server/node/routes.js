@@ -569,13 +569,13 @@ module.exports = function (app, config, client) {
             }
           }
 
-          return [
-            hit._source.min_date,
-            hit._source.max_date,
-            hit._source.name,
-            hit._source.ticker,
-            sic
-          ];
+          return {
+            'min_date': hit._source.min_date,
+            'max_date': hit._source.max_date,
+            'name': hit._source.name,
+            'ticker': hit._source.ticker,
+            'sic': sic
+          };
         }).value()
       });
     });

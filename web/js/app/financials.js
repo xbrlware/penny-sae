@@ -6,6 +6,7 @@ App.FinancialsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('financials', this.get('controller.name')).then(function (response) {
       controller.set('model', response.data);
+      console.log('MODEL :: --> ', response.data);
     });
   }
 });
@@ -40,10 +41,15 @@ App.FinancialsController = Ember.Controller.extend({
     return obj[key].value;
   },
 
+  dateConversion: function (d) {
+    var date = new Date(d);
+    return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
+  },
+
   tableContent: function () {
     var this_ = this;
     return _.map(this.get('model'), function (n) {
-      return [n.name, n.date, n.form,
+      return [n.name, this_.dateConversion(n.date), n.form,
         this_.smartGet(n.__meta__.financials, 'assets'),
         this_.smartGet(n.__meta__.financials, 'liabilitiesAndStockholdersEquity'),
         this_.smartGet(n.__meta__.financials, 'netIncome'),

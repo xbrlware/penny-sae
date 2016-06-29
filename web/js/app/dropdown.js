@@ -30,12 +30,12 @@ App.DropdownController = Ember.ObjectController.extend({
   },
   financials_select_content: [
     {id: undefined, name: 'Choose Type'},
-    {id : 'assets', name: 'Assets'},
-    {id : 'liabilitiesAndStockholdersEquity', name: 'Liabilities and Stockholders Equity'},
-    {id : 'netIncome', name: 'Net Income'},
-    {id : 'profit', name: 'Profit'},
-    {id : 'revenues', name: 'Revenues'},
-    {id : 'earnings', name: 'Earnings' }
+    {id: 'assets', name: 'Assets'},
+    {id: 'liabilitiesAndStockholdersEquity', name: 'Liabilities and Stockholders Equity'},
+    {id: 'netIncome', name: 'Net Income'},
+    {id: 'profit', name: 'Profit'},
+    {id: 'revenues', name: 'Revenues'},
+    {id: 'earnings', name: 'Earnings'}
   ],
   late_filings_content: [
     {id: undefined, name: 'Choose Form'},
@@ -83,7 +83,7 @@ App.DropdownView = Ember.View.extend({
     });
 
     Ember.$('#big-dropdown-button').on('click', function (event) {
-      $(this).parent().toggleClass('open');
+      Ember.$(this).parent().toggleClass('open');
     });
 
     Ember.$('fa').click(function (e) {
