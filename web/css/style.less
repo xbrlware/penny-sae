@@ -850,6 +850,8 @@ path.candle.down {
 .chart {
     border : 1px solid transparent;
 	display: inline-block;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .chart-selected {
@@ -958,6 +960,10 @@ path.candle.down {
 	display: block;
 	border: 0;
 	background-position: 0 0;
+}
+
+.ui-slider-range {
+    background-color: red;
 }
 
 /* support: IE8 - See #6727 */
@@ -1455,7 +1461,7 @@ table.table thead th.sorting_desc:after {
 
 .dataTable > tbody > tr > td {
     font-family: 'Droid Sans Mono', monospace;
-    font-weight: light;
+    font-weight: thin;
     font-size: 0.9em;
 }
 
