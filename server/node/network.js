@@ -195,14 +195,20 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       cb(
         false,
-        _.map(response.hits.hits, function (hit) {
+        _.chain(response.hits.hits).pluck('_source').map(function (hit) {
           return {
-            'issuerCik': hit['_source']['issuerCik'],
-            'issuerName': hit['_source']['issuerName'],
-            'ownerCik': hit['_source']['ownerCik'],
-            'ownerName': hit['_source']['ownerName']
+            'issuerCik': hit['issuerCik'],
+            'issuerName': hit['issuerName'],
+            'ownerCik': hit['ownerCik'],
+            'ownerName': hit['ownerName'],
+            'min_date': hit['min_date'],
+            'max_date': hit['max_date'],
+            'isOwner': hit['isOwner'],
+            'isOfficer': hit['isOfficer'],
+            'isDirector': hit['isDirector'],
+            'isTenPercentOwner': hit['isTenPercentOwner']
           };
-        })
+        }).value()
       );
     }).catch(function (err) { console.log(err.stack); });
   }
@@ -221,7 +227,6 @@ module.exports = function (app, config, client) {
       var edges = _.chain([results]).flatten().value();
       var nodes = edges2nodes(edges);
       computeRedFlags(nodes, redFlagParams, function (nodes) {
-        console.log('/network :: returning', nodes, edges);
         res.send({'nodes': nodes, 'edges': edges});
       });
     });

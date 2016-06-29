@@ -36,4 +36,3 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 });
 
 App.DelinquencyView = App.GenericTableView.extend();
-

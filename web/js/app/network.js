@@ -21,7 +21,9 @@ App.NetView = Ember.View.extend({
     var redFlagParams = con.get('redFlagParams');
 
     var rgraph = App.RGraph.init(con, 'main-infovis', redFlagParams);
-    App.NetworkAPI.expand_node(rgraph, cik, redFlagParams, true);
+    App.NetworkAPI.expand_node(con, rgraph, cik, redFlagParams, true);
+    console.log('rgraph', rgraph);
+    con.set('rgraph', rgraph);
   }
 });
 
@@ -38,7 +40,6 @@ App.NetworkAPI = Ember.Object.extend({});
 
 App.NetworkAPI.reopenClass({
   _fetch: function (params, cb) {
-    console.log('trying to fetch');
     Ember.$.ajax({
       type: 'POST',
       contentType: 'application/json',
@@ -52,23 +53,19 @@ App.NetworkAPI.reopenClass({
   // What if there's a twoway connection
   _add_edges: function (rgraph, edges) {
     _.map(edges, function (edge) {
-      rgraph.graph.addAdjacence(
-        {'id': edge['ownerCik']},
-        {'id': edge['issuerCik']}
-      );
+      rgraph.graph.addAdjacence({'id': edge['ownerCik']}, {'id': edge['issuerCik']}, edge);
     });
   },
 
   _add_nodes: function (rgraph, nodes) {
     _.map(nodes, function (node) {
       if (!rgraph.graph.hasNode(node)) {
-        console.log('redFlags', node.redFlags);
         rgraph.graph.addNode(node, {'redFlags': node.redFlags});
       }
     });
   },
 
-  expand_node: function (rgraph, cik, redFlagParams, init) {
+  expand_node: function (con, rgraph, cik, redFlagParams, init) {
     cik = zpad(cik.toString());
     App.NetworkAPI._fetch({'cik': cik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
       if (init) {
@@ -77,6 +74,10 @@ App.NetworkAPI.reopenClass({
         App.NetworkAPI._add_nodes(rgraph, data.nodes);
       }
       App.NetworkAPI._add_edges(rgraph, data.edges);
+
+      // Add edges for table
+      con.update_data(rgraph);
+
       rgraph.refresh();
     });
   }
@@ -148,7 +149,7 @@ App.RGraph.reopenClass({
         onClick: function (node, eventInfo, e) {
           if (node) {
             node.setData('dim', gconfig.STANDARD_NODE_SIZE);
-            App.NetworkAPI.expand_node(rgraph, node.id, redFlagParams, false);
+            App.NetworkAPI.expand_node(con, rgraph, node.id, redFlagParams, false);
           }
         },
         onRightClick: function (node, eventInfo, e) {
