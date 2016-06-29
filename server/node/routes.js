@@ -245,7 +245,7 @@ module.exports = function (app, config, client) {
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.cik || !d.date_filter) {
+    if (!d.cik || !d.date_filter || !d.ticker) {
       console.log('/board :: null ticker');
       return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }
