@@ -26,7 +26,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': brdData.ticker.toLowerCase()
+                '__meta__.sym.cik': brdData.cik
               }
             }
           }
@@ -38,7 +38,7 @@ module.exports = function (app, config, client) {
         'size': 0,
         'query': {
           'match': {
-            'ticker': btData.ticker.toLowerCase()
+            '__meta__.sym.cik': btData.cik
           }
         },
         'aggs': {
@@ -67,7 +67,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': tData.ticker.toLowerCase()
+                '__meta__.sym.cik': tData.cik
               }
             }
           }
@@ -128,11 +128,16 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                  {'match': { 'ticker': users.ticker }},
+                  {'match': { '__meta__.sym.cik': users.cik }},
                   {'terms': { 'user_id': users.users }}
                 ]
               }
             }
+          }
+        },
+        'sort': {
+          'time': {
+            'order': 'desc'
           }
         }
       };
@@ -226,7 +231,7 @@ module.exports = function (app, config, client) {
   app.post('/user', function (req, res) {
     var d = req.body;
     console.log('/user ::', d);
-    if (!d.ticker || !d.users || !d.date_filter) {
+    if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
     client.search({
@@ -240,7 +245,7 @@ module.exports = function (app, config, client) {
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter) {
       console.log('/board :: null ticker');
       return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }
@@ -263,7 +268,7 @@ module.exports = function (app, config, client) {
   app.post('/redraw', function (req, res) {
     var d = req.body;
     console.log('/redraw ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
     getTimelineData(d, function (n, resp) {
@@ -287,7 +292,7 @@ module.exports = function (app, config, client) {
         timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
-      var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
+      var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
       console.log('/getTimelineData :: returned', r.length);
       cb(null, r);
       return;

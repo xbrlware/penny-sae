@@ -22,9 +22,7 @@ function makeTimeSeries (ts, bounds) {
   d3.select(div).selectAll('svg').remove();
 
   d3.select(div + ' .title').text(ts.name);
-  d3.select(div + ' .before').text(ts.count.before);
-  d3.select(div + ' .during').text(ts.count.during);
-  d3.select(div + ' .after').text(ts.count.after);
+  d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
 
   var tip = d3.tip()
     .attr('class', 'd3-tip')
@@ -140,13 +138,11 @@ App.BoardController = Ember.Controller.extend({
     var cik = _this.controllerFor('detail').get('model.cik');
     this.set('timelineLoading', true);
 
-    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('redraw', {ticker: cData.ticker, date_filter: _this.get('dateFilter')}).then(function (response) {
-        _this.set('model.tlData', response);
-        _this.renderX();
-        _this.renderGauges();
-        _this.set('timelineLoading', false);
-      });
+    App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
+      _this.set('model.tlData', response);
+      _this.renderX();
+      _this.renderGauges();
+      _this.set('timelineLoading', false);
     });
   },
 
@@ -349,8 +345,6 @@ App.BoardController = Ember.Controller.extend({
 
     var dateSupport = getDates(dateRange);
 
-    var includePV = true;
-
     function addDays (currentDate, days) {
       var dat = new Date(currentDate);
       dat.setDate(dat.getDate() + days);
@@ -393,7 +387,7 @@ App.BoardController = Ember.Controller.extend({
     posts.x = techan.scale.financetime().range([0, posts.width]);
     posts.y = d3.scale.linear().range([posts.height, 0]);
     posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-    posts.xAxis = d3.svg.axis().scale(posts.x).orient('bottom');
+    posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
 
     var brushChart = {};
@@ -407,7 +401,7 @@ App.BoardController = Ember.Controller.extend({
     brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
     brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
     brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(8).orient('bottom');
+    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
 
     var price = {};
@@ -421,7 +415,7 @@ App.BoardController = Ember.Controller.extend({
     price.x = techan.scale.financetime().range([0, price.width]);
     price.y = d3.scale.linear().range([price.height, 0]);
     price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-    price.xAxis = d3.svg.axis().scale(price.x).ticks(8).orient('bottom');
+    price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
 
     var volume = {};
@@ -480,21 +474,16 @@ App.BoardController = Ember.Controller.extend({
     brushChart.div = makeDiv(brushChart, 'c2');
     brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
 
-    if (includePV) {
-      price.div = makeDiv(price, 'c3');
-      volume.div = makeDiv(volume, 'c4');
-    }
+    price.div = makeDiv(price, 'c3');
+    volume.div = makeDiv(volume, 'c4');
 
-    if (includePV) {
-      // var accessor = price.plot.accessor()
-      price.x.domain(dateSupport);
-      price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
-      price.div.select('g.close').datum(pvData);
+    price.x.domain(dateSupport);
+    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
+    price.div.select('g.close').datum(pvData);
 
-      volume.x.domain(dateSupport);
-      volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
-      volume.div.select('g.volume').datum(pvData);
-    }
+    volume.x.domain(dateSupport);
+    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
+    volume.div.select('g.volume').datum(pvData);
 
     posts.x.domain(dateSupport);
     posts.y.domain(techan.scale.plot.volume(forumData).domain());
@@ -548,14 +537,19 @@ App.BoardController = Ember.Controller.extend({
       zoomable.domain(brushDomain);
       zoomable2.domain(brushDomain);
 
-      if (includePV) {
-        _draw(price, dateFilter);
-        _draw(volume, dateFilter);
-      }
+      _draw(price, dateFilter);
+      _draw(volume, dateFilter);
 
       _draw(posts, dateFilter);
 
       cb(dateFilter);
+    }
+
+    /* set the initial size of the brush. The brush works on pixels, not on dates */
+    if (forumData.length) {
+      var mn = brushChart.x(forumData[0].date) / brushChart.width;
+      brush.extent([(brushZoom.domain()[1] * mn), brushZoom.domain()[1]]);
+      brushChart.div.select('.pane').call(brush);
     }
 
     draw();
@@ -568,13 +562,11 @@ App.BoardController = Ember.Controller.extend({
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
-        App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-          App.Search.fetch_data('user', {ticker: cData.ticker, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
-            _this.set('filtered_data', _.map(response, function (x) {
-              x.date = new Date(x.time);
-              return x;
-            }));
-          });
+        App.Search.fetch_data('user', {cik: cik, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+          _this.set('filtered_data', _.map(response, function (x) {
+            x.date = new Date(x.time);
+            return x;
+          }));
         });
       } else {
         _this.set('filtered_data', this.get('model.data'));
@@ -596,7 +588,7 @@ App.BoardRoute = Ember.Route.extend({
     var cik = this.controllerFor('detail').get('model.cik');
     console.log('CIK :: ', cik);
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.time);
@@ -612,7 +604,7 @@ App.BoardRoute = Ember.Route.extend({
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
 
-        if (!response.pvData.length) { con.set('isData', false); }
+        if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
       });
     });
   }
