@@ -24,10 +24,15 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
 
   tableContent: function () {
     return _.map(this.get('model'), function (n) {
-      return [n.form, n._enrich.period, n.date, n._enrich.deadline || 'missing', n._enrich.is_late ? 'Late' : ''];
+      return [
+        n.form,
+        n._enrich.period.split('-').join('/'),
+        (n._enrich.deadline || 'missing').split('-').join('/'),
+        n.date.split('-').join('/'),
+        n._enrich.is_late ? 'Late' : ''
+      ];
     });
   }.property('model')
 });
 
 App.DelinquencyView = App.GenericTableView.extend();
-

@@ -43,7 +43,10 @@ App.FinancialsController = Ember.Controller.extend({
   tableContent: function () {
     var this_ = this;
     return _.map(this.get('model'), function (n) {
-      return [n.name, n.date, n.form,
+      return [
+        n.name,
+        n.date.split('-').join('/'),
+        n.form,
         this_.smartGet(n.__meta__.financials, 'assets'),
         this_.smartGet(n.__meta__.financials, 'liabilitiesAndStockholdersEquity'),
         this_.smartGet(n.__meta__.financials, 'netIncome'),

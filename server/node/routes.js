@@ -570,8 +570,8 @@ module.exports = function (app, config, client) {
           }
 
           return [
-            hit._source.min_date,
-            hit._source.max_date,
+            hit._source.min_date.split('-').join('/'),
+            hit._source.max_date.split('-').join('/'),
             hit._source.name,
             hit._source.ticker,
             sic
