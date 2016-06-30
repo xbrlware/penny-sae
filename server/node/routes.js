@@ -25,8 +25,12 @@ module.exports = function (app, config, client) {
               }
             },
             'query': {
-              'match': {
-                '__meta__.sym.cik': brdData.cik
+              'constant_score': {
+                'filter': {
+                  'term': {
+                    '__meta__.sym.cik': brdData.cik
+                  }
+                }
               }
             }
           }
@@ -38,8 +42,12 @@ module.exports = function (app, config, client) {
       return {
         'size': 0,
         'query': {
-          'match': {
-            '__meta__.sym.cik': btData.cik
+          'constant_score': {
+            'filter': {
+              'term': {
+                '__meta__.sym.cik': btData.cik
+              }
+            }
           }
         },
         'aggs': {
@@ -67,8 +75,12 @@ module.exports = function (app, config, client) {
               }
             },
             'query': {
-              'match': {
-                '__meta__.sym.cik': tData.cik
+              'constant_score': {
+                'filter': {
+                  'term': {
+                    '__meta__.sym.cik': tData.cik
+                  }
+                }
               }
             }
           }
@@ -76,18 +88,13 @@ module.exports = function (app, config, client) {
         'aggs': {
           'posts': {
             'terms': {
-              'field': 'user_id',
+              'script': "doc['user_id'].value + '|' + doc['user.cat'].value",
               'size': 10,
               'order': {
                 '_count': 'desc'
               }
             },
             'aggs': {
-              'user': {
-                'terms': {
-                  'field': 'user.cat'
-                }
-              },
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
@@ -287,15 +294,15 @@ module.exports = function (app, config, client) {
       body: pennyQueryBuilder.timeline(data)
     }).then(function (response) {
       var q = _.map(response.aggregations.posts.buckets, function (x) {
-        return {id: x.key,
-          user: x.user.buckets[0].key,
+        var temp = x.key.split('|');
+        return {id: temp[0],
+          user: temp[1],
           doc_count: x.doc_count,
           pos: x.pos.value,
           neut: x.neut.value,
           neg: x.neg.value,
         timeline: x.user_histogram.buckets};
       });
-      // this orders the top 10 users by posts in penny
       console.log('/getTimelineData :: returned', q.length);
       cb(null, q);
       return;
