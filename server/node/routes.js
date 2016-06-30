@@ -30,7 +30,8 @@ module.exports = function (app, config, client) {
               }
             }
           }
-        }
+        },
+        'sort': {'time': 'desc'}
       };
     },
     'boardTimeline': function (btData) {
@@ -76,7 +77,10 @@ module.exports = function (app, config, client) {
           'posts': {
             'terms': {
               'field': 'user_id',
-              'size': 10
+              'size': 10,
+              'order': {
+                '_count': 'desc'
+              }
             },
             'aggs': {
               'user': {
@@ -292,9 +296,8 @@ module.exports = function (app, config, client) {
         timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
-      var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
-      console.log('/getTimelineData :: returned', r.length);
-      cb(null, r);
+      console.log('/getTimelineData :: returned', q.length);
+      cb(null, q);
       return;
     });
   }
@@ -326,7 +329,14 @@ module.exports = function (app, config, client) {
     console.log('getPvData', data);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'size': 9999, 'query': {'term': {'symbol': data.ticker.toLowerCase()}}}
+      body: {'size': 9999,
+        'query': {
+          'term': {
+            'symbol': data.ticker.toLowerCase()
+          }
+        },
+        'sort': { 'date': 'desc' }
+      }
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
@@ -424,7 +434,7 @@ module.exports = function (app, config, client) {
     'company_table': function (cik) {
       return {
         '_source': ['min_date', 'name', 'ticker', 'sic', '__meta__'],
-        'query': { 'term': { 'cik': cik } }
+        'query': { 'term': { 'cik': cik } }, 'sort': [{'min_date': {'order': 'desc'}}]
       };
     },
     'cik2name': function (cik) {
@@ -560,7 +570,7 @@ module.exports = function (app, config, client) {
       'size': 999
     }).then(function (esResponse) {
       res.send({
-        'table': _.chain(esResponse.hits.hits).sortBy(function (hit) { return hit._source.min_date; }).map(function (hit) {
+        'table': _.chain(esResponse.hits.hits).map(function (hit) {
           // Use SIC code unless description is available
           var sic = hit._source.sic;
           if (hit._source.__meta__) {
