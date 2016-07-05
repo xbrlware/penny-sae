@@ -12,16 +12,22 @@ module.exports = function (app, config, client) {
         'query': {
           'filtered': {
             'filter': {
-              'range': {
-                'time': {
-                  'gte': brdData.date_filter[0],
-                  'lte': brdData.date_filter[1]
-                }
-              }
-            },
-            'query': {
-              'match': {
-                '__meta__.sym.cik': brdData.cik
+              'bool': {
+                'must': [
+                  {
+                    'range': {
+                      'time': {
+                        'gte': brdData.date_filter[0],
+                        'lte': brdData.date_filter[1]
+                      }
+                    }
+                  },
+                  {
+                    'term': {
+                      '__meta__.sym.cik': brdData.cik
+                    }
+                  }
+                ]
               }
             }
           }
@@ -32,8 +38,12 @@ module.exports = function (app, config, client) {
       return {
         'size': 0,
         'query': {
-          'match': {
-            '__meta__.sym.cik': btData.cik
+          'constant_score': {
+            'filter': {
+              'term': {
+                '__meta__.sym.cik': btData.cik
+              }
+            }
           }
         },
         'aggs': {
@@ -53,16 +63,22 @@ module.exports = function (app, config, client) {
         'query': {
           'filtered': {
             'filter': {
-              'range': {
-                'time': {
-                  'gte': tData.date_filter[0],
-                  'lte': tData.date_filter[1]
-                }
-              }
-            },
-            'query': {
-              'match': {
-                '__meta__.sym.cik': tData.cik
+              'bool': {
+                'must': [
+                  {
+                    'range': {
+                      'time': {
+                        'gte': tData.date_filter[0],
+                        'lte': tData.date_filter[1]
+                      }
+                    }
+                  },
+                  {
+                    'term': {
+                      '__meta__.sym.cik': tData.cik
+                    }
+                  }
+                ]
               }
             }
           }
@@ -70,10 +86,15 @@ module.exports = function (app, config, client) {
         'aggs': {
           'posts': {
             'terms': {
-              'script': "doc['user_id'].value + '|' + doc['user.cat'].value",
+              'field': 'user_id',
               'size': 10
             },
             'aggs': {
+              'user': {
+                'terms': {
+                  'field': 'user.cat'
+                }
+              },
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
@@ -108,18 +129,24 @@ module.exports = function (app, config, client) {
         'query': {
           'filtered': {
             'filter': {
-              'range': {
-                'time': {
-                  'gte': users.date_filter[0],
-                  'lte': users.date_filter[1]
-                }
-              }
-            },
-            'query': {
               'bool': {
                 'must': [
-                  {'match': { '__meta__.sym.cik': users.cik }},
-                  {'terms': { 'user_id': users.users }}
+                  {
+                    'range': {
+                      'time': {
+                        'gte': users.date_filter[0],
+                        'lte': users.date_filter[1]
+                      }
+                    }
+                  },
+                  {
+                    'bool': {
+                      'must': [
+                        {'match': { '__meta__.sym.cik': users.cik }},
+                        {'terms': { 'user_id': users.users }}
+                      ]
+                    }
+                  }
                 ]
               }
             }
@@ -189,10 +216,9 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.timeline(data)
     }).then(function (response) {
       var q = _.map(response.aggregations.posts.buckets, function (x) {
-        var u = x.key.split('|');
         return {
-          id: u[0],
-          user: u[1],
+          id: x.key,
+          user: x.user.buckets[0].key,
           doc_count: x.doc_count,
           pos: x.pos.value,
           neut: x.neut.value,
