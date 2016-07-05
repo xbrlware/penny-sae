@@ -1,15 +1,15 @@
 // server/node/server.js
 
-var cluster = require('cluster'),
-  _ = require('underscore')._;
+var cluster = require('cluster');
+var _ = require('underscore')._;
 
-function run_server () {
+function runServer () {
   var config = _.extend(require('./server-config'), require('./global-config'));
-  var express = require('express'),
-    https = require('https'),
-    es = require('elasticsearch'),
-    fs = require('fs'),
-    app = express();
+  var express = require('express');
+  var https = require('https');
+  var es = require('elasticsearch');
+  var fs = require('fs');
+  var app = express();
 
   app.use(require('body-parser').json());
 
@@ -30,13 +30,14 @@ function run_server () {
 
   require('./routes')(app, config, client);
   require('./network')(app, config, client);
+  require('./boards')(app, config, client);
 
   app.use('/', express.static('../../web'));
 
   if (config.HTTPS.ENABLED) {
-    var privateKey = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8'),
-      certificate = fs.readFileSync(config.HTTPS.CERTIFICATES.CRT, 'utf8'),
-      credentials = {key: privateKey, cert: certificate};
+    var privateKey = fs.readFileSync(config.HTTPS.CERTIFICATES.PEM, 'utf8');
+    var certificate = fs.readFileSync(config.HTTPS.CERTIFICATES.CRT, 'utf8');
+    var credentials = {key: privateKey, cert: certificate};
 
     https.createServer(credentials, app).listen(config.SERVER.PORT);
   } else {
@@ -56,5 +57,5 @@ if (cluster.isMaster) {
     cluster.fork();
   });
 } else {
-  run_server();
+  runServer();
 }
