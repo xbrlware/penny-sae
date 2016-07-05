@@ -15,24 +15,11 @@ module.exports = function (app, config, client) {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
-          'filtered': {
-            'filter': {
-              'range': {
-                'time': {
-                  'gte': brdData.date_filter[0],
-                  'lte': brdData.date_filter[1]
-                }
-              }
-            },
-            'query': {
-              'constant_score': {
-                'filter': {
-                  'term': {
-                    '__meta__.sym.cik': brdData.cik
-                  }
-                }
-              }
-            }
+          'bool': {
+            'must': [
+            {'range': {'time': { 'gte': brdData.date_filter[0], 'lte': brdData.date_filter[1] }}},
+            {'term': { '__meta__.sym.cik': brdData.cik }}
+            ]
           }
         },
         'sort': {'time': 'desc'}
@@ -42,12 +29,8 @@ module.exports = function (app, config, client) {
       return {
         'size': 0,
         'query': {
-          'constant_score': {
-            'filter': {
-              'term': {
-                '__meta__.sym.cik': btData.cik
-              }
-            }
+          'match': {
+            '__meta__.sym.cik': btData.cik
           }
         },
         'aggs': {
@@ -127,18 +110,11 @@ module.exports = function (app, config, client) {
         'size': 1000,
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
-          'filtered': {
+          'constant_score': {
             'filter': {
-              'range': {
-                'time': {
-                  'gte': users.date_filter[0],
-                  'lte': users.date_filter[1]
-                }
-              }
-            },
-            'query': {
               'bool': {
                 'must': [
+                  {'range': {'time': { 'gte': users.date_filter[0], 'lte': users.date_filter[1] }}},
                   {'match': { '__meta__.sym.cik': users.cik }},
                   {'terms': { 'user_id': users.users }}
                 ]
