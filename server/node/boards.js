@@ -31,9 +31,6 @@ module.exports = function (app, config, client) {
               }
             }
           }
-        },
-        'sort': {
-          'time': {'order': 'desc'}
         }
       };
     },
