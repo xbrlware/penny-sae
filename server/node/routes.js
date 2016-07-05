@@ -26,7 +26,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': brdData.ticker.toLowerCase()
+                '__meta__.sym.cik': brdData.cik
               }
             }
           }
@@ -38,7 +38,7 @@ module.exports = function (app, config, client) {
         'size': 0,
         'query': {
           'match': {
-            'ticker': btData.ticker.toLowerCase()
+            '__meta__.sym.cik': btData.cik
           }
         },
         'aggs': {
@@ -67,7 +67,7 @@ module.exports = function (app, config, client) {
             },
             'query': {
               'match': {
-                'ticker': tData.ticker.toLowerCase()
+                '__meta__.sym.cik': tData.cik
               }
             }
           }
@@ -128,11 +128,16 @@ module.exports = function (app, config, client) {
             'query': {
               'bool': {
                 'must': [
-                  {'match': { 'ticker': users.ticker }},
+                  {'match': { '__meta__.sym.cik': users.cik }},
                   {'terms': { 'user_id': users.users }}
                 ]
               }
             }
+          }
+        },
+        'sort': {
+          'time': {
+            'order': 'desc'
           }
         }
       };
@@ -226,7 +231,7 @@ module.exports = function (app, config, client) {
   app.post('/user', function (req, res) {
     var d = req.body;
     console.log('/user ::', d);
-    if (!d.ticker || !d.users || !d.date_filter) {
+    if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
     client.search({
@@ -240,7 +245,7 @@ module.exports = function (app, config, client) {
   app.post('/board', function (req, res) {
     var d = req.body;
     console.log('/board ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter || !d.ticker) {
       console.log('/board :: null ticker');
       return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
     }
@@ -263,7 +268,7 @@ module.exports = function (app, config, client) {
   app.post('/redraw', function (req, res) {
     var d = req.body;
     console.log('/redraw ::', d);
-    if (!d.ticker || !d.date_filter) {
+    if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
     getTimelineData(d, function (n, resp) {
@@ -287,7 +292,7 @@ module.exports = function (app, config, client) {
         timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
-      var r = _.sortBy(q, function (x) { return x.timeline.length; }).reverse();
+      var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
       console.log('/getTimelineData :: returned', r.length);
       cb(null, r);
       return;
@@ -372,7 +377,6 @@ module.exports = function (app, config, client) {
   function redflagLabel (redFlags, redFlagParams) {
     return _.chain(redFlags)
       .map(function (v, k) {
-        console.log('-- ', redflagLabel_[k](redFlagParams[k]));
         return [k, _.extend(v, {'label': redflagLabel_[k](redFlagParams[k])})];
       })
       .object()
@@ -418,7 +422,7 @@ module.exports = function (app, config, client) {
     },
     'company_table': function (cik) {
       return {
-        '_source': ['min_date', 'max_date', 'name', 'ticker', 'sic', '__meta__'],
+        '_source': ['min_date', 'name', 'ticker', 'sic', '__meta__'],
         'query': { 'term': { 'cik': cik } }
       };
     },
@@ -528,7 +532,8 @@ module.exports = function (app, config, client) {
       'index': config['ES']['INDEX']['AGG'],
       'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
-      'size': 15
+      'size': 15,
+      'preference': '_primary'
     }).then(function (esResponse) {
       var hits = _.map(esResponse.hits.hits, function (hit) {
         return {
@@ -547,7 +552,6 @@ module.exports = function (app, config, client) {
 
   app.post('/company_table', function (req, res) {
     var d = req.body;
-    console.log('d >> ', d);
     client.search({
       'index': config['ES']['INDEX']['SYMBOLOGY'],
       'body': queryBuilder.company_table(d.cik),
@@ -564,13 +568,12 @@ module.exports = function (app, config, client) {
             }
           }
 
-          return [
-            hit._source.min_date,
-            hit._source.max_date,
-            hit._source.name,
-            hit._source.ticker,
-            sic
-          ];
+          return {
+            'min_date': hit._source.min_date,
+            'name': hit._source.name,
+            'ticker': hit._source.ticker,
+            'sic': sic
+          };
         }).value()
       });
     });
@@ -606,7 +609,6 @@ module.exports = function (app, config, client) {
   });
 
   app.post('/delinquency', function (req, res) {
-    console.log('querying delinquency');
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['DELINQUENCY'],
@@ -620,7 +622,6 @@ module.exports = function (app, config, client) {
 
   app.post('/financials', function (req, res) {
     var d = req.body;
-    console.log('financials <<', d);
     client.search({
       'index': config['ES']['INDEX']['FINANCIALS'],
       'body': queryBuilder.financials(d.cik),
@@ -633,7 +634,6 @@ module.exports = function (app, config, client) {
 
   app.post('/suspensions', function (req, res) {
     var d = req.body;
-    console.log('suspensions <<', d);
     client.search({
       'index': config['ES']['INDEX']['SUSPENSIONS'],
       'body': queryBuilder.suspensions(d.cik),

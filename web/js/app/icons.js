@@ -6,9 +6,9 @@
 
 // This is terrible hardcoding and should be changed ~ BKJ
 
-String.prototype.capitalize = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
+function capitalize (name) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
 
 var networkGreenPerson = new Image();
 var networkYellowPerson = new Image();
@@ -37,7 +37,7 @@ function implementIcons () { // eslint-disable-line no-unused-vars
   $jit.RGraph.Plot.NodeTypes.implement({
     'image': {
       'render': function (node, canvas) {
-        var icon = window['network' + node.data['$color'].capitalize() + (node.data['is_issuer'] ? 'Building' : 'Person')];
+        var icon = window['network' + capitalize(node.data['$color']) + (node.data['is_issuer'] ? 'Building' : 'Person')];
         var iconSize = 5 * node.data['$dim'];
         var ctx = canvas.getCtx();
         var pos = node.pos.getc(true);

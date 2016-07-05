@@ -58,11 +58,11 @@ module.exports = function (app, config, client) {
   function formatRedFlagResponse (response, nodes) {
     return _.chain(response.responses)
       .zip(nodes)
-      .filter(function (tuple) {return tuple[0].hits.total > 0;})
+      .filter(function (tuple) { return tuple[0].hits.total > 0; })
       .map(tuple => {
         var redFlags = _.chain(tuple[0]['hits']['hits'])
           .map((hit) => hit['fields']['redFlags'][0])
-          .filter(function (rf) {return _.keys(rf).length > 0;})
+          .filter(function (rf) { return _.keys(rf).length > 0; })
           .value();
 
         return {
@@ -93,20 +93,20 @@ module.exports = function (app, config, client) {
       return b;
     }, {});
 
-    var n_neighbors = redFlags.length;
-    var n_redFlags_computed = _.keys(redFlags[0]).length;
-    var total_redFlags_hit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
-    var avg_redFlags_hit = total_redFlags_hit / n_neighbors;
+    var nNeighbors = redFlags.length;
+    var nRedFlagsComputed = _.keys(redFlags[0]).length;
+    var totalRedFlagsHit = _.chain(raw).pluck('is_flag').reduce((a, b) => a + b, 0).value();
+    var avgRedFlagsHit = totalRedFlagsHit / nNeighbors;
 
     return {
       'raw': raw,
-      'total': avg_redFlags_hit,
-      'possible': n_redFlags_computed * n_neighbors
+      'total': avgRedFlagsHit,
+      'possible': nRedFlagsComputed * nNeighbors
     };
   }
 
   function computeIssuerRedFlags (nodes, redFlagParams, cb) {
-    if (!nodes.length) {return cb([]);}
+    if (!nodes.length) { return cb([]); }
 
     client.msearch({
       'index': config['ES']['INDEX']['AGG'],
@@ -123,11 +123,11 @@ module.exports = function (app, config, client) {
       }).flatten().value()
     }).then((response) => {
       cb(formatRedFlagResponse(response, nodes));
-    }).catch(function (err) {console.log(err.stack);});
+    }).catch(function (err) { console.log(err.stack); });
   }
 
   function computeOwnerRedFlags (nodes, redFlagParams, cb) {
-    if (!nodes.length) {return cb([]);}
+    if (!nodes.length) { return cb([]); }
     client.msearch({
       'index': config['ES']['INDEX']['OWNERSHIP'],
       'body': _.chain(nodes).map((node) => {
@@ -153,7 +153,7 @@ module.exports = function (app, config, client) {
         ];
       }).flatten().value()
     }).then(function (response) {
-      var neighbor_queries = _.chain(response.responses).map((r) => {
+      var neighborQueries = _.chain(response.responses).map((r) => {
         return _.pluck(r['aggregations']['issuerCiks']['buckets'], 'key');
       }).map((ciks) => {
         return [{}, {
@@ -165,11 +165,11 @@ module.exports = function (app, config, client) {
 
       client.msearch({
         'index': config['ES']['INDEX']['AGG'],
-        'body': neighbor_queries
+        'body': neighborQueries
       }).then((response) => {
         cb(formatRedFlagResponse(response, nodes));
-      }).catch(function (err) {console.log(err.stack);});
-    }).catch(function (err) {console.log(err.stack);});
+      }).catch(function (err) { console.log(err.stack); });
+    }).catch(function (err) { console.log(err.stack); });
   }
 
   function computeRedFlags (nodes, redFlagParams, cb) {
@@ -183,7 +183,7 @@ module.exports = function (app, config, client) {
   }
 
   function neighbors (params, cb) {
-    query = {'term': {}};
+    var query = {'term': {}};
     query['term'][`${params.source}Cik`] = params.cik;
 
     client.search({
@@ -195,16 +195,22 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       cb(
         false,
-        _.map(response.hits.hits, function (hit) {
+        _.chain(response.hits.hits).pluck('_source').map(function (hit) {
           return {
-            'issuerCik': hit['_source']['issuerCik'],
-            'issuerName': hit['_source']['issuerName'],
-            'ownerCik': hit['_source']['ownerCik'],
-            'ownerName': hit['_source']['ownerName']
+            'issuerCik': hit['issuerCik'],
+            'issuerName': hit['issuerName'],
+            'ownerCik': hit['ownerCik'],
+            'ownerName': hit['ownerName'],
+            'min_date': hit['min_date'],
+            'max_date': hit['max_date'],
+            'isOwner': hit['isOwner'],
+            'isOfficer': hit['isOfficer'],
+            'isDirector': hit['isDirector'],
+            'isTenPercentOwner': hit['isTenPercentOwner']
           };
-        })
+        }).value()
       );
-    }).catch(function (err) {console.log(err.stack);});
+    }).catch(function (err) { console.log(err.stack); });
   }
 
   app.post('/network', function (req, res) {
@@ -214,13 +220,13 @@ module.exports = function (app, config, client) {
     console.log('/network ::', d);
 
     async.parallel([
-      function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner'  }, cb); },
-      function (cb) { neighbors({ 'cik': cik, 'source': 'owner',  'target': 'issuer' }, cb); }
+      function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner' }, cb); },
+      function (cb) { neighbors({ 'cik': cik, 'source': 'owner', 'target': 'issuer' }, cb); }
     ], function (err, results) {
+      if (err) { console.error(err); }
       var edges = _.chain([results]).flatten().value();
       var nodes = edges2nodes(edges);
       computeRedFlags(nodes, redFlagParams, function (nodes) {
-        console.log('/network :: returning', nodes, edges);
         res.send({'nodes': nodes, 'edges': edges});
       });
     });

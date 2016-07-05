@@ -11,6 +11,20 @@
 @list-group-background: rgba(220, 220, 220, .4);
 @axis-stroke          : rgba(220, 220, 220, 0.6);
 
+/* droid-sans-mono-regular - latin */
+@font-face {
+    font-family: 'Droid Sans Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local('Droid Sans Mono'), local('DroidSansMono'),
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.woff') format('woff'), /* Modern Browsers */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.svg#DroidSansMono') format('svg'); /* Legacy iOS */
+}
+
 .ember-application {
     margin-right  : 10px;
     margin-bottom : 10px;
@@ -179,7 +193,7 @@ select {
 }
   
 .dropdown-menu-animated {
-  opacity:.3;
+  opacity: 0;
   -webkit-transform-origin: top;
   transform-origin: top;
   -webkit-animation-fill-mode: forwards;  
@@ -359,7 +373,6 @@ body {
 #forum-div {
     max-height: 1020px;
     padding: 0px;
-    border: 1px solid gray;
     overflow-y: auto;
 }
 
@@ -837,6 +850,8 @@ path.candle.down {
 .chart {
     border : 1px solid transparent;
 	display: inline-block;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .chart-selected {
@@ -869,11 +884,163 @@ path.candle.down {
   position: relative;
 }
 
+/* Interaction states
+----------------------------------*/
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+	border: 1px solid #cccccc;
+	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
+	font-weight: bold;
+	color: #1c94c4;
+}
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited {
+	color: #1c94c4;
+	text-decoration: none;
+}
+
+.ui-state-default .ui-icon {
+	background-image: url("images/ui-icons_ef8c08_256x240.png");
+}
+
+/* overides previous styling for dates in datepicker */
+#ui-datepicker-div > table > tbody > tr > td > a {
+    border: none;
+    color: black;
+    background: none;
+    font-weight: normal;
+}
+
+/* Component containers
+----------------------------------*/
+.ui-widget {
+	font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+	font-size: 1.1em;
+}
+.ui-widget .ui-widget {
+	font-size: 1em;
+}
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+	font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+	font-size: 1em;
+}
+.ui-widget-content {
+	border: 1px solid #dddddd;
+	color: #333333;
+}
+.ui-widget-content a {
+	color: #333333;
+}
+.ui-widget-header a {
+	color: #ffffff;
+}
+
+.ui-slider {
+	position: relative;
+	text-align: left;
+}
+.ui-slider .ui-slider-handle {
+	position: absolute;
+	z-index: 2;
+	width: 1.2em;
+	height: 1.2em;
+	cursor: default;
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.ui-slider .ui-slider-range {
+	position: absolute;
+	z-index: 1;
+	font-size: .7em;
+	display: block;
+	border: 0;
+	background-position: 0 0;
+}
+
+.ui-slider-range {
+    background-color: red;
+}
+
+/* support: IE8 - See #6727 */
+.ui-slider.ui-state-disabled .ui-slider-handle,
+.ui-slider.ui-state-disabled .ui-slider-range {
+	filter: inherit;
+}
+
+.ui-slider-horizontal {
+	height: .8em;
+}
+.ui-slider-horizontal .ui-slider-handle {
+	top: -.3em;
+	margin-left: -.6em;
+}
+.ui-slider-horizontal .ui-slider-range {
+	top: 0;
+	height: 100%;
+}
+.ui-slider-horizontal .ui-slider-range-min {
+	left: 0;
+}
+.ui-slider-horizontal .ui-slider-range-max {
+	right: 0;
+}
+
+.ui-slider-vertical {
+	width: .8em;
+	height: 100px;
+}
+.ui-slider-vertical .ui-slider-handle {
+	left: -.3em;
+	margin-left: 0;
+	margin-bottom: -.6em;
+}
+.ui-slider-vertical .ui-slider-range {
+	left: 0;
+	width: 100%;
+}
+.ui-slider-vertical .ui-slider-range-min {
+	bottom: 0;
+}
+.ui-slider-vertical .ui-slider-range-max {
+	top: 0;
+}
+
+/* Corner radius */
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-left,
+.ui-corner-tl {
+	border-top-left-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-right,
+.ui-corner-tr {
+	border-top-right-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-left,
+.ui-corner-bl {
+	border-bottom-left-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-right,
+.ui-corner-br {
+	border-bottom-right-radius: 4px;
+}
+
 .ui-datepicker {
 	background-color: #fff;
 	border: 1px solid black;
 	border-radius: 4px;
-	box-shadow: 0 0 8px red;
+	box-shadow: 0 0 2px red;
 	display: none;
 	margin-top: 4px;
 	padding: 10px;
@@ -1242,3 +1409,166 @@ path.candle.down {
 .ember-table-content {
     font-family: inherit;
 }
+
+/*!
+ * DataTables + Font Awesome integration
+ * License: MIT - http://datatables.net/license
+ */
+
+/*
+ * Sort styling
+ */
+table.dataTable thead th {
+	position: relative;
+	background-image: none !important; /* Remove the DataTables bootstrap integration styling */
+}
+
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after {
+	position: absolute;
+	top: 12px;
+	right: 8px;
+	display: block;
+	font-family: FontAwesome;
+}
+
+table.dataTable thead th.sorting:after {
+	content: "\f0dc";
+	color: #ddd;
+	font-size: 0.8em;
+	padding-top: 0.12em;
+}
+table.dataTable thead th.sorting_asc:after {
+	content: "\f0de";
+}
+table.dataTable thead th.sorting_desc:after {
+	content: "\f0dd";
+}
+
+div.dataTables_scrollBody table.dataTable thead th.sorting:after,
+div.dataTables_scrollBody table.dataTable thead th.sorting_asc:after,
+div.dataTables_scrollBody table.dataTable thead th.sorting_desc:after {
+	content: "";
+}
+
+/* In Bootstrap and Foundation the padding top is a little different from the DataTables stylesheet */
+table.table thead th.sorting:after,
+table.table thead th.sorting_asc:after,
+table.table thead th.sorting_desc:after {
+	top: 8px;
+}
+
+.dataTable > tbody > tr > td {
+    font-family: 'Droid Sans Mono', monospace;
+    font-weight: thin;
+    font-size: 0.9em;
+}
+
+/*
+ * DataTables style pagination controls
+ */
+div.dataTables_paginate a.paginate_button.first,
+div.dataTables_paginate a.paginate_button.previous {
+	position: relative;
+	padding-left: 24px;
+}
+
+div.dataTables_paginate a.paginate_button.next,
+div.dataTables_paginate a.paginate_button.last {
+	position: relative;
+	padding-right: 24px;
+}
+
+div.dataTables_paginate a.first:before, 
+div.dataTables_paginate a.previous:before {
+	position: absolute;
+	top: 8px;
+	left: 10px;
+	display: block;
+	font-family: FontAwesome;
+}
+
+div.dataTables_paginate a.next:after,
+div.dataTables_paginate a.last:after {
+	position: absolute;
+	top: 8px;
+	right: 10px;
+	display: block;
+	font-family: FontAwesome;
+}
+
+div.dataTables_paginate a.first:before {
+	content: "\f100";
+}
+
+div.dataTables_paginate a.previous:before {
+	content: "\f104";
+}
+
+div.dataTables_paginate a.next:after {
+	content: "\f105";
+}
+
+div.dataTables_paginate a.last:after {
+	content: "\f101";
+}
+
+
+/*
+ * Bootstrap and foundation style pagination controls
+ */
+div.dataTables_paginate li.first > a,
+div.dataTables_paginate li.previous > a {
+	position: relative;
+	padding-left: 24px;
+}
+
+div.dataTables_paginate li.next > a,
+div.dataTables_paginate li.last > a {
+	position: relative;
+	padding-right: 24px;
+}
+
+div.dataTables_paginate li.first a:before, 
+div.dataTables_paginate li.previous a:before {
+	position: absolute;
+	top: 6px;
+	left: 10px;
+	display: block;
+	font-family: FontAwesome;
+}
+
+div.dataTables_paginate li.next a:after,
+div.dataTables_paginate li.last a:after {
+	position: absolute;
+	top: 6px;
+	right: 10px;
+	display: block;
+	font-family: FontAwesome;
+}
+
+div.dataTables_paginate li.first a:before {
+	content: "\f100";
+}
+
+div.dataTables_paginate li.previous a:before {
+	content: "\f104";
+}
+
+div.dataTables_paginate li.next a:after {
+	content: "\f105";
+}
+
+div.dataTables_paginate li.last a:after {
+	content: "\f101";
+}
+
+/* In Foundation we don't want the padding like in bootstrap */
+div.columns div.dataTables_paginate li.first a:before, 
+div.columns div.dataTables_paginate li.previous a:before,
+div.columns div.dataTables_paginate li.next a:after,
+div.columns div.dataTables_paginate li.last a:after {
+	top: 0;
+}
+
