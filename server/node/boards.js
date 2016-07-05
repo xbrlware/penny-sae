@@ -31,6 +31,9 @@ module.exports = function (app, config, client) {
               }
             }
           }
+        },
+        'sort': {
+          'time': {'order': 'desc'}
         }
       };
     },
@@ -188,7 +191,11 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.user(d)
     }).then(function (response) {
-      res.send(_.pluck(response.hits.hits, '_source'));
+      var m = _.map(response.hits.hits, function (x) {
+        x._source.date = x._source.time;
+        return x._source;
+      });
+      res.send(m);
     });
   });
 
@@ -257,7 +264,9 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.boardTimeline(data)
     }).then(function (response) {
       console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
-      cb(null, response.aggregations.board_histogram.buckets);
+      cb(null, _.map(response.aggregations.board_histogram.buckets, function (d, i) {
+        return {index: i, date: new Date(d.key_as_string), value: d.doc_count};
+      }));
     });
   }
 
@@ -268,7 +277,10 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.board(data)
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
-      cb(null, _.pluck(response.hits.hits, '_source'));
+      cb(null, _.map(response.hits.hits, function (x) {
+        x._source.date = new Date(x._source.time);
+        return x._source;
+      }));
       return;
     });
   }
@@ -279,8 +291,8 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['PV'],
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
-      console.log(response.hits.hits);
       console.log('/pvData :: returning', response.hits.hits.length);
+      console.log(response.hits.hits[0]);
       cb(null, _.pluck(response.hits.hits, '_source'));
       return;
     });

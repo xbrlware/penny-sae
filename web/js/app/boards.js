@@ -150,11 +150,6 @@ App.BoardController = Ember.Controller.extend({
     var _this = this;
     var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
-    data.forEach(function (d, i) {
-      d.index = i;
-      d.date = new Date(d.key_as_string);
-      d.value = d.doc_count;
-    });
 
     // For parent filter
     var datum = crossfilter(data);
@@ -164,7 +159,7 @@ App.BoardController = Ember.Controller.extend({
     });
 
     var forumData = _.map(data, function (x) {
-      return { 'date': x.date, 'volume': x.value };
+      return { 'date': new Date(x.date), 'volume': x.value };
     });
 
     // Whenever the brush moves, re-rendering everything.
@@ -539,7 +534,6 @@ App.BoardController = Ember.Controller.extend({
 
       _draw(price, dateFilter);
       _draw(volume, dateFilter);
-
       _draw(posts, dateFilter);
 
       cb(dateFilter);
@@ -564,7 +558,7 @@ App.BoardController = Ember.Controller.extend({
       if (this.get('splitByFilter').length) {
         App.Search.fetch_data('user', {cik: cik, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
           _this.set('filtered_data', _.map(response, function (x) {
-            x.date = new Date(x.time);
+            x.date = new Date(x.date);
             return x;
           }));
         });
@@ -591,7 +585,7 @@ App.BoardRoute = Ember.Route.extend({
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
-          x.date = new Date(x.time);
+          x.date = new Date(x.date);
           return x;
         }));
 
@@ -628,7 +622,7 @@ Ember.Handlebars.helper('forum-posts', function (data, sbf) {
 
   if (data) {
     for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span>';
+      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].date + ' on ' + data[i].board + '</span>';
 
       if (data[i].msg.length > 70) {
         var msg = data[i].msg.substring(0, 70);
