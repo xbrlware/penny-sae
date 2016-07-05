@@ -133,7 +133,6 @@ module.exports = function (app, config, client) {
   function redflagLabel (redFlags, redFlagParams) {
     return _.chain(redFlags)
       .map(function (v, k) {
-        console.log('-- ', redflagLabel_[k](redFlagParams[k]));
         return [k, _.extend(v, {'label': redflagLabel_[k](redFlagParams[k])})];
       })
       .object()
@@ -289,7 +288,8 @@ module.exports = function (app, config, client) {
       'index': config['ES']['INDEX']['AGG'],
       'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
-      'size': 15
+      'size': 15,
+      'preference': '_primary'
     }).then(function (esResponse) {
       var hits = _.map(esResponse.hits.hits, function (hit) {
         return {
@@ -308,7 +308,6 @@ module.exports = function (app, config, client) {
 
   app.post('/company_table', function (req, res) {
     var d = req.body;
-    console.log('d >> ', d);
     client.search({
       'index': config['ES']['INDEX']['SYMBOLOGY'],
       'body': queryBuilder.company_table(d.cik),
@@ -366,7 +365,6 @@ module.exports = function (app, config, client) {
   });
 
   app.post('/delinquency', function (req, res) {
-    console.log('querying delinquency');
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['DELINQUENCY'],
@@ -380,7 +378,6 @@ module.exports = function (app, config, client) {
 
   app.post('/financials', function (req, res) {
     var d = req.body;
-    console.log('financials <<', d);
     client.search({
       'index': config['ES']['INDEX']['FINANCIALS'],
       'body': queryBuilder.financials(d.cik),
@@ -393,7 +390,6 @@ module.exports = function (app, config, client) {
 
   app.post('/suspensions', function (req, res) {
     var d = req.body;
-    console.log('suspensions <<', d);
     client.search({
       'index': config['ES']['INDEX']['SUSPENSIONS'],
       'body': queryBuilder.suspensions(d.cik),

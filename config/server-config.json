@@ -8,7 +8,7 @@
         "INDEX" : {
           "CROWDSAR"    : "crowdsar",
           "AUTH"        : "ernest_auth",
-          "AGG"         : "ernest_agg_v3",
+          "AGG"         : "ernest_agg_v3_singleshard",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_v2",
           "DELINQUENCY" : "ernest_aq_forms_enrich_cat",
