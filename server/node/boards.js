@@ -57,6 +57,23 @@ module.exports = function (app, config, client) {
         }
       };
     },
+    'getPVData': function (pvData) {
+      return {
+        'size': 9999,
+        'query': {
+          'constant_score': {
+            'filter': {
+              'term': {
+                'symbol': pvData.ticker.toLowerCase()
+              }
+            }
+          }
+        },
+        'sort': {
+          'date': {'order': 'desc'}
+        }
+      };
+    },
     'timeline': function (tData) {
       return {
         'size': 0,
@@ -260,8 +277,9 @@ module.exports = function (app, config, client) {
     console.log('getPvData', data);
     client.search({
       index: config['ES']['INDEX']['PV'],
-      body: {'size': 9999, 'query': {'term': {'symbol': data.ticker.toLowerCase()}}}
+      body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
+      console.log(response.hits.hits);
       console.log('/pvData :: returning', response.hits.hits.length);
       cb(null, _.pluck(response.hits.hits, '_source'));
       return;
