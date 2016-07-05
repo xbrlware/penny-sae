@@ -70,15 +70,10 @@ module.exports = function (app, config, client) {
         'aggs': {
           'posts': {
             'terms': {
-              'field': 'user_id',
+              'script': "doc['user_id'].value + '|' + doc['user.cat'].value",
               'size': 10
             },
             'aggs': {
-              'user': {
-                'terms': {
-                  'field': 'user.cat'
-                }
-              },
               'user_histogram': {
                 'date_histogram': {
                   'field': 'time',
@@ -194,13 +189,15 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.timeline(data)
     }).then(function (response) {
       var q = _.map(response.aggregations.posts.buckets, function (x) {
-        return {id: x.key,
-          user: x.user.buckets[0].key,
+        var u = x.key.split('|');
+        return {
+          id: u[0],
+          user: u[1],
           doc_count: x.doc_count,
           pos: x.pos.value,
           neut: x.neut.value,
           neg: x.neg.value,
-        timeline: x.user_histogram.buckets};
+          timeline: x.user_histogram.buckets};
       });
       // this orders the top 10 users by posts in penny
       var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
