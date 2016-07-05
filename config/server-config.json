@@ -6,8 +6,8 @@
     "ES" : {
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "CROWDSAR"    : "crowdsar",
-          "AUTH"        : "ernest_auth",
+          "CROWDSAR"    : "crowdsar_restore",
+          "AUTH"        : "ernest_auth_sec",
           "AGG"         : "ernest_agg_v3",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_v2",
@@ -19,14 +19,14 @@
         }
     },
     "HTTPS":{
-        "ENABLED" : false,
+        "ENABLED" : true,
         "CERTIFICATES": {
             "PEM" : "authentication/nodesec.pem",
             "CRT" : "authentication/nodesec.crt"
         }
     },
     "SERVER" : {
-        "PORT" : 8090
+        "PORT" : 9000
     },
     "TIMEOUT_AMOUNT": 2,
     "TIMEOUT_UNITS" : "hours"
