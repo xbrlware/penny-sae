@@ -31,6 +31,9 @@ module.exports = function (app, config, client) {
               }
             }
           }
+        },
+        'sort': {
+          'time': 'desc'
         }
       };
     },
@@ -189,7 +192,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.user(d)
     }).then(function (response) {
       var m = _.map(response.hits.hits, function (x) {
-        x._source.date = x._source.time;
+        x._source.date = new Date(x._source.time);
         return x._source;
       });
       res.send(m);
@@ -208,8 +211,8 @@ module.exports = function (app, config, client) {
       function (cb) { getPvData(d, cb); },
       function (cb) { getPostsTimelineData(d, cb); },
       function (cb) { getTimelineData(d, cb); }
-    ], function (err, results) {
-      if (err) { console.log(err); }
+    ], function (error, results) {
+      if (error) { console.log(error); }
       res.send({
         'data': results[0],
         'pvData': results[1],
@@ -225,8 +228,15 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
-    getTimelineData(d, function (n, resp) {
-      res.send(resp);
+    async.parallel([
+      function (cb) { getForumdata(d, cb); },
+      function (cb) { getTimelineData(d, cb); }
+    ], function (error, results) {
+      if (error) { console.log(error); }
+      res.send({
+        'data': results[0],
+        'tlData': results[1]
+      });
     });
   });
 
@@ -246,16 +256,13 @@ module.exports = function (app, config, client) {
           neg: x.neg.value,
           timeline: x.user_histogram.buckets};
       });
-      // this orders the top 10 users by posts in penny
-      var r = _.sortBy(q, function (x) { return x.doc_count; }).reverse();
-      console.log('/getTimelineData :: returned', r.length);
-      cb(null, r);
+      console.log('/getTimelineData :: returned', q.length);
+      cb(null, q);
       return;
     });
   }
 
   function getPostsTimelineData (data, cb) {
-    console.log('getPostsTimelineData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.boardTimeline(data)
@@ -268,7 +275,6 @@ module.exports = function (app, config, client) {
   }
 
   function getForumdata (data, cb) {
-    console.log('getForumData', data);
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.board(data)
@@ -283,13 +289,11 @@ module.exports = function (app, config, client) {
   }
 
   function getPvData (data, cb) {
-    console.log('getPvData', data);
     client.search({
       index: config['ES']['INDEX']['PV'],
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
-      console.log(response.hits.hits[0]);
       cb(null, _.pluck(response.hits.hits, '_source'));
       return;
     });

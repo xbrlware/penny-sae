@@ -50,8 +50,8 @@ function makeTimeSeries (ts, bounds) {
   var xaxis = d3.svg.axis()
     .scale(x)
     .orient('bottom')
-    .ticks(2)
-    .tickFormat(d3.time.format('%b-%y'));
+    .ticks(4)
+    .tickFormat(d3.time.format('%m-%y'));
 
   svg.append('g')
     .attr('class', 'x axis')
@@ -139,7 +139,12 @@ App.BoardController = Ember.Controller.extend({
     this.set('timelineLoading', true);
 
     App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
-      _this.set('model.tlData', response);
+      _this.set('splitByFilter', []);
+      _this.set('model.tlData', response.tlData);
+      _this.set('filtered_data', _.map(response.data, function (x) {
+        x.date = new Date(x.date);
+        return x;
+      }));
       _this.renderX();
       _this.renderGauges();
       _this.set('timelineLoading', false);
@@ -319,7 +324,7 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
-  renderTechan: function (forumdata, pvdata, routeId, subjectId, div, cb) {
+  renderTechan: function (forumData, pvdata, routeId, subjectId, div, cb) {
     var parseDate = d3.time.format('%Y-%m-%d').parse;
 
     var pvData = _.chain(pvdata).map(function (d) {
@@ -332,8 +337,6 @@ App.BoardController = Ember.Controller.extend({
         volume: +d.volume
       };
     }).value();
-
-    var forumData = forumdata;
 
     var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
       _.pluck(forumData, 'date')]));
