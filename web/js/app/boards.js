@@ -141,6 +141,7 @@ App.BoardController = Ember.Controller.extend({
     App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
       _this.set('splitByFilter', []);
       _this.set('model.tlData', response.tlData);
+      _this.set('model.data', response.data);
       _this.set('filtered_data', _.map(response.data, function (x) {
         x.date = new Date(x.date);
         return x;
@@ -566,7 +567,7 @@ App.BoardController = Ember.Controller.extend({
           }));
         });
       } else {
-        _this.set('filtered_data', this.get('model.data'));
+        this.set('filtered_data', this.get('model.data'));
       }
     },
 
