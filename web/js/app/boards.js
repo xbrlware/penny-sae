@@ -82,6 +82,7 @@ App.BoardController = Ember.Controller.extend({
   isLoading: false,
   isData: true,
   timelineLoading: false,
+  pageCount: 1,
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -98,6 +99,7 @@ App.BoardController = Ember.Controller.extend({
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
+    var pgc = this.get('pageCount');
 
     var out;
     var _data;
@@ -119,11 +121,11 @@ App.BoardController = Ember.Controller.extend({
     }
 
     var r = _.chain(out).filter(function (x, i) {
-      return i < 100;
+      return i < (100 * pgc);
     }).value();
 
     return r;
-  }.property('filtered_data', 'dateFilter'),
+  }.property('filtered_data', 'dateFilter', 'pageCount'),
 
   splitBy: function () {
     return 'user';
@@ -140,6 +142,7 @@ App.BoardController = Ember.Controller.extend({
 
     App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
       _this.set('splitByFilter', []);
+      _this.set('pageCount', 1);
       _this.set('model.tlData', response.tlData);
       _this.set('model.data', response.data);
       _this.set('filtered_data', _.map(response.data, function (x) {
@@ -555,6 +558,7 @@ App.BoardController = Ember.Controller.extend({
   actions: {
     topXClicked (id) {
       var _this = this;
+      this.set('pageCount', 1);
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       var cik = this.controllerFor('detail').get('model.cik');
       this.toggleSplitByFilterMember(id);
@@ -594,10 +598,9 @@ App.BoardRoute = Ember.Route.extend({
         }));
 
         con.set('splitByFilter', []);
+        con.set('pageCount', 1);
         con.set('splitBy', 'user');
-
         con.set('routeName', 'board');
-
         con.set('selection_ids', params.params[con.get('routeName')].ids);
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
@@ -609,20 +612,18 @@ App.BoardRoute = Ember.Route.extend({
 });
 
 Ember.Handlebars.helper('forum-posts', function (data, sbf) {
-  var mincount = 20;
-  var maxcount = 40;
-  var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
+  var _this = this;
+  var ourString = '<ul class="list-group" id="collection">';
 
-  Ember.$('.list-group li').slice(20).hide();
-  Ember.$('.list-group').scroll(function () {
-    if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
-      Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
-      mincount = mincount + 20;
-      maxcount = maxcount + 40;
+  Ember.$('.forum-div').scroll(function () {
+    if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
+      var pgc = _this.get('pageCount');
+      if (pgc < 10) {
+        pgc++;
+        _this.set('pageCount', pgc);
+      }
     }
   });
-
-  ourString = ourString + '<div id="forum-div""><ul class="list-group" id="collection">';
 
   if (data) {
     for (var i = 0; i < data.length; i++) {
@@ -636,6 +637,6 @@ Ember.Handlebars.helper('forum-posts', function (data, sbf) {
       }
     }
   }
-  ourString = ourString + '</ul></div></div>';
+  ourString = ourString + '</ul>';
   return new Ember.Handlebars.SafeString(ourString);
 }, 'sbf');

@@ -206,16 +206,18 @@ module.exports = function (app, config, client) {
     },
     'pv': function (ticker) {
       return {
-        'sort': [
-          {
-            'date': {
-              'order': 'asc'
+        'query': {
+          'constant_score': {
+            'filter': {
+              'term': {
+                'symbol.cat': ticker.toLowerCase()
+              }
             }
           }
-        ],
-        'query': {
-          'match': {
-            'symbol.cat': ticker.toLowerCase()
+        },
+        'sort': {
+          'date': {
+            'order': 'asc'
           }
         }
       };
@@ -223,16 +225,14 @@ module.exports = function (app, config, client) {
     'delinquency': function (cik) {
       return {
         '_source': ['form', 'date', '_enrich', 'url'],
-        'sort': [
-          {
-            'date': {
-              'order': 'desc'
-            }
-          }
-        ],
         'query': {
           'terms': {
             'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
+          }
+        },
+        'sort': {
+          'date': {
+            'order': 'desc'
           }
         }
       };

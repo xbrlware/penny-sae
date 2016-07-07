@@ -203,9 +203,18 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
-      console.log('/board :: null ticker');
-      return res.send({'data': [], 'pvData': [], 'ptData': [], 'tlData': []});
+      d = _.mapObject(d, function (value, key) {
+        if (!value) {
+          value = '';
+        }
+        return value;
+      });
     }
+
+    if (d.ticker.indexOf('.') !== -1) {
+      d.ticker = d.ticker.split('.')[0];
+    }
+
     async.parallel([
       function (cb) { getForumdata(d, cb); },
       function (cb) { getPvData(d, cb); },
