@@ -191,8 +191,6 @@ App.BoardController = Ember.Controller.extend({
         renderAll(_this);
       }
     );
-
-  // renderAll(_this)
   }.observes('model'),
 
   toggleSplitByFilterMember (id) {
@@ -330,6 +328,7 @@ App.BoardController = Ember.Controller.extend({
 
   renderTechan: function (forumData, pvdata, routeId, subjectId, div, cb) {
     var parseDate = d3.time.format('%Y-%m-%d').parse;
+    var parseDateTip = d3.time.format('%b-%d');
 
     var pvData = _.chain(pvdata).map(function (d) {
       return {
@@ -391,6 +390,9 @@ App.BoardController = Ember.Controller.extend({
     posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
     posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+    posts.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+    });
 
     var brushChart = {};
     brushChart.title = '';
@@ -405,6 +407,9 @@ App.BoardController = Ember.Controller.extend({
     brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
     brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
+    brushChart.tip = d3.tip().attr('class', 'd3-tip').html(function (d, i) {
+      return 'date: ' + d.date + ' volume: ' + d.volume;
+    });
 
     var price = {};
     price.title = 'Price';
@@ -419,6 +424,9 @@ App.BoardController = Ember.Controller.extend({
     price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
     price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
+    price.tip = d3.tip().attr('class', 'd3-tip').html(function (d, i) {
+      return 'date: ' + d.date + ' volume: ' + d.close;
+    });
 
     var volume = {};
     volume.title = 'Volume';
@@ -433,6 +441,9 @@ App.BoardController = Ember.Controller.extend({
     volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
     volume.xAxis = price.xAxis;
     volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+    volume.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+    });
 
     var svg = d3.select(div).append('svg')
       .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
@@ -527,9 +538,28 @@ App.BoardController = Ember.Controller.extend({
 
       // plot the data
       obj.div.select('g.' + obj.class).call(obj.plot);
+
       // draw the x / y axis for c2
       obj.div.select('g.x.axis').call(obj.xAxis);
       obj.div.select('g.y.axis').call(obj.yAxis);
+
+      if (obj.class !== 'close') {
+        obj.div.selectAll('.bar').remove();
+
+        obj.div.selectAll('.bar')
+          .data(_data)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x', function (d) { return obj.x(d.date); })
+          .attr('width', 4)
+          .attr('y', function (d) { return obj.y(d.volume); })
+          .attr('height', function (d) { return obj.height - obj.y(d.volume); })
+          .attr('opacity', '0.0')
+          .on('mouseover', obj.tip.show)
+          .on('mouseout', obj.tip.hide);
+
+        obj.div.call(obj.tip);
+      }
     }
 
     function draw () {
