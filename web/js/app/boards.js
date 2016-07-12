@@ -407,9 +407,6 @@ App.BoardController = Ember.Controller.extend({
     brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
     brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
-    brushChart.tip = d3.tip().attr('class', 'd3-tip').html(function (d, i) {
-      return 'date: ' + d.date + ' volume: ' + d.volume;
-    });
 
     var price = {};
     price.title = 'Price';
@@ -424,8 +421,8 @@ App.BoardController = Ember.Controller.extend({
     price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
     price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-    price.tip = d3.tip().attr('class', 'd3-tip').html(function (d, i) {
-      return 'date: ' + d.date + ' volume: ' + d.close;
+    price.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
     });
 
     var volume = {};
@@ -543,7 +540,24 @@ App.BoardController = Ember.Controller.extend({
       obj.div.select('g.x.axis').call(obj.xAxis);
       obj.div.select('g.y.axis').call(obj.yAxis);
 
-      if (obj.class !== 'close') {
+      if (obj.class === 'close') {
+        obj.div.selectAll('.dot').remove();
+
+        obj.div.selectAll('.dot')
+            .data(_data)
+            .enter().append('circle')
+            .attr('class', 'dot')
+            .attr('opacity', '0.0')
+            .attr('r', 3)
+            .attr('cx', function (d) { return obj.x(d.date); })
+            .attr('cy', function (d) { return obj.y(d.close); })
+            .on('mouseover', obj.tip.show)
+            .on('mouseout', obj.tip.hide);
+
+        obj.div.call(obj.tip);
+      }
+
+      if (obj.class !== 'close' && obj.class !== 'brush-chart-posts') {
         obj.div.selectAll('.bar').remove();
 
         obj.div.selectAll('.bar')
