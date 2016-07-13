@@ -91,6 +91,25 @@ App.Search.reopenClass({
     });
   },
 
+  refresh_company: function (query, redFlagParams) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: 'refresh',
+        data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
+        success: function (response) {
+          console.log('response in refresh_company --', response);
+          resolve(App.SearchResults.create(response));
+        },
+        error: function (xhr, status, error) {
+          console.log('Error: ' + error.message);
+        }
+      });
+    });
+  },
+
   fetch_data: function (detailName, name) {
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({

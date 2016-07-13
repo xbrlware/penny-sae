@@ -58,6 +58,13 @@ App.DropdownController = Ember.ObjectController.extend({
       appCon.transitionToRoute('sidebar', '-');
     },
 
+    refresh_companies: function () {
+      console.log('---- refresh_companies ----');
+      var appCon = this.controllerFor('application');
+      appCon.transitionToRoute('sidebar', '');
+      appCon.transitionToRoute('sidebar', '--');
+    },
+
     showParameters: function (type) {
       this.set('empty', false);
       var self = this;

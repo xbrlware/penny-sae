@@ -1,6 +1,6 @@
 // web/js/app/sidebar.js
 
-/* global Ember, App, alert, gconfig */
+/* global Ember, App, _, alert, gconfig */
 
 App.SidebarRoute = App.GRoute.extend({
   model: function (params) {
@@ -16,15 +16,24 @@ App.SidebarRoute = App.GRoute.extend({
 
     controller.set('isLoading', true);
     appCon.set('showNav', true);
-    if (model.st !== '-') {
-      appCon.set('searchTerm', model.st);
-      appCon.search_company(function (response) {
+    if (model.st === '-') {
+      appCon.set('searchTerm', undefined);
+      appCon.sort_companies(function (response) {
+        controller.set('model', response);
+        controller.set('isLoading', false);
+      });
+    } else if (model.st === '--' && controller.get('model') !== null) {
+      var parcel = _.map(controller.get('model').hits, function (x) {
+        return x.cik;
+      });
+      appCon.set('searchTerm', undefined);
+      appCon.refresh_companies(parcel, function (response) {
         controller.set('model', response);
         controller.set('isLoading', false);
       });
     } else {
-      appCon.set('searchTerm', undefined);
-      appCon.sort_companies(function (response) {
+      appCon.set('searchTerm', model.st);
+      appCon.search_company(function (response) {
         controller.set('model', response);
         controller.set('isLoading', false);
       });
