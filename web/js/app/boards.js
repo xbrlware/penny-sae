@@ -160,15 +160,15 @@ App.BoardController = Ember.Controller.extend({
     var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
 
+    var forumData = _.map(data, function (x) {
+      return { 'date': new Date(x.date), 'volume': x.value };
+    });
+
     // For parent filter
-    var datum = crossfilter(data);
+    var datum = crossfilter(forumData);
 
     var date = datum.dimension(function (d) {
       return d.date;
-    });
-
-    var forumData = _.map(data, function (x) {
-      return { 'date': new Date(x.date), 'volume': x.value };
     });
 
     // Whenever the brush moves, re-rendering everything.
@@ -640,7 +640,6 @@ App.BoardRoute = Ember.Route.extend({
           x.date = new Date(x.date);
           return x;
         }));
-
         con.set('splitByFilter', []);
         con.set('pageCount', 1);
         con.set('splitBy', 'user');
