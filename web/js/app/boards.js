@@ -173,15 +173,10 @@ App.BoardController = Ember.Controller.extend({
 
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      if (_this.get('topX') === undefined) {
-        // Time series
-        var topX = _.pluck(data, 'id');
-        _this.set('topX', topX);
-        _this.renderX();
-        _this.renderGauges();
-      } else {
-        _this.redraw();
-      }
+      // Time series
+      var topX = _.pluck(data, 'id');
+      _this.set('topX', topX);
+      _this.redraw();
     };
 
     this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
@@ -513,7 +508,7 @@ App.BoardController = Ember.Controller.extend({
 
     var brush = d3.svg.brush()
       .x(brushZoom)
-      .on('brushend', draw);
+      .on('brushend', rtDraw);
 
     brushChart.div.select('g.pane')
       .call(brush)
@@ -576,7 +571,7 @@ App.BoardController = Ember.Controller.extend({
       }
     }
 
-    function draw () {
+    function rtDraw () {
       var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
       var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
 
@@ -597,7 +592,7 @@ App.BoardController = Ember.Controller.extend({
       brushChart.div.select('.pane').call(brush);
     }
 
-    draw();
+    rtDraw();
   },
   actions: {
     topXClicked (id) {

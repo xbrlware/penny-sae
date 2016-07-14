@@ -216,17 +216,13 @@ module.exports = function (app, config, client) {
     }
 
     async.parallel([
-      function (cb) { getForumdata(d, cb); },
       function (cb) { getPvData(d, cb); },
-      function (cb) { getPostsTimelineData(d, cb); },
-      function (cb) { getTimelineData(d, cb); }
+      function (cb) { getPostsTimelineData(d, cb); }
     ], function (error, results) {
       if (error) { console.log(error); }
       res.send({
-        'data': results[0],
-        'pvData': results[1],
-        'ptData': results[2],
-        'tlData': results[3]
+        'pvData': results[0],
+        'ptData': results[1]
       });
     });
   });
