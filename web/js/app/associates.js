@@ -10,7 +10,37 @@ App.AssociatesRoute = Ember.Route.extend({
 App.AssociatesController = Ember.ObjectController.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
+  isLoading: false,
+  noData: false,
   rGraphEdges: [],
+
+  zpad: function (x, n) {
+    n = n | 10;
+    if (x.length < n) {
+      return this.zpad('0' + x, n);
+    } else {
+      return x;
+    }
+  },
+
+  fetch: function (params, cb) {
+    Ember.$.ajax({
+      type: 'POST',
+      contentType: 'application/json',
+      dataType: 'json',
+      url: 'network',
+      data: JSON.stringify(params),
+      success: cb
+    });
+  },
+
+  expand_node: function (con, cik, redFlagParams, init) {
+    cik = this.zpad(cik.toString());
+    this.fetch({'cik': cik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
+      con.set('rgraph', data);
+      con.update_data(data);
+    });
+  },
 
   update_data: function (rgraph) {
     var rGraphEdges = _.map(rgraph.edges, function (v1) {
@@ -49,91 +79,14 @@ App.AssociatesController = Ember.ObjectController.extend({
   ]
 });
 
-App.AssociatesView = App.GenericTableView.extend();
+App.AssociatesView = App.GenericTableView.extend({
+  didInsertElement: function () { this.draw(); },
+  controllerChanged: function () { this.draw(); }.observes('controller.model'),
+  draw: function () {
+    var con = this.get('controller');
+    var cik = con.get('content.cik');
+    var redFlagParams = con.get('redFlagParams');
 
-// ** vv Do we need any of this stuff? vv **
-
-//  rgraph_json: null,
-//  rgraph_object: null,
-//  networkAssociates: null,
-//  origNetworkAssociates: null,
-//
-//  rgraph_origin: null,
-//  origAdj: [],
-//  links: [],
-//
-//  dummy_variable: 'test',
-//  refresh: 0,
-//
-//  searchTermEr: '',
-//
-//  set_ner: function (args) {
-//    Ember.$.ajax({
-//      type: 'POST',
-//      contentType: 'application/json',
-//      dataType: 'json',
-//      url: 'set_ner',
-//      data: JSON.stringify({'cik': args.cik, 'updates': args.updates}),
-//      success: args.callback,
-//      error: function (xhr, status, error) {
-//        console.log('Error: ' + error.message)
-//      }
-//    })
-//  },
-//
-//  update_networkAssociates: function (updates) {
-//    var self = this
-//    return new Ember.RSVP.Promise(function (resolve, reject) {
-//      self.set_ner({
-//        'cik': self.get('model.cik'),
-//        'updates': updates,
-//        'callback': function (response) {
-//          self.transitionToRoute('previousReg')
-//          setTimeout(function () {
-//            self.transitionToRoute('associates')
-//          }, 50)
-//          alert('Changes saved successfully!')
-//          resolve()
-//        }
-//      })
-//    })
-//  },
-//  actions: {
-//    toggle_ner: function (ner) {
-//      var networkAssociates = this.get('networkAssociates')
-//      var ind = _.indexOf(networkAssociates, ner)
-//      var associate = networkAssociates[ind]
-//
-//      associate.toggleProperty('hidden')
-//    },
-//    save_toggles: function () {
-//      var networkAssociates = this.get('networkAssociates')
-//      var updates = _.map(networkAssociates, function (associate) {
-//        return {'nodeTo': associate.id, 'hidden': associate.hidden}
-//      })
-//      this.update_networkAssociates(updates)
-//    },
-//    filter_er: function () {
-//      var searchTermEr = this.get('searchTermEr')
-//      var origNetworkAssociates = this.get('origNetworkAssociates')
-//      if (searchTermEr === '') {
-//        this.set('networkAssociates', origNetworkAssociates)
-//      } else {
-//        this.set('networkAssociates', _.filter(origNetworkAssociates, function (associate) {
-//          var name = associate.name
-//          return name.match(new RegExp(searchTermEr, 'i')) != null
-//        }))
-//      }
-//    },
-//
-//    show_links_ner: function (ner) {
-//      var origAdj = this.get('origAdj')
-//      var cik = this.get('model.cik')
-//      var edge = _.where(origAdj, {'nodeTo': ner.id})[0]
-//      this.set('links', _.map(edge.data.an, function (x) {
-//        var link = 'http://www.sec.gov/Archives/edgar/data/' + cik + '/' + x + '-index.htm'
-//        return {link: link}
-//      }))
-//    }
-//  }
-// })
+    con.expand_node(con, cik, redFlagParams, true);
+  }
+});

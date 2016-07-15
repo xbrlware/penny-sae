@@ -64,7 +64,6 @@
 	       "web/js/app/leadership.js",
            "web/js/app/login.js",
 	       "web/js/app/ner.js",
-	       "web/js/app/network.js",
 	       "web/js/app/previous-reg.js",
 	       "web/js/app/promotions.js",
 	       "web/js/app/boards.js",
