@@ -1,5 +1,5 @@
 // web/js/app/associates.js
-/* global Ember, App, _ */
+/* global Ember, App, d3, _ */
 
 App.AssociatesRoute = Ember.Route.extend({
   model: function () {
@@ -13,6 +13,83 @@ App.AssociatesController = Ember.ObjectController.extend({
   isLoading: false,
   noData: false,
   rGraphEdges: [],
+  didInsertElement: function () {
+    this.expand_node();
+  },
+
+  controllerChanged: function () {
+    this.expand_node();
+  }.observes('controller.model'),
+
+  draw: function (data) {
+    var nodes = {};
+
+    data.edges.forEach(function (x) {
+      x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {name: x.issuerName});
+      x.target = nodes[x.ownerName] || (nodes[x.ownerName] = {name: x.ownerName});
+    });
+
+    var width = 800;
+    var height = 400;
+
+    var force = d3.layout.force()
+      .nodes(d3.values(nodes))
+      .links(data.edges)
+      .size([width, height])
+      .linkDistance(60)
+      .charge(-300)
+      .on('tick', tick)
+      .start();
+
+    var svg = d3.select('.network-graph').append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    var link = svg.selectAll('.link')
+      .data(force.links())
+      .enter()
+      .append('line')
+      .attr('class', 'link');
+
+    var node = svg.selectAll('.node')
+      .data(force.nodes())
+      .enter()
+      .append('g')
+      .attr('class', 'node')
+      .on('mouseover', mouseover)
+      .on('mouseout', mouseout)
+      .call(force.drag);
+
+    node.append('circle').attr('r', 8);
+
+    node.append('text')
+      .attr('x', 12)
+      .attr('dy', 0.35)
+      .text(function (d) { return d.name; });
+
+    function tick () {
+      link
+        .attr('x1', function (d) { return d.source.x; })
+        .attr('y1', function (d) { return d.source.y; })
+        .attr('x2', function (d) { return d.target.x; })
+        .attr('y2', function (d) { return d.target.y; });
+
+      node
+        .attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+    }
+
+    function mouseover () {
+      d3.select(this).select('circle').transition()
+				.duration(750)
+				.attr('r', 16);
+    }
+
+    function mouseout () {
+      d3.select(this).select('circle').transition()
+				.duration(750)
+				.attr('r', 8);
+    }
+  },
 
   zpad: function (x, n) {
     n = n | 10;
@@ -34,11 +111,16 @@ App.AssociatesController = Ember.ObjectController.extend({
     });
   },
 
-  expand_node: function (con, cik, redFlagParams, init) {
-    cik = this.zpad(cik.toString());
-    this.fetch({'cik': cik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
-      con.set('rgraph', data);
-      con.update_data(data);
+  expand_node: function () {
+    var _this = this;
+    var cik = this.get('content.cik');
+    var redFlagParams = this.get('redFlagParams');
+    var zCik = this.zpad(cik.toString());
+
+    this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
+      _this.set('rgraph', data);
+      _this.update_data(data);
+      _this.draw(data);
     });
   },
 
@@ -79,14 +161,4 @@ App.AssociatesController = Ember.ObjectController.extend({
   ]
 });
 
-App.AssociatesView = App.GenericTableView.extend({
-  didInsertElement: function () { this.draw(); },
-  controllerChanged: function () { this.draw(); }.observes('controller.model'),
-  draw: function () {
-    var con = this.get('controller');
-    var cik = con.get('content.cik');
-    var redFlagParams = con.get('redFlagParams');
-
-    con.expand_node(con, cik, redFlagParams, true);
-  }
-});
+App.AssociatesView = App.GenericTableView.extend({});
