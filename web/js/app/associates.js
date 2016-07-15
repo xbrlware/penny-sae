@@ -1,5 +1,5 @@
 // web/js/app/associates.js
-/* global Ember, App, _, gconfig */
+/* global Ember, App, _ */
 
 App.AssociatesRoute = Ember.Route.extend({
   model: function () {
@@ -9,24 +9,14 @@ App.AssociatesRoute = Ember.Route.extend({
 
 App.AssociatesController = Ember.ObjectController.extend({
   needs: ['application'],
-
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
-
-  hide_terminal: gconfig.DEFAULT_HIDE_TERMINAL,
-  hide_ner: gconfig.DEFAULT_HIDE_NER,
-
-  // >>
-  // For table
-
   rGraphEdges: [],
+
   update_data: function (rgraph) {
-    var rGraphEdges = _.chain(rgraph.graph.edges).map(function (v1, source) {
-      return _.chain(v1).map(function (edge, target) {
-        return {'source': source, 'target': target, 'data': edge.data};
-      }).filter(function (x) { return x.source === x.data.ownerCik; }).value();
-    }).flatten().value();
+    var rGraphEdges = _.map(rgraph.edges, function (v1) {
+      return {'source': v1.issuerCik, 'target': v1.ownerCik, 'data': v1};
+    });
     this.set('rGraphEdges', rGraphEdges);
-    console.log('MODEL :: ', this.get('model'));
   },
 
   tableDiv: '#associates-table',

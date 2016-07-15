@@ -61,7 +61,6 @@
 	       "web/js/app/frontpage.js",
 	       "web/js/app/top-news.js",
            "web/js/app/hit.js",
-	       "web/js/app/icons.js",
 	       "web/js/app/leadership.js",
            "web/js/app/login.js",
 	       "web/js/app/ner.js",
