@@ -7,7 +7,7 @@ function makeTimeSeries (ts, bounds) {
   var TEXT_COLOR = '#ccc';
 
   // Calculate bar width
-  var BAR_WIDTH = 2;
+  var BAR_WIDTH = 4;
 
   var data = _.chain(ts.timeseries).map(function (x) {
     return {
@@ -559,8 +559,8 @@ App.BoardController = Ember.Controller.extend({
           .data(_data)
           .enter().append('rect')
           .attr('class', 'bar')
-          .attr('x', function (d) { return obj.x(d.date); })
-          .attr('width', 4)
+          .attr('x', function (d) { return obj.x(d.date) - 3; })
+          .attr('width', 6)
           .attr('y', function (d) { return obj.y(d.volume); })
           .attr('height', function (d) { return obj.height - obj.y(d.volume); })
           .attr('opacity', '0.0')
