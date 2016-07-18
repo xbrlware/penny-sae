@@ -25,10 +25,16 @@ App.AssociatesController = Ember.ObjectController.extend({
     var nodes = {};
 
     data.edges.forEach(function (x) {
-      x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {name: x.issuerName});
-      x.target = nodes[x.ownerName] || (nodes[x.ownerName] = {name: x.ownerName});
+      x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {name: x.issuerName,
+        'cik': x.issuerCik,
+        'issuer': 1});
+      x.target = nodes[x.ownerName] || (nodes[x.ownerName] = {name: x.ownerName,
+        'cik': x.ownerCik,
+        'issuer': 0});
     });
 
+    console.log('DATA :: ', data);
+    console.log('NODE :: ', nodes);
     var width = 800;
     var height = 400;
 
@@ -40,6 +46,13 @@ App.AssociatesController = Ember.ObjectController.extend({
       .charge(-300)
       .on('tick', tick)
       .start();
+
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-5, 0])
+      .html(function (d) {
+        return '<center><span>' + d.name + '</span><br /><span>' + d.cik + '</center>';
+      });
 
     var svg = d3.select('.network-graph').append('svg')
       .attr('width', width)
@@ -56,16 +69,20 @@ App.AssociatesController = Ember.ObjectController.extend({
       .enter()
       .append('g')
       .attr('class', 'node')
-      .on('mouseover', mouseover)
-      .on('mouseout', mouseout)
-      .call(force.drag);
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      .call(force.drag)
+      .call(tip);
 
-    node.append('circle').attr('r', 8);
-
-    node.append('text')
-      .attr('x', 12)
-      .attr('dy', 0.35)
-      .text(function (d) { return d.name; });
+    node.append('image')
+      .attr('class', 'circle')
+      .attr('xlink:href', function (d) {
+        return getImage(d);
+      })
+      .attr('x', '-10px')
+      .attr('y', '-10px')
+      .attr('width', '20px')
+      .attr('height', '20px');
 
     function tick () {
       link
@@ -78,16 +95,15 @@ App.AssociatesController = Ember.ObjectController.extend({
         .attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')'; });
     }
 
-    function mouseover () {
-      d3.select(this).select('circle').transition()
-				.duration(750)
-				.attr('r', 16);
-    }
-
-    function mouseout () {
-      d3.select(this).select('circle').transition()
-				.duration(750)
-				.attr('r', 8);
+    function getImage (d) {
+      if (d) {
+        console.log(d);
+        if (d.issuer === 0) {
+          return 'img/green_person.png';
+        } else {
+          return 'img/green_building.png';
+        }
+      }
     }
   },
 
