@@ -22,25 +22,35 @@ App.AssociatesController = Ember.ObjectController.extend({
   }.observes('controller.model'),
 
   draw: function (data) {
+    d3.select('.network-graph').selectAll('svg').remove();
     var nodes = {};
-
-    data.edges.forEach(function (x) {
-      x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {name: x.issuerName,
+    data.forEach(function (x) {
+      x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {
+        'name': x.issuerName,
         'cik': x.issuerCik,
-        'issuer': 1});
-      x.target = nodes[x.ownerName] || (nodes[x.ownerName] = {name: x.ownerName,
+        'issuer': 1,
+        'red_flags': x.node.data.redFlags,
+        'isDirector': x.isDirector,
+        'isOfficer': x.isOfficer,
+        'isTenPercentOwner': x.isTenPercentOwner
+      });
+      x.target = nodes[x.ownerName] || (nodes[x.ownerName] = {
+        'name': x.ownerName,
         'cik': x.ownerCik,
-        'issuer': 0});
+        'issuer': 0,
+        'red_flags': x.node.data.redFlags,
+        'isDirector': x.isDirector,
+        'isOfficer': x.isOfficer,
+        'isTenPercentOwner': x.isTenPercentOwner
+      });
     });
 
-    console.log('DATA :: ', data);
-    console.log('NODE :: ', nodes);
     var width = 800;
     var height = 400;
 
     var force = d3.layout.force()
       .nodes(d3.values(nodes))
-      .links(data.edges)
+      .links(data)
       .size([width, height])
       .linkDistance(60)
       .charge(-300)
@@ -99,9 +109,17 @@ App.AssociatesController = Ember.ObjectController.extend({
       if (d) {
         console.log(d);
         if (d.issuer === 0) {
-          return 'img/green_person.png';
+          if (d.red_flags.total) {
+            return 'img/red_person.png';
+          } else {
+            return 'img/green_person.png';
+          }
         } else {
-          return 'img/green_building.png';
+          if (d.red_flags.total) {
+            return 'img/red_building.png';
+          } else {
+            return 'img/green_building.png';
+          }
         }
       }
     }
@@ -134,15 +152,24 @@ App.AssociatesController = Ember.ObjectController.extend({
     var zCik = this.zpad(cik.toString());
 
     this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
-      _this.set('rgraph', data);
-      _this.update_data(data);
-      _this.draw(data);
+      data.edges.forEach(function (edge) {
+        return _.map(data.nodes, function (node) {
+          if (node.id === edge.ownerCik) {
+            edge['node'] = node;
+            return edge;
+          }
+        });
+      });
+      console.log(data);
+      _this.set('rgraph', data.edges);
+      _this.update_data(data.edges);
+      _this.draw(data.edges);
     });
   },
 
   update_data: function (rgraph) {
-    var rGraphEdges = _.map(rgraph.edges, function (v1) {
-      return {'source': v1.issuerCik, 'target': v1.ownerCik, 'data': v1};
+    var rGraphEdges = _.map(rgraph, function (edges) {
+      return {'data': edges};
     });
     this.set('rGraphEdges', rGraphEdges);
   },
