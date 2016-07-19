@@ -22,8 +22,10 @@ App.AssociatesController = Ember.ObjectController.extend({
   }.observes('controller.model'),
 
   draw: function (data) {
+    /* make sure that any previously existing graph is removed */
     d3.select('.network-graph').selectAll('svg').remove();
     var nodes = {};
+    /* parse data for graph */
     data.forEach(function (x) {
       x.source = nodes[x.issuerName] || (nodes[x.issuerName] = {
         'name': x.issuerName,
@@ -45,9 +47,11 @@ App.AssociatesController = Ember.ObjectController.extend({
       });
     });
 
+    /* default size for network graph */
     var width = 800;
     var height = 400;
 
+    /* set up graph properties */
     var force = d3.layout.force()
       .nodes(d3.values(nodes))
       .links(data)
@@ -57,23 +61,63 @@ App.AssociatesController = Ember.ObjectController.extend({
       .on('tick', tick)
       .start();
 
+    /* set up node tool tip */
     var tip = d3.tip()
       .attr('class', 'd3-tip')
       .offset([-5, 0])
       .html(function (d) {
-        return '<center><span>' + d.name + '</span><br /><span>' + d.cik + '</center>';
+        var cats = ['name', 'cik', 'red_flags', 'isDirector', 'isOfficer', 'isTenPercentOwner'];
+        var htmlString = '';
+        for (var key in d) {
+          if (cats.indexOf(key) !== -1) {
+            switch (key) {
+              case 'name':
+                htmlString += '<span>Name: ' + d[key] + '</span><br />';
+                break;
+              case 'cik':
+                htmlString += '<span>CIK: ' + d[key] + '</span><br />';
+                break;
+              case 'red_flags':
+                if (d[key].possible) {
+                  htmlString += '<span>Red Flags: ' + (d[key].total ? d[key].total : '0') + '/' + d[key].possible + '</span><br />';
+                }
+                break;
+              case 'isDirector':
+                if (d[key] === 1) {
+                  htmlString += '<span>Director</span><br />';
+                }
+                break;
+              case 'isOfficer':
+                if (d[key] === 1) {
+                  htmlString += '<span>Officer</span><br />';
+                }
+                break;
+              case 'isTenPercentOwner':
+                if (d[key] === 1) {
+                  htmlString += '<span>Ten Percent Owner</span><br />';
+                }
+                break;
+              default:
+                htmlString += '<span>' + key + ': ' + d[key] + '</span><br />';
+            }
+          }
+        }
+        return htmlString;
       });
 
+    /* start svg tree */
     var svg = d3.select('.network-graph').append('svg')
       .attr('width', width)
       .attr('height', height);
 
+    /* init links */
     var link = svg.selectAll('.link')
       .data(force.links())
       .enter()
       .append('line')
       .attr('class', 'link');
 
+    /* init nodes */
     var node = svg.selectAll('.node')
       .data(force.nodes())
       .enter()
@@ -84,6 +128,7 @@ App.AssociatesController = Ember.ObjectController.extend({
       .call(force.drag)
       .call(tip);
 
+    /* append icons instead of circles */
     node.append('image')
       .attr('class', 'circle')
       .attr('xlink:href', function (d) {
@@ -106,17 +151,30 @@ App.AssociatesController = Ember.ObjectController.extend({
     }
 
     function getImage (d) {
+      /* which color icon to add to graph */
       if (d) {
         console.log(d);
         if (d.issuer === 0) {
+          /* if issuer */
           if (d.red_flags.total) {
-            return 'img/red_person.png';
+            if (d.red_flags.total === d.red_flags.possible) {
+              /* matches all red flags */
+              return 'img/red_person.png';
+            } else {
+              /* only matches some */
+              return 'img/yellow_person.png';
+            }
           } else {
+            /* matches none */
             return 'img/green_person.png';
           }
         } else {
           if (d.red_flags.total) {
-            return 'img/red_building.png';
+            if (d.red_flags.total === d.red_flags.possible) {
+              return 'img/red_building.png';
+            } else {
+              return 'img/yellow_building.png';
+            }
           } else {
             return 'img/green_building.png';
           }
