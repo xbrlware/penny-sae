@@ -7,7 +7,9 @@ module.exports = function (passport, config, make_token) {
     crypto = require('crypto'),
     LocalStrategy = require('passport-local');
 
-  var client = new es.Client({hosts: config.ES.HOST});
+  var client = new es.Client({
+    hosts: config.ES.HOST
+  });
 
   function findUser (username, client, callback) {
     var user_hash = crypto.createHash('sha').update(username).digest().toString('hex');
