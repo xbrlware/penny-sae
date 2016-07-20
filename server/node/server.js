@@ -26,7 +26,7 @@ function runServer () {
 
   require('./authentication/auth.js')(app, config);
 
-  var client = new es.Client({hosts: [config.ES.HOST]});
+  var client = new es.Client({hosts: config.ES.HOST});
 
   require('./routes')(app, config, client);
   require('./network')(app, config, client);
