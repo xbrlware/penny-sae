@@ -2,7 +2,7 @@
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 15, bottom: 20, left: 20};
+  var margin = {top: 13, right: 0, bottom: 20, left: 0};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
@@ -33,7 +33,7 @@ function makeTimeSeries (ts, bounds) {
 
   // Get cell height
   var height = (margin.top + margin.bottom) * 1.5;
-  var width = (Ember.$('#techan-wrapper').width() * 0.4) - (margin.left + margin.right);
+  var width = (Ember.$('#gauge-timeline-cell').width() * 0.7);
 
   var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();

@@ -24,19 +24,31 @@
                     <span class="loader-text" >Loading Timeline Data...</span>
                 </div>
             {{else}}
-                <div class="timeline-panel" id="timeline">
-                {{#each topX}}
-                    <div class="col-xs-3">
-                        <div id='gauge-{{this}}' class="gauge chart"></div>
-                    </div>
-                    <div class="col-xs-9 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
-                        <div class="timeline-info">                        
-                            <span class="title"></span>
-                            <div class="count-wrapper pull-right during"></div>
-                        </div>
-                    </div>
-                {{/each}}
-                </div>
+                <table class="col-xs-12 table timeline-panel" id="timeline">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-4">
+                                <button class="col-xs-12"> Sort </button>
+                            </th>
+                            <th class="col-xs-8">
+                                <button class="col-xs-12"> Sort </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    {{#each topX}}
+                        <tr>    
+                            <td class="col-xs-4">
+                                <div id='gauge-{{this}}' class="gauge chart"></div>
+                            </td>
+                            <td class="col-xs-8 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
+                                <div class="timeline-info">                        
+                                    <span class="title"></span>
+                                    <div class="count-wrapper pull-right during"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </table>
             {{/if}}
         </div>
         <div class="col-xs-6" id="forum-posts-cell">
