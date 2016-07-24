@@ -609,6 +609,7 @@ App.BoardController = Ember.Controller.extend({
 
   sortPosters: function (sortType) {
     var tldata = this.get('model.tlData');
+    var fmData = this.get('model.data');
     var ascdesc;
 
     switch (sortType) {
@@ -654,6 +655,12 @@ App.BoardController = Ember.Controller.extend({
     }
 
     this.set('model.tlData', sv);
+    this.set('filtered_data', _.map(fmData, function (x) {
+      x.date = new Date(x.date);
+      return x;
+    }));
+
+    this.set('splitByFilter', []);
 
     this.renderX();
     this.renderGauges();
