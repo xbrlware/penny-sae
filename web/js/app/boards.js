@@ -83,6 +83,10 @@ App.BoardController = Ember.Controller.extend({
   isData: true,
   timelineLoading: false,
   pageCount: 1,
+  docAscDesc: 'desc',
+  posAscDesc: 'desc',
+  negAscDesc: 'desc',
+  neutAscDesc: 'neut',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -200,7 +204,6 @@ App.BoardController = Ember.Controller.extend({
 
   renderX () {
     var model = this.get('model.tlData');
-
     var dateFilter = this.get('dateFilter');
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
@@ -266,7 +269,7 @@ App.BoardController = Ember.Controller.extend({
   drawGauge (bindTo, gaugeData) {
     // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
-
+    var _this = this;
     var w = gconfig.GAUGE.SIZE.WIDTH;
     var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
     var c = gconfig.GAUGE.COLOR_PATT;
@@ -285,6 +288,11 @@ App.BoardController = Ember.Controller.extend({
       .html(function (d) {
         return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
       });
+
+    function sortGauges (d) {
+      /* for sorting gauges in descend / ascend order */
+      _this.sortPosters(d.data.label);
+    }
 
     var vis = d3.select(bindTo).append('svg')
       .data([data])
@@ -312,7 +320,11 @@ App.BoardController = Ember.Controller.extend({
       .append('svg:g')
       .attr('class', 'slice')
       .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
+      .on('mouseout', tip.hide)
+      .on('click', function (d) {
+        d3.selectAll('.d3-tip').remove();
+        sortGauges(d);
+      });
 
     arcs.append('svg:path')
       .attr('fill', function (d, i) { return color[d.data.label]; })
@@ -594,7 +606,64 @@ App.BoardController = Ember.Controller.extend({
 
     rtDraw();
   },
+
+  sortPosters: function (sortType) {
+    var tldata = this.get('model.tlData');
+    var ascdesc;
+
+    switch (sortType) {
+      case 'doc_count':
+        ascdesc = this.get('docAscDesc');
+        break;
+      case 'pos':
+        ascdesc = this.get('posAscDesc');
+        sortType = 'pos';
+        break;
+      case 'neut':
+        ascdesc = this.get('neutAscDesc');
+        sortType = 'neut';
+        break;
+      case 'neg':
+        ascdesc = this.get('negAscDesc');
+        sortType = 'neg';
+        break;
+    }
+
+    var sv;
+    if (ascdesc === 'asc') {
+      sv = _.sortBy(tldata, sortType).reverse();
+      ascdesc = 'desc';
+    } else if (ascdesc === 'desc') {
+      sv = _.sortBy(tldata, sortType);
+      ascdesc = 'asc';
+    }
+
+    switch (sortType) {
+      case 'doc_count':
+        this.set('docAscDesc', ascdesc);
+        break;
+      case 'pos':
+        this.set('posAscDesc', ascdesc);
+        break;
+      case 'neut':
+        this.set('neutAscDesc', ascdesc);
+        break;
+      case 'neg':
+        this.set('negAscDesc', ascdesc);
+        break;
+    }
+
+    this.set('model.tlData', sv);
+
+    this.renderX();
+    this.renderGauges();
+  },
+
   actions: {
+    sortDocCount: function () {
+      this.sortPosters('doc_count');
+    },
+
     topXClicked (id) {
       var _this = this;
       this.set('pageCount', 1);
@@ -625,6 +694,10 @@ App.BoardRoute = Ember.Route.extend({
     con.set('isLoading', true);
     con.set('filtered_data', []);
     con.set('isData', true);
+    con.set('docAscDesc', 'desc');
+    con.set('posAscDesc', 'desc');
+    con.set('negAscDesc', 'desc');
+    con.set('neutAscDesc', 'desc');
 
     var cik = this.controllerFor('detail').get('model.cik');
     console.log('CIK :: ', cik);

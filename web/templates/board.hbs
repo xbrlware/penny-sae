@@ -24,31 +24,21 @@
                     <span class="loader-text" >Loading Timeline Data...</span>
                 </div>
             {{else}}
-                <table class="col-xs-12 table timeline-panel" id="timeline">
-                    <thead>
-                        <tr>
-                            <th class="col-xs-4">
-                                <button class="col-xs-12"> Sort </button>
-                            </th>
-                            <th class="col-xs-8">
-                                <button class="col-xs-12"> Sort </button>
-                            </th>
-                        </tr>
-                    </thead>
+                <ul class="col-xs-12 timeline-panel" id="timeline">
                     {{#each topX}}
-                        <tr>    
-                            <td class="col-xs-4">
+                        <li>    
+                            <div class="col-xs-4">
                                 <div id='gauge-{{this}}' class="gauge chart"></div>
-                            </td>
-                            <td class="col-xs-8 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
+                            </div>
+                            <div class="col-xs-8 ts chart" id="ts-{{this}}">
                                 <div class="timeline-info">                        
-                                    <span class="title"></span>
-                                    <div class="count-wrapper pull-right during"></div>
+                                    <span class="title" {{action "topXClicked" this}}></span>
+                                    <div class="count-wrapper pull-right during" {{action "sortDocCount"}}></div>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </li>
                     {{/each}}
-                </table>
+                </ul>
             {{/if}}
         </div>
         <div class="col-xs-6" id="forum-posts-cell">

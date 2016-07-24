@@ -192,7 +192,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.user(d)
     }).then(function (response) {
       var m = _.map(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace('-', '/').split('T')[0];
+        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         return x._source;
       });
       res.send(m);
@@ -260,7 +260,7 @@ module.exports = function (app, config, client) {
           neut: x.neut.value,
           neg: x.neg.value,
           timeline: _.map(x.user_histogram.buckets, function (d) {
-            var t = d.key_as_string.replace('-', '/').split('T')[0];
+            var t = d.key_as_string.replace(/-/g, '/').split('T')[0];
             return {'key_as_string': t, 'doc_count': d.doc_count};
           })};
       });
@@ -277,7 +277,7 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
       cb(null, _.map(response.aggregations.board_histogram.buckets, function (d, i) {
-        return {index: i, date: d.key_as_string.replace('-', '/').split('T')[0], value: d.doc_count};
+        return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
     });
   }
@@ -289,7 +289,7 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, _.map(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace('-', '/').split('T')[0];
+        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         return x._source;
       }));
       return;
