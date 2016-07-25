@@ -1,89 +1,5 @@
 /* global Ember, App, d3, _, techan, crossfilter, gconfig */
 
-function makeTimeSeries (ts, bounds) {
-  var div = '#ts-' + ts.id;
-  var margin = {top: 13, right: 20, bottom: 20, left: 0};
-  var FILL_COLOR = 'orange';
-  var TEXT_COLOR = '#ccc';
-
-  // Calculate bar width
-  var BAR_WIDTH = 4;
-
-  var data = _.chain(ts.timeseries).map(function (x) {
-    return {
-      'date': new Date(x.key),
-      'value': +x.value
-    };
-  }).value();
-
-  var parseDate = d3.time.format('%b-%d');
-
-  // Clear previous values
-  d3.select(div).selectAll('svg').remove();
-
-  d3.select(div + ' .title').text(ts.name);
-  d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-5, 0])
-    .html(function (d) {
-      return '<center><span>' + parseDate(d.date) + '</span><br /><span>' + d.value + '</span></center>';
-    });
-
-  // Get cell height
-  var height = (margin.top + margin.bottom) * 1.5;
-  var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
-
-  var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
-  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
-
-  var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, ts.max]);
-
-  var svg = d3.select(div).append('svg:svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-  var yaxis = d3.svg.axis()
-    .scale(y)
-    .orient('right')
-    .tickValues([ts.mean, ts.max]);
-
-  var xaxis = d3.svg.axis()
-    .scale(x)
-    .orient('bottom')
-    .ticks(4)
-    .tickFormat(d3.time.format('%m-%y'));
-
-  svg.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(xaxis)
-    .attr('stroke', TEXT_COLOR);
-
-  svg.append('g')
-    .attr('class', 'y axis')
-    .attr('transform', 'translate(' + (width - margin.right) + ',0)')
-    .call(yaxis)
-    .attr('stroke', TEXT_COLOR);
-
-  svg.selectAll('bar')
-    .data(data)
-    .enter().append('rect')
-    .on('mouseover', tip.show)
-    .on('mouseout', tip.hide)
-    .style('fill', FILL_COLOR)
-    .attr('x', function (d) { return x(d.date); })
-    .attr('width', BAR_WIDTH)
-    .attr('y', function (d) { return y(d.value); })
-    .attr('height', function (d) { return height - y(d.value); });
-
-  svg.call(tip);
-}
-
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
   name: Ember.computed.alias('controllers.detail.model'),
@@ -97,7 +13,9 @@ App.BoardController = Ember.Controller.extend({
   docAscDesc: 'desc',
   posAscDesc: 'desc',
   negAscDesc: 'desc',
-  neutAscDesc: 'neut',
+  neutAscDesc: 'desc',
+  meanAscDesc: 'desc',
+  maxAscDesc: 'desc',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -108,6 +26,100 @@ App.BoardController = Ember.Controller.extend({
   splitByFilter: function () {
     return [];
   }.property(),
+
+  makeTimeSeries: function (ts, bounds) {
+    var _this = this;
+    var div = '#ts-' + ts.id;
+    var margin = {top: 13, right: 20, bottom: 20, left: 0};
+    var FILL_COLOR = 'orange';
+    var TEXT_COLOR = '#ccc';
+
+    // Calculate bar width
+    var BAR_WIDTH = 4;
+
+    var data = _.chain(ts.timeseries).map(function (x) {
+      return {
+        'date': new Date(x.key),
+        'value': +x.value
+      };
+    }).value();
+
+    var parseDate = d3.time.format('%b-%d');
+
+    // Clear previous values
+    d3.select(div).selectAll('svg').remove();
+
+    d3.select(div + ' .title').text(ts.name);
+    d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
+
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-5, 0])
+      .html(function (d) {
+        return '<center><span>' + parseDate(d.date) + '</span><br /><span>' + d.value + '</span></center>';
+      });
+
+    // Get cell height
+    var height = (margin.top + margin.bottom) * 1.5;
+    var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
+
+    var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
+    x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
+
+    var y = d3.scale.linear().range([height, 0]);
+    y.domain([0, ts.max]);
+
+    var svg = d3.select(div).append('svg:svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var yaxis = d3.svg.axis()
+      .scale(y)
+      .orient('right')
+      .tickValues([ts.mean, ts.max]);
+
+    var xaxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom')
+      .ticks(4)
+      .tickFormat(d3.time.format('%m-%y'));
+
+    svg.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(xaxis)
+      .attr('stroke', TEXT_COLOR);
+
+    svg.append('g')
+      .attr('class', 'y axis timeline')
+      .attr('transform', 'translate(' + (width - margin.right) + ',0)')
+      .call(yaxis)
+      .attr('stroke', TEXT_COLOR);
+
+    svg.selectAll('bar')
+      .data(data)
+      .enter().append('rect')
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      .style('fill', FILL_COLOR)
+      .attr('x', function (d) { return x(d.date); })
+      .attr('width', BAR_WIDTH)
+      .attr('y', function (d) { return y(d.value); })
+      .attr('height', function (d) { return height - y(d.value); });
+
+    d3.selectAll('g.y.axis.timeline g.tick text')
+      .on('click', function (d, i) {
+        if (i === 0) {
+          _this.sortPosters('mean');
+        } else {
+          _this.sortPosters('max');
+        }
+      });
+
+    svg.call(tip);
+  },
 
   postFilteredData: function () {
     var xId = this.get('splitById');
@@ -214,6 +226,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderX () {
+    var _this = this;
     var model = this.get('model.tlData');
     var dateFilter = this.get('dateFilter');
 
@@ -244,9 +257,9 @@ App.BoardController = Ember.Controller.extend({
         'timeseries': _.map(v.timeline, function (x) {
           return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
         }),
-        'max': d3.max(v.timeline, function (t) { return t.doc_count; }),
-        'mean': d3.mean(v.timeline, function (t) { return t.doc_count; }),
-        'min': d3.min(v.timeline, function (t) { return t.doc_count; })
+        'max': v.max,
+        'mean': v.mean,
+        'min': v.min
       };
     }).value();
 
@@ -258,7 +271,7 @@ App.BoardController = Ember.Controller.extend({
 
     Ember.run.next(function () {
       _.map(timeseries, function (t) {
-        makeTimeSeries(t, {
+        _this.makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
           'ymax': ymax,
@@ -632,15 +645,18 @@ App.BoardController = Ember.Controller.extend({
         break;
       case 'pos':
         ascdesc = this.get('posAscDesc');
-        sortType = 'pos';
         break;
       case 'neut':
         ascdesc = this.get('neutAscDesc');
-        sortType = 'neut';
         break;
       case 'neg':
         ascdesc = this.get('negAscDesc');
-        sortType = 'neg';
+        break;
+      case 'mean':
+        ascdesc = this.get('meanAscDesc');
+        break;
+      case 'max':
+        ascdesc = this.get('maxAscDesc');
         break;
     }
 
@@ -665,6 +681,12 @@ App.BoardController = Ember.Controller.extend({
         break;
       case 'neg':
         this.set('negAscDesc', ascdesc);
+        break;
+      case 'mean':
+        this.set('meanAscDesc', ascdesc);
+        break;
+      case 'max':
+        this.set('maxAscDesc', ascdesc);
         break;
     }
 
@@ -719,6 +741,8 @@ App.BoardRoute = Ember.Route.extend({
     con.set('posAscDesc', 'desc');
     con.set('negAscDesc', 'desc');
     con.set('neutAscDesc', 'desc');
+    con.set('meanAscDesc', 'desc');
+    con.set('maxAscDesc', 'desc');
 
     var cik = this.controllerFor('detail').get('model.cik');
     console.log('CIK :: ', cik);

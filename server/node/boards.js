@@ -3,6 +3,7 @@
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var async = require('async');
+  var lodash = require('lodash');
 
   var boardQueryBuilder = {
     'board': function (brdData) {
@@ -252,6 +253,12 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.timeline(data)
     }).then(function (response) {
       var q = _.map(response.aggregations.posts.buckets, function (x) {
+        var maxObj = lodash.maxBy(x.user_histogram.buckets, function (d) {
+          return d.doc_count;
+        });
+        var minObj = lodash.minBy(x.user_histogram.buckets, function (d) {
+          return d.doc_count;
+        });
         return {
           id: x.key,
           user: x.user.buckets[0].key,
@@ -259,6 +266,11 @@ module.exports = function (app, config, client) {
           pos: x.pos.value,
           neut: x.neut.value,
           neg: x.neg.value,
+          max: maxObj.doc_count,
+          mean: lodash.meanBy(x.user_histogram.buckets, function (d) {
+            return d.doc_count;
+          }),
+          min: minObj.doc_count,
           timeline: _.map(x.user_histogram.buckets, function (d) {
             var t = d.key_as_string.replace(/-/g, '/').split('T')[0];
             return {'key_as_string': t, 'doc_count': d.doc_count};
