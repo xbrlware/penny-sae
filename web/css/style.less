@@ -373,16 +373,31 @@ body {
 #gauge-timeline-cell {
     max-height: 1020px;
 }
+.gauge-align > g.slice {
+    cursor: pointer;
+    &:nth-child(1) > path:hover { 
+        fill: rgba(0, 255, 0, 1.0);
+    }
+    &:nth-child(2) > path:hover {
+        fill: rgba(255, 255, 0, 1.0);
+    }
+    &:nth-child(3) > path:hover {
+        fill: rgba(255, 0, 0, 1.0);
+    }
+}
 
-.count-wrapper:hover {
+.count-wrapper:hover,
+.y.axis.timeline > g.tick > text:hover {
     cursor: pointer;
     color: red;
+    background-color: rgba(211, 211, 211, 0.5);
 }
 
 span {
     &.title:hover {
         cursor: pointer;
         color: red;
+        background-color: rgba(211, 211, 211, 0.5);
     }
 }
 
