@@ -1,7 +1,6 @@
 // server/node/boards.js
 
 module.exports = function (app, config, client) {
-  var _ = require('underscore')._;
   var async = require('async');
   var lodash = require('lodash');
 
@@ -192,7 +191,7 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.user(d)
     }).then(function (response) {
-      var m = _.map(response.hits.hits, function (x) {
+      var m = lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         return x._source;
       });
@@ -204,7 +203,7 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
-      d = _.mapObject(d, function (value, key) {
+      d = lodash.map(d, function (value, key) {
         if (!value) {
           value = '';
         }
@@ -252,7 +251,7 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.timeline(data)
     }).then(function (response) {
-      var q = _.map(response.aggregations.posts.buckets, function (x) {
+      var q = lodash.map(response.aggregations.posts.buckets, function (x) {
         var maxObj = lodash.maxBy(x.user_histogram.buckets, function (d) {
           return d.doc_count;
         });
@@ -267,11 +266,11 @@ module.exports = function (app, config, client) {
           neut: x.neut.value,
           neg: x.neg.value,
           max: maxObj.doc_count,
-          mean: lodash.meanBy(x.user_histogram.buckets, function (d) {
+          mean: lodash.round(lodash.meanBy(x.user_histogram.buckets, function (d) {
             return d.doc_count;
-          }),
+          }), 1),
           min: minObj.doc_count,
-          timeline: _.map(x.user_histogram.buckets, function (d) {
+          timeline: lodash.map(x.user_histogram.buckets, function (d) {
             var t = d.key_as_string.replace(/-/g, '/').split('T')[0];
             return {'key_as_string': t, 'doc_count': d.doc_count};
           })};
@@ -288,7 +287,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.boardTimeline(data)
     }).then(function (response) {
       console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
-      cb(null, _.map(response.aggregations.board_histogram.buckets, function (d, i) {
+      cb(null, lodash.map(response.aggregations.board_histogram.buckets, function (d, i) {
         return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
     });
@@ -300,7 +299,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.board(data)
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
-      cb(null, _.map(response.hits.hits, function (x) {
+      cb(null, lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         return x._source;
       }));
@@ -314,7 +313,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
-      cb(null, _.pluck(response.hits.hits, '_source'));
+      cb(null, lodash.map(response.hits.hits, '_source'));
       return;
     });
   }

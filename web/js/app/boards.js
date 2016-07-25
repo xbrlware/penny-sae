@@ -78,6 +78,7 @@ App.BoardController = Ember.Controller.extend({
     var yaxis = d3.svg.axis()
       .scale(y)
       .orient('right')
+      .tickFormat(d3.format('.f'))
       .tickValues([ts.mean, ts.max]);
 
     var xaxis = d3.svg.axis()
@@ -111,7 +112,7 @@ App.BoardController = Ember.Controller.extend({
 
     d3.selectAll('g.y.axis.timeline g.tick text')
       .on('click', function (d, i) {
-        if (i === 0) {
+        if (i % 2 === 0) {
           _this.sortPosters('mean');
         } else {
           _this.sortPosters('max');
@@ -424,7 +425,7 @@ App.BoardController = Ember.Controller.extend({
     posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
     posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-    posts.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+    posts.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
     });
 
@@ -455,7 +456,7 @@ App.BoardController = Ember.Controller.extend({
     price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
     price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-    price.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+    price.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
     });
 
@@ -472,7 +473,7 @@ App.BoardController = Ember.Controller.extend({
     volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
     volume.xAxis = price.xAxis;
     volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-    volume.tip = d3.tip().attr('class', 'd3-tip').offset([-10, -2]).html(function (d) {
+    volume.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
     });
 
@@ -659,7 +660,7 @@ App.BoardController = Ember.Controller.extend({
         ascdesc = this.get('maxAscDesc');
         break;
     }
-
+    console.log('TLDATA ::', tldata);
     var sv;
     if (ascdesc === 'asc') {
       sv = _.sortBy(tldata, sortType).reverse();
