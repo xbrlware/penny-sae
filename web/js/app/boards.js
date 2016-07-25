@@ -2,7 +2,7 @@
 
 function makeTimeSeries (ts, bounds) {
   var div = '#ts-' + ts.id;
-  var margin = {top: 13, right: 0, bottom: 20, left: 0};
+  var margin = {top: 13, right: 20, bottom: 20, left: 0};
   var FILL_COLOR = 'orange';
   var TEXT_COLOR = '#ccc';
 
@@ -33,19 +33,24 @@ function makeTimeSeries (ts, bounds) {
 
   // Get cell height
   var height = (margin.top + margin.bottom) * 1.5;
-  var width = (Ember.$('#gauge-timeline-cell').width() * 0.7);
+  var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
 
   var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
   x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
   var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, bounds.ymax]);
+  y.domain([0, ts.max]);
 
   var svg = d3.select(div).append('svg:svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  var yaxis = d3.svg.axis()
+    .scale(y)
+    .orient('right')
+    .tickValues([ts.mean, ts.max]);
 
   var xaxis = d3.svg.axis()
     .scale(x)
@@ -57,6 +62,12 @@ function makeTimeSeries (ts, bounds) {
     .attr('class', 'x axis')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xaxis)
+    .attr('stroke', TEXT_COLOR);
+
+  svg.append('g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(' + (width - margin.right) + ',0)')
+    .call(yaxis)
     .attr('stroke', TEXT_COLOR);
 
   svg.selectAll('bar')
@@ -232,7 +243,10 @@ App.BoardController = Ember.Controller.extend({
         },
         'timeseries': _.map(v.timeline, function (x) {
           return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
-        })
+        }),
+        'max': d3.max(v.timeline, function (t) { return t.doc_count; }),
+        'mean': d3.mean(v.timeline, function (t) { return t.doc_count; }),
+        'min': d3.min(v.timeline, function (t) { return t.doc_count; })
       };
     }).value();
 
