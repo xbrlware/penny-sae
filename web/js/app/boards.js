@@ -660,7 +660,6 @@ App.BoardController = Ember.Controller.extend({
         ascdesc = this.get('maxAscDesc');
         break;
     }
-    console.log('TLDATA ::', tldata);
     var sv;
     if (ascdesc === 'asc') {
       sv = _.sortBy(tldata, sortType).reverse();
@@ -727,9 +726,27 @@ App.BoardController = Ember.Controller.extend({
       }
     },
 
+    messageSearch: function (searchTerm) {
+      var _this = this;
+      var st = searchTerm;
+      this.set('pageCount', 1);
+      var cik = this.controllerFor('detail').get('model.cik');
+
+      App.Search.fetch_data('messageSearch', {cik: cik, search_term: st, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+        _this.set('filtered_data', _.map(response.data, function (x) {
+          x.date = new Date(x.date);
+          return x;
+        }));
+        _this.set('model.tlData', response.tlData);
+      });
+
+      console.log(searchTerm);
+    }
+/*
     drilldown () {
       this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
     }
+*/
   }
 });
 

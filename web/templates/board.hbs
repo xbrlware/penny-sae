@@ -42,6 +42,16 @@
             {{/if}}
         </div>
         <div class="col-xs-6" id="forum-posts-cell">
+            <div class="search-input">
+                <div class="input-group">
+                    {{focus-input
+                        class="form-control"
+                        placeholder="- Search Posts -"
+                        id="search-posts"
+                        insert-newline="messageSearch"
+                    }}
+                </div>
+            </div>
             <div class="forum-div">
                 {{forum-posts postFilteredData splitByFilter}}
             </div>
