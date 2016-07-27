@@ -786,12 +786,7 @@ Ember.Handlebars.helper('forum-posts', function (data, sbf) {
     for (var i = 0; i < data.length; i++) {
       ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].date + ' on ' + data[i].board + '</span>';
 
-      if (data[i].msg.length > 70) {
-        var msg = data[i].msg.substring(0, 70);
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      } else {
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      }
+      ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
     }
   }
   ourString = ourString + '</ul>';
