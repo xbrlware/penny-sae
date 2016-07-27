@@ -37,6 +37,45 @@ module.exports = function (app, config, client) {
         }
       };
     },
+    'boardSearchTerm': function (brdData) {
+      return {
+        'size': 1000, // This limits the hits to 1000
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        'query': {
+          'filtered': {
+            'filter': {
+              'bool': {
+                'must': [
+                  {
+                    'range': {
+                      'time': {
+                        'gte': brdData.date_filter[0],
+                        'lte': brdData.date_filter[1]
+                      }
+                    }
+                  },
+                  {
+                    'term': {
+                      '__meta__.sym.cik': brdData.cik
+                    }
+                  },
+                  {
+                    'query_string': {
+                      'fields': ['msg'],
+                      'query': brdData.search_term
+                    }
+                  },
+                  {'terms': { 'user_id': brdData.users }}
+                ]
+              }
+            }
+          }
+        },
+        'sort': {
+          'time': 'desc'
+        }
+      };
+    },
     'boardTimeline': function (btData) {
       return {
         'size': 0,
@@ -245,6 +284,24 @@ module.exports = function (app, config, client) {
     });
   });
 
+  app.post('/postSearch', function (req, res) {
+    var d = req.body;
+    console.log('/postSearch ::', d);
+    if (!d.cik || !d.date_filter || !d.search_term) {
+      return res.send([]);
+    }
+    async.parallel([
+      function (cb) { getForumdata(d, cb); },
+      function (cb) { getTimelineData(d, cb); }
+    ], function (error, results) {
+      if (error) { console.log(error); }
+      res.send({
+        'data': results[0],
+        'tlData': results[1]
+      });
+    });
+  });
+
   function getTimelineData (data, cb) {
     console.log('getTimelineData', data);
     client.search({
@@ -296,7 +353,7 @@ module.exports = function (app, config, client) {
   function getForumdata (data, cb) {
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(data)
+      body: data.hasOwnProperty('search_term') ? boardQueryBuilder.boardSearchTerm(data) : boardQueryBuilder.board(data)
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, lodash.map(response.hits.hits, function (x) {

@@ -729,18 +729,23 @@ App.BoardController = Ember.Controller.extend({
     messageSearch: function (searchTerm) {
       var _this = this;
       var st = searchTerm;
-      this.set('pageCount', 1);
+      var ur = this.get('splitByFilter').length ? this.get('splitByFilter') : this.get('topX');
       var cik = this.controllerFor('detail').get('model.cik');
+      this.set('timelineLoading', true);
 
-      App.Search.fetch_data('messageSearch', {cik: cik, search_term: st, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('postSearch', {cik: cik, search_term: st, users: ur, date_filter: _this.get('dateFilter')}).then(function (response) {
+        _this.set('splitByFilter', []);
+        _this.set('pageCount', 1);
+        _this.set('model.tlData', response.tlData);
+        _this.set('model.data', response.data);
         _this.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
           return x;
         }));
-        _this.set('model.tlData', response.tlData);
+        _this.renderX();
+        _this.renderGauges();
+        _this.set('timelineLoading', false);
       });
-
-      console.log(searchTerm);
     }
 /*
     drilldown () {
@@ -802,13 +807,14 @@ Ember.Handlebars.helper('forum-posts', function (data, sbf) {
   if (data) {
     for (var i = 0; i < data.length; i++) {
       ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].date + ' on ' + data[i].board + '</span>';
-
+/*
       if (data[i].msg.length > 70) {
         var msg = data[i].msg.substring(0, 70);
         ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
       } else {
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      }
+*/
+      ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p>';
+        // <p class="full-msg">' + data[i].msg + '</p></li>';
     }
   }
   ourString = ourString + '</ul>';
