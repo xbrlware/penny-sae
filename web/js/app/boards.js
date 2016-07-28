@@ -128,7 +128,6 @@ App.BoardController = Ember.Controller.extend({
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
     var pgc = this.get('pageCount');
-
     var out;
     var _data;
 
@@ -148,10 +147,14 @@ App.BoardController = Ember.Controller.extend({
       out = _data;
     }
 
-    var r = _.chain(out).filter(function (x, i) {
-      return i < (100 * pgc);
-    }).value();
-
+    var r;
+    if ((100 * pgc) < out.length) {
+      r = _.chain(out).filter(function (x, i) {
+        return i < (100 * pgc);
+      }).value();
+    } else {
+      r = out;
+    }
     return r;
   }.property('filtered_data', 'dateFilter', 'pageCount'),
 
@@ -768,7 +771,6 @@ App.BoardRoute = Ember.Route.extend({
     con.set('maxAscDesc', 'desc');
 
     var cik = this.controllerFor('detail').get('model.cik');
-    console.log('CIK :: ', cik);
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
         con.set('model', response);
@@ -790,31 +792,32 @@ App.BoardRoute = Ember.Route.extend({
   }
 });
 
-Ember.Handlebars.helper('forum-posts', function (data, sbf) {
-  var _this = this;
-  var ourString = '<ul class="list-group" id="collection">';
+App.BoardView = Ember.View.extend({
+  didInsertElement: function () {
+    this._super();
+    var _this = this;
+    Ember.run.scheduleOnce('afterRender', this, function () {
+      Ember.$('.forum-div').scroll(function () {
+        if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
+          var con = _this.get('controller');
+          var pgc = con.get('pageCount');
+          if (pgc < 10) {
+            pgc++;
+            con.set('pageCount', pgc);
+          }
+        }
+      });
+    });
+  }
+});
 
-  Ember.$('.forum-div').scroll(function () {
-    if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
-      var pgc = _this.get('pageCount');
-      if (pgc < 10) {
-        pgc++;
-        _this.set('pageCount', pgc);
-      }
-    }
-  });
+Ember.Handlebars.helper('forum-posts', function (data, sbf) {
+  var ourString = '<ul class="list-group" id="collection">';
 
   if (data) {
     for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].date + ' on ' + data[i].board + '</span>';
-/*
-      if (data[i].msg.length > 70) {
-        var msg = data[i].msg.substring(0, 70);
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      } else {
-*/
-      ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p>';
-        // <p class="full-msg">' + data[i].msg + '</p></li>';
+      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><div class="list-group-item-heading message-header"><div>' + data[i].user + '</div><div>' + data[i].board + '</div><div>' + data[i].date + '</div></div>';
+      ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
     }
   }
   ourString = ourString + '</ul>';
