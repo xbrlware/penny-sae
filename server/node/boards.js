@@ -5,8 +5,8 @@ module.exports = function (app, config, client) {
   var lodash = require('lodash');
 
   var boardQueryBuilder = {
-    'board': function (brdData) {
-      return {
+    'board': function (brdData, search = null, users = false) {
+      var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
         'query': {
@@ -20,11 +20,6 @@ module.exports = function (app, config, client) {
                         'gte': brdData.date_filter[0],
                         'lte': brdData.date_filter[1]
                       }
-                    }
-                  },
-                  {
-                    'term': {
-                      '__meta__.sym.cik': brdData.cik
                     }
                   }
                 ]
@@ -36,45 +31,31 @@ module.exports = function (app, config, client) {
           'time': 'desc'
         }
       };
-    },
-    'boardSearchTerm': function (brdData) {
-      return {
-        'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {
-                    'range': {
-                      'time': {
-                        'gte': brdData.date_filter[0],
-                        'lte': brdData.date_filter[1]
-                      }
-                    }
-                  },
-                  {
-                    'term': {
-                      '__meta__.sym.cik': brdData.cik
-                    }
-                  },
-                  {
-                    'query_string': {
-                      'fields': ['msg'],
-                      'query': brdData.search_term
-                    }
-                  },
-                  {'terms': { 'user_id': brdData.users }}
-                ]
-              }
-            }
+
+      if (users) {
+        q.query.filtered.filter.bool.must.push({
+          'bool': {
+            'must': [
+            {'match': { '__meta__.sym.cik': brdData.cik }},
+            {'terms': { 'user_id': brdData.users }}
+            ]
           }
-        },
-        'sort': {
-          'time': 'desc'
-        }
-      };
+        });
+      } else {
+        q.query.filtered.filter.bool.must.push({
+          'term': {
+            '__meta__.sym.cik': brdData.cik
+          }
+        });
+      }
+
+      if (search) {
+        lodash.map(search, function (s) {
+          q.query.filtered.filter.bool.must.push(s);
+        });
+      }
+
+      return q;
     },
     'boardTimeline': function (btData) {
       return {
@@ -116,8 +97,8 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'timeline': function (tData) {
-      return {
+    'timeline': function (tData, search = null) {
+      var q = {
         'size': 0,
         'query': {
           'filtered': {
@@ -146,7 +127,7 @@ module.exports = function (app, config, client) {
           'posts': {
             'terms': {
               'field': 'user_id',
-              'size': 10
+              'size': tData.size
             },
             'aggs': {
               'user': {
@@ -180,43 +161,12 @@ module.exports = function (app, config, client) {
           }
         }
       };
-    },
-    'user': function (users) {
-      return {
-        'size': 1000,
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {
-                    'range': {
-                      'time': {
-                        'gte': users.date_filter[0],
-                        'lte': users.date_filter[1]
-                      }
-                    }
-                  },
-                  {
-                    'bool': {
-                      'must': [
-                        {'match': { '__meta__.sym.cik': users.cik }},
-                        {'terms': { 'user_id': users.users }}
-                      ]
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        'sort': {
-          'time': {
-            'order': 'desc'
-          }
-        }
-      };
+      if (search) {
+        lodash.map(search, function (s) {
+          q.query.filtered.filter.bool.must.push(s);
+        });
+      }
+      return q;
     }
   };
 
@@ -228,7 +178,7 @@ module.exports = function (app, config, client) {
     }
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.user(d)
+      body: boardQueryBuilder.board(d, null, true)
     }).then(function (response) {
       var m = lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
@@ -284,29 +234,32 @@ module.exports = function (app, config, client) {
     });
   });
 
-  app.post('/postSearch', function (req, res) {
-    var d = req.body;
-    console.log('/postSearch ::', d);
-    if (!d.cik || !d.date_filter || !d.search_term) {
-      return res.send([]);
-    }
-    async.parallel([
-      function (cb) { getForumdata(d, cb); },
-      function (cb) { getTimelineData(d, cb); }
-    ], function (error, results) {
-      if (error) { console.log(error); }
-      res.send({
-        'data': results[0],
-        'tlData': results[1]
-      });
-    });
-  });
+  function hasSearch (data) {
+    return [{
+      'query': {
+        'match': {
+          'msg': {
+            'query': data.search_term,
+            'operator': 'and'
+          }
+        }
+      }
+    },
+    {
+      'terms': {
+        'user_id': data.users
+      }
+    }];
+  }
 
   function getTimelineData (data, cb) {
+    var s = data.hasOwnProperty('search_term') ? hasSearch(data) : null;
+
     console.log('getTimelineData', data);
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.timeline(data)
+      body: boardQueryBuilder.timeline(data, s)
     }).then(function (response) {
       var q = lodash.map(response.aggregations.posts.buckets, function (x) {
         var maxObj = lodash.maxBy(x.user_histogram.buckets, function (d) {
@@ -351,9 +304,11 @@ module.exports = function (app, config, client) {
   }
 
   function getForumdata (data, cb) {
+    var s = data.hasOwnProperty('search_term') ? hasSearch(data) : null;
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: data.hasOwnProperty('search_term') ? boardQueryBuilder.boardSearchTerm(data) : boardQueryBuilder.board(data)
+      body: boardQueryBuilder.board(data, s, false)
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, lodash.map(response.hits.hits, function (x) {

@@ -166,12 +166,17 @@ App.BoardController = Ember.Controller.extend({
     return this.get('splitBy') + '_id';
   }.property(),
 
-  redraw: function () {
+  redraw: function (data = null) {
     var _this = this;
-    var cik = _this.controllerFor('detail').get('model.cik');
+
+    if (!data) {
+      var cik = _this.controllerFor('detail').get('model.cik');
+      data = {cik: cik, date_filter: _this.get('dateFilter'), size: 10};
+    }
+
     this.set('timelineLoading', true);
 
-    App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
+    App.Search.fetch_data('redraw', data).then(function (response) {
       _this.set('splitByFilter', []);
       _this.set('pageCount', 1);
       _this.set('model.tlData', response.tlData);
@@ -207,7 +212,7 @@ App.BoardController = Ember.Controller.extend({
       // Time series
       var topX = _.pluck(data, 'id');
       _this.set('topX', topX);
-      _this.redraw();
+      _this.redraw(null);
     };
 
     this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
@@ -730,31 +735,17 @@ App.BoardController = Ember.Controller.extend({
     },
 
     messageSearch: function (searchTerm) {
-      var _this = this;
-      var st = searchTerm;
-      var ur = this.get('splitByFilter').length ? this.get('splitByFilter') : this.get('topX');
-      var cik = this.controllerFor('detail').get('model.cik');
-      this.set('timelineLoading', true);
+      if (searchTerm.length) {
+        var cik = this.controllerFor('detail').get('model.cik');
+        var ur = this.get('splitByFilter').length ? this.get('splitByFilter') : this.get('topX');
 
-      App.Search.fetch_data('postSearch', {cik: cik, search_term: st, users: ur, date_filter: _this.get('dateFilter')}).then(function (response) {
-        _this.set('splitByFilter', []);
-        _this.set('pageCount', 1);
-        _this.set('model.tlData', response.tlData);
-        _this.set('model.data', response.data);
-        _this.set('filtered_data', _.map(response.data, function (x) {
-          x.date = new Date(x.date);
-          return x;
-        }));
-        _this.renderX();
-        _this.renderGauges();
-        _this.set('timelineLoading', false);
-      });
+        var data = {cik: cik, search_term: searchTerm, users: ur, date_filter: this.get('dateFilter'), size: 10};
+
+        this.redraw(data);
+      } else {
+        this.redraw(null);
+      }
     }
-/*
-    drilldown () {
-      this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
-    }
-*/
   }
 });
 
