@@ -43,13 +43,19 @@
         </div>
         <div class="col-xs-6" id="forum-posts-cell">
             <div class="search-input">
-                <div class="input-group">
-                    {{focus-input
+                <div class="input-group" style="width: 100%;">
+                    <div>
+                        {{
+                        focus-input
                         class="form-control"
                         placeholder="- Search Posts -"
                         id="search-posts"
                         insert-newline="messageSearch"
-                    }}
+                        }}
+                        <div class="centered">
+                            {{model.data.length}} Posts
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="forum-div">

@@ -212,7 +212,7 @@ App.BoardController = Ember.Controller.extend({
       // Time series
       var topX = _.pluck(data, 'id');
       _this.set('topX', topX);
-      _this.redraw(null);
+      _this.redraw();
     };
 
     this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
@@ -743,7 +743,7 @@ App.BoardController = Ember.Controller.extend({
 
         this.redraw(data);
       } else {
-        this.redraw(null);
+        this.redraw();
       }
     }
   }
