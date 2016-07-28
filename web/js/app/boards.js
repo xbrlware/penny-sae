@@ -737,9 +737,7 @@ App.BoardController = Ember.Controller.extend({
     messageSearch: function (searchTerm) {
       if (searchTerm.length) {
         var cik = this.controllerFor('detail').get('model.cik');
-        var ur = this.get('splitByFilter').length ? this.get('splitByFilter') : this.get('topX');
-
-        var data = {cik: cik, search_term: searchTerm, users: ur, date_filter: this.get('dateFilter'), size: 10};
+        var data = {cik: cik, search_term: searchTerm, date_filter: this.get('dateFilter'), size: 10};
 
         this.redraw(data);
       } else {

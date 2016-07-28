@@ -176,9 +176,11 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
+    var s = d.hasOwnProperty('search_term') ? hasSearch(d) : null;
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(d, null, true)
+      body: boardQueryBuilder.board(d, s, true)
     }).then(function (response) {
       var m = lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
@@ -243,11 +245,6 @@ module.exports = function (app, config, client) {
             'operator': 'and'
           }
         }
-      }
-    },
-    {
-      'terms': {
-        'user_id': data.users
       }
     }];
   }
