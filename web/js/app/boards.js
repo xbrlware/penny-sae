@@ -647,65 +647,21 @@ App.BoardController = Ember.Controller.extend({
 
   sortPosters: function (sortType) {
     var tldata = this.get('model.tlData');
-    var fmData = this.get('model.data');
-    var ascdesc;
-
-    switch (sortType) {
-      case 'doc_count':
-        ascdesc = this.get('docAscDesc');
-        break;
-      case 'pos':
-        ascdesc = this.get('posAscDesc');
-        break;
-      case 'neut':
-        ascdesc = this.get('neutAscDesc');
-        break;
-      case 'neg':
-        ascdesc = this.get('negAscDesc');
-        break;
-      case 'mean':
-        ascdesc = this.get('meanAscDesc');
-        break;
-      case 'max':
-        ascdesc = this.get('maxAscDesc');
-        break;
-    }
+    var varName = sortType + 'AscDesc';
+    var ascdesc = this.get(varName);
+    var st = sortType === 'doc' ? 'doc_count' : sortType;
     var sv;
+
     if (ascdesc === 'asc') {
-      sv = _.sortBy(tldata, sortType).reverse();
+      sv = _.sortBy(tldata, st).reverse();
       ascdesc = 'desc';
     } else if (ascdesc === 'desc') {
-      sv = _.sortBy(tldata, sortType);
+      sv = _.sortBy(tldata, st);
       ascdesc = 'asc';
     }
 
-    switch (sortType) {
-      case 'doc_count':
-        this.set('docAscDesc', ascdesc);
-        break;
-      case 'pos':
-        this.set('posAscDesc', ascdesc);
-        break;
-      case 'neut':
-        this.set('neutAscDesc', ascdesc);
-        break;
-      case 'neg':
-        this.set('negAscDesc', ascdesc);
-        break;
-      case 'mean':
-        this.set('meanAscDesc', ascdesc);
-        break;
-      case 'max':
-        this.set('maxAscDesc', ascdesc);
-        break;
-    }
-
+    this.set(varName, ascdesc);
     this.set('model.tlData', sv);
-    this.set('filtered_data', _.map(fmData, function (x) {
-      x.date = new Date(x.date);
-      return x;
-    }));
-
     this.set('splitByFilter', []);
 
     this.renderX();
@@ -714,7 +670,7 @@ App.BoardController = Ember.Controller.extend({
 
   actions: {
     sortDocCount: function () {
-      this.sortPosters('doc_count');
+      this.sortPosters('doc');
     },
 
     topXClicked (id) {
