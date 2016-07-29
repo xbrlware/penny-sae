@@ -10,12 +10,7 @@ App.BoardController = Ember.Controller.extend({
   isData: true,
   timelineLoading: false,
   pageCount: 1,
-  docAscDesc: 'desc',
-  posAscDesc: 'desc',
-  negAscDesc: 'desc',
-  neutAscDesc: 'desc',
-  meanAscDesc: 'desc',
-  maxAscDesc: 'desc',
+  ascDesc: {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc'},
   searchTerm: '',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
@@ -647,20 +642,19 @@ App.BoardController = Ember.Controller.extend({
 
   sortPosters: function (sortType) {
     var tldata = this.get('model.tlData');
-    var varName = sortType + 'AscDesc';
-    var ascdesc = this.get(varName);
+    var ascdesc = this.get('ascDesc');
     var st = sortType === 'doc' ? 'doc_count' : sortType;
     var sv;
 
-    if (ascdesc === 'asc') {
+    if (ascdesc[sortType] === 'asc') {
       sv = _.sortBy(tldata, st).reverse();
-      ascdesc = 'desc';
-    } else if (ascdesc === 'desc') {
+      ascdesc[sortType] = 'desc';
+    } else if (ascdesc[sortType] === 'desc') {
       sv = _.sortBy(tldata, st);
-      ascdesc = 'asc';
+      ascdesc[sortType] = 'asc';
     }
 
-    this.set(varName, ascdesc);
+    this.set('ascDesc', ascdesc);
     this.set('model.tlData', sv);
     this.set('splitByFilter', []);
 
@@ -704,13 +698,16 @@ App.BoardRoute = Ember.Route.extend({
     con.set('isLoading', true);
     con.set('filtered_data', []);
     con.set('isData', true);
-    con.set('docAscDesc', 'desc');
-    con.set('posAscDesc', 'desc');
-    con.set('negAscDesc', 'desc');
-    con.set('neutAscDesc', 'desc');
-    con.set('meanAscDesc', 'desc');
-    con.set('maxAscDesc', 'desc');
     con.set('searchTerm', '');
+
+    con.set('ascDesc', {
+      doc: 'desc',
+      pos: 'desc',
+      neg: 'desc',
+      neut: 'desc',
+      mean: 'desc',
+      max: 'desc'
+    });
 
     var cik = this.controllerFor('detail').get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
