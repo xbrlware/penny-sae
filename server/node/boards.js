@@ -310,6 +310,7 @@ module.exports = function (app, config, client) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        x._source.msg = x._source.msg.replace(/\(Read Entire Message\)/g, '(to be continued)');
         return x._source;
       }));
       return;
