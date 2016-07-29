@@ -8,7 +8,7 @@ module.exports = function (app, config, client) {
     'board': function (brdData, search = null, users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker'],
         'query': {
           'filtered': {
             'filter': {
@@ -311,6 +311,7 @@ module.exports = function (app, config, client) {
       cb(null, lodash.map(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         x._source.msg = x._source.msg.replace(/\(Read Entire Message\)/g, '(to be continued)');
+        x._source.url = config['URL'] + x._source.msg_id;
         return x._source;
       }));
       return;

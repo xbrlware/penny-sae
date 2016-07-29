@@ -29,5 +29,6 @@
         "PORT" : 8090
     },
     "TIMEOUT_AMOUNT": 2,
-    "TIMEOUT_UNITS" : "hours"
+    "TIMEOUT_UNITS" : "hours",
+    "URL": "http://investorshub.advfn.com/boards/read_msg.aspx?message_id="
 }
