@@ -16,6 +16,7 @@ App.BoardController = Ember.Controller.extend({
   neutAscDesc: 'desc',
   meanAscDesc: 'desc',
   maxAscDesc: 'desc',
+  searchTerm: '',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   routeName_pretty: function () {
     var rn = this.get('routeName');
@@ -166,13 +167,14 @@ App.BoardController = Ember.Controller.extend({
     return this.get('splitBy') + '_id';
   }.property(),
 
-  redraw: function (data = null) {
+  redraw: function () {
     var _this = this;
-
-    if (!data) {
-      var cik = _this.controllerFor('detail').get('model.cik');
-      data = {cik: cik, date_filter: _this.get('dateFilter'), size: 10};
-    }
+    var data = {
+      cik: this.controllerFor('detail').get('model.cik'),
+      date_filter: this.get('dateFilter'),
+      search_term: this.get('searchTerm'),
+      size: 10
+    };
 
     this.set('timelineLoading', true);
 
@@ -723,7 +725,7 @@ App.BoardController = Ember.Controller.extend({
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
-        App.Search.fetch_data('user', {cik: cik, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+        App.Search.fetch_data('user', {cik: cik, users: this.get('splitByFilter'), date_filter: this.get('dateFilter'), search_term: this.get('searchTerm')}).then(function (response) {
           _this.set('filtered_data', _.map(response, function (x) {
             x.date = new Date(x.date);
             return x;
@@ -735,14 +737,8 @@ App.BoardController = Ember.Controller.extend({
     },
 
     messageSearch: function (searchTerm) {
-      if (searchTerm.length) {
-        var cik = this.controllerFor('detail').get('model.cik');
-        var data = {cik: cik, search_term: searchTerm, date_filter: this.get('dateFilter'), size: 10};
-
-        this.redraw(data);
-      } else {
-        this.redraw();
-      }
+      this.set('searchTerm', searchTerm);
+      this.redraw();
     }
   }
 });
@@ -758,6 +754,7 @@ App.BoardRoute = Ember.Route.extend({
     con.set('neutAscDesc', 'desc');
     con.set('meanAscDesc', 'desc');
     con.set('maxAscDesc', 'desc');
+    con.set('searchTerm', '');
 
     var cik = this.controllerFor('detail').get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
@@ -801,14 +798,18 @@ App.BoardView = Ember.View.extend({
 });
 
 Ember.Handlebars.helper('forum-posts', function (data, sbf) {
-  var ourString = '<ul class="list-group" id="collection">';
+  var ourString;
+  if (data.length) {
+    ourString = '<ul class="list-group" id="collection">';
 
-  if (data) {
     for (var i = 0; i < data.length; i++) {
       ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><div class="list-group-item-heading message-header"><div>' + data[i].user + '</div><div>' + data[i].board + '</div><div>' + data[i].date + '</div></div>';
       ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
     }
+    ourString = ourString + '</ul>';
+  } else {
+    ourString = '<div class="no-posts">No messages match your search</div>';
   }
-  ourString = ourString + '</ul>';
+
   return new Ember.Handlebars.SafeString(ourString);
 }, 'sbf');

@@ -176,7 +176,7 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
-    var s = d.hasOwnProperty('search_term') ? hasSearch(d) : null;
+    var s = d.search_term !== '' ? hasSearch(d) : null;
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
@@ -250,7 +250,7 @@ module.exports = function (app, config, client) {
   }
 
   function getTimelineData (data, cb) {
-    var s = data.hasOwnProperty('search_term') ? hasSearch(data) : null;
+    var s = data.search_term !== '' ? hasSearch(data) : null;
 
     console.log('getTimelineData', data);
 
@@ -301,7 +301,7 @@ module.exports = function (app, config, client) {
   }
 
   function getForumdata (data, cb) {
-    var s = data.hasOwnProperty('search_term') ? hasSearch(data) : null;
+    var s = data.search_term !== '' ? hasSearch(data) : null;
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
