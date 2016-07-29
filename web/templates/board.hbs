@@ -16,32 +16,34 @@
     </span>
 {{/if}}
 
-    <div class="col-xs-12 charts-wrapper">
-        <div class="col-xs-6" id="gauge-timeline-cell">
-            {{#if timelineLoading}}
-                <div class="data-progress centered">
-                    <i class="fa fa-spinner fa-spin" id="spinner"></i>
-                    <span class="loader-text" >Loading Timeline Data...</span>
-                </div>
-            {{else}}
-                <ul class="col-xs-12 timeline-panel" id="timeline">
-                    {{#each topX}}
-                        <li>    
-                            <div class="col-xs-4">
-                                <div id='gauge-{{this}}' class="gauge chart"></div>
+<div class="col-xs-12 charts-wrapper">
+    <div class="col-xs-6" id="gauge-timeline-cell">
+        {{#if timelineLoading}}
+            <div class="data-progress centered">
+                <i class="fa fa-spinner fa-spin" id="spinner"></i>
+                <span class="loader-text" >Loading Timeline Data...</span>
+            </div>
+        {{else}}
+            <ul class="col-xs-12 timeline-panel" id="timeline">
+                {{#each topX}}
+                    <li>    
+                        <div class="col-xs-4">
+                            <div id='gauge-{{this}}' class="gauge chart"></div>
+                        </div>
+                        <div class="col-xs-8 ts chart" id="ts-{{this}}">
+                            <div class="timeline-info">                        
+                                <span class="title" {{action "topXClicked" this}}></span>
+                                <div class="count-wrapper pull-right during" {{action "sortDocCount"}}></div>
                             </div>
-                            <div class="col-xs-8 ts chart" id="ts-{{this}}">
-                                <div class="timeline-info">                        
-                                    <span class="title" {{action "topXClicked" this}}></span>
-                                    <div class="count-wrapper pull-right during" {{action "sortDocCount"}}></div>
-                                </div>
-                            </div>
-                        </li>
-                    {{/each}}
-                </ul>
-            {{/if}}
-        </div>
-        <div class="col-xs-6" id="forum-posts-cell">
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+        {{/if}}
+    </div>
+    <div class="col-xs-6" id="forum-posts-cell">
+        {{#if isLoading}}
+        {{else}}
             <div class="search-input">
                 <div class="input-group" style="width: 100%;">
                     <div>
@@ -59,7 +61,21 @@
                 </div>
             </div>
             <div class="forum-div">
-                {{forum-posts postFilteredData splitByFilter}}
+                <ul class="list-group" id="collection">'
+                    {{#each postFilteredData}}
+                        <li class="list-group-item comments-group-item" id="forum-item">
+                            <div class="list-group-item-heading message-header">
+                                <div>{{this.user}}</div>
+                                <div>{{this.board}}</div>
+                                <div>{{this.date}}</div>
+                            </div>
+                            <p class="list-group-item-text" id="app-msg">
+                            {{this.msg}}
+                            </p>
+                        </li>
+                    {{/each}}
+                </ul>
             </div>
-        </div>
+        {{/if}}
     </div>
+</div>

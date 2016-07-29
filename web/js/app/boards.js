@@ -749,20 +749,3 @@ App.BoardView = Ember.View.extend({
     });
   }
 });
-
-Ember.Handlebars.helper('forum-posts', function (data, sbf) {
-  var ourString;
-  if (data.length) {
-    ourString = '<ul class="list-group" id="collection">';
-
-    for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><div class="list-group-item-heading message-header"><div>' + data[i].user + '</div><div>' + data[i].board + '</div><div>' + data[i].date + '</div></div>';
-      ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p></li>';
-    }
-    ourString = ourString + '</ul>';
-  } else {
-    ourString = '<div class="no-posts">No messages match your search</div>';
-  }
-
-  return new Ember.Handlebars.SafeString(ourString);
-}, 'sbf');
