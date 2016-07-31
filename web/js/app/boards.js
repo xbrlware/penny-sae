@@ -1,4 +1,4 @@
-/* global Ember, App, d3, _, techan, crossfilter, gconfig */
+/* global Ember, App, d3, _, crossfilter, gconfig */
 
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
@@ -271,16 +271,12 @@ App.BoardController = Ember.Controller.extend({
 
     this.set('topX', topx);
 
-    // Is this redundant?
-    var flatVals = _.chain(timeseries).pluck('timeseries').flatten().value();
-    var ymax = _.chain(flatVals).pluck('value').max().value();
-
     Ember.run.next(function () {
       _.map(timeseries, function (t) {
         _this.makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
-          'ymax': ymax,
+          'ymax': t.max,
           'ymin': 0
         });
       });
@@ -369,6 +365,9 @@ App.BoardController = Ember.Controller.extend({
   renderTechan: function (forumData, pvdata, routeId, subjectId, div, cb) {
     var parseDate = d3.time.format('%Y-%m-%d').parse;
     var parseDateTip = d3.time.format('%b-%d');
+    var margin = { top: 20, bottom: 10, between: { y: 40, x: 40 }, left: 35, right: 5 };
+    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
+    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
 
     var pvData = _.chain(pvdata).map(function (d) {
       return {
@@ -384,50 +383,26 @@ App.BoardController = Ember.Controller.extend({
     var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
       _.pluck(forumData, 'date')]));
 
-    var dateSupport = getDates(dateRange);
+    var dateSupport = [];
+    var currentDate = dateRange[0];
+    var dat;
 
-    function addDays (currentDate, days) {
-      var dat = new Date(currentDate);
-      dat.setDate(dat.getDate() + days);
-      return dat;
+    while (currentDate <= dateRange[1]) {
+      dat = new Date(currentDate);
+      dateSupport.push(dat);
+      dat.setDate(dat.getDate() + 1);
+      currentDate = dat;
     }
-
-    function getDates (dateRange) {
-      var dateArray = [];
-      var currentDate = dateRange[0];
-
-      while (currentDate <= dateRange[1]) {
-        dateArray.push(new Date(currentDate));
-        currentDate = addDays(currentDate, 1);
-      }
-
-      return dateArray;
-    }
-
-    var margin = {
-      top: 20,
-      bottom: 10,
-      between: {
-        y: 40,
-        x: 40
-      },
-      left: 35,
-      right: 5
-    };
-    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
-    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
 
     var posts = {};
     posts.title = 'Post Volume';
-    posts.method = 'volume';
     posts.class = 'volume-posts';
     posts.width = totalWidth * 0.5;
     posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
     posts.position_left = margin.left;
     posts.position_top = margin.top;
-    posts.x = techan.scale.financetime().range([0, posts.width]);
+    posts.x = d3.time.scale().range([0, posts.width]);
     posts.y = d3.scale.linear().range([posts.height, 0]);
-    posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
     posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
     posts.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
@@ -436,29 +411,26 @@ App.BoardController = Ember.Controller.extend({
 
     var brushChart = {};
     brushChart.title = '';
-    brushChart.method = 'volume';
     brushChart.class = 'brush-chart-posts';
     brushChart.width = totalWidth * 0.5;
     brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
     brushChart.position_left = margin.left;
     brushChart.position_top = totalHeight * 0.8 + margin.between.y;
-    brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
+    brushChart.x = d3.time.scale().range([0, brushChart.width]);
     brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
-    brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
     brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
+    brushChart.brush = d3.svg.brush().x(brushChart.x).on('brushend', rtDraw);
 
     var price = {};
     price.title = 'Price';
-    price.method = 'ohlc';
     price.class = 'close';
     price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
     price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
     price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
     price.position_top = margin.top;
-    price.x = techan.scale.financetime().range([0, price.width]);
+    price.x = d3.time.scale().range([0, price.width]);
     price.y = d3.scale.linear().range([price.height, 0]);
-    price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
     price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
     price.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
@@ -467,15 +439,13 @@ App.BoardController = Ember.Controller.extend({
 
     var volume = {};
     volume.title = 'Volume';
-    volume.method = 'volume';
     volume.class = 'volume';
-    volume.width = totalWidth * 0.5 - 2 * margin.between.x;
+    volume.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
     volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
     volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
     volume.position_top = totalHeight * 0.5 + margin.between.y;
-    volume.x = price.x;
+    volume.x = d3.time.scale().range([0, volume.width]);
     volume.y = d3.scale.linear().range([volume.height, 0]);
-    volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
     volume.xAxis = price.xAxis;
     volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
     volume.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
@@ -491,9 +461,9 @@ App.BoardController = Ember.Controller.extend({
         .attr('transform',
           'translate(' + obj.position_left + ',' + obj.position_top + ')');
 
-      div.append('svg:clipPath')
+      div.append('defs').append('clipPath')
         .attr('id', clip)
-        .append('svg:rect')
+        .append('rect')
         .attr('x', 0)
         .attr('y', obj.y(1))
         .attr('width', obj.width)
@@ -519,46 +489,25 @@ App.BoardController = Ember.Controller.extend({
       return div;
     }
 
-    posts.div = makeDiv(posts, 'c1');
-
-    brushChart.div = makeDiv(brushChart, 'c2');
-    brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
-
     price.div = makeDiv(price, 'c3');
-    volume.div = makeDiv(volume, 'c4');
-
-    price.x.domain(dateSupport);
-    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
+    price.x.domain(d3.extent(pvData, function (d) { return d.date; }));
+    price.y.domain(d3.extent(pvData, function (d) { return d.close; }));
     price.div.select('g.close').datum(pvData);
 
-    volume.x.domain(dateSupport);
-    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
+    volume.div = makeDiv(volume, 'c4');
+    volume.x.domain(d3.extent(pvData, function (d) { return d.date; }));
+    volume.y.domain(d3.extent(pvData, function (d) { return d.volume; }));
     volume.div.select('g.volume').datum(pvData);
 
-    posts.x.domain(dateSupport);
-    posts.y.domain(techan.scale.plot.volume(forumData).domain());
+    posts.div = makeDiv(posts, 'c1');
+    posts.x.domain(d3.extent(forumData, function (d) { return d.date; }));
+    posts.y.domain(d3.extent(forumData, function (d) { return d.volume; }));
     posts.div.select('g.volume-posts').datum(forumData);
 
-    brushChart.x.domain(dateSupport);
-    brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
-    brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
-    brushChart.div.select('g.x.axis').call(brushChart.xAxis);
-    brushChart.div.select('g.y.axis').call(brushChart.yAxis);
-
-    // Associate the brush with the scale and render the brush
-    // only AFTER a domain has been applied
-    var brushZoom = brushChart.x.zoomable();
-    var zoomable = price.x.zoomable();
-    var zoomable2 = posts.x.zoomable();
-
-    var brush = d3.svg.brush()
-      .x(brushZoom)
-      .on('brushend', rtDraw);
-
-    brushChart.div.select('g.pane')
-      .call(brush)
-      .selectAll('rect')
-      .attr('height', brushChart.height);
+    brushChart.div = makeDiv(brushChart, 'c2');
+    brushChart.x.domain(posts.x.domain());
+    brushChart.y.domain(posts.y.domain());
+    brushChart.div.select('g.brush-chart-posts').datum(forumData);
 
     function _draw (obj, dateFilter) {
       var data = obj.div.select('g.' + obj.class).datum();
@@ -567,21 +516,21 @@ App.BoardController = Ember.Controller.extend({
         return d.date > dateFilter[0] & d.date < dateFilter[1];
       });
 
-      if (_data.length > 0) {
-        obj.y.domain(techan.scale.plot[obj.method](_data).domain());
-      } else {
-        obj.y.domain([0, 1]);
-      }
-
-      // plot the data
-      obj.div.select('g.' + obj.class).call(obj.plot);
-
-      // draw the x / y axis for c2
       obj.div.select('g.x.axis').call(obj.xAxis);
       obj.div.select('g.y.axis').call(obj.yAxis);
 
       if (obj.class === 'close') {
         obj.div.selectAll('.dot').remove();
+        obj.div.selectAll('.line').remove();
+
+        var line = d3.svg.line()
+          .x(function (d) { return obj.x(d.date); })
+          .y(function (d) { return obj.y(d.close); });
+
+        obj.div.select('g.' + obj.class).append('path')
+          .datum(_data)
+          .attr('class', 'line')
+          .attr('d', line);
 
         obj.div.selectAll('.dot')
             .data(_data)
@@ -596,8 +545,7 @@ App.BoardController = Ember.Controller.extend({
 
         obj.div.call(obj.tip);
       }
-
-      if (obj.class !== 'close' && obj.class !== 'brush-chart-posts') {
+      if (obj.class !== 'close') {
         obj.div.selectAll('.bar').remove();
 
         obj.div.selectAll('.bar')
@@ -605,36 +553,29 @@ App.BoardController = Ember.Controller.extend({
           .enter().append('rect')
           .attr('class', 'bar')
           .attr('x', function (d) { return obj.x(d.date) - 3; })
-          .attr('width', 6)
+          .attr('width', 3)
           .attr('y', function (d) { return obj.y(d.volume); })
-          .attr('height', function (d) { return obj.height - obj.y(d.volume); })
-          .attr('opacity', '0.0')
-          .on('mouseover', obj.tip.show)
-          .on('mouseout', obj.tip.hide);
+          .attr('height', function (d) { return obj.height - obj.y(d.volume); });
 
-        obj.div.call(obj.tip);
+        if (obj.class !== 'brush-chart-posts') {
+          obj.div.selectAll('.bar')
+            .on('mouseover', obj.tip.show)
+            .on('mouseout', obj.tip.hide);
+          obj.div.call(obj.tip);
+        }
       }
     }
 
     function rtDraw () {
-      var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
+      var brushDomain = brushChart.x.domain;
       var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
-
-      zoomable.domain(brushDomain);
-      zoomable2.domain(brushDomain);
 
       _draw(price, dateFilter);
       _draw(volume, dateFilter);
       _draw(posts, dateFilter);
+      _draw(brushChart, dateFilter);
 
       cb(dateFilter);
-    }
-
-    /* set the initial size of the brush. The brush works on pixels, not on dates */
-    if (forumData.length) {
-      var mn = brushChart.x(forumData[0].date) / brushChart.width;
-      brush.extent([(brushZoom.domain()[1] * mn), brushZoom.domain()[1]]);
-      brushChart.div.select('.pane').call(brush);
     }
 
     rtDraw();
