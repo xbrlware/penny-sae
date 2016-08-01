@@ -24,6 +24,20 @@
                 <span class="loader-text" >Loading Timeline Data...</span>
             </div>
         {{else}}
+            <div class="col-xs-12 timeline-head">
+                <div class="col-xs-6 number-posters">
+                    {{
+                    focus-input
+                    class="form-control"
+                    placeholder=topX.length
+                    id="number-posters"
+                    insert-newline="numPosters"
+                    }}
+                </div>
+                <div class="col-xs-6 filter-button">
+                    <button type="button">Set Filters</button>
+                </div>
+            </div>
             <ul class="col-xs-12 timeline-panel" id="timeline">
                 {{#each topX}}
                     <li>    
@@ -68,7 +82,11 @@
                                 <div>{{this.user}}</div>
                                 <div>{{this.board}}</div>
                                 <div>{{this.time}}</div>
-                                <div><a target="_blank" {{bindAttr href=this.url}}>Message Link</a></div>
+                                <div>
+                                    <a target="_blank" {{bindAttr href=this.url}}>
+                                        {{this.msg_id}}
+                                    </a>
+                                </div>
                             </div>
                             <p class="list-group-item-text" id="app-msg">
                             {{this.msg}}
