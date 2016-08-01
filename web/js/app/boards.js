@@ -31,7 +31,7 @@ App.BoardController = Ember.Controller.extend({
     var TEXT_COLOR = '#ccc';
 
     // Calculate bar width
-    var BAR_WIDTH = 4;
+    // var BAR_WIDTH = 4;
 
     var data = _.chain(ts.timeseries).map(function (x) {
       return {
@@ -58,6 +58,8 @@ App.BoardController = Ember.Controller.extend({
     // Get cell height
     var height = (margin.top + margin.bottom) * 1.5;
     var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
+
+    var BAR_WIDTH = 2;
 
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
     x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
@@ -516,10 +518,10 @@ App.BoardController = Ember.Controller.extend({
         return d.date > dateFilter[0] & d.date < dateFilter[1];
       });
 
-      obj.div.select('g.x.axis').call(obj.xAxis);
-      obj.div.select('g.y.axis').call(obj.yAxis);
+      obj.x.domain(dateFilter);
 
       if (obj.class === 'close') {
+        obj.y.domain(d3.extent(_data, function (d) { return d.close; }));
         obj.div.selectAll('.dot').remove();
         obj.div.selectAll('.line').remove();
 
@@ -546,14 +548,16 @@ App.BoardController = Ember.Controller.extend({
         obj.div.call(obj.tip);
       }
       if (obj.class !== 'close') {
+        obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
         obj.div.selectAll('.bar').remove();
+        var BAR_WIDTH = 2;
 
         obj.div.selectAll('.bar')
           .data(_data)
           .enter().append('rect')
           .attr('class', 'bar')
-          .attr('x', function (d) { return obj.x(d.date) - 3; })
-          .attr('width', 3)
+          .attr('x', function (d) { return obj.x(d.date); })
+          .attr('width', BAR_WIDTH)
           .attr('y', function (d) { return obj.y(d.volume); })
           .attr('height', function (d) { return obj.height - obj.y(d.volume); });
 
@@ -562,22 +566,32 @@ App.BoardController = Ember.Controller.extend({
             .on('mouseover', obj.tip.show)
             .on('mouseout', obj.tip.hide);
           obj.div.call(obj.tip);
+        } else {
+          obj.div.append('g')
+            .attr('class', 'x brush')
+            .call(obj.brush)
+            .selectAll('rect')
+            .attr('y', -1)
+            .attr('height', obj.height);
         }
       }
+      obj.div.select('g.x.axis').call(obj.xAxis);
+      obj.div.selectAll('g.y.axis').call(obj.yAxis);
     }
 
     function rtDraw () {
-      var brushDomain = brushChart.x.domain;
-      var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
+      var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
 
-      _draw(price, dateFilter);
-      _draw(volume, dateFilter);
-      _draw(posts, dateFilter);
-      _draw(brushChart, dateFilter);
+      _draw(price, brushDomain);
+      _draw(volume, brushDomain);
+      _draw(posts, brushDomain);
 
-      cb(dateFilter);
+      cb(brushDomain);
     }
 
+    _draw(brushChart, [price.x.domain()[0], brushChart.x.domain()[1]]);
+    brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
+    brushChart.brush(d3.select('.brush').transition());
     rtDraw();
   },
 
