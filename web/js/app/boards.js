@@ -78,7 +78,7 @@ App.BoardController = Ember.Controller.extend({
     var xaxis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .ticks(5)
+      .ticks(4)
       .tickFormat(d3.time.format('%m/%y'));
 
     svg.append('g')
@@ -117,7 +117,6 @@ App.BoardController = Ember.Controller.extend({
   },
 
   postFilteredData: function () {
-    var xId = this.get('splitById');
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
@@ -135,7 +134,7 @@ App.BoardController = Ember.Controller.extend({
 
     if (sbf.length > 0) {
       out = _.filter(_data, function (x) {
-        return _.contains(sbf, x[xId]);
+        return _.contains(sbf, x.user_id);
       });
     } else {
       out = _data;
@@ -151,14 +150,6 @@ App.BoardController = Ember.Controller.extend({
     }
     return r;
   }.property('filtered_data', 'dateFilter', 'pageCount'),
-
-  splitBy: function () {
-    return 'user';
-  }.property(),
-
-  splitById: function () {
-    return this.get('splitBy') + '_id';
-  }.property(),
 
   redraw: function () {
     var _this = this;
@@ -210,7 +201,7 @@ App.BoardController = Ember.Controller.extend({
       _this.redraw();
     };
 
-    this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
+    this.renderCharts(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
       function (dateFilter) {
         _this.set('dateFilter', dateFilter);
         date.filterRange(dateFilter);
@@ -294,7 +285,6 @@ App.BoardController = Ember.Controller.extend({
   }, // This should really be broken apart
 
   drawGauge (bindTo, gaugeData) {
-    // draw gauge gets called twice and we need this for now
     d3.select(bindTo).selectAll('svg').remove();
     var _this = this;
     var w = gconfig.GAUGE.SIZE.WIDTH;
@@ -315,11 +305,6 @@ App.BoardController = Ember.Controller.extend({
       .html(function (d) {
         return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
       });
-
-    function sortGauges (d) {
-      /* for sorting gauges in descend / ascend order */
-      _this.sortPosters(d.data.label);
-    }
 
     var vis = d3.select(bindTo).append('svg')
       .data([data])
@@ -350,7 +335,8 @@ App.BoardController = Ember.Controller.extend({
       .on('mouseout', tip.hide)
       .on('click', function (d) {
         d3.selectAll('.d3-tip').remove();
-        sortGauges(d);
+        // sort gauges
+        _this.sortPosters(d.data.label);
       });
 
     arcs.append('svg:path')
@@ -360,7 +346,7 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
-  renderTechan: function (forumData, pvdata, routeId, subjectId, div, cb) {
+  renderCharts: function (forumData, pvdata, routeId, subjectId, div, cb) {
     var parseDate = d3.time.format('%Y-%m-%d').parse;
     var parseDateTip = d3.time.format('%b-%d');
     var margin = { top: 20, bottom: 10, between: { y: 40, x: 40 }, left: 35, right: 5 };
@@ -377,20 +363,6 @@ App.BoardController = Ember.Controller.extend({
         volume: +d.volume
       };
     }).value();
-
-    var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-      _.pluck(forumData, 'date')]));
-
-    var dateSupport = [];
-    var currentDate = dateRange[0];
-    var dat;
-
-    while (currentDate <= dateRange[1]) {
-      dat = new Date(currentDate);
-      dateSupport.push(dat);
-      dat.setDate(dat.getDate() + 1);
-      currentDate = dat;
-    }
 
     var posts = {};
     posts.title = 'Post Volume';
@@ -487,16 +459,6 @@ App.BoardController = Ember.Controller.extend({
       return div;
     }
 
-    price.div = makeDiv(price, 'c3');
-    price.x.domain(d3.extent(pvData, function (d) { return d.date; }));
-    price.y.domain(d3.extent(pvData, function (d) { return d.close; }));
-    price.div.select('g.close').datum(pvData);
-
-    volume.div = makeDiv(volume, 'c4');
-    volume.x.domain(d3.extent(pvData, function (d) { return d.date; }));
-    volume.y.domain(d3.extent(pvData, function (d) { return d.volume; }));
-    volume.div.select('g.volume').datum(pvData);
-
     posts.div = makeDiv(posts, 'c1');
     posts.x.domain(d3.extent(forumData, function (d) { return d.date; }));
     posts.y.domain(d3.extent(forumData, function (d) { return d.volume; }));
@@ -506,6 +468,16 @@ App.BoardController = Ember.Controller.extend({
     brushChart.x.domain(posts.x.domain());
     brushChart.y.domain(posts.y.domain());
     brushChart.div.select('g.brush-chart-posts').datum(forumData);
+
+    price.div = makeDiv(price, 'c3');
+    price.x.domain(d3.extent(pvData, function (d) { return d.date; }));
+    price.y.domain(d3.extent(pvData, function (d) { return d.close; }));
+    price.div.select('g.close').datum(pvData);
+
+    volume.div = makeDiv(volume, 'c4');
+    volume.x.domain(d3.extent(pvData, function (d) { return d.date; }));
+    volume.y.domain(d3.extent(pvData, function (d) { return d.volume; }));
+    volume.div.select('g.volume').datum(pvData);
 
     function _draw (obj, dateFilter) {
       var data = obj.div.select('g.' + obj.class).datum();
@@ -670,7 +642,6 @@ App.BoardRoute = Ember.Route.extend({
         }));
         con.set('splitByFilter', []);
         con.set('pageCount', 1);
-        con.set('splitBy', 'user');
         con.set('routeName', 'board');
         con.set('selection_ids', params.params[con.get('routeName')].ids);
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
@@ -686,6 +657,7 @@ App.BoardView = Ember.View.extend({
   didInsertElement: function () {
     this._super();
     var _this = this;
+    // lazy loading of forum messages -- currently only supports 1000 message max
     Ember.run.scheduleOnce('afterRender', this, function () {
       Ember.$('.forum-div').scroll(function () {
         if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
