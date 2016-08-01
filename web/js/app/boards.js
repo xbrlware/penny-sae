@@ -30,9 +30,6 @@ App.BoardController = Ember.Controller.extend({
     var FILL_COLOR = 'orange';
     var TEXT_COLOR = '#ccc';
 
-    // Calculate bar width
-    // var BAR_WIDTH = 4;
-
     var data = _.chain(ts.timeseries).map(function (x) {
       return {
         'date': new Date(x.key),
@@ -58,8 +55,7 @@ App.BoardController = Ember.Controller.extend({
     // Get cell height
     var height = (margin.top + margin.bottom) * 1.5;
     var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
-
-    var BAR_WIDTH = 2;
+    var barWidth = width / data.length;
 
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
     x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
@@ -82,8 +78,8 @@ App.BoardController = Ember.Controller.extend({
     var xaxis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .ticks(4)
-      .tickFormat(d3.time.format('%m-%y'));
+      .ticks(5)
+      .tickFormat(d3.time.format('%m/%y'));
 
     svg.append('g')
       .attr('class', 'x axis')
@@ -104,7 +100,7 @@ App.BoardController = Ember.Controller.extend({
       .on('mouseout', tip.hide)
       .style('fill', FILL_COLOR)
       .attr('x', function (d) { return x(d.date); })
-      .attr('width', BAR_WIDTH)
+      .attr('width', barWidth)
       .attr('y', function (d) { return y(d.value); })
       .attr('height', function (d) { return height - y(d.value); });
 
@@ -550,14 +546,14 @@ App.BoardController = Ember.Controller.extend({
       if (obj.class !== 'close') {
         obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
         obj.div.selectAll('.bar').remove();
-        var BAR_WIDTH = 2;
+        var barWidth = obj.width / _data.length;
 
         obj.div.selectAll('.bar')
           .data(_data)
           .enter().append('rect')
           .attr('class', 'bar')
           .attr('x', function (d) { return obj.x(d.date); })
-          .attr('width', BAR_WIDTH)
+          .attr('width', barWidth)
           .attr('y', function (d) { return obj.y(d.volume); })
           .attr('height', function (d) { return obj.height - obj.y(d.volume); });
 
