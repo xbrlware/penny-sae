@@ -25,17 +25,31 @@
             </div>
         {{else}}
             <div class="col-xs-12 timeline-head">
-                <div class="col-xs-6 number-posters">
+                <div class="col-xs-3 number-posters">
                     {{
                     focus-input
                     class="form-control"
-                    placeholder=topX.length
-                    id="number-posters"
+                    placeholder="# of timelines"
+                    id="number-posters-input"
                     insert-newline="numPosters"
                     }}
+                    <span>Top {{topX.length}} posters
                 </div>
-                <div class="col-xs-6 filter-button">
-                    <button type="button">Set Filters</button>
+                <div class="col-xs-7 filter-button">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-round-xs fa fa-chevron-up" type="button">Sentiment</button>
+                        <button class="btn btn-default btn-xs fa">pos</button>
+                        <button class="btn btn-default btn-xs fa">neut</button>
+                        <button class="btn btn-default btn-round-xs fa">neg</button>
+                    </div>
+                    <div class="right-buttons">
+                        <button class="btn btn-default btn-round-xs fa fa-chevron-down" type="button">Posts</button>
+                        <button class="btn btn-default btn-round-xs fa fa-chevron-up" type="button">Max</button>
+                        <button class="btn btn-default btn-round-xs fa fa-chevron-down" type="button">Avg</button>
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <button class="btn btn-warning btn-small" type="button">Set Filter</button>
                 </div>
             </div>
             <ul class="col-xs-12 timeline-panel" id="timeline">
