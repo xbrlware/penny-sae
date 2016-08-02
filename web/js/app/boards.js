@@ -66,7 +66,7 @@ App.BoardController = Ember.Controller.extend({
 
     // Get cell height
     var height = (margin.top + margin.bottom) * 1.5;
-    var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
+    var width = (Ember.$('#gauge-timeline-cell').width() * 0.60);
     var barWidth = width / data.length < 4 ? width / data.length : 4;
 
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
@@ -163,13 +163,13 @@ App.BoardController = Ember.Controller.extend({
     return r;
   }.property('filtered_data', 'dateFilter', 'pageCount'),
 
-  redraw: function () {
+  redraw: function (numPosters = 10) {
     var _this = this;
     var data = {
       cik: this.controllerFor('detail').get('model.cik'),
       date_filter: this.get('dateFilter'),
       search_term: this.get('searchTerm'),
-      size: 10
+      size: numPosters
     };
 
     this.set('timelineLoading', true);
@@ -599,6 +599,11 @@ App.BoardController = Ember.Controller.extend({
   },
 
   actions: {
+    numPosters: function (num) {
+      console.log('numPosters :: num :: ', num);
+      this.redraw(Number(num));
+    },
+
     sortDocCount: function () {
       this.sortPosters('doc');
     },
