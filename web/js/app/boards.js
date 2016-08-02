@@ -1,4 +1,4 @@
-/* global Ember, App, d3, _, crossfilter, gconfig */
+/* global Ember, App, d3, _, crossfilter, sessionStorage, gconfig */
 
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
@@ -10,9 +10,21 @@ App.BoardController = Ember.Controller.extend({
   isData: true,
   timelineLoading: false,
   pageCount: 1,
-  ascDesc: {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc'},
+  ascDesc: {},
   searchTerm: '',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
+  defaultAscDesc: function () {
+    var ss = {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc', type: 'doc'};
+    if (typeof Storage !== 'undefined') {
+      if (sessionStorage.pennyFilters) {
+        var t = JSON.parse(sessionStorage.pennyFilters);
+        ss[t.type] = t[t.type];
+        ss.type = t.type;
+      }
+    }
+    this.set('ascDesc', ss);
+  },
+
   routeName_pretty: function () {
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
@@ -55,7 +67,7 @@ App.BoardController = Ember.Controller.extend({
     // Get cell height
     var height = (margin.top + margin.bottom) * 1.5;
     var width = (Ember.$('#gauge-timeline-cell').width() * 0.66);
-    var barWidth = width / data.length;
+    var barWidth = width / data.length < 4 ? width / data.length : 4;
 
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
     x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
@@ -223,6 +235,14 @@ App.BoardController = Ember.Controller.extend({
   renderX () {
     var _this = this;
     var model = this.get('model.tlData');
+    var ascDesc = this.get('ascDesc');
+
+    if (ascDesc[ascDesc.type] === 'asc') {
+      model = _.sortBy(model, ascDesc.type);
+    } else {
+      model = _.sortBy(model, ascDesc.type).reverse();
+    }
+
     var dateFilter = this.get('dateFilter');
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
@@ -518,7 +538,7 @@ App.BoardController = Ember.Controller.extend({
       if (obj.class !== 'close') {
         obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
         obj.div.selectAll('.bar').remove();
-        var barWidth = obj.width / _data.length;
+        var barWidth = obj.width / _data.length < 4 ? obj.width / _data.length : 4;
 
         obj.div.selectAll('.bar')
           .data(_data)
@@ -564,21 +584,14 @@ App.BoardController = Ember.Controller.extend({
   },
 
   sortPosters: function (sortType) {
-    var tldata = this.get('model.tlData');
     var ascdesc = this.get('ascDesc');
-    var st = sortType === 'doc' ? 'doc_count' : sortType;
-    var sv;
 
-    if (ascdesc[sortType] === 'asc') {
-      sv = _.sortBy(tldata, st).reverse();
-      ascdesc[sortType] = 'desc';
-    } else if (ascdesc[sortType] === 'desc') {
-      sv = _.sortBy(tldata, st);
-      ascdesc[sortType] = 'asc';
-    }
+    ascdesc[sortType] = ascdesc[sortType] === 'asc' ? 'desc' : 'asc';
 
+    ascdesc.type = sortType;
     this.set('ascDesc', ascdesc);
-    this.set('model.tlData', sv);
+    sessionStorage.pennyFilters = JSON.stringify(ascdesc);
+
     this.set('splitByFilter', []);
 
     this.renderX();
@@ -623,14 +636,8 @@ App.BoardRoute = Ember.Route.extend({
     con.set('isData', true);
     con.set('searchTerm', '');
 
-    con.set('ascDesc', {
-      doc: 'desc',
-      pos: 'desc',
-      neg: 'desc',
-      neut: 'desc',
-      mean: 'desc',
-      max: 'desc'
-    });
+    // set poster sort object this.ascDesc
+    con.defaultAscDesc();
 
     var cik = this.controllerFor('detail').get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
