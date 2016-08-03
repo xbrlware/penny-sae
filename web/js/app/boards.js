@@ -35,6 +35,15 @@ App.BoardController = Ember.Controller.extend({
     return [];
   }.property(),
 
+  dateDiff: function (startDate, endDate) {
+    // Does not take daylight savings in account
+    var oneDay = 24 * 60 * 60 * 1000;
+    var firstDate = new Date(startDate);
+    var secondDate = new Date(endDate);
+
+    return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+  },
+
   makeTimeSeries: function (ts, bounds) {
     var _this = this;
     var div = '#ts-' + ts.id;
@@ -67,13 +76,15 @@ App.BoardController = Ember.Controller.extend({
     // Get cell height
     var height = (margin.top + margin.bottom) * 1.5;
     var width = (Ember.$('#gauge-timeline-cell').width() * 0.60);
-    var barWidth = width / data.length < 4 ? width / data.length : 4;
 
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
     x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
     var y = d3.scale.linear().range([height, 0]);
     y.domain([0, ts.max]);
+
+    var dd = this.dateDiff(x.domain()[0], x.domain()[1]);
+    var barWidth = width / dd;
 
     var svg = d3.select(div).append('svg:svg')
       .attr('width', width + margin.left + margin.right)
@@ -367,6 +378,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderCharts: function (forumData, pvdata, routeId, subjectId, div, cb) {
+    var _this = this;
     var parseDate = d3.time.format('%Y-%m-%d').parse;
     var parseDateTip = d3.time.format('%b-%d');
     var margin = { top: 20, bottom: 10, between: { y: 40, x: 40 }, left: 35, right: 5 };
@@ -535,10 +547,13 @@ App.BoardController = Ember.Controller.extend({
 
         obj.div.call(obj.tip);
       }
+
       if (obj.class !== 'close') {
         obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
         obj.div.selectAll('.bar').remove();
-        var barWidth = obj.width / _data.length < 4 ? obj.width / _data.length : 4;
+
+        var dd = _this.dateDiff(obj.x.domain()[0], obj.x.domain()[1]);
+        var barWidth = obj.width / dd;
 
         obj.div.selectAll('.bar')
           .data(_data)
@@ -600,8 +615,7 @@ App.BoardController = Ember.Controller.extend({
 
   actions: {
     numPosters: function (num) {
-      console.log('numPosters :: num :: ', num);
-      this.redraw(Number(num));
+      this.redraw(Number(num) < 1 ? 1 : Number(num));
     },
 
     sortDocCount: function () {
