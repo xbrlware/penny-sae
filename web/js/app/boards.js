@@ -613,13 +613,79 @@ App.BoardController = Ember.Controller.extend({
     this.renderGauges();
   },
 
+  handleFilterDecorations: function (sortType, fClass) {
+    if (fClass) {
+      if (sortType !== 'ascdesc') {
+        Ember.$('.btn-xs').removeClass('active');
+        Ember.$('.btn-round-xs').removeClass('active');
+        Ember.$(fClass).toggleClass('active');
+      } else {
+        if (Ember.$(fClass).hasClass('fa-chevron-down')) {
+          Ember.$(fClass).removeClass('fa-chevron-down');
+          Ember.$(fClass).addClass('fa-chevron-up');
+        } else {
+          Ember.$(fClass).removeClass('fa-chevron-up');
+          Ember.$(fClass).addClass('fa-chevron-down');
+        }
+      }
+    }
+  },
+
+  setFilterDecoration: function (sortType, chevronClass) {
+    var ad = this.get('ascDesc')[sortType];
+    this.handleFilterDecorations(sortType, '.filter-' + sortType);
+
+    if (ad === 'desc') {
+      if (Ember.$(chevronClass).hasClass('fa-chevron-up')) {
+        Ember.$(chevronClass).removeClass('fa-chevron-up');
+        Ember.$(chevronClass).addClass('fa-chevron-down');
+      }
+    } else {
+      if (Ember.$(chevronClass).hasClass('fa-chevron-down')) {
+        Ember.$(chevronClass).removeClass('fa-chevron-down');
+        Ember.$(chevronClass).addClass('fa-chevron-up');
+      }
+    }
+  },
+
   actions: {
+    filterTimelines: function (sortType, fClass = null) {
+      this.handleFilterDecorations(sortType, fClass);
+      this.sortPosters(sortType);
+    },
+
     numPosters: function (num) {
       this.redraw(Number(num) < 1 ? 1 : Number(num));
     },
 
+    sortAvg: function () {
+      this.setFilterDecoration('mean', '.numposts');
+      this.sortPosters('mean');
+    },
+
     sortDocCount: function () {
+      this.setFilterDecoration('doc', '.numposts');
       this.sortPosters('doc');
+    },
+
+    sortMax: function () {
+      this.setFilterDecoration('max', '.numposts');
+      this.sortPosters('max');
+    },
+
+    sortNeg: function () {
+      this.setFilterDecoration('neg', '.sentiment');
+      this.sortPosters('neg');
+    },
+
+    sortNeut: function () {
+      this.setFilterDecoration('neut', '.sentiment');
+      this.sortPosters('neut');
+    },
+
+    sortPos: function () {
+      this.setFilterDecoration('pos', '.sentiment');
+      this.sortPosters('pos');
     },
 
     topXClicked (id) {

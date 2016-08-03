@@ -36,16 +36,16 @@
                 </div>
                 <div class="col-xs-9 filter-button">
                     <div class="col-xs-12 btn-group top-buttons">
-                        <button class="col-xs-6 btn btn-default btn-round-xs fa fa-chevron-up" type="button">Sentiment</button>
-                        <button class="col-xs-2 btn btn-default btn-xs fa">pos</button>
-                        <button class="col-xs-2 btn btn-default btn-xs fa">neut</button>
-                        <button class="col-xs-2 btn btn-default btn-round-xs fa">neg</button>
+                        <button {{action 'filterTimelines' 'ascdesc' '.sentiment'}} class="col-xs-6 btn btn-default btn-round-xs fa fa-chevron-down sentiment" type="button"> Sentiment</button>
+                        <button {{action 'sortPos'}} class="col-xs-2 btn btn-default btn-xs fa filter-pos">pos</button>
+                        <button {{action 'sortNeut'}} class="col-xs-2 btn btn-default btn-xs fa filter-neut">neut</button>
+                        <button {{action 'sortNeg'}} class="col-xs-2 btn btn-default btn-round-xs fa filter-neg">neg</button>
                     </div>
-                    <div class="col-xs-12 bottom-buttons">
-                        <button class="col-xs-3 btn btn-danger btn-xs fa" type="button">Set Filter</button>
-                        <button class="col-xs-3 btn btn-default btn-xs fa fa-chevron-down" type="button">Posts</button>
-                        <button class="col-xs-3 btn btn-default btn-xs fa fa-chevron-up" type="button">Max</button>
-                        <button class="col-xs-3 btn btn-default btn-xs fa fa-chevron-down" type="button">Avg</button>
+                    <div class="col-xs-12 btn-group bottom-buttons">
+                        <button {{action 'filterTimelines' 'ascdesc' '.numposts'}} class="col-xs-6 btn btn-default btn-round-xs fa fa-chevron-down numposts" type="button"> Num. Posts</button>
+                        <button {{action 'sortDocCount'}} class="col-xs-2 btn btn-default btn-xs fa filter-doc active">Num</button>
+                        <button {{action 'sortMax'}} class="col-xs-2 btn btn-default btn-xs fa filter-max">max</button>
+                        <button {{action 'sortAvg'}} class="col-xs-2 btn btn-default btn-round-xs fa filter-avg">avg</button>
                     </div>
                 </div>
             </div>
