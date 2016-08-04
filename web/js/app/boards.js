@@ -197,6 +197,15 @@ App.BoardController = Ember.Controller.extend({
       }));
       _this.renderX();
       _this.renderGauges();
+      Ember.run.next(function () {
+        var a = _this.get('ascDesc').type;
+        var b = _this.get('ascDesc')[a];
+        var c = a === 'pos' || a === 'neut' || a === 'neg' ? '.sentiment' : '.numposts';
+        var d = 'ascDesc.' + a;
+        _this.set(d, b === 'asc' ? 'desc' : 'asc');
+
+        _this.setFilterDecoration(a, c);
+      });
       _this.set('timelineLoading', false);
     });
   },
