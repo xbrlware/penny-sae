@@ -36,16 +36,82 @@
                 </div>
                 <div class="col-xs-9 filter-button">
                     <div class="col-xs-12 btn-group top-buttons">
-                        <button {{action 'ascdesc' 'sentiment'}} class="col-xs-6 btn btn-default btn-round-xs fa fa-chevron-down sentiment" type="button"> Sentiment</button>
-                        <button {{action 'sortUsers' 'pos'}} class="col-xs-2 btn btn-default btn-xs fa filter-pos">pos</button>
-                        <button {{action 'sortUsers' 'neut'}} class="col-xs-2 btn btn-default btn-xs fa filter-neut">neut</button>
-                        <button {{action 'sortUsers' 'neg'}} class="col-xs-2 btn btn-default btn-round-xs fa filter-neg">neg</button>
+                        {{
+                        filter-button
+                        action="ascdesc"
+                        param="sentiment"
+                        colXs6=true
+                        btnRoundXs=true
+                        faChevronDown=true
+                        sentiment=true
+                        title=" Sentiment"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="pos"
+                        colXs2=true
+                        btnXs=true
+                        filterPos=true
+                        title="pos"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="neut"
+                        colXs2=true
+                        btnXs=true
+                        filterNeut=true
+                        title="neut"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="neg"
+                        colXs2=true
+                        btnRoundXs=true
+                        filterNeg=true
+                        title="neg"
+                        }}
                     </div>
                     <div class="col-xs-12 btn-group bottom-buttons">
-                        <button {{action 'ascdesc' 'numposts'}} class="col-xs-6 btn btn-default btn-round-xs fa fa-chevron-down numposts" type="button"> Posts</button>
-                        <button {{action 'sortUsers' 'doc'}} class="col-xs-2 btn btn-default btn-xs fa filter-doc">num</button>
-                        <button {{action 'sortUsers' 'max'}} class="col-xs-2 btn btn-default btn-xs fa filter-max">max</button>
-                        <button {{action 'sortUsers' 'mean'}} class="col-xs-2 btn btn-default btn-round-xs fa filter-mean">mean</button>
+                        {{
+                        filter-button
+                        action="ascdesc"
+                        param="numposts"
+                        colXs6=true
+                        btnRoundXs=true
+                        faChevronDown=true
+                        numposts=true
+                        title=" Posts"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="doc"
+                        colXs2=true
+                        btnXs=true
+                        filterDoc=true
+                        title="num"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="max"
+                        colXs2=true
+                        btnXs=true
+                        filterMax=true
+                        title="max"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="mean"
+                        colXs2=true
+                        btnRoundXs=true
+                        filterMean=true
+                        title="mean"
+                        }}
                     </div>
                 </div>
             </div>

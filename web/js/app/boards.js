@@ -650,7 +650,7 @@ App.BoardController = Ember.Controller.extend({
     },
 
     ascdesc: function (btn) {
-      var a = Ember.$('.btn.active').text() === 'num' ? 'doc' : Ember.$('.btn.active').text();
+      var a = Ember.$('.btn.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.btn.active').text().replace(/\n/g, '');
 
       if (btn === 'sentiment') {
         if (a === 'doc' || a === 'max' || a === 'min') {
