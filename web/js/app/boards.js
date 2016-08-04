@@ -22,6 +22,7 @@ App.BoardController = Ember.Controller.extend({
         ss.type = t.type;
       }
     }
+    console.log('SS ::', ss);
     this.set('ascDesc', ss);
   },
 
@@ -130,9 +131,9 @@ App.BoardController = Ember.Controller.extend({
     d3.selectAll('g.y.axis.timeline g.tick text')
       .on('click', function (d, i) {
         if (i % 2 === 0) {
-          _this.sortPosters('mean');
+          _this.sortTimelines('mean');
         } else {
-          _this.sortPosters('max');
+          _this.sortTimelines('max');
         }
       });
 
@@ -249,9 +250,9 @@ App.BoardController = Ember.Controller.extend({
     var ascDesc = this.get('ascDesc');
 
     if (ascDesc[ascDesc.type] === 'asc') {
-      model = _.sortBy(model, ascDesc.type);
+      model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type);
     } else {
-      model = _.sortBy(model, ascDesc.type).reverse();
+      model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type).reverse();
     }
 
     var dateFilter = this.get('dateFilter');
@@ -367,7 +368,7 @@ App.BoardController = Ember.Controller.extend({
       .on('click', function (d) {
         d3.selectAll('.d3-tip').remove();
         // sort gauges
-        _this.sortPosters(d.data.label);
+        _this.sortTimelines(d.data.label);
       });
 
     arcs.append('svg:path')
@@ -602,8 +603,8 @@ App.BoardController = Ember.Controller.extend({
     var ascdesc = this.get('ascDesc');
 
     ascdesc[sortType] = ascdesc[sortType] === 'asc' ? 'desc' : 'asc';
-
     ascdesc.type = sortType;
+
     this.set('ascDesc', ascdesc);
     sessionStorage.pennyFilters = JSON.stringify(ascdesc);
 
@@ -613,79 +614,54 @@ App.BoardController = Ember.Controller.extend({
     this.renderGauges();
   },
 
-  handleFilterDecorations: function (sortType, fClass) {
-    if (fClass) {
-      if (sortType !== 'ascdesc') {
-        Ember.$('.btn-xs').removeClass('active');
-        Ember.$('.btn-round-xs').removeClass('active');
-        Ember.$(fClass).toggleClass('active');
-      } else {
-        if (Ember.$(fClass).hasClass('fa-chevron-down')) {
-          Ember.$(fClass).removeClass('fa-chevron-down');
-          Ember.$(fClass).addClass('fa-chevron-up');
-        } else {
-          Ember.$(fClass).removeClass('fa-chevron-up');
-          Ember.$(fClass).addClass('fa-chevron-down');
-        }
-      }
-    }
-  },
-
   setFilterDecoration: function (sortType, chevronClass) {
     var ad = this.get('ascDesc')[sortType];
-    this.handleFilterDecorations(sortType, '.filter-' + sortType);
 
-    if (ad === 'desc') {
+    Ember.$('.btn-xs').removeClass('active');
+    Ember.$('.btn-round-xs').removeClass('active');
+    Ember.$('.filter-' + sortType).toggleClass('active');
+
+    if (ad === 'asc') {
       if (Ember.$(chevronClass).hasClass('fa-chevron-up')) {
         Ember.$(chevronClass).removeClass('fa-chevron-up');
-        Ember.$(chevronClass).addClass('fa-chevron-down');
+        Ember.$(chevronClass).toggleClass('fa-chevron-down');
       }
     } else {
       if (Ember.$(chevronClass).hasClass('fa-chevron-down')) {
         Ember.$(chevronClass).removeClass('fa-chevron-down');
-        Ember.$(chevronClass).addClass('fa-chevron-up');
+        Ember.$(chevronClass).toggleClass('fa-chevron-up');
       }
     }
   },
 
-  actions: {
-    filterTimelines: function (sortType, fClass = null) {
-      this.handleFilterDecorations(sortType, fClass);
-      this.sortPosters(sortType);
-    },
+  sortTimelines: function (st) {
+    var c = st === 'pos' || st === 'neut' || st === 'neg' ? '.sentiment' : '.numposts';
+    this.setFilterDecoration(st, c);
+    this.sortPosters(st);
+  },
 
+  actions: {
     numPosters: function (num) {
       this.redraw(Number(num) < 1 ? 1 : Number(num));
     },
 
-    sortAvg: function () {
-      this.setFilterDecoration('mean', '.numposts');
-      this.sortPosters('mean');
+    sortUsers: function (sortType) {
+      this.sortTimelines(sortType);
     },
 
-    sortDocCount: function () {
-      this.setFilterDecoration('doc', '.numposts');
-      this.sortPosters('doc');
-    },
+    ascdesc: function (btn) {
+      var a = Ember.$('.btn.active').text() === 'num' ? 'doc' : Ember.$('.btn.active').text();
 
-    sortMax: function () {
-      this.setFilterDecoration('max', '.numposts');
-      this.sortPosters('max');
-    },
-
-    sortNeg: function () {
-      this.setFilterDecoration('neg', '.sentiment');
-      this.sortPosters('neg');
-    },
-
-    sortNeut: function () {
-      this.setFilterDecoration('neut', '.sentiment');
-      this.sortPosters('neut');
-    },
-
-    sortPos: function () {
-      this.setFilterDecoration('pos', '.sentiment');
-      this.sortPosters('pos');
+      if (btn === 'sentiment') {
+        if (a === 'doc' || a === 'max' || a === 'min') {
+          a = 'pos';
+        }
+      } else {
+        if (a === 'pos' || a === 'neut' || a === 'neg') {
+          a = 'doc';
+        }
+      }
+      this.sortTimelines(a);
     },
 
     topXClicked (id) {
