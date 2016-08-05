@@ -7,6 +7,7 @@ module.exports = function (app, config, client) {
   var minBy = require('lodash/minBy');
   var meanBy = require('lodash/meanBy');
   var round = require('lodash/round');
+  var mapValues = require('lodash/mapValues');
 
   var boardQueryBuilder = {
     'board': function (brdData, search = null, users = false) {
@@ -198,15 +199,16 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
-      d = lomap(d, function (value, key) {
+      d = mapValues(d, function (value, key) {
         if (!value) {
           value = '';
         }
         return value;
       });
     }
+    console.log('MORGAN :: ', d);
 
-    if (d.ticker.indexOf('.') !== -1) {
+    if (d.ticker !== undefined && d.ticker.indexOf('.') !== -1) {
       d.ticker = d.ticker.split('.')[0];
     }
 
