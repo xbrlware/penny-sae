@@ -14,6 +14,7 @@ App.BoardController = Ember.Controller.extend({
   searchTerm: '',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   defaultAscDesc: function () {
+    /* sets default value for filter buttons - checks sessionStorage in browser first */
     var ss = {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc', type: 'doc'};
     if (typeof Storage !== 'undefined') {
       if (sessionStorage.pennyFilters) {
@@ -27,16 +28,18 @@ App.BoardController = Ember.Controller.extend({
   },
 
   routeName_pretty: function () {
+    /* returns a just the route name */
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
   }.property(),
 
-  // Field names for "splitting" entity (i.e. the user if board, board if user)
   splitByFilter: function () {
+    /* Field names for "splitting" entity (i.e. the user if board, board if user) */
     return [];
   }.property(),
 
   dateDiff: function (startDate, endDate) {
+    /* gets amount of days between start and end - used for bar width in charts */
     // Does not take daylight savings in account
     var oneDay = 24 * 60 * 60 * 1000;
     var firstDate = new Date(startDate);
@@ -46,12 +49,14 @@ App.BoardController = Ember.Controller.extend({
   },
 
   makeTimeSeries: function (ts, bounds) {
+    /* Builds time series for users using D3 */
     var _this = this;
     var div = '#ts-' + ts.id;
     var margin = {top: 13, right: 20, bottom: 20, left: 0};
     var FILL_COLOR = 'orange';
     var TEXT_COLOR = '#ccc';
 
+    // format data returned from node
     var data = _.chain(ts.timeseries).map(function (x) {
       return {
         'date': new Date(x.key),
@@ -59,14 +64,17 @@ App.BoardController = Ember.Controller.extend({
       };
     }).value();
 
+    // format date for D3
     var parseDate = d3.time.format('%b-%d');
 
     // Clear previous values
     d3.select(div).selectAll('svg').remove();
 
+    // acquire user name and number of posts
     d3.select(div + ' .title').text(ts.name);
     d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
 
+    // init
     var tip = d3.tip()
       .attr('class', 'd3-tip')
       .offset([-5, 0])
@@ -78,12 +86,15 @@ App.BoardController = Ember.Controller.extend({
     var height = (margin.top + margin.bottom) * 1.5;
     var width = (Ember.$('#gauge-timeline-cell').width() * 0.60);
 
+    // set x scale and domain
     var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
     x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
 
+    // set y scale and domain
     var y = d3.scale.linear().range([height, 0]);
     y.domain([0, ts.max]);
 
+    // figure out width of bar
     var dd = this.dateDiff(x.domain()[0], x.domain()[1]);
     var barWidth = width / dd;
 
@@ -141,41 +152,34 @@ App.BoardController = Ember.Controller.extend({
   },
 
   postFilteredData: function () {
+    /* populates forum posts with data from filtered_data */
+    /* watches these properties: filtered_data, dateFilter, pageCount */
     var data = this.get('filtered_data');
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
     var pgc = this.get('pageCount');
-    var out;
-    var _data;
 
-    if (dfl.length) {
-      _data = _.filter(data, function (d) {
-        return d.date > dfl[0] & d.date < dfl[1];
-      });
-    } else {
-      _data = data;
-    }
+    // filter dates
+    var _data = dfl.length ? _.filter(data, function (d) {
+      return d.date > dfl[0] & d.date < dfl[1];
+    }) : data;
 
-    if (sbf.length > 0) {
-      out = _.filter(_data, function (x) {
-        return _.contains(sbf, x.user_id);
-      });
-    } else {
-      out = _data;
-    }
+    // make sure that only the users we want are included
+    var out = sbf.length ? _.filter(_data, function (d) {
+      return _.contains(sbf, d.user_id);
+    }) : _data;
 
-    var r;
-    if ((100 * pgc) < out.length) {
-      r = _.chain(out).filter(function (x, i) {
-        return i < (100 * pgc);
-      }).value();
-    } else {
-      r = out;
-    }
+    // only send out 100 forum messages at a time for lazy loading
+    var r = (100 * pgc) < out.length ? _.chain(out).filter(function (x, i) {
+      return i < (100 * pgc);
+    }).value() : out;
+
     return r;
   }.property('filtered_data', 'dateFilter', 'pageCount'),
 
   redraw: function (numPosters = 10) {
+    /* redraw time lines and forum messages */
+    /* numPosters is used by size in the ES query */
     var _this = this;
     var data = {
       cik: this.controllerFor('detail').get('model.cik'),
@@ -184,8 +188,10 @@ App.BoardController = Ember.Controller.extend({
       size: numPosters
     };
 
+    // set spinner
     this.set('timelineLoading', true);
 
+    // call to ES
     App.Search.fetch_data('redraw', data).then(function (response) {
       _this.set('splitByFilter', []);
       _this.set('pageCount', 1);
@@ -195,22 +201,27 @@ App.BoardController = Ember.Controller.extend({
         x.date = new Date(x.date);
         return x;
       }));
+      // render everything
       _this.renderX();
       _this.renderGauges();
+
       Ember.run.next(function () {
+        // sets which filter buttons are colored as active
         var a = _this.get('ascDesc').type;
         var b = _this.get('ascDesc')[a];
         var c = a === 'pos' || a === 'neut' || a === 'neg' ? '.sentiment' : '.numposts';
         var d = 'ascDesc.' + a;
         _this.set(d, b === 'asc' ? 'desc' : 'asc');
-
         _this.setFilterDecoration(a, c);
       });
+      // stop spinner
       _this.set('timelineLoading', false);
     });
   },
 
   draw: function () {
+    /* main draw function for all charts */
+    /* fires when there are changes in the model */
     var _this = this;
     var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
@@ -244,6 +255,7 @@ App.BoardController = Ember.Controller.extend({
   }.observes('model'),
 
   toggleSplitByFilterMember (id) {
+    /* toggles which users are seen in the forum messages */
     var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
@@ -254,16 +266,21 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderX () {
+    /* sets up data and then uses makeTimeSeries to draw all
+     * users and their timelines
+     */
     var _this = this;
     var model = this.get('model.tlData');
     var ascDesc = this.get('ascDesc');
 
+    // in order of ascending or descending
     if (ascDesc[ascDesc.type] === 'asc') {
       model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type);
     } else {
       model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type).reverse();
     }
 
+    // set up x axis
     var dateFilter = this.get('dateFilter');
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
@@ -274,10 +291,11 @@ App.BoardController = Ember.Controller.extend({
       return new Date(x);
     }).max().value();
 
+    // rounding time
     var roundingFunction = (xmin - xmax) < (86400000 * 30) ? d3.time.hour : d3.time.day;
 
+    // set up time line object to be passed to makeTimeSeries
     var topx = [];
-
     var timeseries = _.chain(model).map(function (v) {
       topx.push(v.id);
       return {
@@ -299,8 +317,10 @@ App.BoardController = Ember.Controller.extend({
       };
     }).value();
 
+    // set topX which is used by the HB template
     this.set('topX', topx);
 
+    // make time series
     Ember.run.next(function () {
       _.map(timeseries, function (t) {
         _this.makeTimeSeries(t, {
@@ -314,6 +334,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderGauges () {
+    /* loads data used for drawing gauges and then passes that data to drawGauge */
     var _this = this;
     var data = this.get('model.tlData');
 
@@ -326,8 +347,11 @@ App.BoardController = Ember.Controller.extend({
   }, // This should really be broken apart
 
   drawGauge (bindTo, gaugeData) {
+    /* handles drawing a single gauge using D3 */
     d3.select(bindTo).selectAll('svg').remove();
     var _this = this;
+    var data = gaugeData;
+
     var w = gconfig.GAUGE.SIZE.WIDTH;
     var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
     var c = gconfig.GAUGE.COLOR_PATT;
@@ -337,8 +361,6 @@ App.BoardController = Ember.Controller.extend({
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
     var valueFormat = d3.format('.4p');
-
-    var data = gaugeData;
 
     var tip = d3.tip()
       .attr('class', 'd3-tip')
@@ -388,13 +410,19 @@ App.BoardController = Ember.Controller.extend({
   },
 
   renderCharts: function (forumData, pvdata, routeId, subjectId, div, cb) {
+    /* renders Post Volume, Brush, Price, and Trading Volume charts */
     var _this = this;
+
+    // date formatting functions
     var parseDate = d3.time.format('%Y-%m-%d').parse;
     var parseDateTip = d3.time.format('%b-%d');
+
+    // set up measuremeants for svg that holds all the charts
     var margin = { top: 20, bottom: 10, between: { y: 40, x: 40 }, left: 35, right: 5 };
     var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
     var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
 
+    // get price/volume data and parse it
     var pvData = _.chain(pvdata).map(function (d) {
       return {
         date: parseDate(d.date),
@@ -406,6 +434,7 @@ App.BoardController = Ember.Controller.extend({
       };
     }).value();
 
+    // post volume
     var posts = {};
     posts.title = 'Post Volume';
     posts.class = 'volume-posts';
@@ -421,6 +450,7 @@ App.BoardController = Ember.Controller.extend({
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
     });
 
+    // brush chart
     var brushChart = {};
     brushChart.title = '';
     brushChart.class = 'brush-chart-posts';
@@ -434,6 +464,7 @@ App.BoardController = Ember.Controller.extend({
     brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
     brushChart.brush = d3.svg.brush().x(brushChart.x).on('brushend', rtDraw);
 
+    // price chart
     var price = {};
     price.title = 'Price';
     price.class = 'close';
@@ -449,6 +480,7 @@ App.BoardController = Ember.Controller.extend({
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
     });
 
+    // trading volume chart
     var volume = {};
     volume.title = 'Volume';
     volume.class = 'volume';
@@ -460,19 +492,24 @@ App.BoardController = Ember.Controller.extend({
     volume.y = d3.scale.linear().range([volume.height, 0]);
     volume.xAxis = price.xAxis;
     volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
+    // init D3 tip that is activated when you hover over charts
     volume.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
       return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
     });
 
+    // init svg tree
     var svg = d3.select(div).append('svg')
       .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
       .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
 
     function makeDiv (obj, clip) {
+      /* builds generic 'g' tag for each chart */
+      /* obj = chart object from above, clip = name of clip path */
       var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
         .attr('transform',
           'translate(' + obj.position_left + ',' + obj.position_top + ')');
 
+      // define clip path
       div.append('defs').append('clipPath')
         .attr('id', clip)
         .append('rect')
@@ -481,6 +518,7 @@ App.BoardController = Ember.Controller.extend({
         .attr('width', obj.width)
         .attr('height', obj.y(0) - obj.y(1));
 
+      // set clip path
       div.append('g')
         .attr('class', obj.class)
         .attr('clip-path', 'url(#' + clip + ')');
@@ -501,27 +539,32 @@ App.BoardController = Ember.Controller.extend({
       return div;
     }
 
+    // post volume definition
     posts.div = makeDiv(posts, 'c1');
     posts.x.domain(d3.extent(forumData, function (d) { return d.date; }));
     posts.y.domain(d3.extent(forumData, function (d) { return d.volume; }));
     posts.div.select('g.volume-posts').datum(forumData);
 
+    // brush chart definition
     brushChart.div = makeDiv(brushChart, 'c2');
     brushChart.x.domain(posts.x.domain());
     brushChart.y.domain(posts.y.domain());
     brushChart.div.select('g.brush-chart-posts').datum(forumData);
 
+    // price chart definition
     price.div = makeDiv(price, 'c3');
     price.x.domain(d3.extent(pvData, function (d) { return d.date; }));
     price.y.domain(d3.extent(pvData, function (d) { return d.close; }));
     price.div.select('g.close').datum(pvData);
 
+    // volume chart definition
     volume.div = makeDiv(volume, 'c4');
     volume.x.domain(d3.extent(pvData, function (d) { return d.date; }));
     volume.y.domain(d3.extent(pvData, function (d) { return d.volume; }));
     volume.div.select('g.volume').datum(pvData);
 
     function _draw (obj, dateFilter) {
+      /* handles drawing each chart */
       var data = obj.div.select('g.' + obj.class).datum();
 
       var _data = _.filter(data, function (d) {
@@ -530,6 +573,7 @@ App.BoardController = Ember.Controller.extend({
 
       obj.x.domain(dateFilter);
 
+      // only for price object
       if (obj.class === 'close') {
         obj.y.domain(d3.extent(_data, function (d) { return d.close; }));
         obj.div.selectAll('.dot').remove();
@@ -544,6 +588,7 @@ App.BoardController = Ember.Controller.extend({
           .attr('class', 'line')
           .attr('d', line);
 
+        // overlays dots so d3 tip works
         obj.div.selectAll('.dot')
             .data(_data)
             .enter().append('circle')
@@ -558,6 +603,7 @@ App.BoardController = Ember.Controller.extend({
         obj.div.call(obj.tip);
       }
 
+      // handles the bar charts
       if (obj.class !== 'close') {
         obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
         obj.div.selectAll('.bar').remove();
@@ -574,6 +620,7 @@ App.BoardController = Ember.Controller.extend({
           .attr('y', function (d) { return obj.y(d.volume); })
           .attr('height', function (d) { return obj.height - obj.y(d.volume); });
 
+        // brush chart does not get d3 tip
         if (obj.class !== 'brush-chart-posts') {
           obj.div.selectAll('.bar')
             .on('mouseover', obj.tip.show)
@@ -588,11 +635,13 @@ App.BoardController = Ember.Controller.extend({
             .attr('height', obj.height);
         }
       }
+      // draw the axis
       obj.div.select('g.x.axis').call(obj.xAxis);
       obj.div.selectAll('g.y.axis').call(obj.yAxis);
     }
 
     function rtDraw () {
+      /* fired during init and when the brush moves */
       var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
 
       _draw(price, brushDomain);
@@ -602,13 +651,16 @@ App.BoardController = Ember.Controller.extend({
       cb(brushDomain);
     }
 
+    // draw brush chart
     _draw(brushChart, [price.x.domain()[0], brushChart.x.domain()[1]]);
+    // set inital date ranges to be shown
     brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     brushChart.brush(d3.select('.brush').transition());
     rtDraw();
   },
 
   sortPosters: function (sortType) {
+    /* sets variables and lets renderX and renderGauges render by sort type */
     var ascdesc = this.get('ascDesc');
 
     ascdesc[sortType] = ascdesc[sortType] === 'asc' ? 'desc' : 'asc';
@@ -624,6 +676,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   setFilterDecoration: function (sortType, chevronClass) {
+    /* activates/deactivates the right buttons and FA chevrons */
     var ad = this.get('ascDesc')[sortType];
 
     Ember.$('.btn-xs').removeClass('active');
@@ -644,6 +697,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   sortTimelines: function (st) {
+    /* high level sorting function */
     var c = st === 'pos' || st === 'neut' || st === 'neg' ? '.sentiment' : '.numposts';
     this.setFilterDecoration(st, c);
     this.sortPosters(st);
@@ -651,14 +705,17 @@ App.BoardController = Ember.Controller.extend({
 
   actions: {
     numPosters: function (num) {
+      /* handles when user changes number of time lines to be displayed */
       this.redraw(Number(num) < 1 ? 1 : Number(num));
     },
 
     sortUsers: function (sortType) {
+      /* handles high level sorting of time lines *.
       this.sortTimelines(sortType);
     },
 
     ascdesc: function (btn) {
+      /* handles when sentiment and posts filter buttons are pressed */
       var a = Ember.$('.btn.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.btn.active').text().replace(/\n/g, '');
 
       if (btn === 'sentiment') {
@@ -674,6 +731,7 @@ App.BoardController = Ember.Controller.extend({
     },
 
     topXClicked (id) {
+      /* handles when user is clicked on */
       var _this = this;
       this.set('pageCount', 1);
       Ember.$('#ts-' + id).toggleClass('chart-selected');
@@ -693,6 +751,7 @@ App.BoardController = Ember.Controller.extend({
     },
 
     messageSearch: function (searchTerm) {
+      /* high level function for searching messages for string */
       this.set('searchTerm', searchTerm);
       this.redraw();
     }
@@ -700,6 +759,7 @@ App.BoardController = Ember.Controller.extend({
 });
 
 App.BoardRoute = Ember.Route.extend({
+  /* only used for setting up controller and loading initial data */
   setupController: function (con, model, params) {
     con.set('isLoading', true);
     con.set('filtered_data', []);
@@ -731,6 +791,7 @@ App.BoardRoute = Ember.Route.extend({
 });
 
 App.BoardView = Ember.View.extend({
+  /* all this does is insert code for lazy loading of forum messages */
   didInsertElement: function () {
     this._super();
     var _this = this;
