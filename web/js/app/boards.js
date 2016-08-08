@@ -710,7 +710,7 @@ App.BoardController = Ember.Controller.extend({
     },
 
     sortUsers: function (sortType) {
-      /* handles high level sorting of time lines *.
+      /* handles high level sorting of time lines */
       this.sortTimelines(sortType);
     },
 
