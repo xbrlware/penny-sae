@@ -213,6 +213,16 @@ App.BoardController = Ember.Controller.extend({
         var d = 'ascDesc.' + a;
         _this.set(d, b === 'asc' ? 'desc' : 'asc');
         _this.setFilterDecoration(a, c);
+
+        Ember.$('.forum-div').scroll(function () {
+          if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
+            var pgc = _this.get('pageCount');
+            if (pgc < 10) {
+              pgc++;
+              _this.set('pageCount', pgc);
+            }
+          }
+        });
       });
       // stop spinner
       _this.set('timelineLoading', false);
@@ -706,7 +716,9 @@ App.BoardController = Ember.Controller.extend({
   actions: {
     numPosters: function (num) {
       /* handles when user changes number of time lines to be displayed */
-      this.redraw(Number(num) < 1 ? 1 : Number(num));
+      if (!isNaN(num)) {
+        this.redraw(Number(num) < 1 ? 1 : Number(num));
+      }
     },
 
     sortUsers: function (sortType) {
@@ -785,27 +797,6 @@ App.BoardRoute = Ember.Route.extend({
         con.set('isLoading', false);
 
         if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
-      });
-    });
-  }
-});
-
-App.BoardView = Ember.View.extend({
-  /* all this does is insert code for lazy loading of forum messages */
-  didInsertElement: function () {
-    this._super();
-    var _this = this;
-    // lazy loading of forum messages -- currently only supports 1000 message max
-    Ember.run.scheduleOnce('afterRender', this, function () {
-      Ember.$('.forum-div').scroll(function () {
-        if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
-          var con = _this.get('controller');
-          var pgc = con.get('pageCount');
-          if (pgc < 10) {
-            pgc++;
-            con.set('pageCount', pgc);
-          }
-        }
       });
     });
   }

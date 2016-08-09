@@ -206,7 +206,6 @@ module.exports = function (app, config, client) {
         return value;
       });
     }
-    console.log('MORGAN :: ', d);
 
     if (d.ticker !== undefined && d.ticker.indexOf('.') !== -1) {
       d.ticker = d.ticker.split('.')[0];
