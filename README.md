@@ -1,51 +1,32 @@
 # Penny: Suspicious Activity Explorer
 
-## Grunt
+Web app for exploring suspicious activity in penny stocks.  Incorporates EDGAR, XBRL, message board, press release and tout data.
 
-##### Registered Tasks
-Configure the grunt tasks in Gruntfile.js.
-
-```
-devApp - compiles the nodesec specific js into one file without uglifying it.
-
-devLib - compiles all libraries (underscore, handlebars, etc.) into one file with uglifying it. It also runs the task cmp which compiles templates and adds them to the libs.js.
-
-css    - compiles, minifies, and blesses all css files.
-cmp    - compiles all handlebars files.
-
-prodApp and prodLib do the same thing as devApp/devLib, but they also uglify the files. These have not been tested yet, so use at your own risk.
-
-wth    - starts grunt-watch, but you must customize this to handle your tasks.
-```
-
-All file locations and variables available to grunt tasks are located in ./grunt.config.json.
-
-## Setup
-
-After cloning the repository, run the following commands to get started.
-
+#### Quickstart
 ```bash
-
-# Install Dependencies
+# Node dependencies
+cd $PROJECT_ROOT/
 npm install
-cd server/node
-npm install
-cd ../..
 
-# Set up server configuration files (eventually turn into Grunt task)
-cd config
+cd $PROJECT_ROOT/server/node
+npm install
+
+# Configuration
+cd $PROJECT_ROOT/config
 node configure.js
 
-# Connect to elasticsearch
-
-# Go back up to app root directory
-
-# Compile static resources 
+# Grunt
+cd $PROJECT_ROOT/
 ./grunt-all.sh
 
-# Launch app!
-cd server/node
+# Run server (make sure that Elasticsearch is visible!)
+cd $PROJECT_ROOT/server/node
 node server.js
-# App is running at localhost:8090 or whichever port is specified by console
+
+# Navigate to localhost:8090
 
 ```
+
+#### Grunt
+
+Run `./grunt-all.sh` to run all `grunt` processes.
