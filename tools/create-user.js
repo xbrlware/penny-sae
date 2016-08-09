@@ -1,3 +1,10 @@
+// create-user.js
+//
+// Utility for creating users
+//
+// Example:
+//  node create-user.js username [password]
+
 var crypto = require('crypto');
 var es = require('elasticsearch');
 var config = require('../config/server-config');
