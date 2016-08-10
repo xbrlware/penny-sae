@@ -3,17 +3,19 @@ function combine_scores (scores, params) {
   // ... Need to actually determine how to combine these things...
   var out = 0;
   for (s in scores) {
-    out += scores[s]['is_flag'] * (1 + 0.01 * scores[s]['value']);
+    if(!isNaN(scores[s]['value'])) {
+      out += scores[s]['is_flag'] * (1 + 0.01 * scores[s]['value']); 
+    }
   }
   return out;
 }
 
 // Register functions
 var functions = {
-  'symbology': symbology,
-  'delinquency': delinquency,
+  // 'symbology': symbology,
+  // 'delinquency': delinquency,
   'otc_neighbors': otc_neighbors,
-  'crowdsar': crowdsar,
+  // 'crowdsar': crowdsar,
   'suspensions': suspensions,
   'financials': financials
 };
@@ -22,7 +24,7 @@ function run () {
   // Compute scores (if parameterized)
   var scores = {};
   for (k in params) {
-    kscore = functions[k](_source[k], params[k]);
+    kscore = functions[k](doc, _source, params[k], k);
     if (kscore.have) {scores[k] = kscore;}
   }
 

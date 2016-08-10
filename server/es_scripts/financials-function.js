@@ -1,4 +1,5 @@
-function financials (data, params) {
+function financials (doc, source, params, key) {
+  var data = source[key];
   var have = data != null;
   var n = 0;
 
@@ -13,7 +14,7 @@ function financials (data, params) {
 
   return {
     'value': n,
-    'is_flag': n > params.threshold,
+    'is_flag': n >= params.threshold,
     'have': have
   };
 }

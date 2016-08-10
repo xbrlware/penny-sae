@@ -1,9 +1,12 @@
-function suspensions (data, params) {
+function suspensions (doc, source, params, key) {
+  var dates = doc['suspensions.date'].value;
+  dates = Array.isArray(dates) ? dates : [dates]
+  
   var n = 0;
-  var have = data != null;
+  var have = dates.length > 0;
   if (have) {
-    for (i = 0; i < data.length; i++) {
-      n += time_filter(data[i].date, params.min_date, params.max_date);
+    for (i = 0; i < dates.length; i++) {
+      n += time_filter(dates[i], new Date(params.min_date).getTime(), new Date(params.max_date).getTime());
     }
   }
   return {
