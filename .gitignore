@@ -1,3 +1,5 @@
+npm-debug.log
+*DS_Store
 penny.xcworkspace/
 server/node/node_modules/
 web/js/dist/

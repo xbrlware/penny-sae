@@ -10,7 +10,9 @@ function runServer () {
   var es = require('elasticsearch');
   var fs = require('fs');
   var app = express();
+  var compression = require('compression');
 
+  app.use(compression());
   app.use(require('body-parser').json());
 
   // headers
