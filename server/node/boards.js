@@ -145,6 +145,13 @@ module.exports = function (app, config, client) {
                   'field': 'time',
                   'interval': 'day',
                   'min_doc_count': 1
+                },
+                'aggs': {
+                  'maximum': {
+                    'max': {
+                      'field': 'doc_count'
+                    }
+                  }
                 }
               },
               'pos': {

@@ -641,7 +641,7 @@ App.BoardController = Ember.Controller.extend({
             .attr('class', 'x brush')
             .call(obj.brush)
             .selectAll('rect')
-            .attr('y', -1)
+            .attr('y', 0)
             .attr('height', obj.height);
         }
       }

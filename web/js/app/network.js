@@ -22,7 +22,6 @@ App.NetView = Ember.View.extend({
 
     var rgraph = App.RGraph.init(con, 'main-infovis', redFlagParams);
     App.NetworkAPI.expand_node(con, rgraph, cik, redFlagParams, true);
-    console.log('rgraph', rgraph);
     con.set('rgraph', rgraph);
   }
 });
@@ -114,7 +113,6 @@ App.RGraph.reopenClass({
         offsetX: 10,
         offsetY: 10,
         onShow: function (tip, node) {
-          console.log('node', node);
           tip.innerHTML = `Name: ${node.name} <br> CIK: ${node.id}`;
         }
       },

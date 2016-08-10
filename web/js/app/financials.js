@@ -6,7 +6,6 @@ App.FinancialsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     App.Search.fetch_data('financials', this.get('controller.name')).then(function (response) {
       controller.set('model', response.data);
-      console.log('MODEL :: --> ', response.data);
     });
   }
 });
