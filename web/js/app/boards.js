@@ -448,6 +448,7 @@ App.BoardController = Ember.Controller.extend({
     var posts = {};
     posts.title = 'Post Volume';
     posts.class = 'volume-posts';
+    posts.clip = 'c1';
     posts.width = totalWidth * 0.5;
     posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
     posts.position_left = margin.left;
@@ -464,6 +465,7 @@ App.BoardController = Ember.Controller.extend({
     var brushChart = {};
     brushChart.title = '';
     brushChart.class = 'brush-chart-posts';
+    brushChart.clip = 'c2';
     brushChart.width = totalWidth * 0.5;
     brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
     brushChart.position_left = margin.left;
@@ -478,6 +480,7 @@ App.BoardController = Ember.Controller.extend({
     var price = {};
     price.title = 'Price';
     price.class = 'close';
+    price.clip = 'c3';
     price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
     price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
     price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
@@ -494,13 +497,14 @@ App.BoardController = Ember.Controller.extend({
     var volume = {};
     volume.title = 'Volume';
     volume.class = 'volume';
+    volume.clip = 'c4';
     volume.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
     volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
     volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
     volume.position_top = totalHeight * 0.5 + margin.between.y;
     volume.x = d3.time.scale().range([0, volume.width]);
     volume.y = d3.scale.linear().range([volume.height, 0]);
-    volume.xAxis = price.xAxis;
+    volume.xAxis = d3.svg.axis().scale(volume.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
     volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
     // init D3 tip that is activated when you hover over charts
     volume.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
@@ -549,120 +553,116 @@ App.BoardController = Ember.Controller.extend({
       return div;
     }
 
-    // post volume definition
-    posts.div = makeDiv(posts, 'c1');
-    posts.x.domain(d3.extent(forumData, function (d) { return d.date; }));
-    posts.y.domain(d3.extent(forumData, function (d) { return d.volume; }));
-    posts.div.select('g.volume-posts').datum(forumData);
+    function makeBarChart (svg, chartObj, data, dateFilter) {
+      if (!chartObj.div) {
+        chartObj.div = makeDiv(chartObj, chartObj.clip);
+        chartObj.div.select('g.' + chartObj.class).datum(data);
+      }
 
-    // brush chart definition
-    brushChart.div = makeDiv(brushChart, 'c2');
-    brushChart.x.domain(posts.x.domain());
-    brushChart.y.domain(posts.y.domain());
-    brushChart.div.select('g.brush-chart-posts').datum(forumData);
+      var _data = _.filter(data, function (x) {
+        return x.date > dateFilter[0] & x.date < dateFilter[1];
+      });
+
+      chartObj.x.domain(dateFilter);
+      chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
+
+      chartObj.div.selectAll('.bar').remove();
+
+      var dd = _this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
+      var barWidth = chartObj.width / dd;
+
+      chartObj.div.selectAll('.bar')
+        .data(_data)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x', function (d) { return chartObj.x(d.date); })
+        .attr('width', barWidth)
+        .attr('y', function (d) { return chartObj.y(d.volume); })
+        .attr('height', function (d) { return chartObj.height - chartObj.y(d.volume); });
+
+      // draw the axis
+      chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+      chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
+    }
 
     // price chart definition
-    price.div = makeDiv(price, 'c3');
-    price.x.domain(d3.extent(pvData, function (d) { return d.date; }));
-    price.y.domain(d3.extent(pvData, function (d) { return d.close; }));
-    price.div.select('g.close').datum(pvData);
-
-    // volume chart definition
-    volume.div = makeDiv(volume, 'c4');
-    volume.x.domain(d3.extent(pvData, function (d) { return d.date; }));
-    volume.y.domain(d3.extent(pvData, function (d) { return d.volume; }));
-    volume.div.select('g.volume').datum(pvData);
-
-    function _draw (obj, dateFilter) {
+    function makeClose (svg, chartObj, data, dateFilter) {
       /* handles drawing each chart */
-      var data = obj.div.select('g.' + obj.class).datum();
+      if (!chartObj.div) {
+        chartObj.div = makeDiv(chartObj, chartObj.clip);
+        chartObj.div.select('g.' + chartObj.class).datum(data);
+      }
+
+      chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
+      chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
 
       var _data = _.filter(data, function (d) {
         return d.date > dateFilter[0] & d.date < dateFilter[1];
       });
 
-      obj.x.domain(dateFilter);
+      chartObj.x.domain(dateFilter);
 
       // only for price object
-      if (obj.class === 'close') {
-        obj.y.domain(d3.extent(_data, function (d) { return d.close; }));
-        obj.div.selectAll('.dot').remove();
-        obj.div.selectAll('.line').remove();
+      chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
+      chartObj.div.selectAll('.dot').remove();
+      chartObj.div.selectAll('.line').remove();
 
-        var line = d3.svg.line()
-          .x(function (d) { return obj.x(d.date); })
-          .y(function (d) { return obj.y(d.close); });
+      var line = d3.svg.line()
+        .x(function (d) { return chartObj.x(d.date); })
+        .y(function (d) { return chartObj.y(d.close); });
 
-        obj.div.select('g.' + obj.class).append('path')
-          .datum(_data)
-          .attr('class', 'line')
-          .attr('d', line);
+      chartObj.div.select('g.' + chartObj.class).append('path')
+        .datum(_data)
+        .attr('class', 'line')
+        .attr('d', line);
 
-        // overlays dots so d3 tip works
-        obj.div.selectAll('.dot')
-            .data(_data)
-            .enter().append('circle')
-            .attr('class', 'dot')
-            .attr('opacity', '0.0')
-            .attr('r', 3)
-            .attr('cx', function (d) { return obj.x(d.date); })
-            .attr('cy', function (d) { return obj.y(d.close); })
-            .on('mouseover', obj.tip.show)
-            .on('mouseout', obj.tip.hide);
+      // overlays dots so d3 tip works
+      chartObj.div.selectAll('.dot')
+        .data(_data)
+        .enter().append('circle')
+        .attr('class', 'dot')
+        .attr('opacity', '0.0')
+        .attr('r', 3)
+        .attr('cx', function (d) { return chartObj.x(d.date); })
+        .attr('cy', function (d) { return chartObj.y(d.close); })
+        .on('mouseover', chartObj.tip.show)
+        .on('mouseout', chartObj.tip.hide);
 
-        obj.div.call(obj.tip);
-      }
-
-      // handles the bar charts
-      if (obj.class !== 'close') {
-        obj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
-        obj.div.selectAll('.bar').remove();
-
-        var dd = _this.dateDiff(obj.x.domain()[0], obj.x.domain()[1]);
-        var barWidth = obj.width / dd;
-
-        obj.div.selectAll('.bar')
-          .data(_data)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x', function (d) { return obj.x(d.date); })
-          .attr('width', barWidth)
-          .attr('y', function (d) { return obj.y(d.volume); })
-          .attr('height', function (d) { return obj.height - obj.y(d.volume); });
-
-        // brush chart does not get d3 tip
-        if (obj.class !== 'brush-chart-posts') {
-          obj.div.selectAll('.bar')
-            .on('mouseover', obj.tip.show)
-            .on('mouseout', obj.tip.hide);
-          obj.div.call(obj.tip);
-        } else {
-          obj.div.append('g')
-            .attr('class', 'x brush')
-            .call(obj.brush)
-            .selectAll('rect')
-            .attr('y', 0)
-            .attr('height', obj.height);
-        }
-      }
+      chartObj.div.call(chartObj.tip);
       // draw the axis
-      obj.div.select('g.x.axis').call(obj.xAxis);
-      obj.div.selectAll('g.y.axis').call(obj.yAxis);
+      chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+      chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
     }
 
     function rtDraw () {
       /* fired during init and when the brush moves */
       var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
 
-      _draw(price, brushDomain);
-      _draw(volume, brushDomain);
-      _draw(posts, brushDomain);
+      makeClose(svg, price, pvData, brushDomain);
+      makeBarChart(svg, volume, pvData, brushDomain);
+      volume.div.selectAll('.bar')
+        .on('mouseover', volume.tip.show)
+        .on('mouseout', volume.tip.hide);
+      volume.div.call(volume.tip);
+
+      makeBarChart(svg, posts, forumData, brushDomain);
+      posts.div.selectAll('.bar')
+        .on('mouseover', posts.tip.show)
+        .on('mouseout', posts.tip.hide);
+      posts.div.call(posts.tip);
 
       cb(brushDomain);
     }
 
     // draw brush chart
-    _draw(brushChart, [price.x.domain()[0], brushChart.x.domain()[1]]);
+    makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    brushChart.div.append('g')
+      .attr('class', 'x brush')
+      .call(brushChart.brush)
+      .selectAll('rect')
+      .attr('y', 0)
+      .attr('height', brushChart.height);
+
     // set inital date ranges to be shown
     brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     brushChart.brush(d3.select('.brush').transition());
@@ -783,8 +783,9 @@ App.BoardRoute = Ember.Route.extend({
 
     var cik = this.controllerFor('detail').get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'neg': 0.5}).then(function (response) {
         con.set('model', response);
+        console.log('model ::', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
           return x;

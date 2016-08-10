@@ -63,13 +63,15 @@ module.exports = function (app, config, client) {
       return q;
     },
     'boardTimeline': function (btData) {
-      return {
+      var bt = {
         'size': 0,
         'query': {
-          'constant_score': {
+          'filtered': {
             'filter': {
-              'term': {
-                '__meta__.sym.cik': btData.cik
+              'bool': {
+                'must': [
+                  {'term': {'__meta__.sym.cik': btData.cik}}
+                ]
               }
             }
           }
@@ -84,6 +86,10 @@ module.exports = function (app, config, client) {
           }
         }
       };
+      if (btData.flag) {
+        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.neg}}});
+      }
+      return bt;
     },
     'getPVData': function (pvData) {
       return {
@@ -145,13 +151,6 @@ module.exports = function (app, config, client) {
                   'field': 'time',
                   'interval': 'day',
                   'min_doc_count': 1
-                },
-                'aggs': {
-                  'maximum': {
-                    'max': {
-                      'field': 'doc_count'
-                    }
-                  }
                 }
               },
               'pos': {
@@ -220,12 +219,14 @@ module.exports = function (app, config, client) {
 
     async.parallel([
       function (cb) { getPvData(d, cb); },
-      function (cb) { getPostsTimelineData(d, cb); }
+      function (cb) { getPostsTimelineData(d, false, cb); },
+      function (cb) { getPostsTimelineData(d, true, cb); }
     ], function (error, results) {
       if (error) { console.log(error); }
       res.send({
         'pvData': results[0],
-        'ptData': results[1]
+        'ptData': results[1],
+        'ptNegData': results[2]
       });
     });
   });
@@ -300,7 +301,8 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function getPostsTimelineData (data, cb) {
+  function getPostsTimelineData (data, flag, cb) {
+    data['flag'] = flag;
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.boardTimeline(data)
