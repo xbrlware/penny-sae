@@ -7,7 +7,7 @@ function capitalizeFirstLetter (str) {
 
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
-  
+
   function redflagScript (params, score) {
     return {
       'script': {
@@ -68,26 +68,26 @@ module.exports = function (app, config, client) {
     'search': function (query, redFlagParams) {
       return {
         'query': { 'match_phrase': { 'searchterms': query } },
-        'aggs' : {
-          'top_hits' : {
-            'top_hits' : {
-              'size' : 15,
+        'aggs': {
+          'top_hits': {
+            'top_hits': {
+              'size': 15,
               '_source': ['cik', 'current_symbology.name'],
               'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
           }
-        }        
+        }
       };
     },
     'refresh': function (query, redFlagParams) {
       return {
         'query': { 'terms': { 'cik': query } },
-        'aggs' : {
-          'top_hits' : {
-            'top_hits' : {
-              'size' : 15,
+        'aggs': {
+          'top_hits': {
+            'top_hits': {
+              'size': 15,
               '_source': ['cik', 'current_symbology.name'],
-              'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
+              'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
           }
         }
@@ -109,12 +109,12 @@ module.exports = function (app, config, client) {
             }
           }
         },
-        'aggs' : {
-          'top_hits' : {
-            'top_hits' : {
-              'size' : 15,
-                '_source': ['cik', 'current_symbology.name'],
-                'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
+        'aggs': {
+          'top_hits': {
+            'top_hits': {
+              'size': 15,
+              '_source': ['cik', 'current_symbology.name'],
+              'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
           }
         }
@@ -232,7 +232,7 @@ module.exports = function (app, config, client) {
       'index': config['ES']['INDEX']['AGG'],
       'body': d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
-      'size': 0,
+      'size': 0
     }).then(function (esResponse) {
       var hits = _.map(esResponse.aggregations.top_hits.hits.hits, function (hit) {
         return {
@@ -241,7 +241,7 @@ module.exports = function (app, config, client) {
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
-      console.log('took =', esResponse.took)
+      console.log('took =', esResponse.took);
       res.send({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
@@ -264,7 +264,7 @@ module.exports = function (app, config, client) {
       'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
       'size': 0,
-      'requestCache' : true
+      'requestCache': true
     }).then(function (esResponse) {
       var hits = _.map(esResponse.aggregations.top_hits.hits.hits, function (hit) {
         return {
@@ -273,7 +273,7 @@ module.exports = function (app, config, client) {
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
-      console.log('took =', esResponse.took)
+      console.log('took =', esResponse.took);
       res.send({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
