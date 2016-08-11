@@ -1,4 +1,4 @@
-function otc_neighbors (doc, source, params, key) {
+function otc_neighbors (doc, params, key) {
   var otc_paths = doc[key + '.otc_paths'].value;
   var total_paths = doc[key + '.total_paths'].value;
   

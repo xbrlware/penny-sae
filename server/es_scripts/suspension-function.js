@@ -1,4 +1,4 @@
-function suspensions (doc, source, params, key) {
+function suspensions (doc, params, key) {
   var dates = doc['suspensions.date'].value;
   var n = 0;
   var have = dates != null;

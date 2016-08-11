@@ -24,7 +24,7 @@ function run () {
   // Compute scores (if parameterized)
   var scores = {};
   for (k in params) {
-    kscore = functions[k](doc, _source, params[k], k);
+    kscore = functions[k](doc, params[k], k);
     if (kscore.have) {scores[k] = kscore;}
   }
 

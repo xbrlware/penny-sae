@@ -1,13 +1,14 @@
-function financials (doc, source, params, key) {
-  var data = source[key];
+function financials (doc, params, key) {
+  var data = doc[key + '_stringified'].value;
   var have = data != null;
   var n = 0;
 
-  if (data != null) {
-    for (i = 0; i < data.length; i++) {
-      var field = data[i].field == params.field;
-      var tf = time_filter(data[i].date, params.min_date, params.max_date);
-      var low = data[i].value < params.value;
+  if (have) {
+    var pdata = JSON.parse(data);
+    for (i = 0; i < pdata.length; i++) {
+      var tf = time_filter(pdata[i].date, params.min_date, params.max_date);
+      var field = pdata[i].field == params.field;
+      var low = pdata[i].value < params.value;
       n += field & tf & low;
     }
   }
@@ -16,5 +17,5 @@ function financials (doc, source, params, key) {
     'value': n,
     'is_flag': n >= params.threshold,
     'have': have
-  };
+  }; 
 }
