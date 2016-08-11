@@ -1,15 +1,15 @@
 function crowdsar (doc, params, key) {
-  var data = doc[key + '_stringified'].value;
+  var data = doc[key + '_stringified'].values;
   var have = data != null;
   var n = 0;
   var c = 0;
   
   if (have) {
-    var pdata = JSON.parse(data);
-    for (i = 0; i < pdata.length; i++) {
-      if (time_filter(pdata[i].date, params.min_date, params.max_date)) {
+    for (i = 0; i < data.length; i++) {
+      var pdata = JSON.parse(data[i]);
+      if (time_filter(pdata.date, params.min_date, params.max_date)) {
         c += 1;
-        n += pdata[i][params.field];
+        n += pdata[params.field];
       }
     }
   }

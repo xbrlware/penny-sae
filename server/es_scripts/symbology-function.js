@@ -1,13 +1,13 @@
 function symbology (doc, params, key) {
-  var data = doc[key + '_stringified'].value;
+  var data = doc[key + '_stringified'].values;
   var have = data != null;
   var n = 0;
   
   if (have) {
-    var pdata = JSON.parse(data);
-    for (i = 0; i < pdata.length; i++) {
-      var tf = time_filter(data[i].new_date, params.min_date, params.max_date);
-      var field = pdata[i].field == params.field;
+    for (i = 0; i < data.length; i++) {
+      var pdata = JSON.parse(data[i]);
+      var tf = time_filter(pdata.new_date, params.min_date, params.max_date);
+      var field = pdata.field == params.field;
       n += field & tf;
     }
   }
