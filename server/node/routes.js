@@ -11,7 +11,7 @@ module.exports = function (app, config, client) {
   function redflagScript (params, score) {
     return {
       'script': {
-        'id': 'ernest',
+        'id': config.ES.SCRIPT,
         'lang': 'js',
         'params': {
           'score': score,
