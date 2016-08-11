@@ -5,6 +5,7 @@
     "CLEAR_USERS_ON_RESTART" : false,
     "ES" : {
         "HOST"  : ["http://localhost:9205", "http://localhost:9206", "http://localhost:9207", "http://localhost:9208"],
+        "SCRIPT" : "ernest",
         "INDEX" : {
           "CROWDSAR"    : "ernest_crowdsar",
           "AUTH"        : "ernest_auth",
