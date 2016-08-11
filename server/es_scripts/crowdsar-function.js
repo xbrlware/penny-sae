@@ -1,12 +1,15 @@
-function crowdsar (data, params) {
+function crowdsar (doc, params, key) {
+  var data = doc[key + '_stringified'].values;
+  var have = data != null;
   var n = 0;
   var c = 0;
-  var have = data != null;
+  
   if (have) {
     for (i = 0; i < data.length; i++) {
-      if (time_filter(data[i].date, params.min_date, params.max_date)) {
+      var pdata = JSON.parse(data[i]);
+      if (time_filter(pdata.date, params.min_date, params.max_date)) {
         c += 1;
-        n += data[i][params.field];
+        n += pdata[params.field];
       }
     }
   }
@@ -19,5 +22,5 @@ function crowdsar (data, params) {
     'value': Math.round(100 * n) / 100,
     'is_flag': n >= params.threshold,
     'have': have
-  };
+  };  
 }
