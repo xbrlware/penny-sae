@@ -3,17 +3,13 @@
 module.exports = function (app, config, client) {
   var async = require('async');
   var lomap = require('lodash/map');
-  var maxBy = require('lodash/maxBy');
-  var minBy = require('lodash/minBy');
-  var meanBy = require('lodash/meanBy');
-  var round = require('lodash/round');
   var mapValues = require('lodash/mapValues');
 
   var boardQueryBuilder = {
     'board': function (brdData, search = null, users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
         'query': {
           'filtered': {
             'filter': {
@@ -31,11 +27,13 @@ module.exports = function (app, config, client) {
               }
             }
           }
-        },
-        'sort': {
-          'time': 'desc'
         }
       };
+      if (brdData.sentiment.type === 'neg') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': brdData.sentiment.score}}});
+      } else if (brdData.sentiment.type === 'pos') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': brdData.sentiment.score}}});
+      }
 
       if (users) {
         q.query.filtered.filter.bool.must.push({
@@ -86,14 +84,15 @@ module.exports = function (app, config, client) {
           }
         }
       };
-      if (btData.flag) {
-        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.neg}}});
+      if (btData.sentiment.type === 'neg') {
+        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}});
+      } else if (btData.sentiment.type === 'pos') {
+        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}});
       }
       return bt;
     },
     'getPVData': function (pvData) {
       return {
-        'size': 9999,
         'query': {
           'constant_score': {
             'filter': {
@@ -103,8 +102,32 @@ module.exports = function (app, config, client) {
             }
           }
         },
-        'sort': {
-          'date': {'order': 'desc'}
+        'aggs': {
+          'top_dates': {
+            'terms': {
+              'field': 'date',
+              'size': 9999
+            },
+            'aggs': {
+              'top_sort': {
+                'top_hits': {
+                  'sort': [
+                    {'date': {'order': 'desc'}}
+                  ],
+                  '_source': {
+                    'include': [
+                      'date',
+                      'open',
+                      'high',
+                      'low',
+                      'close',
+                      'volume'
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       };
     },
@@ -150,7 +173,23 @@ module.exports = function (app, config, client) {
                 'date_histogram': {
                   'field': 'time',
                   'interval': 'day',
+                  'format': 'yyyy/MM/dd',
                   'min_doc_count': 1
+                }
+              },
+              'maximum': {
+                'max_bucket': {
+                  'buckets_path': 'user_histogram>_count'
+                }
+              },
+              'minimum': {
+                'min_bucket': {
+                  'buckets_path': 'user_histogram>_count'
+                }
+              },
+              'average': {
+                'avg_bucket': {
+                  'buckets_path': 'user_histogram>_count'
                 }
               },
               'pos': {
@@ -172,6 +211,11 @@ module.exports = function (app, config, client) {
           }
         }
       };
+      if (tData.sentiment.type === 'neg') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}});
+      } else if (tData.sentiment.type === 'pos') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': tData.sentiment.score}}});
+      }
       if (search) {
         lomap(search, function (s) {
           q.query.filtered.filter.bool.must.push(s);
@@ -219,14 +263,12 @@ module.exports = function (app, config, client) {
 
     async.parallel([
       function (cb) { getPvData(d, cb); },
-      function (cb) { getPostsTimelineData(d, false, cb); },
-      function (cb) { getPostsTimelineData(d, true, cb); }
+      function (cb) { getPostsTimelineData(d, cb); }
     ], function (error, results) {
       if (error) { console.log(error); }
       res.send({
         'pvData': results[0],
-        'ptData': results[1],
-        'ptNegData': results[2]
+        'ptData': results[1]
       });
     });
   });
@@ -272,28 +314,20 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.timeline(data, s)
     }).then(function (response) {
       var q = lomap(response.aggregations.posts.buckets, function (x) {
-        var maxObj = maxBy(x.user_histogram.buckets, function (d) {
-          return d.doc_count;
-        });
-        var minObj = minBy(x.user_histogram.buckets, function (d) {
-          return d.doc_count;
-        });
         return {
           id: x.key,
           user: x.user.buckets[0].key,
           doc_count: x.doc_count,
-          pos: x.pos.value,
-          neut: x.neut.value,
-          neg: x.neg.value,
-          max: maxObj.doc_count,
-          mean: round(meanBy(x.user_histogram.buckets, function (d) {
-            return d.doc_count;
-          }), 1),
-          min: minObj.doc_count,
-          timeline: lomap(x.user_histogram.buckets, function (d) {
-            var t = d.key_as_string.replace(/-/g, '/').split('T')[0];
-            return {'key_as_string': t, 'doc_count': d.doc_count};
-          })};
+          pred_data: [
+            {label: 'pos', value: x.pos.value},
+            {label: 'neut', value: x.neut.value},
+            {label: 'neg', value: x.neg.value}
+          ],
+          max: x.maximum.value,
+          mean: x.average.value,
+          min: x.minimum.value,
+          timeline: x.user_histogram.buckets
+        };
       });
       console.log('/getTimelineData :: returned', q.length);
       cb(null, q);
@@ -301,8 +335,7 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function getPostsTimelineData (data, flag, cb) {
-    data['flag'] = flag;
+  function getPostsTimelineData (data, cb) {
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
       body: boardQueryBuilder.boardTimeline(data)
@@ -338,7 +371,9 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
-      cb(null, lomap(response.hits.hits, '_source'));
+      cb(null, lomap(response.aggregations.top_dates.buckets, function (d) {
+        return d.top_sort.hits.hits[0]._source;
+      }));
       return;
     });
   }
