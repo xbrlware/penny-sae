@@ -4,7 +4,6 @@ function financials (doc, params, key) {
   var n = 0;
 
   if (have) {
-    
     for (i = 0; i < data.length; i++) {
       var pdata = JSON.parse(data[i]);
       var tf = time_filter(pdata.date, params.min_date, params.max_date);
@@ -18,5 +17,5 @@ function financials (doc, params, key) {
     'value': n,
     'is_flag': n >= params.threshold,
     'have': have
-  }; 
+  };
 }

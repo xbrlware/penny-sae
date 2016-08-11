@@ -3,7 +3,7 @@ function crowdsar (doc, params, key) {
   var have = data != null;
   var n = 0;
   var c = 0;
-  
+
   if (have) {
     for (i = 0; i < data.length; i++) {
       var pdata = JSON.parse(data[i]);
@@ -22,5 +22,5 @@ function crowdsar (doc, params, key) {
     'value': Math.round(100 * n) / 100,
     'is_flag': n >= params.threshold,
     'have': have
-  };  
+  };
 }

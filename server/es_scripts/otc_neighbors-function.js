@@ -1,7 +1,7 @@
 function otc_neighbors (doc, params, key) {
   var otc_paths = doc[key + '.otc_paths'].value;
   var total_paths = doc[key + '.total_paths'].value;
-  
+
   var have = otc_paths != null;
   var prop = 0;
   var cond1 = false;
