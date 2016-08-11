@@ -95,7 +95,7 @@ module.exports = function (app, config, client) {
   function redflagScript (params, score) {
     return {
       'script': {
-        'id': 'ernest',
+        'id': 'ernest_test',
         'lang': 'js',
         'params': {
           'score': score,
@@ -296,7 +296,7 @@ module.exports = function (app, config, client) {
       'body': d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
       'size': 15,
-      'preference': '_primary'
+      // 'preference': '_primary'
     }).then(function (esResponse) {
       var hits = _.map(esResponse.hits.hits, function (hit) {
         return {
@@ -327,7 +327,7 @@ module.exports = function (app, config, client) {
       'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
       'size': 15,
-      'preference': '_primary'
+      // 'preference': '_primary'
     }).then(function (esResponse) {
       var hits = _.map(esResponse.hits.hits, function (hit) {
         return {
@@ -336,6 +336,7 @@ module.exports = function (app, config, client) {
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
+      console.log('took = ', esResponse.took);
       res.send({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
