@@ -12,10 +12,10 @@ function combine_scores (scores, params) {
 
 // Register functions
 var functions = {
-  // 'symbology': symbology,
-  // 'delinquency': delinquency,
+  'symbology': symbology,
+  'delinquency': delinquency,
   'otc_neighbors': otc_neighbors,
-  // 'crowdsar': crowdsar,
+  'crowdsar': crowdsar,
   'suspensions': suspensions,
   'financials': financials
 };

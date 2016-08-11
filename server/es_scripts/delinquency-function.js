@@ -1,4 +1,5 @@
-function delinquency (data, params) {
+function delinquency (doc, source, params, key) {
+  var data = source[key];
   var n = 0;
   var have = data != null;
   if (have) {

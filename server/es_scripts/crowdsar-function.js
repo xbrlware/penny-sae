@@ -1,4 +1,5 @@
-function crowdsar (data, params) {
+function crowdsar (doc, source, params, key) {
+  var data = source[key];
   var n = 0;
   var c = 0;
   var have = data != null;
