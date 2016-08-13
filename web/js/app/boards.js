@@ -49,6 +49,140 @@ App.BoardController = Ember.Controller.extend({
     return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
   },
 
+  makeDiv: function (obj, clip, svg) {
+    /* builds generic 'g' tag for each chart */
+    /* obj = chart object from above, clip = name of clip path */
+    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
+      .attr('transform',
+          'translate(' + obj.position_left + ',' + obj.position_top + ')');
+
+    // define clip path
+    div.append('defs').append('clipPath')
+      .attr('id', clip)
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', obj.y(1))
+      .attr('width', obj.width)
+      .attr('height', obj.y(0) - obj.y(1));
+
+    // set clip path
+    div.append('g')
+      .attr('class', obj.class)
+      .attr('clip-path', 'url(#' + clip + ')');
+
+    div.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + obj.height + ')');
+
+    div.append('g')
+      .attr('class', 'y axis')
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 6)
+      .attr('dy', '.71em')
+      .style('text-anchor', 'end')
+      .text(obj.title);
+
+    return div;
+  },
+
+  makeBarChart: function (svg, chartObj, data, dateFilter) {
+    if (!chartObj.div) {
+      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
+      chartObj.div.select('g.' + chartObj.class).datum(data);
+    }
+
+    var _data = _.filter(data, function (x) {
+      return x.date > dateFilter[0] & x.date < dateFilter[1];
+    });
+
+    chartObj.x.domain(dateFilter);
+    chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
+
+    chartObj.div.selectAll('.bar').remove();
+
+    var dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
+    var barWidth = chartObj.width / dd;
+
+    chartObj.div.selectAll('.bar')
+      .data(_data)
+      .enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', function (d) { return chartObj.x(d.date); })
+      .attr('width', barWidth)
+      .attr('y', function (d) { return chartObj.y(d.volume); })
+      .attr('height', function (d) { return chartObj.height - chartObj.y(d.volume); });
+
+    // draw the axis
+    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
+
+    if (chartObj.tip) {
+      chartObj.div.selectAll('.bar')
+        .on('mouseover', chartObj.tip.show)
+        .on('mouseout', chartObj.tip.hide);
+      chartObj.div.call(chartObj.tip);
+    }
+
+    // draw brush if it is a brush object
+    if (chartObj.brush) {
+      chartObj.div.append('g')
+        .attr('class', 'x brush')
+        .call(chartObj.brush)
+        .selectAll('rect')
+        .attr('y', 0)
+        .attr('height', chartObj.height);
+    }
+  },
+
+  makeClose: function (svg, chartObj, data, dateFilter) {
+    /* handles drawing each close chart */
+    if (!chartObj.div) {
+      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
+      chartObj.div.select('g.' + chartObj.class).datum(data);
+    }
+
+    chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
+    chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
+
+    var _data = _.filter(data, function (d) {
+      return d.date > dateFilter[0] & d.date < dateFilter[1];
+    });
+
+    chartObj.x.domain(dateFilter);
+
+    // only for price object
+    chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
+    chartObj.div.selectAll('.dot').remove();
+    chartObj.div.selectAll('.line').remove();
+
+    var line = d3.svg.line()
+      .x(function (d) { return chartObj.x(d.date); })
+      .y(function (d) { return chartObj.y(d.close); });
+
+    chartObj.div.select('g.' + chartObj.class).append('path')
+      .datum(_data)
+      .attr('class', 'line')
+      .attr('d', line);
+
+    // overlays dots so d3 tip works
+    chartObj.div.selectAll('.dot')
+      .data(_data)
+      .enter().append('circle')
+        .attr('class', 'dot')
+        .attr('opacity', '0.0')
+        .attr('r', 3)
+        .attr('cx', function (d) { return chartObj.x(d.date); })
+        .attr('cy', function (d) { return chartObj.y(d.close); })
+        .on('mouseover', chartObj.tip.show)
+        .on('mouseout', chartObj.tip.hide);
+
+    chartObj.div.call(chartObj.tip);
+    // draw the axis
+    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
+  },
+
   makeTimeSeries: function (ts, bounds) {
     /* Builds time series for users using D3 */
     var _this = this;
@@ -258,7 +392,7 @@ App.BoardController = Ember.Controller.extend({
         renderAll(_this);
       }
     );
-  }.observes('model'),
+  },
 
   toggleSplitByFilterMember (id) {
     /* toggles which users are seen in the forum messages */
@@ -414,7 +548,6 @@ App.BoardController = Ember.Controller.extend({
   renderCharts: function (forumData, pvdata, div, cb) {
     /* renders Post Volume, Brush, Price, and Trading Volume charts */
     var _this = this;
-
     // date formatting functions
     var parseDate = d3.time.format('%Y-%m-%d').parse;
     var parseDateTip = d3.time.format('%b-%d');
@@ -509,154 +642,19 @@ App.BoardController = Ember.Controller.extend({
       .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
       .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
 
-    function makeDiv (obj, clip) {
-      /* builds generic 'g' tag for each chart */
-      /* obj = chart object from above, clip = name of clip path */
-      var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-        .attr('transform',
-          'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-      // define clip path
-      div.append('defs').append('clipPath')
-        .attr('id', clip)
-        .append('rect')
-        .attr('x', 0)
-        .attr('y', obj.y(1))
-        .attr('width', obj.width)
-        .attr('height', obj.y(0) - obj.y(1));
-
-      // set clip path
-      div.append('g')
-        .attr('class', obj.class)
-        .attr('clip-path', 'url(#' + clip + ')');
-
-      div.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + obj.height + ')');
-
-      div.append('g')
-        .attr('class', 'y axis')
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '.71em')
-        .style('text-anchor', 'end')
-        .text(obj.title);
-
-      return div;
-    }
-
-    function makeBarChart (svg, chartObj, data, dateFilter) {
-      if (!chartObj.div) {
-        chartObj.div = makeDiv(chartObj, chartObj.clip);
-        chartObj.div.select('g.' + chartObj.class).datum(data);
-      }
-
-      var _data = _.filter(data, function (x) {
-        return x.date > dateFilter[0] & x.date < dateFilter[1];
-      });
-
-      chartObj.x.domain(dateFilter);
-      chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
-
-      chartObj.div.selectAll('.bar').remove();
-
-      var dd = _this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
-      var barWidth = chartObj.width / dd;
-
-      chartObj.div.selectAll('.bar')
-        .data(_data)
-        .enter().append('rect')
-        .attr('class', 'bar')
-        .attr('x', function (d) { return chartObj.x(d.date); })
-        .attr('width', barWidth)
-        .attr('y', function (d) { return chartObj.y(d.volume); })
-        .attr('height', function (d) { return chartObj.height - chartObj.y(d.volume); });
-
-      // draw the axis
-      chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-      chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
-
-      if (chartObj.tip) {
-        chartObj.div.selectAll('.bar')
-          .on('mouseover', chartObj.tip.show)
-          .on('mouseout', chartObj.tip.hide);
-        chartObj.div.call(chartObj.tip);
-      }
-
-      // draw brush if it is a brush object
-      if (chartObj.brush) {
-        chartObj.div.append('g')
-          .attr('class', 'x brush')
-          .call(chartObj.brush)
-          .selectAll('rect')
-          .attr('y', 0)
-          .attr('height', chartObj.height);
-      }
-    }
-
-    // price chart definition
-    function makeClose (svg, chartObj, data, dateFilter) {
-      /* handles drawing each chart */
-      if (!chartObj.div) {
-        chartObj.div = makeDiv(chartObj, chartObj.clip);
-        chartObj.div.select('g.' + chartObj.class).datum(data);
-      }
-
-      chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
-      chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
-
-      var _data = _.filter(data, function (d) {
-        return d.date > dateFilter[0] & d.date < dateFilter[1];
-      });
-
-      chartObj.x.domain(dateFilter);
-
-      // only for price object
-      chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
-      chartObj.div.selectAll('.dot').remove();
-      chartObj.div.selectAll('.line').remove();
-
-      var line = d3.svg.line()
-        .x(function (d) { return chartObj.x(d.date); })
-        .y(function (d) { return chartObj.y(d.close); });
-
-      chartObj.div.select('g.' + chartObj.class).append('path')
-        .datum(_data)
-        .attr('class', 'line')
-        .attr('d', line);
-
-      // overlays dots so d3 tip works
-      chartObj.div.selectAll('.dot')
-        .data(_data)
-        .enter().append('circle')
-        .attr('class', 'dot')
-        .attr('opacity', '0.0')
-        .attr('r', 3)
-        .attr('cx', function (d) { return chartObj.x(d.date); })
-        .attr('cy', function (d) { return chartObj.y(d.close); })
-        .on('mouseover', chartObj.tip.show)
-        .on('mouseout', chartObj.tip.hide);
-
-      chartObj.div.call(chartObj.tip);
-      // draw the axis
-      chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-      chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
-    }
-
     function rtDraw () {
       /* fired during init and when the brush moves */
       var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
 
-      makeBarChart(svg, posts, forumData, brushDomain);
-      makeClose(svg, price, pvData, brushDomain);
-      makeBarChart(svg, volume, pvData, brushDomain);
+      _this.makeBarChart(svg, posts, forumData, brushDomain);
+      _this.makeClose(svg, price, pvData, brushDomain);
+      _this.makeBarChart(svg, volume, pvData, brushDomain);
 
       cb(brushDomain);
     }
 
     // draw brush chart
-    makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    this.makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
     // set inital date ranges to be shown
     brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     brushChart.brush(d3.select('.brush').transition());
@@ -801,6 +799,7 @@ App.BoardRoute = Ember.Route.extend({
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'neut', score: 0.5}}).then(function (response) {
         con.set('model', response);
+        con.draw();
         console.log('model ::', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
