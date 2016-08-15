@@ -39,247 +39,6 @@ App.BoardController = Ember.Controller.extend({
     return [];
   }.property(),
 
-  dateDiff: function (startDate, endDate) {
-    /* gets amount of days between start and end - used for bar width in charts */
-    // Does not take daylight savings in account
-    var oneDay = 24 * 60 * 60 * 1000;
-    var firstDate = new Date(startDate);
-    var secondDate = new Date(endDate);
-
-    return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
-  },
-
-  makeDiv: function (obj, clip, svg) {
-    /* builds generic 'g' tag for each chart */
-    /* obj = chart object from above, clip = name of clip path */
-    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-      .attr('transform',
-          'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-    // define clip path
-    div.append('defs').append('clipPath')
-      .attr('id', clip)
-      .append('rect')
-      .attr('x', 0)
-      .attr('y', obj.y(1))
-      .attr('width', obj.width)
-      .attr('height', obj.y(0) - obj.y(1));
-
-    // set clip path
-    div.append('g')
-      .attr('class', obj.class)
-      .attr('clip-path', 'url(#' + clip + ')');
-
-    div.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + obj.height + ')');
-
-    div.append('g')
-      .attr('class', 'y axis')
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '.71em')
-      .style('text-anchor', 'end')
-      .text(obj.title);
-
-    return div;
-  },
-
-  makeBarChart: function (svg, chartObj, data, dateFilter) {
-    if (!chartObj.div) {
-      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
-      chartObj.div.select('g.' + chartObj.class).datum(data);
-    }
-
-    var _data = _.filter(data, function (x) {
-      return x.date > dateFilter[0] & x.date < dateFilter[1];
-    });
-
-    chartObj.x.domain(dateFilter);
-    chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
-
-    chartObj.div.selectAll('.bar').remove();
-
-    var dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
-    var barWidth = chartObj.width / dd;
-
-    chartObj.div.selectAll('.bar')
-      .data(_data)
-      .enter().append('rect')
-      .attr('class', 'bar')
-      .attr('x', function (d) { return chartObj.x(d.date); })
-      .attr('width', barWidth)
-      .attr('y', function (d) { return chartObj.y(d.volume); })
-      .attr('height', function (d) { return chartObj.height - chartObj.y(d.volume); });
-
-    // draw the axis
-    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
-
-    if (chartObj.tip) {
-      chartObj.div.selectAll('.bar')
-        .on('mouseover', chartObj.tip.show)
-        .on('mouseout', chartObj.tip.hide);
-      chartObj.div.call(chartObj.tip);
-    }
-
-    // draw brush if it is a brush object
-    if (chartObj.brush) {
-      chartObj.div.append('g')
-        .attr('class', 'x brush')
-        .call(chartObj.brush)
-        .selectAll('rect')
-        .attr('y', 0)
-        .attr('height', chartObj.height);
-    }
-  },
-
-  makeClose: function (svg, chartObj, data, dateFilter) {
-    /* handles drawing each close chart */
-    if (!chartObj.div) {
-      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
-      chartObj.div.select('g.' + chartObj.class).datum(data);
-    }
-
-    chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
-    chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
-
-    var _data = _.filter(data, function (d) {
-      return d.date > dateFilter[0] & d.date < dateFilter[1];
-    });
-
-    chartObj.x.domain(dateFilter);
-
-    // only for price object
-    chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
-    chartObj.div.selectAll('.dot').remove();
-    chartObj.div.selectAll('.line').remove();
-
-    var line = d3.svg.line()
-      .x(function (d) { return chartObj.x(d.date); })
-      .y(function (d) { return chartObj.y(d.close); });
-
-    chartObj.div.select('g.' + chartObj.class).append('path')
-      .datum(_data)
-      .attr('class', 'line')
-      .attr('d', line);
-
-    // overlays dots so d3 tip works
-    chartObj.div.selectAll('.dot')
-      .data(_data)
-      .enter().append('circle')
-        .attr('class', 'dot')
-        .attr('opacity', '0.0')
-        .attr('r', 3)
-        .attr('cx', function (d) { return chartObj.x(d.date); })
-        .attr('cy', function (d) { return chartObj.y(d.close); })
-        .on('mouseover', chartObj.tip.show)
-        .on('mouseout', chartObj.tip.hide);
-
-    chartObj.div.call(chartObj.tip);
-    // draw the axis
-    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
-  },
-
-  makeTimeSeries: function (ts, bounds) {
-    /* Builds time series for users using D3 */
-    var _this = this;
-    var div = '#ts-' + ts.id;
-    var margin = {top: 13, right: 20, bottom: 20, left: 0};
-    var FILL_COLOR = 'orange';
-    var TEXT_COLOR = '#ccc';
-    var data = ts.timeseries;
-
-    // format date for D3
-    var parseDate = d3.time.format('%b-%d');
-    var meanFormat = d3.format('.2f');
-
-    // Clear previous values
-    d3.select(div).selectAll('svg').remove();
-
-    // acquire user name and number of posts
-    d3.select(div + ' .title').text(ts.name);
-    d3.select(div + ' .during').html('<span>Posts: ' + ts.count.during + '</span>');
-
-    // init
-    var tip = d3.tip()
-      .attr('class', 'd3-tip')
-      .offset([-5, 0])
-      .html(function (d) {
-        return '<center><span>' + parseDate(d.date) + '</span><br /><span>' + d.value + '</span></center>';
-      });
-
-    // Get cell height
-    var height = (margin.top + margin.bottom) * 1.5;
-    var width = (Ember.$('#gauge-timeline-cell').width() * 0.60);
-
-    // set x scale and domain
-    var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
-    x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
-
-    // set y scale and domain
-    var y = d3.scale.linear().range([height, 0]);
-    y.domain([0, ts.max]);
-
-    // figure out width of bar
-    var dd = this.dateDiff(x.domain()[0], x.domain()[1]);
-    var barWidth = width / dd;
-
-    var svg = d3.select(div).append('svg:svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-    var yaxis = d3.svg.axis()
-      .scale(y)
-      .orient('right')
-      .tickFormat(d3.format('.f'))
-      .tickValues([meanFormat(ts.mean), ts.max]);
-
-    var xaxis = d3.svg.axis()
-      .scale(x)
-      .orient('bottom')
-      .ticks(4)
-      .tickFormat(d3.time.format('%m/%y'));
-
-    svg.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(xaxis)
-      .attr('stroke', TEXT_COLOR);
-
-    svg.append('g')
-      .attr('class', 'y axis timeline')
-      .attr('transform', 'translate(' + (width - margin.right) + ',0)')
-      .call(yaxis)
-      .attr('stroke', TEXT_COLOR);
-
-    svg.selectAll('bar')
-      .data(data)
-      .enter().append('rect')
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-      .style('fill', FILL_COLOR)
-      .attr('x', function (d) { return x(d.date); })
-      .attr('width', barWidth)
-      .attr('y', function (d) { return y(d.value); })
-      .attr('height', function (d) { return height - y(d.value); });
-
-    d3.selectAll('g.y.axis.timeline g.tick text')
-      .on('click', function (d, i) {
-        if (i % 2 === 0) {
-          _this.sortTimelines('mean');
-        } else {
-          _this.sortTimelines('max');
-        }
-      });
-
-    svg.call(tip);
-  },
-
   postFilteredData: function () {
     /* populates forum posts with data from filtered_data */
     /* watches these properties: filtered_data, dateFilter, pageCount */
@@ -409,7 +168,6 @@ App.BoardController = Ember.Controller.extend({
     /* sets up data and then uses makeTimeSeries to draw all
      * users and their timelines
      */
-    var _this = this;
     var model = this.get('model.tlData');
     var ascDesc = this.get('ascDesc');
 
@@ -459,8 +217,9 @@ App.BoardController = Ember.Controller.extend({
 
     // make time series
     Ember.run.next(function () {
+      var mts = App.Chart.create();
       _.map(timeseries, function (t) {
-        _this.makeTimeSeries(t, {
+        mts.makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
           'ymax': t.max,
@@ -642,20 +401,22 @@ App.BoardController = Ember.Controller.extend({
       .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
       .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
 
+    var charts = App.Chart.create();
+
     function rtDraw () {
       /* fired during init and when the brush moves */
       var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
 
-      _this.makeBarChart(svg, posts, forumData, brushDomain);
-      _this.makeClose(svg, price, pvData, brushDomain);
-      _this.makeBarChart(svg, volume, pvData, brushDomain);
+      charts.makeBarChart(svg, posts, forumData, brushDomain);
+      charts.makeClose(svg, price, pvData, brushDomain);
+      charts.makeBarChart(svg, volume, pvData, brushDomain);
 
       console.log('this ::', _this);
       cb(brushDomain);
     }
 
     // draw brush chart
-    this.makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    charts.makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
     // set inital date ranges to be shown
     brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     brushChart.brush(d3.select('.brush').transition());
