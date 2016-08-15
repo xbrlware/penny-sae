@@ -650,6 +650,7 @@ App.BoardController = Ember.Controller.extend({
       _this.makeClose(svg, price, pvData, brushDomain);
       _this.makeBarChart(svg, volume, pvData, brushDomain);
 
+      console.log('this ::', _this);
       cb(brushDomain);
     }
 
@@ -717,6 +718,7 @@ App.BoardController = Ember.Controller.extend({
           return x;
         }));
         if (!response.pvData.length && !response.data.length) { _this.set('isData', false); }
+        _this.draw();
       });
     });
   },
