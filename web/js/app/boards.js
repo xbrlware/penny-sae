@@ -20,7 +20,6 @@ App.BoardController = Ember.Controller.extend({
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   rtDraw: function () {
     /* fired during init and when the brush moves */
-    console.log('THIS ::', this);
     var data = this.get('model.ptData');
     var pvdata = this.get('model.pvData');
 
@@ -48,7 +47,7 @@ App.BoardController = Ember.Controller.extend({
     charts.makeBarChart(this.postsChart, forumData, brushDomain);
     charts.makeClose(this.priceChart, pvData, brushDomain);
     charts.makeBarChart(this.volumeChart, pvData, brushDomain);
-    return brushDomain;
+    this.set('dateFilter', brushDomain);
   },
 
   createChartDimensions: function (id, wMultiplier, hMultiplier) {
@@ -68,6 +67,7 @@ App.BoardController = Ember.Controller.extend({
     var _this = this;
     function brushed () {
       _this.rtDraw();
+      _this.redraw();
     }
 
     var parseDateTip = d3.time.format('%b-%d');
@@ -190,7 +190,7 @@ App.BoardController = Ember.Controller.extend({
     }).value() : out;
 
     return r;
-  }.property('filtered_data', 'dateFilter', 'pageCount'),
+  }.property('filtered_data', 'pageCount'),
 
   redraw: function (numPosters = 10) {
     /* redraw time lines and forum messages */
@@ -262,7 +262,6 @@ App.BoardController = Ember.Controller.extend({
     var date = datum.dimension(function (d) {
       return d.date;
     });
-
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
       // Time series
@@ -271,13 +270,8 @@ App.BoardController = Ember.Controller.extend({
       _this.redraw();
     };
 
-    this.renderCharts(forumData, pvData,
-      function (dateFilter) {
-        _this.set('dateFilter', dateFilter);
-        date.filterRange(dateFilter);
-        renderAll(_this);
-      }
-    );
+    this.renderCharts(forumData, pvData);
+    renderAll(_this);
   },
 
   toggleSplitByFilterMember (id) {
@@ -431,7 +425,7 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
-  renderCharts: function (forumData, pvdata, cb) {
+  renderCharts: function (forumData, pvdata) {
     /* renders Post Volume, Brush, Price, and Trading Volume charts */
     // date formatting functions
     var charts = App.Chart.create();
@@ -447,7 +441,7 @@ App.BoardController = Ember.Controller.extend({
     }
 
     this.brushChart.brush(d3.select('.brush').transition());
-    cb(this.rtDraw(pvdata, forumData));
+    this.rtDraw(pvdata, forumData);
   },
 
   sortPosters: function (sortType) {
