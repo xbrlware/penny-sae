@@ -15,6 +15,7 @@ function zpad (x, n) {
 function edges2nodes (edges) {
   var nodes = [];
   _.map(edges, function (edge) {
+    // Issuers
     if (!_.findWhere(nodes, {'id': edge['issuerCik']})) {
       nodes.push({
         'id': edge['issuerCik'],
@@ -25,17 +26,19 @@ function edges2nodes (edges) {
     } else {
       _.findWhere(nodes, {'id': edge['issuerCik']})['role'].add('issuer');
     }
-
+    
+    // Owners
     if (!_.findWhere(nodes, {'id': edge['ownerCik']})) {
       nodes.push({
         'id': edge['ownerCik'],
         'name': edge['ownerName'],
         'role': new Set(['owner']),
-        'terminal': (edge['__meta__'] || {'issuer_has_one_neighbor':false})['owner_has_one_neighbor']
+        'terminal': (edge['__meta__'] || {'owner_has_one_neighbor':false})['owner_has_one_neighbor']
       });
     } else {
       _.findWhere(nodes, {'id': edge['ownerCik']})['role'].add('owner');
     }
+    
   });
   return nodes;
 }
