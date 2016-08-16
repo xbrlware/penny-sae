@@ -11,26 +11,19 @@ App.Chart = Ember.Object.extend({
     return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
   },
 
-  makeDiv: function (obj, clip, svg) {
+  makeDiv: function (obj) {
     /* builds generic 'g' tag for each chart */
     /* obj = chart object from above, clip = name of clip path */
-    var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-      .attr('transform',
-          'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-    // define clip path
-    div.append('defs').append('clipPath')
-      .attr('id', clip)
-      .append('rect')
-      .attr('x', 0)
-      .attr('y', obj.y(1))
+    d3.select(obj.id).select('svg').remove();
+    var div = d3.select(obj.id).append('svg')
       .attr('width', obj.width)
-      .attr('height', obj.y(0) - obj.y(1));
+      .attr('height', obj.height + obj.margin.top + obj.margin.bottom)
+      .style('padding-left', obj.margin.left)
+      .style('padding-top', obj.margin.top);
 
-    // set clip path
-    div.append('g')
-      .attr('class', obj.class)
-      .attr('clip-path', 'url(#' + clip + ')');
+    div.append('g').attr('class', 'focus1').attr('id', obj.class)
+      .attr('transform',
+          'translate(' + 35 + ', -' + 0 + ')');
 
     div.append('g')
       .attr('class', 'x axis')
@@ -48,9 +41,10 @@ App.Chart = Ember.Object.extend({
     return div;
   },
 
-  makeBarChart: function (svg, chartObj, data, dateFilter) {
+  makeBarChart: function (chartObj, data, dateFilter) {
     if (!chartObj.div) {
-      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
+      // init svg tree
+      chartObj.div = this.makeDiv(chartObj);
       chartObj.div.select('g.' + chartObj.class).datum(data);
     }
 
@@ -77,7 +71,10 @@ App.Chart = Ember.Object.extend({
 
     // draw the axis
     chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
+
+    if (!chartObj.brush) {
+      chartObj.div.select('g.y.axis').call(chartObj.yAxis);
+    }
 
     if (chartObj.tip) {
       chartObj.div.selectAll('.bar')
@@ -97,58 +94,10 @@ App.Chart = Ember.Object.extend({
     }
   },
 
-  makeClose: function (svg, chartObj, data, dateFilter) {
-    /* handles drawing each close chart */
-    if (!chartObj.div) {
-      chartObj.div = this.makeDiv(chartObj, chartObj.clip, svg);
-      chartObj.div.select('g.' + chartObj.class).datum(data);
-    }
-
-    chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
-    chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
-
-    var _data = _.filter(data, function (d) {
-      return d.date > dateFilter[0] & d.date < dateFilter[1];
-    });
-
-    chartObj.x.domain(dateFilter);
-
-    // only for price object
-    chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
-    chartObj.div.selectAll('.dot').remove();
-    chartObj.div.selectAll('.line').remove();
-
-    var line = d3.svg.line()
-      .x(function (d) { return chartObj.x(d.date); })
-      .y(function (d) { return chartObj.y(d.close); });
-
-    chartObj.div.select('g.' + chartObj.class).append('path')
-      .datum(_data)
-      .attr('class', 'line')
-      .attr('d', line);
-
-    // overlays dots so d3 tip works
-    chartObj.div.selectAll('.dot')
-      .data(_data)
-      .enter().append('circle')
-        .attr('class', 'dot')
-        .attr('opacity', '0.0')
-        .attr('r', 3)
-        .attr('cx', function (d) { return chartObj.x(d.date); })
-        .attr('cy', function (d) { return chartObj.y(d.close); })
-        .on('mouseover', chartObj.tip.show)
-        .on('mouseout', chartObj.tip.hide);
-
-    chartObj.div.call(chartObj.tip);
-    // draw the axis
-    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
-    chartObj.div.selectAll('g.y.axis').call(chartObj.yAxis);
-  },
-
   makeTimeSeries: function (ts, bounds) {
     /* Builds time series for users using D3 */
     var _this = this;
-    var div = '#ts-' + ts.id;
+    var div = ts.id;
     var margin = {top: 13, right: 20, bottom: 20, left: 0};
     var FILL_COLOR = 'orange';
     var TEXT_COLOR = '#ccc';
@@ -240,5 +189,68 @@ App.Chart = Ember.Object.extend({
       });
 
     svg.call(tip);
+  },
+
+  makeClose: function (chartObj, data, dateFilter) {
+    /* handles drawing each close chart */
+    if (!chartObj.div) {
+      // init svg tree
+      chartObj.div = this.makeDiv(chartObj);
+      chartObj.div.select('g.' + chartObj.class).datum(data);
+
+      // define clip path
+      chartObj.div.append('defs').append('clipPath')
+        .attr('id', chartObj.clip)
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', chartObj.y(1))
+        .attr('width', chartObj.width)
+        .attr('height', chartObj.y(0) - chartObj.y(1));
+
+      // set clip path
+      chartObj.div.append('g')
+        .attr('class', chartObj.class)
+        .attr('clip-path', 'url(#' + chartObj.clip + ')');
+    }
+
+    chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
+    chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
+
+    var _data = _.filter(data, function (d) {
+      return d.date > dateFilter[0] & d.date < dateFilter[1];
+    });
+
+    chartObj.x.domain(dateFilter);
+
+    // only for price object
+    chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
+    chartObj.div.selectAll('.dot').remove();
+    chartObj.div.selectAll('.line').remove();
+
+    var line = d3.svg.line()
+      .x(function (d) { return chartObj.x(d.date); })
+      .y(function (d) { return chartObj.y(d.close); });
+
+    chartObj.div.select('g.' + chartObj.class).append('path')
+      .datum(_data)
+      .attr('class', 'line')
+      .attr('d', line);
+
+    // overlays dots so d3 tip works
+    chartObj.div.selectAll('.dot')
+      .data(_data)
+      .enter().append('circle')
+        .attr('class', 'dot')
+        .attr('opacity', '0.0')
+        .attr('r', 3)
+        .attr('cx', function (d) { return chartObj.x(d.date); })
+        .attr('cy', function (d) { return chartObj.y(d.close); })
+        .on('mouseover', chartObj.tip.show)
+        .on('mouseout', chartObj.tip.hide);
+
+    chartObj.div.call(chartObj.tip);
+    // draw the axis
+    chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+    chartObj.div.select('g.y.axis').call(chartObj.yAxis);
   }
 });

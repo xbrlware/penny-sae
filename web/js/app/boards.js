@@ -11,9 +11,137 @@ App.BoardController = Ember.Controller.extend({
   timelineLoading: false,
   pageCount: 1,
   ascDesc: {},
+  postsChart: {},
+  brushChart: {},
+  priceChart: {},
+  volumeChart: {},
   searchTerm: '',
   sentiment: 'neut',
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
+  rtDraw: function () {
+    /* fired during init and when the brush moves */
+    console.log('THIS ::', this);
+    var data = this.get('model.ptData');
+    var pvdata = this.get('model.pvData');
+
+    var parseDate = d3.time.format('%Y-%m-%d').parse;
+
+    // get price/volume data and parse it
+    var pvData = _.chain(pvdata).map(function (d) {
+      return {
+        date: parseDate(d.date),
+        open: +d.open,
+        high: +d.high,
+        low: +d.low,
+        close: +d.close,
+        volume: +d.volume
+      };
+    }).value();
+
+    var forumData = _.map(data, function (x) {
+      return { 'date': new Date(x.date), 'volume': x.value };
+    });
+
+    var charts = App.Chart.create();
+    var brushDomain = this.brushChart.brush.empty() ? this.priceChart.x.domain() : this.brushChart.brush.extent();
+
+    charts.makeBarChart(this.postsChart, forumData, brushDomain);
+    charts.makeClose(this.priceChart, pvData, brushDomain);
+    charts.makeBarChart(this.volumeChart, pvData, brushDomain);
+    return brushDomain;
+  },
+
+  createChartDimensions: function (id, wMultiplier, hMultiplier) {
+    var w = Ember.$(id).width() * wMultiplier;
+    var h = w * hMultiplier;
+    var x = d3.time.scale().range([0, w]);
+    var y = d3.scale.linear().range([h, 0]);
+    return {
+      width: w,
+      height: h,
+      x: x,
+      y: y
+    };
+  },
+
+  initChartObjects: function () {
+    var _this = this;
+    function brushed () {
+      _this.rtDraw();
+    }
+
+    var parseDateTip = d3.time.format('%b-%d');
+    var a = this.createChartDimensions('#bg', 0.5, 0.6);
+    this.set('postsChart', {
+      id: '#tl-posts-volume',
+      margin: { top: 10, bottom: 20, left: 35, right: 40 },
+      title: 'Post Volume',
+      class: 'volume-posts',
+      clip: 'c1',
+      width: a.width,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom'),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+      })
+    });
+
+    a = this.createChartDimensions('#bg', 0.5, 0.2);
+    this.set('brushChart', {
+      id: '#tl-brush-chart',
+      margin: { top: 10, bottom: 20, left: 0, right: 40 },
+      title: '',
+      class: 'brush-chart-posts',
+      clip: 'c2',
+      width: a.width,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom'),
+      yAxis: d3.svg.axis().scale(a.y).ticks(0).orient('left'),
+      brush: d3.svg.brush().x(a.x).on('brushend', brushed)
+    });
+
+    a = this.createChartDimensions('#bg', 0.5, 0.6);
+    this.set('priceChart', {
+      id: '#pv-price-chart',
+      margin: { top: 10, bottom: 20, left: 45, right: 40 },
+      title: 'Price',
+      class: 'close',
+      clip: 'c3',
+      width: a.width,
+      height: a.height,
+      x: a.x,
+      y: a.y.nice(),
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
+      })
+    });
+
+    a = this.createChartDimensions('#bg', 0.5, 0.2);
+    this.set('volumeChart', {
+      id: '#pv-volume-chart',
+      margin: { top: 10, bottom: 20, left: 35, right: 40 },
+      title: 'Volume',
+      class: 'volume',
+      clip: 'c4',
+      width: a.width,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4).tickFormat(d3.format('s')),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+      })
+    });
+  },
+
   defaultAscDesc: function () {
     /* sets default value for filter buttons - checks sessionStorage in browser first */
     var ss = {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc', type: 'doc'};
@@ -24,7 +152,6 @@ App.BoardController = Ember.Controller.extend({
         ss.type = t.type;
       }
     }
-    console.log('SS ::', ss);
     this.set('ascDesc', ss);
   },
 
@@ -144,7 +271,7 @@ App.BoardController = Ember.Controller.extend({
       _this.redraw();
     };
 
-    this.renderCharts(forumData, pvData, '#time-chart',
+    this.renderCharts(forumData, pvData,
       function (dateFilter) {
         _this.set('dateFilter', dateFilter);
         date.filterRange(dateFilter);
@@ -194,7 +321,7 @@ App.BoardController = Ember.Controller.extend({
     var timeseries = _.chain(model).map(function (v) {
       topx.push(v.id);
       return {
-        'id': v.id,
+        'id': '#ts-' + v.id,
         'name': v.user,
         'count': {
           'during': _.reduce(v.timeline, function (x, y) {
@@ -304,123 +431,23 @@ App.BoardController = Ember.Controller.extend({
     return arcs;
   },
 
-  renderCharts: function (forumData, pvdata, div, cb) {
+  renderCharts: function (forumData, pvdata, cb) {
     /* renders Post Volume, Brush, Price, and Trading Volume charts */
-    var _this = this;
     // date formatting functions
-    var parseDate = d3.time.format('%Y-%m-%d').parse;
-    var parseDateTip = d3.time.format('%b-%d');
-
-    // set up measuremeants for svg that holds all the charts
-    var margin = { top: 20, bottom: 10, between: { y: 40, x: 40 }, left: 35, right: 5 };
-    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
-    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-
-    // get price/volume data and parse it
-    var pvData = _.chain(pvdata).map(function (d) {
-      return {
-        date: parseDate(d.date),
-        open: +d.open,
-        high: +d.high,
-        low: +d.low,
-        close: +d.close,
-        volume: +d.volume
-      };
-    }).value();
-
-    // post volume
-    var posts = {};
-    posts.title = 'Post Volume';
-    posts.class = 'volume-posts';
-    posts.clip = 'c1';
-    posts.width = totalWidth * 0.5;
-    posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
-    posts.position_left = margin.left;
-    posts.position_top = margin.top;
-    posts.x = d3.time.scale().range([0, posts.width]);
-    posts.y = d3.scale.linear().range([posts.height, 0]);
-    posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
-    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-    posts.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
-      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
-    });
-
-    // brush chart
-    var brushChart = {};
-    brushChart.title = '';
-    brushChart.class = 'brush-chart-posts';
-    brushChart.clip = 'c2';
-    brushChart.width = totalWidth * 0.5;
-    brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
-    brushChart.position_left = margin.left;
-    brushChart.position_top = totalHeight * 0.8 + margin.between.y;
-    brushChart.x = d3.time.scale().range([0, brushChart.width]);
-    brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
-    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
-    brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
-    brushChart.brush = d3.svg.brush().x(brushChart.x).on('brushend', rtDraw);
-
-    // price chart
-    var price = {};
-    price.title = 'Price';
-    price.class = 'close';
-    price.clip = 'c3';
-    price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
-    price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-    price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-    price.position_top = margin.top;
-    price.x = d3.time.scale().range([0, price.width]);
-    price.y = d3.scale.linear().range([price.height, 0]);
-    price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
-    price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-    price.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
-      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
-    });
-
-    // trading volume chart
-    var volume = {};
-    volume.title = 'Volume';
-    volume.class = 'volume';
-    volume.clip = 'c4';
-    volume.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
-    volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-    volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-    volume.position_top = totalHeight * 0.5 + margin.between.y;
-    volume.x = d3.time.scale().range([0, volume.width]);
-    volume.y = d3.scale.linear().range([volume.height, 0]);
-    volume.xAxis = d3.svg.axis().scale(volume.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
-    volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-    // init D3 tip that is activated when you hover over charts
-    volume.tip = d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
-      return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
-    });
-
-    // init svg tree
-    d3.select(div).select('svg').remove();
-    var svg = d3.select(div).append('svg')
-      .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
-      .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
-
     var charts = App.Chart.create();
-
-    function rtDraw () {
-      /* fired during init and when the brush moves */
-      var brushDomain = brushChart.brush.empty() ? price.x.domain() : brushChart.brush.extent();
-
-      charts.makeBarChart(svg, posts, forumData, brushDomain);
-      charts.makeClose(svg, price, pvData, brushDomain);
-      charts.makeBarChart(svg, volume, pvData, brushDomain);
-
-      console.log('this ::', _this);
-      cb(brushDomain);
+    var dateDomain = this.brushChart.brush.extent();
+    d3.select('g.x.brush').remove();
+    // draw brush chart
+    charts.makeBarChart(this.brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    // set inital date ranges to be shown
+    if (dateDomain[0] < new Date('2004-01-01')) {
+      this.brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
+    } else {
+      this.brushChart.brush.extent(dateDomain);
     }
 
-    // draw brush chart
-    charts.makeBarChart(svg, brushChart, forumData, [new Date('2004-01-01'), new Date()]);
-    // set inital date ranges to be shown
-    brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
-    brushChart.brush(d3.select('.brush').transition());
-    rtDraw();
+    this.brushChart.brush(d3.select('.brush').transition());
+    cb(this.rtDraw(pvdata, forumData));
   },
 
   sortPosters: function (sortType) {
@@ -562,7 +589,6 @@ App.BoardRoute = Ember.Route.extend({
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'neut', score: 0.5}}).then(function (response) {
         con.set('model', response);
-        con.draw();
         console.log('model ::', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
@@ -576,6 +602,8 @@ App.BoardRoute = Ember.Route.extend({
         con.set('isLoading', false);
 
         if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
+        con.initChartObjects();
+        con.draw();
       });
     });
   }
