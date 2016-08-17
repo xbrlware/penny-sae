@@ -273,7 +273,7 @@ module.exports = function (app, config, client) {
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
-      console.log('took =', esResponse.took);
+      console.log('took = ', esResponse.took);
       res.send({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
