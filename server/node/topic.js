@@ -31,6 +31,7 @@ module.exports = function (app, config, client) {
 
     // (*) Right now, this is going to return multiple SICs for a single company, since
     // companies appear multiple times in SYMBOLOGY
+    // ^^ In the process of fixing this
     client.search({
       'index': config['ES']['INDEX']['CROWDSAR'],
       'body': queryBuilder.topic.cik(query, size = 500),
@@ -40,20 +41,20 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key');
       client.search({
-        'index': config['ES']['INDEX']['SYMBOLOGY'],
+        'index': config['ES']['INDEX']['AGG'],
         'body': queryBuilder.topic.sic_histogram(ciks),
         'from': 0,
         'size': 0,
         'requestCache': true
-      }).then(function (esResponse2) {
-        cb(undefined, {'sic_histogram': esResponse2.aggregations.sics.buckets});
+      }).then(function (esResponse) {
+        cb(undefined, {'sic_histogram': esResponse.aggregations.sics.buckets});
       });
     });
   }
 
   app.post('/topic_summary', function (req, res) {
     var d = req.body;
-
+    console.log('topic_summary ->', d.query);
     async.parallel([
       function (cb) { time_series(d.query, cb); },
       function (cb) { sic_distribution(d.query, cb); }

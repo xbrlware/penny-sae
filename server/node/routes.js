@@ -47,7 +47,7 @@ module.exports = function (app, config, client) {
       .value();
   }
   // </redflag-helpers>
-  
+
   // <search>
   function company_search (req, cb, query = undefined) {
     var d = req.body;
@@ -107,12 +107,12 @@ module.exports = function (app, config, client) {
       }, query = ciks);
     });
   }
-  
+
   app.post('/search', function (req, res) {
     !req.body.searchTopic ? company_search(req, (x) => res.send(x)) : topic_search(req, (x) => res.send(x));
   });
   // </search>
-  
+
   // <details>
   app.post('/company_table', function (req, res) {
     var d = req.body;

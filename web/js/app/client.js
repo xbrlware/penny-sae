@@ -69,26 +69,6 @@ App.SearchResultsView = Ember.View.extend({
   }
 });
 
-// >>
-App.SummaryRoute = Ember.Route.extend({
-  renderTemplate: function () {
-    this.render({outlet: 'summary'});
-  },
-  setupController: function (controller, model, queryParams) {
-    App.Search.fetch_data('topic_summary', {query: controller.get('searchTerm')}).then(function (response) {
-      console.log('summary response -- ', response);
-      controller.set('model', response);
-    });
-  }
-});
-
-App.SummaryController = Ember.ObjectController.extend({
-  needs: ['application'],
-  searchTerm: Ember.computed.alias('controllers.application.searchTerm')
-});
-
-// <<
-
 App.Search = Ember.Object.extend({});
 
 App.Search.reopenClass({
@@ -123,7 +103,9 @@ App.Search.reopenClass({
         dataType: 'json',
         url: detailName,
         data: JSON.stringify(name),
-        success: resolve,
+        success: function (response) {
+          resolve(response);
+        },
         error: function (error) {
           console.error('fetch_data :: ', error.message);
         }

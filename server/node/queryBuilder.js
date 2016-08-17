@@ -65,7 +65,7 @@ module.exports = function (config) {
           'aggs': {
             'sics': {
               'terms': {
-                'field': '__meta__.sic_lab.cat'
+                'field': 'current_symbology.sic_lab.cat'
               }
             }
           }
