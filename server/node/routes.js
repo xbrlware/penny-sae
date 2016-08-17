@@ -103,13 +103,14 @@ module.exports = function (app, config, client) {
               'terms': {
                 'field': '__meta__.sym.cik',
                 'min_doc_count': 1,
-                'size': 500
+                'size': 15
               }
             }
           }
         };
       },
       'companies': function (ciks, redFlagParams) {
+        // Not implemented yet
         return false;
       }
     },
@@ -285,9 +286,19 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 15);
       company_search(req, function (companyResponse) {
-        companyResponse.hits = _.sortBy(companyResponse.hits, function (x) {
+        companyResponse.hits = _.chain(companyResponse.hits).sortBy(function (x) {
           return _.indexOf(ciks, '' + x['cik']);
-        });
+        })
+        .zip(esResponse.aggregations.ciks.buckets)
+        .map(function(x) {
+          return _.extend(x[0], {
+            '__topic__' : {
+              'doc_count' : x[1]['doc_count']
+            }
+          });
+        })
+        .value();
+        console.log(companyResponse.hits);
         cb(companyResponse);
       }, query = ciks);
     });

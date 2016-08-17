@@ -19,6 +19,9 @@
                         {{#unless h.redFlags.possible}}
                             </p>
                         {{/unless}}
+                        {{#if h.__topic__.doc_count}}
+                            -- Mentions : {{h.__topic__.doc_count}}
+                        {{/if}}
                     </div>
                     
                     <br />
