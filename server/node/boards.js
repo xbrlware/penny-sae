@@ -235,7 +235,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(d, s, true)
+      body: boardQueryBuilder.board(d, s, true),
+      requestCache: true
     }).then(function (response) {
       var m = lomap(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
@@ -250,10 +251,7 @@ module.exports = function (app, config, client) {
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
       d = mapValues(d, function (value, key) {
-        if (!value) {
-          value = '';
-        }
-        return value;
+        return value || '';
       });
     }
 
@@ -311,7 +309,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.timeline(data, s)
+      body: boardQueryBuilder.timeline(data, s),
+      requestCache: true
     }).then(function (response) {
       var q = lomap(response.aggregations.posts.buckets, function (x) {
         return {
@@ -329,7 +328,7 @@ module.exports = function (app, config, client) {
           timeline: x.user_histogram.buckets
         };
       });
-      console.log('/getTimelineData :: returned', q.length);
+      console.log('/getTimelineData :: returning', q.length);
       cb(null, q);
       return;
     });
@@ -338,9 +337,10 @@ module.exports = function (app, config, client) {
   function getPostsTimelineData (data, cb) {
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.boardTimeline(data)
+      body: boardQueryBuilder.boardTimeline(data),
+      requestCache: true
     }).then(function (response) {
-      console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
+      console.log('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
       cb(null, lomap(response.aggregations.board_histogram.buckets, function (d, i) {
         return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
@@ -352,7 +352,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(data, s, false)
+      body: boardQueryBuilder.board(data, s, false),
+      requestCache: true
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, lomap(response.hits.hits, function (x) {
