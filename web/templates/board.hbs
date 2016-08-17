@@ -8,6 +8,32 @@
 
 {{#if isData}}
     <div class="col-xs-12" id="techan-wrapper">
+        <div class="col-xs-12 btn-group">
+            {{
+            filter-button
+            action="toggleVolume"
+            param="pos"
+            colXs2=true
+            btnRoundXs=true
+            title="pos"
+            }}
+            {{
+            filter-button
+            action="toggleVolume"
+            param="neut"
+            colXs2=true
+            btnXs=true
+            title="neut"
+            }}
+            {{
+            filter-button
+            action="toggleVolume"
+            param="neg"
+            colXs2=true
+            btnRoundXs=true
+            title="neg"
+            }}
+        </div>
         <div id="time-chart" class="chart"></div>
     </div>
 {{else}}
