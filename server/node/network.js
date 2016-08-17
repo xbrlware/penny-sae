@@ -21,24 +21,23 @@ function edges2nodes (edges) {
         'id': edge['issuerCik'],
         'name': edge['issuerName'],
         'role': new Set(['issuer']),
-        'terminal': (edge['__meta__'] || {'issuer_has_one_neighbor':false})['issuer_has_one_neighbor']
+        'terminal': (edge['__meta__'] || {'issuer_has_one_neighbor': false})['issuer_has_one_neighbor']
       });
     } else {
       _.findWhere(nodes, {'id': edge['issuerCik']})['role'].add('issuer');
     }
-    
+
     // Owners
     if (!_.findWhere(nodes, {'id': edge['ownerCik']})) {
       nodes.push({
         'id': edge['ownerCik'],
         'name': edge['ownerName'],
         'role': new Set(['owner']),
-        'terminal': (edge['__meta__'] || {'owner_has_one_neighbor':false})['owner_has_one_neighbor']
+        'terminal': (edge['__meta__'] || {'owner_has_one_neighbor': false})['owner_has_one_neighbor']
       });
     } else {
       _.findWhere(nodes, {'id': edge['ownerCik']})['role'].add('owner');
     }
-    
   });
   return nodes;
 }
@@ -191,7 +190,7 @@ module.exports = function (app, config, client) {
   function neighbors (params, cb) {
     var query = {
       'size': MAX_NEIGHBORS,
-      '_source' : [
+      '_source': [
         'issuerCik',
         'issuerName',
         'ownerCik',
@@ -203,9 +202,9 @@ module.exports = function (app, config, client) {
         'isDirector',
         'isTenPercentOwner',
         '__meta__.issuer_has_one_neighbor',
-        '__meta__.owner_has_one_neighbor',
+        '__meta__.owner_has_one_neighbor'
       ],
-      'query' : {
+      'query': {
         'term': {}
       }
     };

@@ -264,7 +264,7 @@ App.BoardController = Ember.Controller.extend({
     );
   }.observes('model'),
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember(id) {
     /* toggles which users are seen in the forum messages */
     var xFilter = this.get('splitByFilter');
 
@@ -275,7 +275,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX() {
     /* sets up data and then uses makeTimeSeries to draw all
      * users and their timelines
      */
@@ -343,7 +343,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges() {
     /* loads data used for drawing gauges and then passes that data to drawGauge */
     var _this = this;
     var data = this.get('model.tlData');
@@ -356,7 +356,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge(bindTo, gaugeData) {
     /* handles drawing a single gauge using D3 */
     d3.select(bindTo).selectAll('svg').remove();
     var _this = this;
@@ -600,15 +600,15 @@ App.BoardController = Ember.Controller.extend({
 
         // overlays dots so d3 tip works
         obj.div.selectAll('.dot')
-            .data(_data)
-            .enter().append('circle')
-            .attr('class', 'dot')
-            .attr('opacity', '0.0')
-            .attr('r', 3)
-            .attr('cx', function (d) { return obj.x(d.date); })
-            .attr('cy', function (d) { return obj.y(d.close); })
-            .on('mouseover', obj.tip.show)
-            .on('mouseout', obj.tip.hide);
+          .data(_data)
+          .enter().append('circle')
+          .attr('class', 'dot')
+          .attr('opacity', '0.0')
+          .attr('r', 3)
+          .attr('cx', function (d) { return obj.x(d.date); })
+          .attr('cy', function (d) { return obj.y(d.close); })
+          .on('mouseover', obj.tip.show)
+          .on('mouseout', obj.tip.hide);
 
         obj.div.call(obj.tip);
       }
@@ -742,7 +742,7 @@ App.BoardController = Ember.Controller.extend({
       this.sortTimelines(a);
     },
 
-    topXClicked (id) {
+    topXClicked(id) {
       /* handles when user is clicked on */
       var _this = this;
       this.set('pageCount', 1);

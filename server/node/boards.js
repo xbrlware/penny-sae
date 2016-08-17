@@ -10,7 +10,7 @@ module.exports = function (app, config, client) {
   var mapValues = require('lodash/mapValues');
 
   var boardQueryBuilder = {
-    'board': function (brdData, search = null, users = false) {
+    'board': function (brdData, search = null , users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker'],
@@ -41,8 +41,8 @@ module.exports = function (app, config, client) {
         q.query.filtered.filter.bool.must.push({
           'bool': {
             'must': [
-            {'match': { '__meta__.sym.cik': brdData.cik }},
-            {'terms': { 'user_id': brdData.users }}
+              {'match': { '__meta__.sym.cik': brdData.cik }},
+              {'terms': { 'user_id': brdData.users }}
             ]
           }
         });
@@ -292,7 +292,7 @@ module.exports = function (app, config, client) {
           timeline: lomap(x.user_histogram.buckets, function (d) {
             var t = d.key_as_string.replace(/-/g, '/').split('T')[0];
             return {'key_as_string': t, 'doc_count': d.doc_count};
-          })};
+        })};
       });
       console.log('/getTimelineData :: returned', q.length);
       cb(null, q);
