@@ -71,15 +71,15 @@ App.SearchResultsView = Ember.View.extend({
 
 // >>
 App.SummaryRoute = Ember.Route.extend({
-  renderTemplate: function() {
-    this.render({outlet : 'summary'});
+  renderTemplate: function () {
+    this.render({outlet: 'summary'});
   },
   setupController: function (controller, model, queryParams) {
-    App.Search.fetch_data('topic_summary', {query : controller.get('searchTerm')}).then(function(response) {
-      console.log('summary response -- ', response)
+    App.Search.fetch_data('topic_summary', {query: controller.get('searchTerm')}).then(function (response) {
+      console.log('summary response -- ', response);
       controller.set('model', response);
     });
-  },
+  }
 });
 
 App.SummaryController = Ember.ObjectController.extend({
@@ -87,7 +87,7 @@ App.SummaryController = Ember.ObjectController.extend({
   searchTerm: Ember.computed.alias('controllers.application.searchTerm')
 });
 
-//<<
+// <<
 
 App.Search = Ember.Object.extend({});
 
@@ -103,7 +103,7 @@ App.Search.reopenClass({
           'query': query,
           'redFlagParams': redFlagParams.get_toggled_params(),
           'searchTopic': searchTopic,
-          'mode' : refresh ? 'refresh' : 'search'
+          'mode': refresh ? 'refresh' : 'search'
         }),
         success: function (response) {
           resolve(App.SearchResults.create(response));

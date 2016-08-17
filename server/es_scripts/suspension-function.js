@@ -8,7 +8,7 @@ function suspensions (data, params) {
   }
   return {
     'value': n,
-    'is_flag': n > params.threshold,
+    'is_flag': n >= params.threshold,
     'have': have
   };
 }

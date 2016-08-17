@@ -54,7 +54,7 @@ App.SidebarRoute = App.GRoute.extend({
         controller.con.set('isLoading', false);
       });
     },
-    summary_detail: function() {
+    summary_detail: function () {
       return [1, 2, 3];
     }
   }
@@ -66,7 +66,7 @@ App.SidebarController = Ember.ObjectController.extend({
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
   searchTopic: Ember.computed.alias('controllers.application.searchTopic'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
-  
+
   actions: {
     iterateSidebar: function (dir) {
       if (dir > 0) {

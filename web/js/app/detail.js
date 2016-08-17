@@ -10,9 +10,9 @@ App.DetailRoute = Ember.Route.extend({
   setupController: function (controller, model, queryParams) {
     controller.set('model', model);
   },
-  
-  renderTemplate: function() {
-    this.render({outlet : 'detail'});
+
+  renderTemplate: function () {
+    this.render({outlet: 'detail'});
   }
 });
 

@@ -8,7 +8,7 @@ function capitalizeFirstLetter (str) {
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var queryBuilder = require('./queryBuilder')(config);
-  
+
   // <redflag-helpers>
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
   function defaultRedFlags () {
@@ -237,5 +237,5 @@ module.exports = function (app, config, client) {
       res.send({'data': esResponse['_source']});
     });
   });
-  // </details>
+// </details>
 };
