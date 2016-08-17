@@ -93,24 +93,24 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'topic' : {
-      'cik' : function(query) {
+    'topic': {
+      'cik': function (query) {
         // Searching message boards
         return {
-          "query": { "match_phrase": { "msg": query } },
-          "aggs": {
-            "ciks": {
-              "terms": {
-                "field": "__meta__.sym.cik",
-                "min_doc_count": 1,
-                "size" : 500
+          'query': { 'match_phrase': { 'msg': query } },
+          'aggs': {
+            'ciks': {
+              'terms': {
+                'field': '__meta__.sym.cik',
+                'min_doc_count': 1,
+                'size': 500
               }
             }
           }
         };
       },
-      'companies' : function(ciks, redFlagParams) {
-        return false
+      'companies': function (ciks, redFlagParams) {
+        return false;
       }
     },
     'sort': function (redFlagParams) {
@@ -239,17 +239,17 @@ module.exports = function (app, config, client) {
     }
   };
 
-  app.post('/search', function(req, res) {
+  app.post('/search', function (req, res) {
     !req.body.searchTopic ? company_search(req, (x) => res.send(x)) : topic_search(req, (x) => res.send(x));
   });
-  
-  function company_search(req, cb, query=undefined) {
+
+  function company_search (req, cb, query = undefined) {
     var d = req.body;
-    
+
     // Coerce parameters if we injected a query
     d.query = query || d.query;
     d.mode = query ? 'refresh' : d.mode;
-    
+
     client.search({
       'index': config['ES']['INDEX']['AGG'],
       'body': d.query ? queryBuilder[d.mode](d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
@@ -272,24 +272,24 @@ module.exports = function (app, config, client) {
         'hits': hits
       });
     });
-  };
-  
-  function topic_search(req, cb) {
+  }
+
+  function topic_search (req, cb) {
     var d = req.body;
     client.search({
-      'index' : 'ernest_crowdsar',
-      'body' : queryBuilder.topic.cik(d.query, d.redFlagParams),
-      'from' : 0,
-      'size' : 0,
-      'requestCache' : true
-    }).then(function(esResponse) {
+      'index': config['ES']['INDEX']['CROWDSAR'],
+      'body': queryBuilder.topic.cik(d.query, d.redFlagParams),
+      'from': 0,
+      'size': 0,
+      'requestCache': true
+    }).then(function (esResponse) {
       var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 15);
-      company_search(req, function(companyResponse) {
-        companyResponse.hits = _.sortBy(companyResponse.hits, function(x) {
+      company_search(req, function (companyResponse) {
+        companyResponse.hits = _.sortBy(companyResponse.hits, function (x) {
           return _.indexOf(ciks, '' + x['cik']);
         });
         cb(companyResponse);
-      }, query=ciks);
+      }, query = ciks);
     });
   }
 
