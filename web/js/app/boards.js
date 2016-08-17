@@ -1,4 +1,4 @@
-/* global Ember, App, d3, _, crossfilter, sessionStorage, gconfig */
+/* global Ember, App, d3, _, sessionStorage, gconfig */
 
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
@@ -51,7 +51,7 @@ App.BoardController = Ember.Controller.extend({
   },
 
   createChartDimensions: function (id, wMultiplier, hMultiplier) {
-    var w = Ember.$(id).width() * wMultiplier;
+    var w = Ember.$(id).width();
     var h = w * hMultiplier;
     var x = d3.time.scale().range([0, w]);
     var y = d3.scale.linear().range([h, 0]);
@@ -71,14 +71,15 @@ App.BoardController = Ember.Controller.extend({
     }
 
     var parseDateTip = d3.time.format('%b-%d');
-    var a = this.createChartDimensions('#bg', 0.5, 0.6);
+    var a = this.createChartDimensions('#tl-posts-volume', 0.5, 0.6);
+    console.log('AAAA ::', a);
     this.set('postsChart', {
       id: '#tl-posts-volume',
       margin: { top: 10, bottom: 20, left: 35, right: 40 },
       title: 'Post Volume',
       class: 'volume-posts',
       clip: 'c1',
-      width: a.width,
+      width: a.width + 35 + 40,
       height: a.height,
       x: a.x,
       y: a.y,
@@ -89,14 +90,14 @@ App.BoardController = Ember.Controller.extend({
       })
     });
 
-    a = this.createChartDimensions('#bg', 0.5, 0.2);
+    a = this.createChartDimensions('#tl-brush-chart', 0.5, 0.2);
     this.set('brushChart', {
       id: '#tl-brush-chart',
-      margin: { top: 10, bottom: 20, left: 0, right: 40 },
+      margin: { top: 10, bottom: 20, left: 35, right: 40 },
       title: '',
       class: 'brush-chart-posts',
       clip: 'c2',
-      width: a.width,
+      width: a.width + 35 + 40,
       height: a.height,
       x: a.x,
       y: a.y,
@@ -105,14 +106,14 @@ App.BoardController = Ember.Controller.extend({
       brush: d3.svg.brush().x(a.x).on('brushend', brushed)
     });
 
-    a = this.createChartDimensions('#bg', 0.5, 0.6);
+    a = this.createChartDimensions('#pv-price-chart', 0.5, 0.6);
     this.set('priceChart', {
       id: '#pv-price-chart',
       margin: { top: 10, bottom: 20, left: 45, right: 40 },
       title: 'Price',
       class: 'close',
       clip: 'c3',
-      width: a.width,
+      width: a.width + 35 + 40,
       height: a.height,
       x: a.x,
       y: a.y.nice(),
@@ -123,14 +124,14 @@ App.BoardController = Ember.Controller.extend({
       })
     });
 
-    a = this.createChartDimensions('#bg', 0.5, 0.2);
+    a = this.createChartDimensions('#pv-volume-chart', 0.5, 0.2);
     this.set('volumeChart', {
       id: '#pv-volume-chart',
-      margin: { top: 10, bottom: 20, left: 35, right: 40 },
+      margin: { top: 10, bottom: 20, left: 45, right: 40 },
       title: 'Volume',
       class: 'volume',
       clip: 'c4',
-      width: a.width,
+      width: a.width + 35 + 40,
       height: a.height,
       x: a.x,
       y: a.y,
@@ -256,12 +257,14 @@ App.BoardController = Ember.Controller.extend({
       return { 'date': new Date(x.date), 'volume': x.value };
     });
 
+    /*
     // For parent filter
     var datum = crossfilter(forumData);
-
     var date = datum.dimension(function (d) {
       return d.date;
     });
+    */
+
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
       // Time series

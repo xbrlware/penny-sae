@@ -8,39 +8,52 @@
 
 {{#if isData}}
     <div class="col-xs-12" id="techan-wrapper">
-        <div class="col-xs-12 btn-group" id="bg">
-            {{
-            filter-button
-            action="toggleVolume"
-            param="pos"
-            colXs2=true
-            btnRoundXs=true
-            title="pos"
-            }}
-            {{
-            filter-button
-            action="toggleVolume"
-            param="neut"
-            colXs2=true
-            btnXs=true
-            title="neut"
-            }}
-            {{
-            filter-button
-            action="toggleVolume"
-            param="neg"
-            colXs2=true
-            btnRoundXs=true
-            title="neg"
-            }}
+        <div class="row">
+            <div class="col-xs-6 btn-group" id="bg">
+                {{
+                filter-button
+                action="toggleVolume"
+                param="na"
+                colXs2=true
+                btnRoundXs=true
+                title="reset"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="pos"
+                colXs2=true
+                btnXs=true
+                title="pos"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="neut"
+                colXs2=true
+                btnXs=true
+                title="neut"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="neg"
+                colXs2=true
+                btnRoundXs=true
+                title="neg"
+                }}
+            </div>
         </div>
         <div class="row">
-            <div class="col-xs-6" id="tl-posts-volume"></div>
-            <div class="col-xs-6" id="pv-price-chart"></div>
+            <div class="col-xs-5" id="tl-posts-volume"></div>
+            <div class="col-xs-1"></div>
+            <div class="col-xs-5" id="pv-price-chart"></div>
         </div>
-        <div class="clearfix visible-xs-block"></div>
-            <div class="col-xs-6" id="tl-brush-chart"></div>
-            <div class="col-xs-6" id="pv-volume-chart"></div>
+        <div class="row">
+            <div class="col-xs-5" id="tl-brush-chart"></div>
+            <div class="col-xs-1"></div>
+            <div class="col-xs-5" id="pv-volume-chart"></div>
+        </div>
 {{else}}
     <span class="centered">
     <h4> There is no data available. </h4>

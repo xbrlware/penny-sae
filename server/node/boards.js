@@ -88,6 +88,8 @@ module.exports = function (app, config, client) {
         bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}});
       } else if (btData.sentiment.type === 'pos') {
         bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}});
+      } else if (btData.sentiment.type === 'neut') {
+        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': btData.sentiment.score}}});
       }
       return bt;
     },
@@ -211,11 +213,15 @@ module.exports = function (app, config, client) {
           }
         }
       };
+
       if (tData.sentiment.type === 'neg') {
         q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}});
       } else if (tData.sentiment.type === 'pos') {
         q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': tData.sentiment.score}}});
+      } else if (tData.sentiment.type === 'neut') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': tData.sentiment.score}}});
       }
+
       if (search) {
         lomap(search, function (s) {
           q.query.filtered.filter.bool.must.push(s);
