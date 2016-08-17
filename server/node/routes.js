@@ -1,10 +1,5 @@
 // server/node/routes.js
 
-// Helpers
-function capitalizeFirstLetter (str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var queryBuilder = require('./queryBuilder')(config);
@@ -21,7 +16,7 @@ module.exports = function (app, config, client) {
     if (x.length > 12) {
       x = x.slice(0, 12) + '...';
     }
-    return capitalizeFirstLetter(x);
+    return x.charAt(0).toUpperCase() + str.slice(1);
   }
 
   var redflagLabel_ = {
@@ -52,6 +47,7 @@ module.exports = function (app, config, client) {
       .value();
   }
   // </redflag-helpers>
+  
   // <search>
   function company_search (req, cb, query = undefined) {
     var d = req.body;
@@ -111,10 +107,12 @@ module.exports = function (app, config, client) {
       }, query = ciks);
     });
   }
+  
   app.post('/search', function (req, res) {
     !req.body.searchTopic ? company_search(req, (x) => res.send(x)) : topic_search(req, (x) => res.send(x));
   });
   // </search>
+  
   // <details>
   app.post('/company_table', function (req, res) {
     var d = req.body;
