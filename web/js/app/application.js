@@ -61,6 +61,7 @@ App.Router.map(function () {
   this.route('login', {path: 'login'}, function () {});
   this.route('frontpage', {path: '/'}, function () {});
   this.route('sidebar', {path: 'sidebar/:st'}, function () {
+    this.resource('summary', {path: 'summary'}, function () {});
     this.resource('detail', {path: 'detail/:cik'}, function () {
       this.resource('board', function () {});
       this.resource('topNews', function () {
@@ -76,7 +77,6 @@ App.Router.map(function () {
       this.resource('promotions', function () {});
       this.resource('leadership', function () {});
     });
-    this.resource('topic', {path: 'topic'}, function () {});
   });
 });
 

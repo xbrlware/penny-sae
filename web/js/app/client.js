@@ -45,6 +45,7 @@ App.SearchResultsView = Ember.View.extend({
     var cik = this.get('cik');
     var columns = this.get('columns');
 
+    console.log('fetch company table', cik);
     App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
       Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
@@ -68,47 +69,25 @@ App.SearchResultsView = Ember.View.extend({
   }
 });
 
-App.SummaryView = Ember.View.extend({
-  columns: [
-    {title: 'Min Date', defaultContent: '', className: 'dt-body-right'},
-    {title: 'Name', defaultContent: ''},
-    {title: 'Ticker', defaultContent: ''},
-    {title: 'SIC', defaultContent: ''}
-  ],
-
-  didInsertElement: function () {
-    this._super();
-    Ember.run.scheduleOnce('afterRender', this, this.afterRenderEvent);
+// >>
+App.SummaryRoute = Ember.Route.extend({
+  renderTemplate: function() {
+    this.render({outlet : 'summary'});
   },
-
-  afterRenderEvent: function () {
-    var _this = this;
-    console.log('hits !!', this.get('hits'));
-    var cik = this.get('hits')[0]['cik'];
-    var columns = this.get('columns');
-
-    App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
-      Ember.$('#search_result_test').DataTable({
-        fnDrawCallback: function (oSettings) {
-          if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {
-            Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-          }
-        },
-        columns: columns,
-        data: _.map(response['table'], function (x) {
-          return [_this.dateConversion(x.min_date), x.name, x.ticker, x.sic];
-        }),
-        bFilter: false,
-        bInfo: false
-      });
+  setupController: function (controller, model, queryParams) {
+    App.Search.fetch_data('topic_summary', {query : controller.get('searchTerm')}).then(function(response) {
+      console.log('summary response -- ', response)
+      controller.set('model', response);
     });
   },
+});
 
-  dateConversion: function (d) {
-    var date = new Date(d);
-    return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
-  }
-})
+App.SummaryController = Ember.ObjectController.extend({
+  needs: ['application'],
+  searchTerm: Ember.computed.alias('controllers.application.searchTerm')
+});
+
+//<<
 
 App.Search = Ember.Object.extend({});
 

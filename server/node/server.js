@@ -33,6 +33,7 @@ function runServer () {
   });
 
   require('./routes')(app, config, client);
+  require('./topic')(app, config, client);
   require('./network')(app, config, client);
   require('./boards')(app, config, client);
 
