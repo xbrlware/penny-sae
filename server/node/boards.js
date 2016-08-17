@@ -6,7 +6,7 @@ module.exports = function (app, config, client) {
   var mapValues = require('lodash/mapValues');
 
   var boardQueryBuilder = {
-    'board': function (brdData, search = null, users = false) {
+    'board': function (brdData, search = null , users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
@@ -39,8 +39,8 @@ module.exports = function (app, config, client) {
         q.query.filtered.filter.bool.must.push({
           'bool': {
             'must': [
-            {'match': { '__meta__.sym.cik': brdData.cik }},
-            {'terms': { 'user_id': brdData.users }}
+              {'match': { '__meta__.sym.cik': brdData.cik }},
+              {'terms': { 'user_id': brdData.users }}
             ]
           }
         });

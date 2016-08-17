@@ -14,8 +14,7 @@ App.NetView = Ember.View.extend({
   draw: function () {
     var con = this.get('controller');
 
-    //    con.set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL)
-    //    con.set('hide_ner', gconfig.DEFAULT_HIDE_NER)
+    con.set('hide_terminal', gconfig.DEFAULT_HIDE_TERMINAL);
 
     var cik = con.get('content.cik');
     var redFlagParams = con.get('redFlagParams');
@@ -188,34 +187,33 @@ App.RGraph.reopenClass({
           node.data['$dim'] = gconfig.STANDARD_NODE_SIZE;
         }
 
-        // Hide terminal nodes
-        //        if (con.get('hide_terminal') && node.data['terminal']) {
-        //          node.data['$alpha'] = 0
-        //        }
+        if (con.get('hide_terminal') && node.data['terminal']) {
+          node.data['$alpha'] = 0;
+        }
 
         node.data['$color'] = App.RGraph.computeColor(node.data['redFlags']['total']);
       }
     });
-    //    App.RGraph.addButtons(con, rgraph)
+    App.RGraph.addButtons(con, rgraph);
     return rgraph;
   },
 
-  //  addButtons: function (con, rgraph) {
-  //    button = $jit.id('toggle-terminal')
-  //    button.onclick = function () {
-  //      con.toggleProperty('hide_terminal')
-  //
-  //      $(this).context.value = (con.get('hide_terminal') ? 'Show' : 'Hide') + ' Terminal Nodes'
-  //      rgraph.graph.eachNode(function (node) {
-  //        node.setData('alpha', con.get('hide_terminal') ? (node.data['terminal'] ? 0 : 1) : 1, 'end')
-  //      })
-  //
-  //      rgraph.fx.animate({
-  //        modes: ['node-property:alpha'],
-  //        duration: 250
-  //      })
-  //    }
-  //  },
+  addButtons: function (con, rgraph) {
+    button = $jit.id('toggle-terminal');
+    button.onclick = function () {
+      con.toggleProperty('hide_terminal');
+
+      $(this).context.value = (con.get('hide_terminal') ? 'Show' : 'Hide') + ' Terminal Nodes';
+      rgraph.graph.eachNode(function (node) {
+        node.setData('alpha', con.get('hide_terminal') ? (node.data['terminal'] ? 0 : 1) : 1, 'end');
+      });
+
+      rgraph.fx.animate({
+        modes: ['node-property:alpha'],
+        duration: 250
+      });
+    };
+  },
 
   computeColor: function (redFlagsTotal) {
     if (redFlagsTotal === undefined) { return 'grey'; }

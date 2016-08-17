@@ -394,7 +394,7 @@ App.BoardController = Ember.Controller.extend({
     );
   },
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember(id) {
     /* toggles which users are seen in the forum messages */
     var xFilter = this.get('splitByFilter');
 
@@ -405,7 +405,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX() {
     /* sets up data and then uses makeTimeSeries to draw all
      * users and their timelines
      */
@@ -470,7 +470,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges() {
     /* loads data used for drawing gauges and then passes that data to drawGauge */
     var _this = this;
     var data = this.get('model.tlData');
@@ -482,7 +482,7 @@ App.BoardController = Ember.Controller.extend({
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge(bindTo, gaugeData) {
     /* handles drawing a single gauge using D3 */
     d3.select(bindTo).selectAll('svg').remove();
     var _this = this;
@@ -757,7 +757,7 @@ App.BoardController = Ember.Controller.extend({
       this.sortTimelines(a);
     },
 
-    topXClicked (id) {
+    topXClicked(id) {
       /* handles when user is clicked on */
       var _this = this;
       this.set('pageCount', 1);
