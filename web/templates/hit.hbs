@@ -19,6 +19,7 @@
                         {{#unless h.redFlags.possible}}
                             </p>
                         {{/unless}}
+                        {{!-- (*) This could be cleaned up --}}
                         {{#if h.__topic__.doc_count}}
                             -- Mentions : {{h.__topic__.doc_count}}
                         {{/if}}
