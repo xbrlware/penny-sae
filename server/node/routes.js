@@ -221,11 +221,9 @@ module.exports = function (app, config, client) {
 
   app.post('/search', function (req, res) {
     var d = req.body;
-    var body = d.query ? queryBuilder[d.mode](d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams);
-    
     client.search({
       'index': config['ES']['INDEX']['AGG'],
-      'body': body,
+      'body': d.query ? queryBuilder[d.mode](d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
       'size': 0,
       'requestCache': true
