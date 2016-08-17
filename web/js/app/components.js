@@ -8,10 +8,10 @@ App.InputComponent = Ember.TextField.extend({
 });
 
 App.FocusInputComponent = Ember.TextField.extend({
-  attributeBindings: ['style', 'type', 'value', 'size'],
-  becomeFocused: function () {
-    this.$().focus();
-  }.on('didInsertElement')
+  attributeBindings: ['style', 'type', 'value', 'size']
+//  becomeFocused: function () {
+//    this.$().focus()
+//  }.on('didInsertElement')
 });
 
 App.QueryBuilderInputComponent = Ember.TextField.extend({
