@@ -1,5 +1,13 @@
 // server/node/server.js
 
+const MIN_VERSION=10
+const MAJOR_VERSION = parseInt(process.version.replace('v', '').split('.')[0]);
+if(MAJOR_VERSION < MIN_VERSION) {
+  console.log('!! Major version of node.js is less than ', MIN_VERSION);
+  console.log('!! You probably need to update.');
+  process.exit()
+}
+
 var cluster = require('cluster');
 var _ = require('underscore')._;
 
