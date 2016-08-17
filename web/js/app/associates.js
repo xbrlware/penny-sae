@@ -26,7 +26,6 @@ App.AssociatesController = Ember.ObjectController.extend({
       }).filter(function (x) { return x.source === x.data.ownerCik; }).value();
     }).flatten().value();
     this.set('rGraphEdges', rGraphEdges);
-    console.log('MODEL :: ', this.get('model'));
   },
 
   tableDiv: '#associates-table',
