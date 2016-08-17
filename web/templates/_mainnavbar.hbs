@@ -17,10 +17,11 @@
                        {{
                             focus-input class="form-control"
                             placeholder="- Search Company -"
-                            id="search-text" insert-newline="companySearch"
+                            id="search-text" 
+                            insert-newline="companySearch"
                         }}
-   
                     </div>
+                    {{view App.ToggleSwitch checkedBinding="searchTopic"}}
    
                     {{#if isLoading }}
                         <i class="fa fa-spinner fa-spin" id="spinner"></i>
@@ -43,31 +44,6 @@
                         </ul>
                     </li>
 
-                {{!--
-                    <li class="dropdown yamm" id="big-dropdown-topic">
-                        <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button-topic" data-toggle="dropdown"> Search Topic of Interest </b></a>
-                        <ul class="dropdown-menu dropdown-menu-animated" style="width:30%; height:100px;">
-                            <li>
-                                <div class="yamm-content">
-                                    <div class="form-group">
-                                        <span class="centered">
-                                            <h4 style="color:blue;"> Search Topic Of Interest </h4>
-                                                {{focus-input class="form-control" placeholder="- Search Topic Of Interest -" value=searchTerm_topic style="text-align:center; width:60%;" id="input-topic" insert-newline="topicSearch" }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </a>
-                </li>
-                --}}
-                {{!--
-                <li>
-                    <a class="btn btn-default navbar-btn" id="big-button-promotions" {{action "allPromotions"}}>
-                        Promotions
-                    </a>
-                </li>
-                --}}
                 </ul>
             </div>
         </div>

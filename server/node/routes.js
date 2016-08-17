@@ -219,49 +219,13 @@ module.exports = function (app, config, client) {
     }
   };
 
-  app.post('/refresh', function (req, res) {
-    var d = req.body;
-    console.log('/refresh :: ',
-      JSON.stringify(
-        d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-        null, 2
-      )
-    );
-
-    client.search({
-      'index': config['ES']['INDEX']['AGG'],
-      'body': d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-      'from': 0,
-      'size': 0
-    }).then(function (esResponse) {
-      var hits = _.map(esResponse.aggregations.top_hits.hits.hits, function (hit) {
-        return {
-          'cik': hit['_source']['cik'],
-          'name': hit['_source']['current_symbology'] ? hit['_source']['current_symbology']['name'] : '<no-name>',
-          'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
-        };
-      });
-      console.log('took =', esResponse.took);
-      res.send({
-        'query_time': esResponse.took / 1000,
-        'total_hits': esResponse.hits.total,
-        'hits': hits
-      });
-    });
-  });
-
   app.post('/search', function (req, res) {
     var d = req.body;
-    console.log('/search :: ',
-      JSON.stringify(
-        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-        null, 2
-      )
-    );
-
+    var body = d.query ? queryBuilder[d.mode](d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams);
+    
     client.search({
       'index': config['ES']['INDEX']['AGG'],
-      'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
+      'body': body,
       'from': 0,
       'size': 0,
       'requestCache': true

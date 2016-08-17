@@ -54,7 +54,7 @@ App.BoardController = Ember.Controller.extend({
     /* obj = chart object from above, clip = name of clip path */
     var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
       .attr('transform',
-          'translate(' + obj.position_left + ',' + obj.position_top + ')');
+        'translate(' + obj.position_left + ',' + obj.position_top + ')');
 
     // define clip path
     div.append('defs').append('clipPath')
@@ -169,13 +169,13 @@ App.BoardController = Ember.Controller.extend({
     chartObj.div.selectAll('.dot')
       .data(_data)
       .enter().append('circle')
-        .attr('class', 'dot')
-        .attr('opacity', '0.0')
-        .attr('r', 3)
-        .attr('cx', function (d) { return chartObj.x(d.date); })
-        .attr('cy', function (d) { return chartObj.y(d.close); })
-        .on('mouseover', chartObj.tip.show)
-        .on('mouseout', chartObj.tip.hide);
+      .attr('class', 'dot')
+      .attr('opacity', '0.0')
+      .attr('r', 3)
+      .attr('cx', function (d) { return chartObj.x(d.date); })
+      .attr('cy', function (d) { return chartObj.y(d.close); })
+      .on('mouseover', chartObj.tip.show)
+      .on('mouseout', chartObj.tip.hide);
 
     chartObj.div.call(chartObj.tip);
     // draw the axis
