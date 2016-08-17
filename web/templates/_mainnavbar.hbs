@@ -16,12 +16,20 @@
                     <div class="form-group">
                        {{
                             focus-input class="form-control"
-                            placeholder="- Search Company -"
+                            placeholder="- Search-"
                             id="search-text" 
                             insert-newline="companySearch"
                         }}
                     </div>
-                    {{view App.ToggleSwitch checkedBinding="searchTopic"}}
+                    <div class="form-group">
+                        {{!-- (*) This needs to be cleaned up --}}
+                        {{#if searchTopic}}
+                            Searching topics
+                        {{else}}
+                            Searching companies
+                        {{/if}}
+                        {{view App.ToggleSwitch checkedBinding="searchTopic"}}
+                    </div>
    
                     {{#if isLoading }}
                         <i class="fa fa-spinner fa-spin" id="spinner"></i>
