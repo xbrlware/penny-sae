@@ -4,9 +4,11 @@ module.exports = function (app, config, client) {
   var async = require('async');
   var lomap = require('lodash/map');
   var mapValues = require('lodash/mapValues');
+  var sortBy = require('lodash/sortBy');
+  var dropRight = require('lodash/dropRight');
 
   var boardQueryBuilder = {
-    'board': function (brdData, search = null , users = false) {
+    'board': function (brdData, search = null, users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
@@ -88,6 +90,8 @@ module.exports = function (app, config, client) {
         bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}});
       } else if (btData.sentiment.type === 'pos') {
         bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}});
+      } else if (btData.sentiment.type === 'neut') {
+        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': btData.sentiment.score}}});
       }
       return bt;
     },
@@ -136,23 +140,9 @@ module.exports = function (app, config, client) {
         'size': 0,
         'query': {
           'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {
-                    'range': {
-                      'time': {
-                        'gte': tData.date_filter[0],
-                        'lte': tData.date_filter[1]
-                      }
-                    }
-                  },
-                  {
-                    'term': {
-                      '__meta__.sym.cik': tData.cik
-                    }
-                  }
-                ]
+            'query': {
+              'match': {
+                '__meta__.sym.cik': tData.cik
               }
             }
           }
@@ -161,7 +151,8 @@ module.exports = function (app, config, client) {
           'posts': {
             'terms': {
               'field': 'user_id',
-              'size': tData.size
+              'size': tData.query_size,
+              'min_doc_count': tData.min_doc
             },
             'aggs': {
               'user': {
@@ -177,18 +168,8 @@ module.exports = function (app, config, client) {
                   'min_doc_count': 1
                 }
               },
-              'maximum': {
-                'max_bucket': {
-                  'buckets_path': 'user_histogram>_count'
-                }
-              },
-              'minimum': {
-                'min_bucket': {
-                  'buckets_path': 'user_histogram>_count'
-                }
-              },
-              'average': {
-                'avg_bucket': {
+              'stats': {
+                'stats_bucket': {
                   'buckets_path': 'user_histogram>_count'
                 }
               },
@@ -211,16 +192,28 @@ module.exports = function (app, config, client) {
           }
         }
       };
+
+      var baseFilter = {'range': {'time': {'gte': tData.date_filter[0], 'lte': tData.date_filter[1]}}};
+
       if (tData.sentiment.type === 'neg') {
-        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}});
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
       } else if (tData.sentiment.type === 'pos') {
-        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': tData.sentiment.score}}});
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
+      } else if (tData.sentiment.type === 'neut') {
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
+      } else {
+        q.query.filtered['filter'] = baseFilter;
       }
+
       if (search) {
+        if (!q.query.filtered.filter.bool) {
+          q.query.filtered.filter = {'bool': {'must': [baseFilter]}};
+        }
         lomap(search, function (s) {
           q.query.filtered.filter.bool.must.push(s);
         });
       }
+
       return q;
     }
   };
@@ -277,6 +270,7 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
+
     async.parallel([
       function (cb) { getForumdata(d, cb); },
       function (cb) { getTimelineData(d, cb); }
@@ -316,19 +310,40 @@ module.exports = function (app, config, client) {
         return {
           id: x.key,
           user: x.user.buckets[0].key,
-          doc_count: x.doc_count,
+          doc_count: x.stats.sum,
           pred_data: [
-            {label: 'pos', value: x.pos.value},
-            {label: 'neut', value: x.neut.value},
-            {label: 'neg', value: x.neg.value}
+          {label: 'pos', value: x.pos.value},
+          {label: 'neut', value: x.neut.value},
+          {label: 'neg', value: x.neg.value}
           ],
-          max: x.maximum.value,
-          mean: x.average.value,
-          min: x.minimum.value,
+          max: x.stats.max,
+          mean: x.stats.avg,
+          min: x.stats.min,
           timeline: x.user_histogram.buckets
         };
       });
-      console.log('/getTimelineData :: returning', q.length);
+
+      if (data.sort_field === 'pos' || data.sort_field === 'neg' || data.sort_field === 'neut') {
+        q = sortBy(q, function (d) {
+          return lomap(d.pred_data, function (x) {
+            if (x.label === data.sort_field) {
+              return x.value;
+            }
+          });
+        });
+      } else {
+        q = sortBy(q, data.sort_field);
+      }
+
+      if (data.sort_type === 'desc') {
+        q.reverse();
+      }
+
+      if (data.query_size === 0) {
+        q = dropRight(q, (q.length - data.size));
+      }
+
+      console.log('/getTimelineData :: returned', q.length);
       cb(null, q);
       return;
     });
