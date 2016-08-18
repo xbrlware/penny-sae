@@ -406,8 +406,8 @@ App.BoardController = Ember.Controller.extend({
     /* activates/deactivates the right buttons and FA chevrons */
     var ad = this.get('ascDesc')[sortType];
 
+    console.log('sortType ::', sortType);
     Ember.$('.filter').removeClass('active');
-//    Ember.$('.btn-round-xs').removeClass('active');
     Ember.$('.filter-' + sortType).toggleClass('active');
 
     if (ad === 'asc') {
@@ -472,7 +472,10 @@ App.BoardController = Ember.Controller.extend({
 
     ascdesc: function (btn) {
       /* handles when sentiment and posts filter buttons are pressed */
-      var a = Ember.$('.btn.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.btn.active').text().replace(/\n/g, '');
+      var a = Ember.$('.filter.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.filter.active').text().replace(/\n/g, '');
+
+      console.log('BTN ::', btn);
+      console.log('AAA ::', a);
 
       if (btn === 'sentiment') {
         if (a === 'doc' || a === 'max' || a === 'min') {
@@ -483,6 +486,7 @@ App.BoardController = Ember.Controller.extend({
           a = 'doc';
         }
       }
+      console.log('ABB ::', a);
       this.sortTimelines(a);
     },
 
