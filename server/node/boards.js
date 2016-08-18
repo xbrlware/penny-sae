@@ -41,8 +41,8 @@ module.exports = function (app, config, client) {
         q.query.filtered.filter.bool.must.push({
           'bool': {
             'must': [
-            {'match': { '__meta__.sym.cik': brdData.cik }},
-            {'terms': { 'user_id': brdData.users }}
+              {'match': { '__meta__.sym.cik': brdData.cik }},
+              {'terms': { 'user_id': brdData.users }}
             ]
           }
         });
@@ -135,7 +135,7 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'timeline': function (tData, sortField, search = null) {
+    'timeline': function (tData, search = null) {
       var q = {
         'size': 0,
         'query': {
@@ -206,6 +206,9 @@ module.exports = function (app, config, client) {
       }
 
       if (search) {
+        if (!q.query.filtered.filter.bool) {
+          q.query.filtered.filter = {'bool': {'must': [baseFilter]}};
+        }
         lomap(search, function (s) {
           q.query.filtered.filter.bool.must.push(s);
         });
@@ -225,7 +228,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(d, s, true)
+      body: boardQueryBuilder.board(d, s, true),
+      requestCache: true
     }).then(function (response) {
       var m = lomap(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
@@ -240,10 +244,7 @@ module.exports = function (app, config, client) {
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
       d = mapValues(d, function (value, key) {
-        if (!value) {
-          value = '';
-        }
-        return value;
+        return value || '';
       });
     }
 
@@ -302,7 +303,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.timeline(data, data.sort_field, s)
+      body: boardQueryBuilder.timeline(data, s),
+      requestCache: true
     }).then(function (response) {
       var q = lomap(response.aggregations.posts.buckets, function (x) {
         return {
@@ -350,9 +352,10 @@ module.exports = function (app, config, client) {
   function getPostsTimelineData (data, cb) {
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.boardTimeline(data)
+      body: boardQueryBuilder.boardTimeline(data),
+      requestCache: true
     }).then(function (response) {
-      console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
+      console.log('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
       cb(null, lomap(response.aggregations.board_histogram.buckets, function (d, i) {
         return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
@@ -364,7 +367,8 @@ module.exports = function (app, config, client) {
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(data, s, false)
+      body: boardQueryBuilder.board(data, s, false),
+      requestCache: true
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
       cb(null, lomap(response.hits.hits, function (x) {

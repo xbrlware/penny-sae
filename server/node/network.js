@@ -15,21 +15,25 @@ function zpad (x, n) {
 function edges2nodes (edges) {
   var nodes = [];
   _.map(edges, function (edge) {
+    // Issuers
     if (!_.findWhere(nodes, {'id': edge['issuerCik']})) {
       nodes.push({
         'id': edge['issuerCik'],
         'name': edge['issuerName'],
-        'role': new Set(['issuer'])
+        'role': new Set(['issuer']),
+        'terminal': (edge['__meta__'] || {'issuer_has_one_neighbor': false})['issuer_has_one_neighbor']
       });
     } else {
       _.findWhere(nodes, {'id': edge['issuerCik']})['role'].add('issuer');
     }
 
+    // Owners
     if (!_.findWhere(nodes, {'id': edge['ownerCik']})) {
       nodes.push({
         'id': edge['ownerCik'],
         'name': edge['ownerName'],
-        'role': new Set(['owner'])
+        'role': new Set(['owner']),
+        'terminal': (edge['__meta__'] || {'owner_has_one_neighbor': false})['owner_has_one_neighbor']
       });
     } else {
       _.findWhere(nodes, {'id': edge['ownerCik']})['role'].add('owner');
@@ -70,7 +74,8 @@ module.exports = function (app, config, client) {
           'name': tuple[1]['name'],
           'data': {
             'is_issuer': tuple[1].role.has('issuer'),
-            'redFlags': reduceRedFlags(redFlags)
+            'redFlags': reduceRedFlags(redFlags),
+            'terminal': tuple[1].terminal
           }
         };
       })
@@ -183,33 +188,33 @@ module.exports = function (app, config, client) {
   }
 
   function neighbors (params, cb) {
-    var query = {'term': {}};
-    query['term'][`${params.source}Cik`] = params.cik;
+    var query = {
+      'size': MAX_NEIGHBORS,
+      '_source': [
+        'issuerCik',
+        'issuerName',
+        'ownerCik',
+        'ownerName',
+        'min_date',
+        'max_date',
+        'isOwner',
+        'isOfficer',
+        'isDirector',
+        'isTenPercentOwner',
+        '__meta__.issuer_has_one_neighbor',
+        '__meta__.owner_has_one_neighbor'
+      ],
+      'query': {
+        'term': {}
+      }
+    };
+    query['query']['term'][`${params.source}Cik`] = params.cik;
 
     client.search({
       'index': config['ES']['INDEX']['OWNERSHIP'],
-      'body': {
-        'size': MAX_NEIGHBORS,
-        'query': query
-      }
+      'body': query
     }).then(function (response) {
-      cb(
-        false,
-        _.chain(response.hits.hits).pluck('_source').map(function (hit) {
-          return {
-            'issuerCik': hit['issuerCik'],
-            'issuerName': hit['issuerName'],
-            'ownerCik': hit['ownerCik'],
-            'ownerName': hit['ownerName'],
-            'min_date': hit['min_date'],
-            'max_date': hit['max_date'],
-            'isOwner': hit['isOwner'],
-            'isOfficer': hit['isOfficer'],
-            'isDirector': hit['isDirector'],
-            'isTenPercentOwner': hit['isTenPercentOwner']
-          };
-        }).value()
-      );
+      cb(false, _.pluck(response.hits.hits, '_source'));
     }).catch(function (err) { console.log(err.stack); });
   }
 

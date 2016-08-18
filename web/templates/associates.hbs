@@ -18,14 +18,23 @@
 
 <span class="centered">
     <div onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';" id="main-center-container">
-{{!--
+
         <input type="button" class="btn btn-default" value="Hide Terminal Nodes" id="toggle-terminal">
---}}
+        
         <div id="main-infovis"></div>
     </div>
     <div id="right-container">
         <div id="inner-details"></div>
     </div>
 </span>
+
+<table>
+    <tr>
+        <td> <img src='img/green_person.png' height='20px'> = less than 1 </td>
+        <td> <img src='img/yellow_person.png' height='20px'> = 1 - 1.99 </td>
+        <td> <img src='img/orange_person.png' height='20px'> = 2 - 3.99 </td>
+        <td> <img src='img/red_person.png' height='20px'> = more than 4 </td>
+    </tr>
+</table>
 
 <table id="associates-table" class="display"></table>
