@@ -54,7 +54,6 @@
            "web/js/app/generic-table-view.js",
            "web/js/app/associates.js",
            "web/js/app/delinquency.js",
-           "web/js/app/summary.js",
            "web/js/app/detail.js",
            "web/js/app/dropdown.js",
            "web/js/app/financials.js",
@@ -76,6 +75,7 @@
 	       "web/js/app/widgets.js",
 	       "web/js/app/topic.js",
 	       "web/js/app/tts-charts.js",
+           "web/js/app/summary.js",
            "web/js/app/wrapper.js"
     ]
 }

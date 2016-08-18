@@ -42,23 +42,35 @@ App.Chart = Ember.Object.extend({
   },
 
   makeBarChart: function (chartObj, data, dateFilter) {
+    var _data;
     if (!chartObj.div) {
       // init svg tree
       chartObj.div = this.makeDiv(chartObj);
       chartObj.div.select('g.' + chartObj.class).datum(data);
     }
 
-    var _data = _.filter(data, function (x) {
-      return x.date > dateFilter[0] & x.date < dateFilter[1];
-    });
-
-    chartObj.x.domain(dateFilter);
-    chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
+    if (dateFilter) {
+      _data = _.filter(data, function (x) {
+        return x.date > dateFilter[0] & x.date < dateFilter[1];
+      });
+      chartObj.x.domain(dateFilter);
+      chartObj.y.domain(d3.extent(_data, function (d) { return d.volume; }));
+    } else {
+      _data = data;
+      chartObj.x.domain(_.map(_data, function (d) { return d.date; }));
+      chartObj.y.domain([0, d3.max(_data, function (d) { return d.volume; })]);
+    }
 
     chartObj.div.selectAll('.bar').remove();
 
-    var dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
-    var barWidth = chartObj.width / dd;
+    var dd;
+    var barWidth;
+    if (dateFilter) {
+      dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
+      barWidth = chartObj.width / dd;
+    } else {
+      barWidth = chartObj.x.rangeBand();
+    }
 
     chartObj.div.selectAll('.bar')
       .data(_data)
@@ -69,8 +81,26 @@ App.Chart = Ember.Object.extend({
       .attr('y', function (d) { return chartObj.y(d.volume); })
       .attr('height', function (d) { return chartObj.height - chartObj.y(d.volume); });
 
+    if (chartObj.text) {
+      chartObj.div.selectAll('.bartext')
+        .data(_data)
+        .enter()
+        .append('text')
+        .attr('class', 'bartext')
+        .attr('text-anchor', 'start')
+        .attr('transform', function (d) { return 'rotate(-90)'; })
+        .attr('fill', 'black')
+        .attr('x', function (d, i) { return -chartObj.height + 2; })
+        .attr('y', function (d, i) { return chartObj.x(d.date) - 2; })
+        .text(function (d) { return d.date; });
+    }
     // draw the axis
     chartObj.div.select('g.x.axis').call(chartObj.xAxis);
+
+    if (chartObj.text) {
+      chartObj.div.selectAll('g.x.axis g.tick line')
+        .attr('y2', function (x) { return 0; });
+    }
 
     if (!chartObj.brush) {
       chartObj.div.select('g.y.axis').call(chartObj.yAxis);
@@ -203,17 +233,18 @@ App.Chart = Ember.Object.extend({
         .attr('clip-path', 'url(#' + chartObj.clip + ')');
     }
 
-    chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
-    chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
-
     var _data = _.filter(data, function (d) {
       return d.date > dateFilter[0] & d.date < dateFilter[1];
     });
 
-    chartObj.x.domain(dateFilter);
+    if (_data.length !== data.length) {
+      chartObj.x.domain(dateFilter);
+      chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
+    } else {
+      chartObj.x.domain(d3.extent(data, function (d) { return d.date; }));
+      chartObj.y.domain(d3.extent(data, function (d) { return d.close; }));
+    }
 
-    // only for price object
-    chartObj.y.domain(d3.extent(_data, function (d) { return d.close; }));
     chartObj.div.selectAll('.dot').remove();
     chartObj.div.selectAll('.line').remove();
 
@@ -226,12 +257,15 @@ App.Chart = Ember.Object.extend({
       .attr('class', 'line')
       .attr('d', line);
 
+    var opcty = chartObj.class === 'date-histogram' ? 1 : 0;
+
     // overlays dots so d3 tip works
     chartObj.div.selectAll('.dot')
       .data(_data)
       .enter().append('circle')
         .attr('class', 'dot')
-        .attr('opacity', '0.0')
+        .attr('fill', 'red')
+        .attr('opacity', opcty)
         .attr('r', 3)
         .attr('cx', function (d) { return chartObj.x(d.date); })
         .attr('cy', function (d) { return chartObj.y(d.close); })

@@ -440,7 +440,7 @@ App.BoardController = Ember.Controller.extend({
           x.date = new Date(x.date);
           return x;
         }));
-        if (!response.pvData.length && !response.data.length) { _this.set('isData', false); }
+        if (!response.pvData && !response.data) { _this.set('isData', false); }
         _this.draw();
         Ember.$('.toggle').removeClass('active');
         Ember.$('.toggle-' + st).toggleClass('active');
@@ -545,7 +545,7 @@ App.BoardRoute = Ember.Route.extend({
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
 
-        if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
+        if (!response.pvData && !model.data) { con.set('isData', false); }
         con.initChartObjects();
         con.draw();
       });
