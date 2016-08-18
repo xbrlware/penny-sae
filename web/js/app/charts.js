@@ -1,4 +1,4 @@
-/* global Ember, App, d3, _ */
+/* global Ember, App, d3, _, gconfig */
 
 App.Chart = Ember.Object.extend({
   dateDiff: function (startDate, endDate) {
@@ -96,7 +96,6 @@ App.Chart = Ember.Object.extend({
 
   makeTimeSeries: function (ts, bounds) {
     /* Builds time series for users using D3 */
-    var _this = this;
     var div = ts.id;
     var margin = {top: 13, right: 20, bottom: 20, left: 0};
     var FILL_COLOR = 'orange';
@@ -179,15 +178,6 @@ App.Chart = Ember.Object.extend({
       .attr('y', function (d) { return y(d.value); })
       .attr('height', function (d) { return height - y(d.value); });
 
-    d3.selectAll('g.y.axis.timeline g.tick text')
-      .on('click', function (d, i) {
-        if (i % 2 === 0) {
-          _this.sortTimelines('mean');
-        } else {
-          _this.sortTimelines('max');
-        }
-      });
-
     svg.call(tip);
   },
 
@@ -252,5 +242,62 @@ App.Chart = Ember.Object.extend({
     // draw the axis
     chartObj.div.select('g.x.axis').call(chartObj.xAxis);
     chartObj.div.select('g.y.axis').call(chartObj.yAxis);
+  },
+
+  drawGauge (bindTo, gaugeData) {
+    /* handles drawing a single gauge using D3 */
+    d3.select(bindTo).selectAll('svg').remove();
+    var data = gaugeData;
+
+    var w = gconfig.GAUGE.SIZE.WIDTH;
+    var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
+    var c = gconfig.GAUGE.COLOR_PATT;
+
+    var r = w / 2;
+    var ir = w / 4;
+    var pi = Math.PI;
+    var color = {pos: c[0], neut: c[1], neg: c[2]};
+    var valueFormat = d3.format('.4p');
+
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-5, 0])
+      .html(function (d) {
+        return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
+      });
+
+    var vis = d3.select(bindTo).append('svg')
+      .data([data])
+      .attr('width', w)
+      .attr('height', h)
+      .append('svg:g')
+      .attr('class', 'gauge-align')
+      .attr('transform', 'translate(' + r + ',' + r + ')');
+
+    vis.call(tip);
+
+    var arc = d3.svg.arc()
+      .outerRadius(r)
+      .innerRadius(ir);
+
+    var pie = d3.layout.pie()
+      .sort(null)
+      .value(function (d) { return d.value; })
+      .startAngle(-90 * (pi / 180))
+      .endAngle(90 * (pi / 180));
+
+    var arcs = vis.selectAll('g.slice')
+      .data(pie)
+      .enter()
+      .append('svg:g')
+      .attr('class', 'slice')
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+    arcs.append('svg:path')
+      .attr('fill', function (d, i) { return color[d.data.label]; })
+      .attr('d', arc);
+
+    return arcs;
   }
 });

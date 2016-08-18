@@ -16,7 +16,9 @@
                 param="na"
                 colXs2=true
                 btnRoundXs=true
-                title="reset"
+                toggle=true
+                toggleAll=true
+                title="All"
                 }}
                 {{
                 filter-button
@@ -24,6 +26,8 @@
                 param="pos"
                 colXs2=true
                 btnXs=true
+                toggle=true
+                togglePos=true
                 title="pos"
                 }}
                 {{
@@ -32,6 +36,8 @@
                 param="neut"
                 colXs2=true
                 btnXs=true
+                toggle=true
+                toggleNeut=true
                 title="neut"
                 }}
                 {{
@@ -40,6 +46,8 @@
                 param="neg"
                 colXs2=true
                 btnRoundXs=true
+                toggle=true
+                toggleNeg=true
                 title="neg"
                 }}
             </div>
@@ -96,6 +104,7 @@
                         param="pos"
                         colXs2=true
                         btnXs=true
+                        filter=true
                         filterPos=true
                         title="pos"
                         }}
@@ -105,6 +114,7 @@
                         param="neut"
                         colXs2=true
                         btnXs=true
+                        filter=true
                         filterNeut=true
                         title="neut"
                         }}
@@ -114,6 +124,7 @@
                         param="neg"
                         colXs2=true
                         btnRoundXs=true
+                        filter=true
                         filterNeg=true
                         title="neg"
                         }}
@@ -135,6 +146,7 @@
                         param="doc"
                         colXs2=true
                         btnXs=true
+                        filter=true
                         filterDoc=true
                         title="num"
                         }}
@@ -144,6 +156,7 @@
                         param="max"
                         colXs2=true
                         btnXs=true
+                        filter=true
                         filterMax=true
                         title="max"
                         }}
@@ -153,6 +166,7 @@
                         param="mean"
                         colXs2=true
                         btnRoundXs=true
+                        filter=true
                         filterMean=true
                         title="mean"
                         }}
@@ -191,9 +205,6 @@
                         id="search-posts"
                         insert-newline="messageSearch"
                         }}
-                        <div class="centered">
-                            {{model.data.length}} Posts
-                        </div>
                     </div>
                 </div>
             </div>

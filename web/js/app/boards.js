@@ -19,6 +19,7 @@ App.BoardController = Ember.Controller.extend({
   sentiment: 'na',
   numOfPosters: 10,
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
+  ChartsObj: App.Chart.create(),
   rtDraw: function () {
     /* fired during init and when the brush moves */
     var data = this.get('model.ptData');
@@ -42,12 +43,16 @@ App.BoardController = Ember.Controller.extend({
       return { 'date': new Date(x.date), 'volume': x.value };
     });
 
-    var charts = App.Chart.create();
+    // don't let the brush change the sort
+    var ad = this.get('ascDesc');
+    ad[ad.type] = ad[ad.type] === 'asc' ? 'desc' : 'asc';
+    sessionStorage.pennyFilters = JSON.stringify(ad);
+
     var brushDomain = this.brushChart.brush.empty() ? this.priceChart.x.domain() : this.brushChart.brush.extent();
 
-    charts.makeBarChart(this.postsChart, forumData, brushDomain);
-    charts.makeClose(this.priceChart, pvData, brushDomain);
-    charts.makeBarChart(this.volumeChart, pvData, brushDomain);
+    this.ChartsObj.makeBarChart(this.postsChart, forumData, brushDomain);
+    this.ChartsObj.makeClose(this.priceChart, pvData, brushDomain);
+    this.ChartsObj.makeBarChart(this.volumeChart, pvData, brushDomain);
     this.set('dateFilter', brushDomain);
   },
 
@@ -145,7 +150,7 @@ App.BoardController = Ember.Controller.extend({
 
   defaultAscDesc: function () {
     /* sets default value for filter buttons - checks sessionStorage in browser first */
-    var ss = {doc: 'desc', pos: 'asc', neg: 'asc', neut: 'asc', mean: 'asc', max: 'asc', type: 'doc'};
+    var ss = {doc: 'asc', pos: 'asc', neg: 'asc', neut: 'asc', mean: 'asc', max: 'asc', type: 'doc'};
     if (typeof Storage !== 'undefined') {
       sessionStorage.pennyFilters = JSON.stringify(ss);
       var t = ss;
@@ -169,12 +174,13 @@ App.BoardController = Ember.Controller.extend({
   postFilteredData: function () {
     /* populates forum posts with data from filtered_data */
     /* watches these properties: filtered_data, dateFilter, pageCount */
-    var data = this.get('filtered_data');
+    var data = _.sortBy(this.get('filtered_data'), 'date').reverse();
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
     var pgc = this.get('pageCount');
 
     // filter dates
+
     var _data = dfl.length ? _.filter(data, function (d) {
       return d.date > dfl[0] & d.date < dfl[1];
     }) : data;
@@ -265,7 +271,6 @@ App.BoardController = Ember.Controller.extend({
       return { 'date': new Date(x.date), 'volume': x.value };
     });
 
-    // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
       // Time series
       var topX = _.pluck(data, 'id');
@@ -292,6 +297,7 @@ App.BoardController = Ember.Controller.extend({
     /* sets up data and then uses makeTimeSeries to draw all
      * users and their timelines
      */
+    var _this = this;
     var model = this.get('model.tlData');
 
     // set up x axis
@@ -333,9 +339,8 @@ App.BoardController = Ember.Controller.extend({
 
     // make time series
     Ember.run.next(function () {
-      var mts = App.Chart.create();
       _.map(timeseries, function (t) {
-        mts.makeTimeSeries(t, {
+        _this.ChartsObj.makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
           'ymax': t.max,
@@ -352,82 +357,20 @@ App.BoardController = Ember.Controller.extend({
 
     Ember.run.next(function () {
       _.map(data, function (x) {
-        return _this.drawGauge('#gauge-' + x.id, x.pred_data);
+        return _this.ChartsObj.drawGauge('#gauge-' + x.id, x.pred_data);
       });
     });
   }, // This should really be broken apart
 
-  drawGauge (bindTo, gaugeData) {
-    /* handles drawing a single gauge using D3 */
-    d3.select(bindTo).selectAll('svg').remove();
-    var _this = this;
-    var data = gaugeData;
-
-    var w = gconfig.GAUGE.SIZE.WIDTH;
-    var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
-    var c = gconfig.GAUGE.COLOR_PATT;
-
-    var r = w / 2;
-    var ir = w / 4;
-    var pi = Math.PI;
-    var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.4p');
-
-    var tip = d3.tip()
-      .attr('class', 'd3-tip')
-      .offset([-5, 0])
-      .html(function (d) {
-        return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
-      });
-
-    var vis = d3.select(bindTo).append('svg')
-      .data([data])
-      .attr('width', w)
-      .attr('height', h)
-      .append('svg:g')
-      .attr('class', 'gauge-align')
-      .attr('transform', 'translate(' + r + ',' + r + ')');
-
-    vis.call(tip);
-
-    var arc = d3.svg.arc()
-      .outerRadius(r)
-      .innerRadius(ir);
-
-    var pie = d3.layout.pie()
-      .sort(null)
-      .value(function (d) { return d.value; })
-      .startAngle(-90 * (pi / 180))
-      .endAngle(90 * (pi / 180));
-
-    var arcs = vis.selectAll('g.slice')
-      .data(pie)
-      .enter()
-      .append('svg:g')
-      .attr('class', 'slice')
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-      .on('click', function (d) {
-        d3.selectAll('.d3-tip').remove();
-        // sort gauges
-        _this.sortTimelines(d.data.label);
-      });
-
-    arcs.append('svg:path')
-      .attr('fill', function (d, i) { return color[d.data.label]; })
-      .attr('d', arc);
-
-    return arcs;
-  },
-
   renderCharts: function (forumData, pvdata) {
     /* renders Post Volume, Brush, Price, and Trading Volume charts */
     // date formatting functions
-    var charts = App.Chart.create();
     var dateDomain = this.brushChart.brush.extent();
     d3.select('g.x.brush').remove();
+
     // draw brush chart
-    charts.makeBarChart(this.brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    this.ChartsObj.makeBarChart(this.brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+
     // set inital date ranges to be shown
     if (dateDomain[0] < new Date('2004-01-01')) {
       this.brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
@@ -457,16 +400,14 @@ App.BoardController = Ember.Controller.extend({
     this.set('splitByFilter', []);
 
     this.redraw();
-    // this.renderX();
-    // this.renderGauges();
   },
 
   setFilterDecoration: function (sortType, chevronClass) {
     /* activates/deactivates the right buttons and FA chevrons */
     var ad = this.get('ascDesc')[sortType];
 
-    Ember.$('.btn-xs').removeClass('active');
-    Ember.$('.btn-round-xs').removeClass('active');
+    Ember.$('.filter').removeClass('active');
+//    Ember.$('.btn-round-xs').removeClass('active');
     Ember.$('.filter-' + sortType).toggleClass('active');
 
     if (ad === 'asc') {
@@ -495,13 +436,14 @@ App.BoardController = Ember.Controller.extend({
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': _this.get('dateFilter'), 'sentiment': {type: st, score: 0.5}}).then(function (response) {
         _this.set('model', response);
-        console.log('model ::', response);
         _this.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
           return x;
         }));
         if (!response.pvData.length && !response.data.length) { _this.set('isData', false); }
         _this.draw();
+        Ember.$('.toggle').removeClass('active');
+        Ember.$('.toggle-' + st).toggleClass('active');
       });
     });
   },
@@ -517,6 +459,9 @@ App.BoardController = Ember.Controller.extend({
       if (!isNaN(num)) {
         this.set('numOfPosters', (Number(num) < 1 ? 1 : Number(num)));
       }
+      var ad = this.get('ascDesc');
+      ad[ad.type] = ad[ad.type] === 'asc' ? 'desc' : 'asc';
+      sessionStorage.pennyFilters = JSON.stringify(ad);
       this.redraw();
     },
 
@@ -585,7 +530,6 @@ App.BoardRoute = Ember.Route.extend({
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'neut', score: 0.5}}).then(function (response) {
         con.set('model', response);
-        console.log('model ::', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);
           return x;
