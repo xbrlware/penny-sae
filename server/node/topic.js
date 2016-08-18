@@ -3,7 +3,7 @@ module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var queryBuilder = require('./queryBuilder')(config);
 
-  function time_series (query, cb) {
+  function timeSeries (query, cb) {
     // Given a search string, return histogram of mentions over time
     client.search({
       'index': config['ES']['INDEX']['CROWDSAR'],
@@ -26,15 +26,16 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function sic_distribution (query, cb) {
+  function sicDistribution (query, cb) {
     // Given a search string, return histogram of associated SIC numbers
 
     // (*) Right now, this is going to return multiple SICs for a single company, since
     // companies appear multiple times in SYMBOLOGY
     // ^^ In the process of fixing this
+    var size = 500;
     client.search({
       'index': config['ES']['INDEX']['CROWDSAR'],
-      'body': queryBuilder.topic.cik(query, size = 500),
+      'body': queryBuilder.topic.cik(query, size),
       'from': 0,
       'size': 0,
       'requestCache': true
@@ -56,11 +57,11 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('topic_summary ->', d.query);
     async.parallel([
-      function (cb) { time_series(d.query, cb); },
-      function (cb) { sic_distribution(d.query, cb); }
+      function (cb) { timeSeries(d.query, cb); },
+      function (cb) { sicDistribution(d.query, cb); }
     ], function (err, results) {
       if (err) { console.error(err); }
-      res.send(_.reduce(results, function (a, b) {return _.extend(a, b);}, {}));
+      res.send(_.reduce(results, function (a, b) { return _.extend(a, b); }, {}));
     });
   });
 };
