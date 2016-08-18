@@ -16,7 +16,8 @@ App.BoardController = Ember.Controller.extend({
   priceChart: {},
   volumeChart: {},
   searchTerm: '',
-  sentiment: 'neut',
+  sentiment: 'na',
+  numOfPosters: 10,
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   rtDraw: function () {
     /* fired during init and when the brush moves */
@@ -72,7 +73,6 @@ App.BoardController = Ember.Controller.extend({
 
     var parseDateTip = d3.time.format('%b-%d');
     var a = this.createChartDimensions('#tl-posts-volume', 0.5, 0.6);
-    console.log('AAAA ::', a);
     this.set('postsChart', {
       id: '#tl-posts-volume',
       margin: { top: 10, bottom: 20, left: 35, right: 40 },
@@ -83,7 +83,7 @@ App.BoardController = Ember.Controller.extend({
       height: a.height,
       x: a.x,
       y: a.y,
-      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom'),
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
       yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4),
       tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
         return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
@@ -145,13 +145,12 @@ App.BoardController = Ember.Controller.extend({
 
   defaultAscDesc: function () {
     /* sets default value for filter buttons - checks sessionStorage in browser first */
-    var ss = {doc: 'desc', pos: 'desc', neg: 'desc', neut: 'desc', mean: 'desc', max: 'desc', type: 'doc'};
+    var ss = {doc: 'desc', pos: 'asc', neg: 'asc', neut: 'asc', mean: 'asc', max: 'asc', type: 'doc'};
     if (typeof Storage !== 'undefined') {
-      if (sessionStorage.pennyFilters) {
-        var t = JSON.parse(sessionStorage.pennyFilters);
-        ss[t.type] = t[t.type];
-        ss.type = t.type;
-      }
+      sessionStorage.pennyFilters = JSON.stringify(ss);
+      var t = ss;
+      ss[t.type] = t[t.type];
+      ss.type = t.type;
     }
     this.set('ascDesc', ss);
   },
@@ -193,7 +192,7 @@ App.BoardController = Ember.Controller.extend({
     return r;
   }.property('filtered_data', 'pageCount'),
 
-  redraw: function (numPosters = 10) {
+  redraw: function () {
     /* redraw time lines and forum messages */
     /* numPosters is used by size in the ES query */
     var _this = this;
@@ -202,8 +201,17 @@ App.BoardController = Ember.Controller.extend({
       date_filter: this.get('dateFilter'),
       search_term: this.get('searchTerm'),
       sentiment: {type: this.get('sentiment'), score: 0.5},
-      size: numPosters
+      sort_field: this.get('ascDesc').type === 'doc' ? 'doc_count' : this.get('ascDesc').type,
+      sort_type: this.get('ascDesc')[this.get('ascDesc').type],
+      min_doc: 10,
+      size: this.get('numOfPosters')
     };
+
+    if (data.sort_field === 'max' || data.sort_field === 'avg' || data.sort_field === 'min') {
+      data['query_size'] = 0;
+    } else {
+      data['query_size'] = data.size;
+    }
 
     // set spinner
     this.set('timelineLoading', true);
@@ -257,14 +265,6 @@ App.BoardController = Ember.Controller.extend({
       return { 'date': new Date(x.date), 'volume': x.value };
     });
 
-    /*
-    // For parent filter
-    var datum = crossfilter(forumData);
-    var date = datum.dimension(function (d) {
-      return d.date;
-    });
-    */
-
     // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
       // Time series
@@ -293,14 +293,6 @@ App.BoardController = Ember.Controller.extend({
      * users and their timelines
      */
     var model = this.get('model.tlData');
-    var ascDesc = this.get('ascDesc');
-
-    // in order of ascending or descending
-    if (ascDesc[ascDesc.type] === 'asc') {
-      model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type);
-    } else {
-      model = _.sortBy(model, ascDesc.type === 'doc' ? 'doc_count' : ascDesc.type).reverse();
-    }
 
     // set up x axis
     var dateFilter = this.get('dateFilter');
@@ -449,18 +441,24 @@ App.BoardController = Ember.Controller.extend({
 
   sortPosters: function (sortType) {
     /* sets variables and lets renderX and renderGauges render by sort type */
-    var ascdesc = this.get('ascDesc');
+    var ascdesc = JSON.parse(sessionStorage.pennyFilters);
 
-    ascdesc[sortType] = ascdesc[sortType] === 'asc' ? 'desc' : 'asc';
+    if (ascdesc[sortType] === 'desc') {
+      ascdesc[sortType] = 'asc';
+    } else {
+      ascdesc[sortType] = 'desc';
+    }
+
     ascdesc.type = sortType;
 
     this.set('ascDesc', ascdesc);
-    sessionStorage.pennyFilters = JSON.stringify(ascdesc);
 
+    sessionStorage.pennyFilters = JSON.stringify(ascdesc);
     this.set('splitByFilter', []);
 
-    this.renderX();
-    this.renderGauges();
+    this.redraw();
+    // this.renderX();
+    // this.renderGauges();
   },
 
   setFilterDecoration: function (sortType, chevronClass) {
@@ -517,8 +515,9 @@ App.BoardController = Ember.Controller.extend({
     numPosters: function (num) {
       /* handles when user changes number of time lines to be displayed */
       if (!isNaN(num)) {
-        this.redraw(Number(num) < 1 ? 1 : Number(num));
+        this.set('numOfPosters', (Number(num) < 1 ? 1 : Number(num)));
       }
+      this.redraw();
     },
 
     sortUsers: function (sortType) {
@@ -577,8 +576,8 @@ App.BoardRoute = Ember.Route.extend({
     con.set('filtered_data', []);
     con.set('isData', true);
     con.set('searchTerm', '');
-    con.set('sentiment', 'neut');
-
+    con.set('sentiment', 'na');
+    con.set('numOfPosters', 10);
     // set poster sort object this.ascDesc
     con.defaultAscDesc();
 
