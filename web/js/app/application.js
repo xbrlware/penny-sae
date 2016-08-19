@@ -3,6 +3,7 @@
 /* Setup Authorization */
 
 /* global Ember, SimpleAuth, _, gconfig */
+
 window.ENV = window.ENV || {};
 window.ENV['simple-auth'] = {
   authorizer: 'authorizer:custom',
@@ -116,24 +117,26 @@ App.ApplicationController = Ember.Controller.extend({
     App.Search.search_company(
       this.searchTerm,
       this.redFlagParams,
-      searchTopic = this.searchTopic,
-      refresh = false
+      this.searchTopic,
+      false
     ).then(cb);
   },
+
   sort_companies: function (cb) {
     App.Search.search_company(
       undefined,
       this.redFlagParams,
-      searchTopic = this.searchTopic,
-      refresh = false
+      this.searchTopic,
+      false
     ).then(cb);
   },
+
   refresh_companies: function (query, cb) {
     App.Search.search_company(
       query,
       this.redFlagParams,
-      searchTopic = this.searchTopic,
-      refresh = true
+      this.searchTopic,
+      true
     ).then(cb);
   }
 });

@@ -45,7 +45,6 @@ App.SearchResultsView = Ember.View.extend({
     var cik = this.get('cik');
     var columns = this.get('columns');
 
-    console.log('fetch company table', cik);
     App.Search.fetch_data('company_table', {'cik': cik}).then(function (response) {
       Ember.$('#search_result_' + cik).DataTable({
         fnDrawCallback: function (oSettings) {
@@ -72,7 +71,7 @@ App.SearchResultsView = Ember.View.extend({
 App.Search = Ember.Object.extend({});
 
 App.Search.reopenClass({
-  search_company: function (query, redFlagParams, searchTopic = false , refresh = false) {
+  search_company: function (query, redFlagParams, searchTopic = false, refresh = false) {
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
