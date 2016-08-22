@@ -6,9 +6,9 @@
     "ES" : {
         "HOST"  : "http://localhost:9205",
         "INDEX" : {
-          "CROWDSAR"    : "crowdsar_restore",
+          "CROWDSAR"    : "ernest_crowdsar",
           "AUTH"        : "ernest_auth_sec",
-          "AGG"         : "ernest_agg_v3",
+          "AGG"         : "ernest_agg_v3_singleshard",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_v2",
           "DELINQUENCY" : "ernest_aq_forms_enrich_cat",
