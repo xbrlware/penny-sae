@@ -135,7 +135,7 @@ module.exports = function (app, config, client) {
         }
       };
     },
-    'timeline': function (tData, search = null) {
+    'timeline': function (tData, search) {
       var q = {
         'size': 0,
         'query': {
@@ -207,8 +207,9 @@ module.exports = function (app, config, client) {
 
       if (search) {
         if (!q.query.filtered.filter.bool) {
-          q.query.filtered.filter = {'bool': {'must': [baseFilter]}};
+          q.query.filtered['filter'] = {'bool': {'must': [baseFilter]}};
         }
+
         lomap(search, function (s) {
           q.query.filtered.filter.bool.must.push(s);
         });

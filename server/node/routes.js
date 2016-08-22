@@ -16,7 +16,7 @@ module.exports = function (app, config, client) {
     if (x.length > 12) {
       x = x.slice(0, 12) + '...';
     }
-    return x.charAt(0).toUpperCase() + str.slice(1);
+    return x.charAt(0).toUpperCase() + x.slice(1);
   }
 
   var redflagLabel_ = {

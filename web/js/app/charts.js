@@ -63,10 +63,9 @@ App.Chart = Ember.Object.extend({
 
     chartObj.div.selectAll('.bar').remove();
 
-    var dd;
     var barWidth;
     if (dateFilter) {
-      dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
+      var dd = this.dateDiff(chartObj.x.domain()[0], chartObj.x.domain()[1]);
       barWidth = chartObj.width / dd;
     } else {
       barWidth = chartObj.x.rangeBand();
@@ -285,10 +284,10 @@ App.Chart = Ember.Object.extend({
 
     var w = gconfig.GAUGE.SIZE.WIDTH;
     var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
-    var c = gconfig.GAUGE.COLOR_PATT;
+    var c = gconfig.GAUGE.COLOR_PATT;  // all three gauge colors
 
-    var r = w / 2;
-    var ir = w / 4;
+    var r = w / 2;  // outside radius
+    var ir = w / 4;  // inside radius
     var pi = Math.PI;
     var color = {pos: c[0], neut: c[1], neg: c[2]};
     var valueFormat = d3.format('.4p');

@@ -56,7 +56,7 @@ App.BoardController = Ember.Controller.extend({
     this.set('dateFilter', brushDomain);
   },
 
-  createChartDimensions: function (id, wMultiplier, hMultiplier) {
+  createChartDimensions: function (id, hMultiplier) {
     var w = Ember.$(id).width();
     var h = w * hMultiplier;
     var x = d3.time.scale().range([0, w]);
@@ -77,7 +77,7 @@ App.BoardController = Ember.Controller.extend({
     }
 
     var parseDateTip = d3.time.format('%b-%d');
-    var a = this.createChartDimensions('#tl-posts-volume', 0.5, 0.6);
+    var a = this.createChartDimensions('#tl-posts-volume', 0.6);
     this.set('postsChart', {
       id: '#tl-posts-volume',
       margin: { top: 10, bottom: 20, left: 35, right: 40 },
@@ -95,7 +95,7 @@ App.BoardController = Ember.Controller.extend({
       })
     });
 
-    a = this.createChartDimensions('#tl-brush-chart', 0.5, 0.2);
+    a = this.createChartDimensions('#tl-brush-chart', 0.2);
     this.set('brushChart', {
       id: '#tl-brush-chart',
       margin: { top: 10, bottom: 20, left: 35, right: 40 },
@@ -111,7 +111,7 @@ App.BoardController = Ember.Controller.extend({
       brush: d3.svg.brush().x(a.x).on('brushend', brushed)
     });
 
-    a = this.createChartDimensions('#pv-price-chart', 0.5, 0.6);
+    a = this.createChartDimensions('#pv-price-chart', 0.6);
     this.set('priceChart', {
       id: '#pv-price-chart',
       margin: { top: 10, bottom: 20, left: 45, right: 40 },
@@ -129,7 +129,7 @@ App.BoardController = Ember.Controller.extend({
       })
     });
 
-    a = this.createChartDimensions('#pv-volume-chart', 0.5, 0.2);
+    a = this.createChartDimensions('#pv-volume-chart', 0.2);
     this.set('volumeChart', {
       id: '#pv-volume-chart',
       margin: { top: 10, bottom: 20, left: 45, right: 40 },
@@ -209,7 +209,7 @@ App.BoardController = Ember.Controller.extend({
       sentiment: {type: this.get('sentiment'), score: 0.5},
       sort_field: this.get('ascDesc').type === 'doc' ? 'doc_count' : this.get('ascDesc').type,
       sort_type: this.get('ascDesc')[this.get('ascDesc').type],
-      min_doc: 10,
+      min_doc: 1,
       size: this.get('numOfPosters')
     };
 
@@ -404,22 +404,14 @@ App.BoardController = Ember.Controller.extend({
 
   setFilterDecoration: function (sortType, chevronClass) {
     /* activates/deactivates the right buttons and FA chevrons */
-    var ad = this.get('ascDesc')[sortType];
+    var cc = this.get('ascDesc')[sortType] === 'asc' ? ['up', 'down'] : ['down', 'up'];
 
-    console.log('sortType ::', sortType);
     Ember.$('.filter').removeClass('active');
     Ember.$('.filter-' + sortType).toggleClass('active');
 
-    if (ad === 'asc') {
-      if (Ember.$(chevronClass).hasClass('fa-chevron-up')) {
-        Ember.$(chevronClass).removeClass('fa-chevron-up');
-        Ember.$(chevronClass).toggleClass('fa-chevron-down');
-      }
-    } else {
-      if (Ember.$(chevronClass).hasClass('fa-chevron-down')) {
-        Ember.$(chevronClass).removeClass('fa-chevron-down');
-        Ember.$(chevronClass).toggleClass('fa-chevron-up');
-      }
+    if (Ember.$(chevronClass).hasClass('fa-chevron-' + cc[0])) {
+      Ember.$(chevronClass).removeClass('fa-chevron-' + cc[0]);
+      Ember.$(chevronClass).toggleClass('fa-chevron-' + cc[1]);
     }
   },
 
