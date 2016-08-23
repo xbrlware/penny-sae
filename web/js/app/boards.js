@@ -232,6 +232,9 @@ App.BoardController = Ember.Controller.extend({
         x.date = new Date(x.date);
         return x;
       }));
+
+      console.log('TLDATA ::', response.tlData);
+
       // render everything
       _this.renderX();
       _this.renderGauges();
@@ -478,7 +481,6 @@ App.BoardController = Ember.Controller.extend({
           a = 'doc';
         }
       }
-      console.log('ABB ::', a);
       this.sortTimelines(a);
     },
 

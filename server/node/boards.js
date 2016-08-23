@@ -198,9 +198,9 @@ module.exports = function (app, config, client) {
       if (tData.sentiment.type === 'neg') {
         q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
       } else if (tData.sentiment.type === 'pos') {
-        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.pos': {'gte': tData.sentiment.score}}}, baseFilter]}};
       } else if (tData.sentiment.type === 'neut') {
-        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neut': {'gte': tData.sentiment.score}}}, baseFilter]}};
       } else {
         q.query.filtered['filter'] = baseFilter;
       }
