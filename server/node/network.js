@@ -89,10 +89,8 @@ module.exports = function (app, config, client) {
         _.map(v, (vv, kk) => {
           if (!b[k]) {
             b[k] = {};
-            b[k][kk] = vv;
-          } else {
-            b[k][kk] += vv;
           }
+          b[k][kk] = b[k][kk] ? b[k][kk] + vv : vv;
         });
       });
       return b;
