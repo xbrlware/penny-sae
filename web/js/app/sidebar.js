@@ -1,6 +1,6 @@
 // web/js/app/sidebar.js
 
-/* global Ember, App, alert, gconfig */
+/* global Ember, App, _, alert, gconfig */
 
 App.SidebarRoute = App.GRoute.extend({
   model: function (params) {
@@ -16,15 +16,22 @@ App.SidebarRoute = App.GRoute.extend({
 
     controller.set('isLoading', true);
     appCon.set('showNav', true);
-    if (model.st !== '-') {
-      appCon.set('searchTerm', model.st);
-      appCon.search_company(function (response) {
+    if (model.st === '-') {
+      appCon.set('searchTerm', undefined);
+      appCon.sort_companies(function (response) {
+        controller.set('model', response);
+        controller.set('isLoading', false);
+      });
+    } else if (model.st === '--' && controller.get('model') !== null) {
+      appCon.set('searchTerm', undefined);
+      var ciks = _.pluck(controller.get('model').hits, 'cik');
+      appCon.refresh_companies(ciks, function (response) {
         controller.set('model', response);
         controller.set('isLoading', false);
       });
     } else {
-      appCon.set('searchTerm', undefined);
-      appCon.sort_companies(function (response) {
+      appCon.set('searchTerm', model.st);
+      appCon.search_company(function (response) {
         controller.set('model', response);
         controller.set('isLoading', false);
       });
@@ -46,6 +53,9 @@ App.SidebarRoute = App.GRoute.extend({
         controller.set('model', response);
         controller.con.set('isLoading', false);
       });
+    },
+    summary_detail: function () {
+      return [1, 2, 3];
     }
   }
 });
@@ -54,6 +64,7 @@ App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
+  searchTopic: Ember.computed.alias('controllers.application.searchTopic'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
 
   actions: {

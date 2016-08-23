@@ -2,8 +2,6 @@
 
 /* global Ember, App, _, gconfig*/
 
-// Dropdown
-
 App.DropdownController = Ember.ObjectController.extend({
   needs: ['application'],
 
@@ -56,6 +54,13 @@ App.DropdownController = Ember.ObjectController.extend({
       var appCon = this.controllerFor('application');
       appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '-');
+    },
+
+    refresh_companies: function () {
+      console.log('---- refresh_companies ----');
+      var appCon = this.controllerFor('application');
+      appCon.transitionToRoute('sidebar', '');
+      appCon.transitionToRoute('sidebar', '--');
     },
 
     showParameters: function (type) {

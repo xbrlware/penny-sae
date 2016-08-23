@@ -25,7 +25,7 @@ App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
   tableContent: function () {
     var _this = this;
     return _.map(this.get('model'), function (n) {
-      return [n.form, _this.dateConversion(n._enrich.period), _this.dateConversion(n.date), n._enrich.deadline ? _this.dateConversion(n._enrich.deadline) : 'missing', n._enrich.is_late ? 'Late' : ''];
+      return [n.form, _this.dateConversion(n._enrich.period), n._enrich.deadline ? _this.dateConversion(n._enrich.deadline) : 'missing', _this.dateConversion(n.date), n._enrich.is_late ? 'Late' : ''];
     });
   }.property('model'),
 

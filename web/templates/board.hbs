@@ -8,36 +8,227 @@
 
 {{#if isData}}
     <div class="col-xs-12" id="techan-wrapper">
-        <div id="time-chart" class="chart"></div>
-    </div>
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-1 btn-group" id="bg">
+                {{
+                filter-button
+                action="toggleVolume"
+                param="na"
+                colXs2=true
+                btnRoundXs=true
+                toggle=true
+                toggleAll=true
+                title="All"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="pos"
+                colXs2=true
+                btnXs=true
+                toggle=true
+                togglePos=true
+                title="pos"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="neut"
+                colXs2=true
+                btnXs=true
+                toggle=true
+                toggleNeut=true
+                title="neut"
+                }}
+                {{
+                filter-button
+                action="toggleVolume"
+                param="neg"
+                colXs2=true
+                btnRoundXs=true
+                toggle=true
+                toggleNeg=true
+                title="neg"
+                }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5" id="tl-posts-volume"></div>
+            <div class="col-xs-1"></div>
+            <div class="col-xs-5" id="pv-price-chart"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5" id="tl-brush-chart"></div>
+            <div class="col-xs-1"></div>
+            <div class="col-xs-5" id="pv-volume-chart"></div>
+        </div>
 {{else}}
     <span class="centered">
     <h4> There is no data available. </h4>
     </span>
 {{/if}}
 
-    <div class="col-xs-12 charts-wrapper">
-        <div class="col-xs-6" id="gauge-timeline-cell">
-            {{#if timelineLoading}}
-                <div class="data-progress centered">
-                    <i class="fa fa-spinner fa-spin" id="spinner"></i>
-                    <span class="loader-text" >Loading Timeline Data...</span>
+<div class="col-xs-12 charts-wrapper">
+    <div class="col-xs-6" id="gauge-timeline-cell">
+        {{#if timelineLoading}}
+            <div class="data-progress centered">
+                <i class="fa fa-spinner fa-spin" id="spinner"></i>
+                <span class="loader-text" >Loading Timeline Data...</span>
+            </div>
+        {{else}}
+            <div class="col-xs-12 timeline-head">
+                <div class="col-xs-3 number-posters">
+                    {{
+                    focus-input
+                    class="form-control"
+                    placeholder=topX.length
+                    id="number-posters-input"
+                    insert-newline="numPosters"
+                    }}
                 </div>
-            {{else}}
-                <div class="timeline-panel" id="timeline">
-                {{#each topX}}
-                    <div class="col-xs-3">
-                        <div id='gauge-{{this}}' class="gauge chart"></div>
+                <div class="col-xs-9 filter-button">
+                    <div class="col-xs-12 btn-group top-buttons">
+                        {{
+                        filter-button
+                        action="ascdesc"
+                        param="sentiment"
+                        colXs6=true
+                        btnRoundXs=true
+                        faChevronDown=true
+                        sentiment=true
+                        title=" Sentiment"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="pos"
+                        colXs2=true
+                        btnXs=true
+                        filter=true
+                        filterPos=true
+                        title="pos"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="neut"
+                        colXs2=true
+                        btnXs=true
+                        filter=true
+                        filterNeut=true
+                        title="neut"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="neg"
+                        colXs2=true
+                        btnRoundXs=true
+                        filter=true
+                        filterNeg=true
+                        title="neg"
+                        }}
                     </div>
-                    <div class="col-xs-9 ts chart" id="ts-{{this}}" {{action "topXClicked" this}}>
-                        <div class="timeline-info">                        
-                            <span class="title"></span>
-                            <div class="count-wrapper pull-right during"></div>
-                        </div>
+                    <div class="col-xs-12 btn-group bottom-buttons">
+                        {{
+                        filter-button
+                        action="ascdesc"
+                        param="numposts"
+                        colXs6=true
+                        btnRoundXs=true
+                        faChevronDown=true
+                        numposts=true
+                        title=" Posts"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="doc"
+                        colXs2=true
+                        btnXs=true
+                        filter=true
+                        filterDoc=true
+                        title="num"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="max"
+                        colXs2=true
+                        btnXs=true
+                        filter=true
+                        filterMax=true
+                        title="max"
+                        }}
+                        {{
+                        filter-button
+                        action="sortUsers"
+                        param="mean"
+                        colXs2=true
+                        btnRoundXs=true
+                        filter=true
+                        filterMean=true
+                        title="mean"
+                        }}
                     </div>
-                {{/each}}
                 </div>
-            {{/if}}
-        </div>
-        {{forum-posts postFilteredData splitByFilter}}
+            </div>
+            <div class="col-xs-12 timeline-container">
+                <ul class="col-xs-12 timeline-panel" id="timeline">
+                    {{#each topX}}
+                        <li>    
+                            <div class="col-xs-4">
+                                <div id='gauge-{{this}}' class="gauge chart"></div>
+                            </div>
+                            <div class="col-xs-8 ts chart" id="ts-{{this}}">
+                                <div class="timeline-info">                        
+                                    <span class="title" {{action "topXClicked" this}}></span>
+                                    <div class="count-wrapper pull-right during" {{action "sortUsers" "doc"}}></div>
+                                </div>
+                            </div>
+                        </li>
+                    {{/each}}
+                </ul>
+            </div>
+        {{/if}}
     </div>
+    <div class="col-xs-6" id="forum-posts-cell">
+        {{#if isLoading}}
+        {{else}}
+            <div class="search-input">
+                <div class="input-group" style="width: 100%;">
+                    <div>
+                        {{
+                        focus-input
+                        class="form-control"
+                        placeholder="- Search Posts -"
+                        id="search-posts"
+                        insert-newline="messageSearch"
+                        }}
+                    </div>
+                </div>
+            </div>
+            <div class="forum-div">
+                <ul class="list-group" id="collection">'
+                    {{#each postFilteredData}}
+                        <li class="list-group-item comments-group-item" id="forum-item">
+                            <div class="list-group-item-heading message-header">
+                                <div>{{this.user}}</div>
+                                <div>{{this.board}}</div>
+                                <div>{{this.time}}</div>
+                                <div>
+                                    <a target="_blank" {{bindAttr href=this.url}}>
+                                        {{this.msg_id}}
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="list-group-item-text" id="app-msg">
+                            {{this.msg}}
+                            </p>
+                        </li>
+                    {{/each}}
+                </ul>
+            </div>
+        {{/if}}
+    </div>
+</div>

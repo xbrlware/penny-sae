@@ -3,6 +3,7 @@
 /* Setup Authorization */
 
 /* global Ember, SimpleAuth, _, gconfig */
+
 window.ENV = window.ENV || {};
 window.ENV['simple-auth'] = {
   authorizer: 'authorizer:custom',
@@ -61,6 +62,7 @@ App.Router.map(function () {
   this.route('login', {path: 'login'}, function () {});
   this.route('frontpage', {path: '/'}, function () {});
   this.route('sidebar', {path: 'sidebar/:st'}, function () {
+    this.resource('summary', {path: 'summary'}, function () {});
     this.resource('detail', {path: 'detail/:cik'}, function () {
       this.resource('board', function () {});
       this.resource('topNews', function () {
@@ -76,7 +78,6 @@ App.Router.map(function () {
       this.resource('promotions', function () {});
       this.resource('leadership', function () {});
     });
-    this.resource('topic', {path: 'topic'}, function () {});
   });
 });
 
@@ -107,15 +108,35 @@ App.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 
 App.ApplicationController = Ember.Controller.extend({
   searchTerm: undefined,
+  searchTopic: false,
   showNav: false,
   redFlagParams: App.RedFlagParams.create(),
   isLoading: false, // state variable for spinner
 
   search_company: function (cb) {
-    App.Search.search_company(this.searchTerm, this.redFlagParams).then(cb);
+    App.Search.search_company(
+      this.searchTerm,
+      this.redFlagParams,
+      this.searchTopic,
+      false
+    ).then(cb);
   },
+
   sort_companies: function (cb) {
-    console.log('application -> sort_companies');
-    App.Search.search_company(undefined, this.redFlagParams).then(cb);
+    App.Search.search_company(
+      undefined,
+      this.redFlagParams,
+      this.searchTopic,
+      false
+    ).then(cb);
+  },
+
+  refresh_companies: function (query, cb) {
+    App.Search.search_company(
+      query,
+      this.redFlagParams,
+      this.searchTopic,
+      true
+    ).then(cb);
   }
 });

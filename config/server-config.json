@@ -4,11 +4,12 @@
     },    
     "CLEAR_USERS_ON_RESTART" : false,
     "ES" : {
-        "HOST"  : "http://localhost:9205",
+        "HOST"  : ["http://localhost:9205", "http://localhost:9206", "http://localhost:9207", "http://localhost:9208"],
+        "SCRIPT" : "ernest_v2",
         "INDEX" : {
           "CROWDSAR"    : "ernest_crowdsar",
           "AUTH"        : "ernest_auth_sec",
-          "AGG"         : "ernest_agg_v3_singleshard",
+          "AGG"         : "ernest_agg_v4",
           "PV"          : "ernest_pv_cat",
           "SYMBOLOGY"   : "ernest_symbology_v2",
           "DELINQUENCY" : "ernest_aq_forms_enrich_cat",
@@ -29,5 +30,6 @@
         "PORT" : 9000
     },
     "TIMEOUT_AMOUNT": 2,
-    "TIMEOUT_UNITS" : "hours"
+    "TIMEOUT_UNITS" : "hours",
+    "URL": "http://investorshub.advfn.com/boards/read_msg.aspx?message_id="
 }

@@ -1,77 +1,4 @@
-/* global Ember, App, d3, _, techan, crossfilter, gconfig */
-
-function makeTimeSeries (ts, bounds) {
-  var div = '#ts-' + ts.id;
-  var margin = {top: 10, right: 15, bottom: 20, left: 20};
-  var FILL_COLOR = 'orange';
-  var TEXT_COLOR = '#ccc';
-
-  // Calculate bar width
-  var BAR_WIDTH = 2;
-
-  var data = _.chain(ts.timeseries).map(function (x) {
-    return {
-      'date': new Date(x.key),
-      'value': +x.value
-    };
-  }).value();
-
-  var parseDate = d3.time.format('%b-%d');
-
-  // Clear previous values
-  d3.select(div).selectAll('svg').remove();
-
-  d3.select(div + ' .title').text(ts.name);
-  d3.select(div + ' .during').html('<span>Num. Posts: ' + ts.count.during + '</span>');
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-5, 0])
-    .html(function (d) {
-      return '<center><span>' + parseDate(d.date) + '</span><br /><span>' + d.value + '</span></center>';
-    });
-
-  // Get cell height
-  var height = (margin.top + margin.bottom) * 1.5;
-  var width = (Ember.$('#techan-wrapper').width() * 0.4) - (margin.left + margin.right);
-
-  var x = d3.time.scale().range([0, width - (margin.left + margin.right)]);
-  x.domain(d3.extent([bounds.xmin, bounds.xmax])).nice();
-
-  var y = d3.scale.linear().range([height, 0]);
-  y.domain([0, bounds.ymax]);
-
-  var svg = d3.select(div).append('svg:svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-  var xaxis = d3.svg.axis()
-    .scale(x)
-    .orient('bottom')
-    .ticks(2)
-    .tickFormat(d3.time.format('%b-%y'));
-
-  svg.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(xaxis)
-    .attr('stroke', TEXT_COLOR);
-
-  svg.selectAll('bar')
-    .data(data)
-    .enter().append('rect')
-    .on('mouseover', tip.show)
-    .on('mouseout', tip.hide)
-    .style('fill', FILL_COLOR)
-    .attr('x', function (d) { return x(d.date); })
-    .attr('width', BAR_WIDTH)
-    .attr('y', function (d) { return y(d.value); })
-    .attr('height', function (d) { return height - y(d.value); });
-
-  svg.call(tip);
-}
+/* global Ember, App, d3, _, sessionStorage, gconfig */
 
 App.BoardController = Ember.Controller.extend({
   needs: ['application', 'detail'],
@@ -82,116 +9,281 @@ App.BoardController = Ember.Controller.extend({
   isLoading: false,
   isData: true,
   timelineLoading: false,
+  pageCount: 1,
+  ascDesc: {},
+  postsChart: {},
+  brushChart: {},
+  priceChart: {},
+  volumeChart: {},
+  searchTerm: '',
+  sentiment: 'na',
+  numOfPosters: 10,
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
+  ChartsObj: App.Chart.create(),
+  rtDraw: function () {
+    /* fired during init and when the brush moves */
+    var data = this.get('model.ptData');
+    var pvdata = this.get('model.pvData');
+
+    var parseDate = d3.time.format('%Y-%m-%d').parse;
+
+    // get price/volume data and parse it
+    var pvData = _.chain(pvdata).map(function (d) {
+      return {
+        date: parseDate(d.date),
+        open: +d.open,
+        high: +d.high,
+        low: +d.low,
+        close: +d.close,
+        volume: +d.volume
+      };
+    }).value();
+
+    var forumData = _.map(data, function (x) {
+      return { 'date': new Date(x.date), 'volume': x.value };
+    });
+
+    // don't let the brush change the sort
+    var ad = this.get('ascDesc');
+    ad[ad.type] = ad[ad.type] === 'asc' ? 'desc' : 'asc';
+    sessionStorage.pennyFilters = JSON.stringify(ad);
+
+    var brushDomain = this.brushChart.brush.empty() ? this.priceChart.x.domain() : this.brushChart.brush.extent();
+
+    this.ChartsObj.makeBarChart(this.postsChart, forumData, brushDomain);
+    this.ChartsObj.makeClose(this.priceChart, pvData, brushDomain);
+    this.ChartsObj.makeBarChart(this.volumeChart, pvData, brushDomain);
+    this.set('dateFilter', brushDomain);
+  },
+
+  createChartDimensions: function (id, hMultiplier) {
+    var w = Ember.$(id).width();
+    var h = w * hMultiplier;
+    var x = d3.time.scale().range([0, w]);
+    var y = d3.scale.linear().range([h, 0]);
+    return {
+      width: w,
+      height: h,
+      x: x,
+      y: y
+    };
+  },
+
+  initChartObjects: function () {
+    var _this = this;
+    function brushed () {
+      _this.rtDraw();
+      _this.redraw();
+    }
+
+    var parseDateTip = d3.time.format('%b-%d');
+    var a = this.createChartDimensions('#tl-posts-volume', 0.6);
+    this.set('postsChart', {
+      id: '#tl-posts-volume',
+      margin: { top: 10, bottom: 20, left: 35, right: 40 },
+      title: 'Post Volume',
+      class: 'volume-posts',
+      clip: 'c1',
+      width: a.width + 35 + 40,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+      })
+    });
+
+    a = this.createChartDimensions('#tl-brush-chart', 0.2);
+    this.set('brushChart', {
+      id: '#tl-brush-chart',
+      margin: { top: 10, bottom: 20, left: 35, right: 40 },
+      title: '',
+      class: 'brush-chart-posts',
+      clip: 'c2',
+      width: a.width + 35 + 40,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom'),
+      yAxis: d3.svg.axis().scale(a.y).ticks(0).orient('left'),
+      brush: d3.svg.brush().x(a.x).on('brushend', brushed)
+    });
+
+    a = this.createChartDimensions('#pv-price-chart', 0.6);
+    this.set('priceChart', {
+      id: '#pv-price-chart',
+      margin: { top: 10, bottom: 20, left: 45, right: 40 },
+      title: 'Price',
+      class: 'close',
+      clip: 'c3',
+      width: a.width + 35 + 40,
+      height: a.height,
+      x: a.x,
+      y: a.y.nice(),
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>Open: ' + d.open + '</span><br /><span>Close: ' + d.close + '</span><br /><span>High: ' + d.high + '</span><br /><span>Low: ' + d.low + '</span></center>';
+      })
+    });
+
+    a = this.createChartDimensions('#pv-volume-chart', 0.2);
+    this.set('volumeChart', {
+      id: '#pv-volume-chart',
+      margin: { top: 10, bottom: 20, left: 45, right: 40 },
+      title: 'Volume',
+      class: 'volume',
+      clip: 'c4',
+      width: a.width + 35 + 40,
+      height: a.height,
+      x: a.x,
+      y: a.y,
+      xAxis: d3.svg.axis().scale(a.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y')),
+      yAxis: d3.svg.axis().scale(a.y).orient('left').ticks(4).tickFormat(d3.format('s')),
+      tip: d3.tip().attr('class', 'techan-tip').offset([-10, -2]).html(function (d) {
+        return '<center><span>' + parseDateTip(d.date) + '</span><br /><span>' + d.volume + '</span></center>';
+      })
+    });
+  },
+
+  defaultAscDesc: function () {
+    /* sets default value for filter buttons - checks sessionStorage in browser first */
+    var ss = {doc: 'asc', pos: 'asc', neg: 'asc', neut: 'asc', mean: 'asc', max: 'asc', type: 'doc'};
+    if (typeof Storage !== 'undefined') {
+      sessionStorage.pennyFilters = JSON.stringify(ss);
+      var t = ss;
+      ss[t.type] = t[t.type];
+      ss.type = t.type;
+    }
+    this.set('ascDesc', ss);
+  },
+
   routeName_pretty: function () {
+    /* returns a just the route name */
     var rn = this.get('routeName');
     return rn.charAt(0).toUpperCase() + rn.substr(1).toLowerCase();
   }.property(),
 
-  // Field names for "splitting" entity (i.e. the user if board, board if user)
   splitByFilter: function () {
+    /* Field names for "splitting" entity (i.e. the user if board, board if user) */
     return [];
   }.property(),
 
   postFilteredData: function () {
-    var xId = this.get('splitById');
-    var data = this.get('filtered_data');
+    /* populates forum posts with data from filtered_data */
+    /* watches these properties: filtered_data, dateFilter, pageCount */
+    var data = _.sortBy(this.get('filtered_data'), 'date').reverse();
     var sbf = this.get('splitByFilter');
     var dfl = this.get('dateFilter');
+    var pgc = this.get('pageCount');
 
-    var out;
-    var _data;
+    // filter dates
 
-    if (dfl.length) {
-      _data = _.filter(data, function (d) {
-        return d.date > dfl[0] & d.date < dfl[1];
-      });
-    } else {
-      _data = data;
-    }
+    var _data = dfl.length ? _.filter(data, function (d) {
+      return d.date > dfl[0] & d.date < dfl[1];
+    }) : data;
 
-    if (sbf.length > 0) {
-      out = _.filter(_data, function (x) {
-        return _.contains(sbf, x[xId]);
-      });
-    } else {
-      out = _data;
-    }
+    // make sure that only the users we want are included
+    var out = sbf.length ? _.filter(_data, function (d) {
+      return _.contains(sbf, d.user_id);
+    }) : _data;
 
-    var r = _.chain(out).filter(function (x, i) {
-      return i < 100;
-    }).value();
+    // only send out 100 forum messages at a time for lazy loading
+    var r = (100 * pgc) < out.length ? _.chain(out).filter(function (x, i) {
+      return i < (100 * pgc);
+    }).value() : out;
 
     return r;
-  }.property('filtered_data', 'dateFilter'),
-
-  splitBy: function () {
-    return 'user';
-  }.property(),
-
-  splitById: function () {
-    return this.get('splitBy') + '_id';
-  }.property(),
+  }.property('filtered_data', 'pageCount'),
 
   redraw: function () {
+    /* redraw time lines and forum messages */
+    /* numPosters is used by size in the ES query */
     var _this = this;
-    var cik = _this.controllerFor('detail').get('model.cik');
+    var data = {
+      cik: this.controllerFor('detail').get('model.cik'),
+      date_filter: this.get('dateFilter'),
+      search_term: this.get('searchTerm'),
+      sentiment: {type: this.get('sentiment'), score: 0.5},
+      sort_field: this.get('ascDesc').type === 'doc' ? 'doc_count' : this.get('ascDesc').type,
+      sort_type: this.get('ascDesc')[this.get('ascDesc').type],
+      min_doc: 1,
+      size: this.get('numOfPosters')
+    };
+
+    if (data.sort_field === 'max' || data.sort_field === 'avg' || data.sort_field === 'min') {
+      data['query_size'] = 0;
+    } else {
+      data['query_size'] = data.size;
+    }
+
+    // set spinner
     this.set('timelineLoading', true);
 
-    App.Search.fetch_data('redraw', {cik: cik, date_filter: _this.get('dateFilter')}).then(function (response) {
-      _this.set('model.tlData', response);
+    // call to ES
+    App.Search.fetch_data('redraw', data).then(function (response) {
+      _this.set('splitByFilter', []);
+      _this.set('pageCount', 1);
+      _this.set('model.tlData', response.tlData);
+      _this.set('model.data', response.data);
+      _this.set('filtered_data', _.map(response.data, function (x) {
+        x.date = new Date(x.date);
+        return x;
+      }));
+      // render everything
       _this.renderX();
       _this.renderGauges();
+
+      Ember.run.next(function () {
+        // sets which filter buttons are colored as active
+        var a = _this.get('ascDesc').type;
+        var b = _this.get('ascDesc')[a];
+        var c = a === 'pos' || a === 'neut' || a === 'neg' ? '.sentiment' : '.numposts';
+        var d = 'ascDesc.' + a;
+        _this.set(d, b === 'asc' ? 'desc' : 'asc');
+        _this.setFilterDecoration(a, c);
+
+        Ember.$('.forum-div').scroll(function () {
+          if (Ember.$('.forum-div').scrollTop() + Ember.$('.forum-div').height() >= Ember.$('.forum-div')[0].scrollHeight) {
+            var pgc = _this.get('pageCount');
+            if (pgc < 10) {
+              pgc++;
+              _this.set('pageCount', pgc);
+            }
+          }
+        });
+      });
+      // stop spinner
       _this.set('timelineLoading', false);
     });
   },
 
   draw: function () {
+    /* main draw function for all charts */
+    /* fires when there are changes in the model */
     var _this = this;
     var data = this.get('model.ptData');
     var pvData = this.get('model.pvData');
-    data.forEach(function (d, i) {
-      d.index = i;
-      d.date = new Date(d.key_as_string);
-      d.value = d.doc_count;
-    });
-
-    // For parent filter
-    var datum = crossfilter(data);
-
-    var date = datum.dimension(function (d) {
-      return d.date;
-    });
 
     var forumData = _.map(data, function (x) {
-      return { 'date': x.date, 'volume': x.value };
+      return { 'date': new Date(x.date), 'volume': x.value };
     });
 
-    // Whenever the brush moves, re-rendering everything.
     var renderAll = function (_this) {
-      if (_this.get('topX') === undefined) {
-        // Time series
-        var topX = _.pluck(data, 'id');
-        _this.set('topX', topX);
-        _this.renderX();
-        _this.renderGauges();
-      } else {
-        _this.redraw();
-      }
+      // Time series
+      var topX = _.pluck(data, 'id');
+      _this.set('topX', topX);
+      _this.redraw();
     };
 
-    this.renderTechan(forumData, pvData, this.get('routeName'), this.get('selection_ids'), '#time-chart',
-      function (dateFilter) {
-        _this.set('dateFilter', dateFilter);
-        date.filterRange(dateFilter);
-        renderAll(_this);
-      }
-    );
+    this.renderCharts(forumData, pvData);
+    renderAll(_this);
+  },
 
-  // renderAll(_this)
-  }.observes('model'),
-
-  toggleSplitByFilterMember(id) {
+  toggleSplitByFilterMember (id) {
+    /* toggles which users are seen in the forum messages */
     var xFilter = this.get('splitByFilter');
 
     if (_.contains(xFilter, id)) {
@@ -201,9 +293,14 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX() {
+  renderX () {
+    /* sets up data and then uses makeTimeSeries to draw all
+     * users and their timelines
+     */
+    var _this = this;
     var model = this.get('model.tlData');
 
+    // set up x axis
     var dateFilter = this.get('dateFilter');
 
     var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
@@ -214,14 +311,12 @@ App.BoardController = Ember.Controller.extend({
       return new Date(x);
     }).max().value();
 
-    var roundingFunction = (xmin - xmax) < (86400000 * 30) ? d3.time.hour : d3.time.day;
-
+    // set up time line object to be passed to makeTimeSeries
     var topx = [];
-
     var timeseries = _.chain(model).map(function (v) {
       topx.push(v.id);
       return {
-        'id': v.id,
+        'id': '#ts-' + v.id,
         'name': v.user,
         'count': {
           'during': _.reduce(v.timeline, function (x, y) {
@@ -231,417 +326,221 @@ App.BoardController = Ember.Controller.extend({
           'after': 0
         },
         'timeseries': _.map(v.timeline, function (x) {
-          return {key: roundingFunction(new Date(x.key_as_string)), value: x.doc_count};
-        })
+          return {date: new Date(x.key_as_string), value: x.doc_count};
+        }),
+        'max': v.max,
+        'mean': v.mean,
+        'min': v.min
       };
     }).value();
 
+    // set topX which is used by the HB template
     this.set('topX', topx);
 
-    // Is this redundant?
-    var flatVals = _.chain(timeseries).pluck('timeseries').flatten().value();
-    var ymax = _.chain(flatVals).pluck('value').max().value();
-
+    // make time series
     Ember.run.next(function () {
       _.map(timeseries, function (t) {
-        makeTimeSeries(t, {
+        _this.ChartsObj.makeTimeSeries(t, {
           'xmin': xmin,
           'xmax': xmax,
-          'ymax': ymax,
+          'ymax': t.max,
           'ymin': 0
         });
       });
     });
   },
 
-  renderGauges() {
+  renderGauges () {
+    /* loads data used for drawing gauges and then passes that data to drawGauge */
     var _this = this;
     var data = this.get('model.tlData');
 
     Ember.run.next(function () {
       _.map(data, function (x) {
-        var predData = [{label: 'pos', value: x.pos}, {label: 'neut', value: x.neut}, {label: 'neg', value: x.neg}];
-        return _this.drawGauge('#gauge-' + x.id, predData);
+        return _this.ChartsObj.drawGauge('#gauge-' + x.id, x.pred_data);
       });
     });
   }, // This should really be broken apart
 
-  drawGauge(bindTo, gaugeData) {
-    // draw gauge gets called twice and we need this for now
-    d3.select(bindTo).selectAll('svg').remove();
+  renderCharts: function (forumData, pvdata) {
+    /* renders Post Volume, Brush, Price, and Trading Volume charts */
+    // date formatting functions
+    var dateDomain = this.brushChart.brush.extent();
+    d3.select('g.x.brush').remove();
 
-    var w = gconfig.GAUGE.SIZE.WIDTH;
-    var h = gconfig.GAUGE.SIZE.HEIGHT / 2;
-    var c = gconfig.GAUGE.COLOR_PATT;
+    // draw brush chart
+    this.ChartsObj.makeBarChart(this.brushChart, forumData, [new Date('2004-01-01'), new Date()]);
 
-    var r = w / 2;
-    var ir = w / 4;
-    var pi = Math.PI;
-    var color = {pos: c[0], neut: c[1], neg: c[2]};
-    var valueFormat = d3.format('.4p');
+    // set inital date ranges to be shown
+    if (dateDomain[0] < new Date('2004-01-01')) {
+      this.brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
+    } else {
+      this.brushChart.brush.extent(dateDomain);
+    }
 
-    var data = gaugeData;
-
-    var tip = d3.tip()
-      .attr('class', 'd3-tip')
-      .offset([-5, 0])
-      .html(function (d) {
-        return '<center><strong>' + d.data.label + '</strong><br /><span>' + valueFormat(d.data.value) + '</span></center>';
-      });
-
-    var vis = d3.select(bindTo).append('svg')
-      .data([data])
-      .attr('width', w)
-      .attr('height', h)
-      .append('svg:g')
-      .attr('class', 'gauge-align')
-      .attr('transform', 'translate(' + r + ',' + r + ')');
-
-    vis.call(tip);
-
-    var arc = d3.svg.arc()
-      .outerRadius(r)
-      .innerRadius(ir);
-
-    var pie = d3.layout.pie()
-      .sort(null)
-      .value(function (d) { return d.value; })
-      .startAngle(-90 * (pi / 180))
-      .endAngle(90 * (pi / 180));
-
-    var arcs = vis.selectAll('g.slice')
-      .data(pie)
-      .enter()
-      .append('svg:g')
-      .attr('class', 'slice')
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
-
-    arcs.append('svg:path')
-      .attr('fill', function (d, i) { return color[d.data.label]; })
-      .attr('d', arc);
-
-    return arcs;
+    this.brushChart.brush(d3.select('.brush').transition());
+    this.rtDraw(pvdata, forumData);
   },
 
-  renderTechan: function (forumdata, pvdata, routeId, subjectId, div, cb) {
-    var parseDate = d3.time.format('%Y-%m-%d').parse;
+  sortPosters: function (sortType) {
+    /* sets variables and lets renderX and renderGauges render by sort type */
+    var ascdesc = JSON.parse(sessionStorage.pennyFilters);
 
-    var pvData = _.chain(pvdata).map(function (d) {
-      return {
-        date: parseDate(d.date),
-        open: +d.open,
-        high: +d.high,
-        low: +d.low,
-        close: +d.close,
-        volume: +d.volume
-      };
-    }).sortBy(function (a) { return a.date; }).value();
-
-    var forumData = forumdata;
-
-    var dateRange = d3.extent(_.flatten([_.pluck(pvData, 'date'),
-      _.pluck(forumData, 'date')]));
-
-    var dateSupport = getDates(dateRange);
-
-    function addDays (currentDate, days) {
-      var dat = new Date(currentDate);
-      dat.setDate(dat.getDate() + days);
-      return dat;
+    if (ascdesc[sortType] === 'desc') {
+      ascdesc[sortType] = 'asc';
+    } else {
+      ascdesc[sortType] = 'desc';
     }
 
-    function getDates (dateRange) {
-      var dateArray = [];
-      var currentDate = dateRange[0];
+    ascdesc.type = sortType;
 
-      while (currentDate <= dateRange[1]) {
-        dateArray.push(new Date(currentDate));
-        currentDate = addDays(currentDate, 1);
-      }
+    this.set('ascDesc', ascdesc);
 
-      return dateArray;
-    }
+    sessionStorage.pennyFilters = JSON.stringify(ascdesc);
+    this.set('splitByFilter', []);
 
-    var margin = {
-      top: 20,
-      bottom: 10,
-      between: {
-        y: 40,
-        x: 40
-      },
-      left: 35,
-      right: 5
-    };
-    var totalHeight = 400 - margin.top - margin.between.y - margin.bottom;
-    var totalWidth = Ember.$('#techan-wrapper').width() - margin.left - margin.right;
-
-    var posts = {};
-    posts.title = 'Post Volume';
-    posts.method = 'volume';
-    posts.class = 'volume-posts';
-    posts.width = totalWidth * 0.5;
-    posts.height = totalHeight * 0.8 - 0.5 * margin.between.y;
-    posts.position_left = margin.left;
-    posts.position_top = margin.top;
-    posts.x = techan.scale.financetime().range([0, posts.width]);
-    posts.y = d3.scale.linear().range([posts.height, 0]);
-    posts.plot = techan.plot.volume().xScale(posts.x).yScale(posts.y);
-    posts.xAxis = d3.svg.axis().scale(posts.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
-    posts.yAxis = d3.svg.axis().scale(posts.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-
-    var brushChart = {};
-    brushChart.title = '';
-    brushChart.method = 'volume';
-    brushChart.class = 'brush-chart-posts';
-    brushChart.width = totalWidth * 0.5;
-    brushChart.height = totalHeight * 0.2 - 0.5 * margin.between.y;
-    brushChart.position_left = margin.left;
-    brushChart.position_top = totalHeight * 0.8 + margin.between.y;
-    brushChart.x = techan.scale.financetime().range([0, brushChart.width]);
-    brushChart.y = d3.scale.linear().range([brushChart.height, 0]);
-    brushChart.plot = techan.plot.volume().xScale(brushChart.x).yScale(brushChart.y);
-    brushChart.xAxis = d3.svg.axis().scale(brushChart.x).ticks(4).orient('bottom');
-    brushChart.yAxis = d3.svg.axis().scale(brushChart.y).ticks(0).orient('left');
-
-    var price = {};
-    price.title = 'Price';
-    price.method = 'ohlc';
-    price.class = 'close';
-    price.width = totalWidth * 0.5 - 2 * margin.between.x - 20;
-    price.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-    price.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-    price.position_top = margin.top;
-    price.x = techan.scale.financetime().range([0, price.width]);
-    price.y = d3.scale.linear().range([price.height, 0]);
-    price.plot = techan.plot.close().xScale(price.x).yScale(price.y);
-    price.xAxis = d3.svg.axis().scale(price.x).ticks(4).orient('bottom').tickFormat(d3.time.format('%m-%Y'));
-    price.yAxis = d3.svg.axis().scale(price.y).orient('left').ticks(4);
-
-    var volume = {};
-    volume.title = 'Volume';
-    volume.method = 'volume';
-    volume.class = 'volume';
-    volume.width = totalWidth * 0.5 - 2 * margin.between.x;
-    volume.height = totalHeight * 0.5 - 0.5 * margin.between.y;
-    volume.position_left = totalWidth * 0.5 + 2 * margin.between.x;
-    volume.position_top = totalHeight * 0.5 + margin.between.y;
-    volume.x = price.x;
-    volume.y = d3.scale.linear().range([volume.height, 0]);
-    volume.plot = techan.plot.volume().xScale(volume.x).yScale(volume.y);
-    volume.xAxis = price.xAxis;
-    volume.yAxis = d3.svg.axis().scale(volume.y).orient('left').ticks(4).tickFormat(d3.format('s'));
-
-    var svg = d3.select(div).append('svg')
-      .attr('width', totalWidth + margin.left + margin.between.x + margin.right)
-      .attr('height', totalHeight + margin.top + margin.between.y + margin.bottom);
-
-    function makeDiv (obj, clip) {
-      var div = svg.append('g').attr('class', 'focus1').attr('id', obj.class)
-        .attr('transform',
-          'translate(' + obj.position_left + ',' + obj.position_top + ')');
-
-      div.append('svg:clipPath')
-        .attr('id', clip)
-        .append('svg:rect')
-        .attr('x', 0)
-        .attr('y', obj.y(1))
-        .attr('width', obj.width)
-        .attr('height', obj.y(0) - obj.y(1));
-
-      div.append('g')
-        .attr('class', obj.class)
-        .attr('clip-path', 'url(#' + clip + ')');
-
-      div.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + obj.height + ')');
-
-      div.append('g')
-        .attr('class', 'y axis')
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '.71em')
-        .style('text-anchor', 'end')
-        .text(obj.title);
-
-      return div;
-    }
-
-    posts.div = makeDiv(posts, 'c1');
-
-    brushChart.div = makeDiv(brushChart, 'c2');
-    brushChart.div.append('g').attr('class', 'pane'); // add hook for brush
-
-    price.div = makeDiv(price, 'c3');
-    volume.div = makeDiv(volume, 'c4');
-
-    price.x.domain(dateSupport);
-    price.y.domain(techan.scale.plot.ohlc(pvData).domain()).nice();
-    price.div.select('g.close').datum(pvData);
-
-    volume.x.domain(dateSupport);
-    volume.y.domain([1000000, techan.scale.plot.volume(pvData).domain()[1]]);
-    volume.div.select('g.volume').datum(pvData);
-
-    posts.x.domain(dateSupport);
-    posts.y.domain(techan.scale.plot.volume(forumData).domain());
-    posts.div.select('g.volume-posts').datum(forumData);
-
-    brushChart.x.domain(dateSupport);
-    brushChart.y.domain(techan.scale.plot.volume(forumData).domain());
-    brushChart.div.select('g.brush-chart-posts').datum(forumData).call(brushChart.plot);
-    brushChart.div.select('g.x.axis').call(brushChart.xAxis);
-    brushChart.div.select('g.y.axis').call(brushChart.yAxis);
-
-    // Associate the brush with the scale and render the brush
-    // only AFTER a domain has been applied
-    var brushZoom = brushChart.x.zoomable();
-    var zoomable = price.x.zoomable();
-    var zoomable2 = posts.x.zoomable();
-
-    var brush = d3.svg.brush()
-      .x(brushZoom)
-      .on('brushend', draw);
-
-    brushChart.div.select('g.pane')
-      .call(brush)
-      .selectAll('rect')
-      .attr('height', brushChart.height);
-
-    function _draw (obj, dateFilter) {
-      var data = obj.div.select('g.' + obj.class).datum();
-
-      var _data = _.filter(data, function (d) {
-        return d.date > dateFilter[0] & d.date < dateFilter[1];
-      });
-
-      if (_data.length > 0) {
-        obj.y.domain(techan.scale.plot[obj.method](_data).domain());
-      } else {
-        obj.y.domain([0, 1]);
-      }
-
-      // plot the data
-      obj.div.select('g.' + obj.class).call(obj.plot);
-      // draw the x / y axis for c2
-      obj.div.select('g.x.axis').call(obj.xAxis);
-      obj.div.select('g.y.axis').call(obj.yAxis);
-    }
-
-    function draw () {
-      var brushDomain = brush.empty() ? brushZoom.domain() : brush.extent();
-      var dateFilter = d3.extent(dateSupport.slice.apply(dateSupport, brushDomain));
-
-      zoomable.domain(brushDomain);
-      zoomable2.domain(brushDomain);
-
-      _draw(price, dateFilter);
-      _draw(volume, dateFilter);
-
-      _draw(posts, dateFilter);
-
-      cb(dateFilter);
-    }
-
-    /* set the initial size of the brush. The brush works on pixels, not on dates */
-    if (forumData.length) {
-      var mn = brushChart.x(forumData[0].date) / brushChart.width;
-      brush.extent([(brushZoom.domain()[1] * mn), brushZoom.domain()[1]]);
-      brushChart.div.select('.pane').call(brush);
-    }
-
-    draw();
+    this.redraw();
   },
+
+  setFilterDecoration: function (sortType, chevronClass) {
+    /* activates/deactivates the right buttons and FA chevrons */
+    var cc = this.get('ascDesc')[sortType] === 'asc' ? ['up', 'down'] : ['down', 'up'];
+
+    Ember.$('.filter').removeClass('active');
+    Ember.$('.filter-' + sortType).toggleClass('active');
+
+    if (Ember.$(chevronClass).hasClass('fa-chevron-' + cc[0])) {
+      Ember.$(chevronClass).removeClass('fa-chevron-' + cc[0]);
+      Ember.$(chevronClass).toggleClass('fa-chevron-' + cc[1]);
+    }
+  },
+
+  sortTimelines: function (st) {
+    /* high level sorting function */
+    var c = st === 'pos' || st === 'neut' || st === 'neg' ? '.sentiment' : '.numposts';
+    this.setFilterDecoration(st, c);
+    this.sortPosters(st);
+  },
+
+  toggleSentiment: function (st) {
+    var _this = this;
+    var cik = this.controllerFor('detail').get('model.cik');
+    App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': _this.get('dateFilter'), 'sentiment': {type: st, score: 0.5}}).then(function (response) {
+        _this.set('model', response);
+        _this.set('filtered_data', _.map(response.data, function (x) {
+          x.date = new Date(x.date);
+          return x;
+        }));
+        if (!response.pvData && !response.data) { _this.set('isData', false); }
+        _this.draw();
+        Ember.$('.toggle').removeClass('active');
+        Ember.$('.toggle-' + st).toggleClass('active');
+      });
+    });
+  },
+
   actions: {
-    topXClicked(id) {
+    toggleVolume: function (sentiment) {
+      this.set('sentiment', sentiment);
+      this.toggleSentiment(sentiment);
+    },
+
+    numPosters: function (num) {
+      /* handles when user changes number of time lines to be displayed */
+      if (!isNaN(num)) {
+        this.set('numOfPosters', (Number(num) < 1 ? 1 : Number(num)));
+      }
+      var ad = this.get('ascDesc');
+      ad[ad.type] = ad[ad.type] === 'asc' ? 'desc' : 'asc';
+      sessionStorage.pennyFilters = JSON.stringify(ad);
+      this.redraw();
+    },
+
+    sortUsers: function (sortType) {
+      /* handles high level sorting of time lines */
+      this.sortTimelines(sortType);
+    },
+
+    ascdesc: function (btn) {
+      /* handles when sentiment and posts filter buttons are pressed */
+      var a = Ember.$('.filter.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.filter.active').text().replace(/\n/g, '');
+
+      console.log('BTN ::', btn);
+      console.log('AAA ::', a);
+
+      if (btn === 'sentiment') {
+        if (a === 'doc' || a === 'max' || a === 'min') {
+          a = 'pos';
+        }
+      } else {
+        if (a === 'pos' || a === 'neut' || a === 'neg') {
+          a = 'doc';
+        }
+      }
+      console.log('ABB ::', a);
+      this.sortTimelines(a);
+    },
+
+    topXClicked (id) {
+      /* handles when user is clicked on */
       var _this = this;
+      this.set('pageCount', 1);
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       var cik = this.controllerFor('detail').get('model.cik');
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {
-        App.Search.fetch_data('user', {cik: cik, users: _this.get('splitByFilter'), date_filter: _this.get('dateFilter')}).then(function (response) {
+        App.Search.fetch_data('user', {cik: cik, users: this.get('splitByFilter'), date_filter: this.get('dateFilter'), search_term: this.get('searchTerm'), sentiment: {type: _this.get('sentiment'), score: 0.5}}).then(function (response) {
           _this.set('filtered_data', _.map(response, function (x) {
-            x.date = new Date(x.time);
+            x.date = new Date(x.date);
             return x;
           }));
         });
       } else {
-        _this.set('filtered_data', this.get('model.data'));
+        this.set('filtered_data', this.get('model.data'));
       }
     },
 
-    drilldown() {
-      this.transitionTo(this.get('splitBy'), this.get(this.get('splitByFilter')).join(','));
+    messageSearch: function (searchTerm) {
+      /* high level function for searching messages for string */
+      this.set('searchTerm', searchTerm);
+      this.redraw();
     }
   }
 });
 
 App.BoardRoute = Ember.Route.extend({
+  /* only used for setting up controller and loading initial data */
   setupController: function (con, model, params) {
     con.set('isLoading', true);
     con.set('filtered_data', []);
     con.set('isData', true);
+    con.set('searchTerm', '');
+    con.set('sentiment', 'na');
+    con.set('numOfPosters', 10);
+    // set poster sort object this.ascDesc
+    con.defaultAscDesc();
 
     var cik = this.controllerFor('detail').get('model.cik');
-    console.log('CIK :: ', cik);
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter')}).then(function (response) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'neut', score: 0.5}}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
-          x.date = new Date(x.time);
+          x.date = new Date(x.date);
           return x;
         }));
-
         con.set('splitByFilter', []);
-        con.set('splitBy', 'user');
-
+        con.set('pageCount', 1);
         con.set('routeName', 'board');
-
         con.set('selection_ids', params.params[con.get('routeName')].ids);
         con.set(con.get('routeName') + '_filter', params.params[con.get('routeName')].ids);
         con.set('isLoading', false);
 
-        if (!response.pvData.length && !response.data.length) { con.set('isData', false); }
+        if (!response.pvData && !model.data) { con.set('isData', false); }
+        con.initChartObjects();
+        con.draw();
       });
     });
   }
 });
-
-Ember.Handlebars.helper('forum-posts', function (d, sbf) {
-  var mincount = 20;
-  var maxcount = 40;
-  var ourString = '<div class="col-xs-6" id="forum-posts-cell">';
-
-  if (d) {
-    var data = _.sortBy(d, function (x) { return x.time; }).reverse();
-  }
-
-  Ember.$('.list-group li').slice(20).hide();
-  Ember.$('.list-group').scroll(function () {
-    if (Ember.$('.list-group').scrollTop() + Ember.$('.list-group').height() >= Ember.$('.list-group')[0].scrollHeight) {
-      Ember.$('.list-group li').slice(mincount, maxcount).fadeIn(1000);
-      mincount = mincount + 20;
-      maxcount = maxcount + 40;
-    }
-  });
-
-  ourString = ourString + '<div id="forum-div""><ul class="list-group" id="collection">';
-
-  if (data) {
-    for (var i = 0; i < data.length; i++) {
-      ourString = ourString + '<li class="list-group-item comments-group-item" id="forum-item"><span class="list-group-item-heading" id="app-grey">' + data[i].user + ' at ' + data[i].time + ' on ' + data[i].board + '</span>';
-
-      if (data[i].msg.length > 70) {
-        var msg = data[i].msg.substring(0, 70);
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + msg + '... (continued)</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      } else {
-        ourString = ourString + '<p class="list-group-item-text" id="app-msg">' + data[i].msg + '</p><p class="full-msg">' + data[i].msg + '</p></li>';
-      }
-    }
-  }
-  ourString = ourString + '</ul></div></div>';
-  return new Ember.Handlebars.SafeString(ourString);
-}, 'sbf');
