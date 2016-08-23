@@ -8,7 +8,7 @@ module.exports = function (app, config, client) {
   var dropRight = require('lodash/dropRight');
 
   var boardQueryBuilder = {
-    'board': function (brdData, search = null, users = false) {
+    'board': function (brdData, search = null , users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
@@ -313,9 +313,9 @@ module.exports = function (app, config, client) {
           user: x.user.buckets[0].key,
           doc_count: x.stats.sum,
           pred_data: [
-          {label: 'pos', value: x.pos.value},
-          {label: 'neut', value: x.neut.value},
-          {label: 'neg', value: x.neg.value}
+            {label: 'pos', value: x.pos.value},
+            {label: 'neut', value: x.neut.value},
+            {label: 'neg', value: x.neg.value}
           ],
           max: x.stats.max,
           mean: x.stats.avg,
