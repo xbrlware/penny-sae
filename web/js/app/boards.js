@@ -389,14 +389,8 @@ App.BoardController = Ember.Controller.extend({
     /* sets variables and lets renderX and renderGauges render by sort type */
     var ascdesc = JSON.parse(sessionStorage.pennyFilters);
 
-    if (ascdesc[sortType] === 'desc') {
-      ascdesc[sortType] = 'asc';
-    } else {
-      ascdesc[sortType] = 'desc';
-    }
-
+    ascdesc[sortType] = ascdesc[sortType] === 'desc' ? 'asc' : 'desc';
     ascdesc.type = sortType;
-
     this.set('ascDesc', ascdesc);
 
     sessionStorage.pennyFilters = JSON.stringify(ascdesc);
@@ -468,9 +462,6 @@ App.BoardController = Ember.Controller.extend({
     ascdesc: function (btn) {
       /* handles when sentiment and posts filter buttons are pressed */
       var a = Ember.$('.filter.active').text().replace(/\n/g, '') === 'num' ? 'doc' : Ember.$('.filter.active').text().replace(/\n/g, '');
-
-      console.log('BTN ::', btn);
-      console.log('AAA ::', a);
 
       if (btn === 'sentiment') {
         if (a === 'doc' || a === 'max' || a === 'min') {

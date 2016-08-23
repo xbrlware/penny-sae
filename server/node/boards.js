@@ -8,7 +8,7 @@ module.exports = function (app, config, client) {
   var dropRight = require('lodash/dropRight');
 
   var boardQueryBuilder = {
-    'board': function (brdData, search = null , users = false) {
+    'board': function (brdData, search = null, users = false) {
       var q = {
         'size': 1000, // This limits the hits to 1000
         '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
@@ -35,6 +35,8 @@ module.exports = function (app, config, client) {
         q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': brdData.sentiment.score}}});
       } else if (brdData.sentiment.type === 'pos') {
         q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': brdData.sentiment.score}}});
+      } else if (brdData.sentiment.type === 'neut') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': brdData.sentiment.score}}});
       }
 
       if (users) {
