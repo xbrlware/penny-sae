@@ -8,7 +8,7 @@ var gconfig = {
  "DEFAULT_HIDE_TERMINAL": false,
  "DEFAULT_HIDE_NER": true,
  "DEFAULT_DATE_FILTER": [
-  "2000-01-01",
+  "2010-01-01",
   "2017-01-01"
  ],
  "DEFAULT_REDFLAG_PARAMS": {

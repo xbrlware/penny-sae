@@ -49,6 +49,7 @@ App.BoardController = Ember.Controller.extend({
     sessionStorage.pennyFilters = JSON.stringify(ad);
 
     var brushDomain = this.brushChart.brush.empty() ? this.priceChart.x.domain() : this.brushChart.brush.extent();
+    brushDomain = _.uniq(brushDomain)[0] === undefined ? this.get('dateFilter') : brushDomain;
 
     this.ChartsObj.makeBarChart(this.postsChart, forumData, brushDomain);
     this.ChartsObj.makeClose(this.priceChart, pvData, brushDomain);
@@ -233,8 +234,6 @@ App.BoardController = Ember.Controller.extend({
         return x;
       }));
 
-      console.log('TLDATA ::', response.tlData);
-
       // render everything
       _this.renderX();
       _this.renderGauges();
@@ -306,13 +305,14 @@ App.BoardController = Ember.Controller.extend({
     // set up x axis
     var dateFilter = this.get('dateFilter');
 
-    var xmin = dateFilter ? dateFilter[0] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
-      return new Date(x);
-    }).min().value();
+    var maxmin = _.flatten(_.map(model, function (x) {
+      return _.map(x.timeline, function (y) {
+        return new Date(y.key_as_string);
+      });
+    }));
 
-    var xmax = dateFilter ? dateFilter[1] : _.chain(model.timeline).pluck('key_as_string').map(function (x) {
-      return new Date(x);
-    }).max().value();
+    var xmin = dateFilter[0] ? dateFilter[0] : _.min(maxmin);
+    var xmax = dateFilter[1] ? dateFilter[1] : _.max(maxmin);
 
     // set up time line object to be passed to makeTimeSeries
     var topx = [];
@@ -517,7 +517,7 @@ App.BoardRoute = Ember.Route.extend({
 
     var cik = this.controllerFor('detail').get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
-      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'neut', score: 0.5}}).then(function (response) {
+      App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': con.get('dateFilter'), 'sentiment': {type: 'na', score: 0.5}}).then(function (response) {
         con.set('model', response);
         con.set('filtered_data', _.map(response.data, function (x) {
           x.date = new Date(x.date);

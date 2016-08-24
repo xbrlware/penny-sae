@@ -69,11 +69,9 @@ module.exports = function (app, config, client) {
         'size': 0,
         'query': {
           'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {'term': {'__meta__.sym.cik': btData.cik}}
-                ]
+            'query': {
+              'match': {
+                '__meta__.sym.cik': btData.cik
               }
             }
           }
@@ -88,12 +86,13 @@ module.exports = function (app, config, client) {
           }
         }
       };
+
       if (btData.sentiment.type === 'neg') {
-        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}});
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}};
       } else if (btData.sentiment.type === 'pos') {
-        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}});
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}};
       } else if (btData.sentiment.type === 'neut') {
-        bt.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': btData.sentiment.score}}});
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.neut': {'gte': btData.sentiment.score}}};
       }
       return bt;
     },
