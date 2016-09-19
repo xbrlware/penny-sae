@@ -84,12 +84,12 @@ module.exports = function (app, config, client) {
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['CROWDSAR'],
-      'body': queryBuilder.topic.cik(d.query),
+      'body': queryBuilder.topic.cik(d.query, 50),
       'from': 0,
       'size': 0,
       'requestCache': true
     }).then(function (esResponse) {
-      var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 15);
+      var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 50);
       company_search(req, function (companyResponse) {
         companyResponse.hits = _.chain(companyResponse.hits).sortBy(function (x) {
           return _.indexOf(ciks, '' + x['cik']);

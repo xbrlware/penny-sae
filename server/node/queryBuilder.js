@@ -44,7 +44,7 @@ module.exports = function (config) {
       };
     },
     'topic': {
-      'cik': function (query, size = 15 , min_doc_count = 1) {
+      'cik': function (query, size = 15, minDocCount = 1) {
         // Searching message boards
         return {
           'query': { 'match_phrase': { 'msg': query } },
@@ -52,16 +52,16 @@ module.exports = function (config) {
             'ciks': {
               'terms': {
                 'field': '__meta__.sym.cik',
-                'min_doc_count': min_doc_count,
+                'minDocCount': minDocCount,
                 'size': size
               }
             }
           }
         };
       },
-      'sic_histogram': function (ciks, size = 25 , min_doc_count = 1) {
+      'sic_histogram': function (ciks, size = 25, minDocCount = 1) {
         return {
-          'query': { 'terms': { 'cik': ciks}},
+          'query': { 'terms': { 'cik': ciks } },
           'aggs': {
             'sics': {
               'terms': {
