@@ -288,10 +288,22 @@ module.exports = function (app, config, client) {
   function hasSearch (data) {
     return [{
       'query': {
-        'match': {
-          'msg': {
-            'query': data.search_term,
-            'operator': 'and'
+        'bool': {
+          'must': {
+            'match': {
+              'msg': {
+                'query': data.search_term,
+                'operator': 'and'
+              }
+            }
+          },
+          'should': {
+            'match_phrase': {
+              'msg': {
+                'query': data.search_term,
+                'slop': 50
+              }
+            }
           }
         }
       }

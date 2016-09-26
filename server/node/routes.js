@@ -49,7 +49,7 @@ module.exports = function (app, config, client) {
   // </redflag-helpers>
 
   // <search>
-  function company_search (req, cb, query = undefined) {
+  function companySearch (req, cb, query = undefined) {
     var d = req.body;
 
     // Coerce parameters if we injected a query
@@ -80,7 +80,7 @@ module.exports = function (app, config, client) {
     });
   }
 
-  function topic_search (req, cb) {
+  function topicSearch (req, cb) {
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['CROWDSAR'],
@@ -90,7 +90,7 @@ module.exports = function (app, config, client) {
       'requestCache': true
     }).then(function (esResponse) {
       var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 50);
-      company_search(req, function (companyResponse) {
+      companySearch(req, function (companyResponse) {
         companyResponse.hits = _.chain(companyResponse.hits).sortBy(function (x) {
           return _.indexOf(ciks, '' + x['cik']);
         })
@@ -104,12 +104,12 @@ module.exports = function (app, config, client) {
           })
           .value();
         cb(companyResponse);
-      }, query = ciks);
+      }, ciks);
     });
   }
 
   app.post('/search', function (req, res) {
-    !req.body.searchTopic ? company_search(req, (x) => res.send(x)) : topic_search(req, (x) => res.send(x));
+    !req.body.searchTopic ? companySearch(req, (x) => res.send(x)) : topicSearch(req, (x) => res.send(x));
   });
   // </search>
 
@@ -124,12 +124,12 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       res.send({
         'table': _.chain(esResponse.hits.hits).map(function (hit) {
-          var sic_lab = (hit._source.__meta__ || {'sic_lab': undefined}).sic_lab;
+          var sicLab = (hit._source.__meta__ || {'sicLab': undefined}).sicLab;
           return {
             'min_date': hit._source.min_date,
             'name': hit._source.name,
             'ticker': hit._source.ticker,
-            'sic': sic_lab ? sic_lab : hit._source.sic
+            'sic': sicLab || hit._source.sic
           };
         }).value()
       });

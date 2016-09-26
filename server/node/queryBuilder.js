@@ -21,7 +21,7 @@ module.exports = function (config) {
         'aggs': {
           'top_hits': {
             'top_hits': {
-              'size': 15,
+              'size': 50,
               '_source': ['cik', 'current_symbology.name'],
               'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
@@ -35,7 +35,7 @@ module.exports = function (config) {
         'aggs': {
           'top_hits': {
             'top_hits': {
-              'size': 15,
+              'size': 50,
               '_source': ['cik', 'current_symbology.name'],
               'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
@@ -44,10 +44,23 @@ module.exports = function (config) {
       };
     },
     'topic': {
-      'cik': function (query, size = 15, minDocCount = 1) {
+      'cik': function (query, size = 50, minDocCount = 1) {
         // Searching message boards
         return {
-          'query': { 'match_phrase': { 'msg': query } },
+          'query': {
+            'bool': {
+              'must': {
+                'match': {
+                  'msg': query
+                }
+              },
+              'should': {
+                'match_phrase': {
+                  'msg': query
+                }
+              }
+            }
+          },
           'aggs': {
             'ciks': {
               'terms': {
@@ -95,7 +108,7 @@ module.exports = function (config) {
         'aggs': {
           'top_hits': {
             'top_hits': {
-              'size': 15,
+              'size': 50,
               '_source': ['cik', 'current_symbology.name'],
               'script_fields': {'redFlags': redflagScript(redFlagParams, false)}
             }
