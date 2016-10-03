@@ -66,7 +66,6 @@ App.Router.map(function () {
     this.resource('detail', {path: 'detail/:cik'}, function () {
       this.resource('board', function () {});
       this.resource('topNews', function () {
-        this.resource('subNews', function () {});
         this.resource('omxNews', {path: 'omxNews/:article_id'}, function () {});
       });
       this.resource('previousReg', function () {});

@@ -217,10 +217,11 @@ module.exports = function (app, config, client) {
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['OMX'],
-      'body': queryBuilder.omx(d.cik),
+      'body': queryBuilder.omx(d),
       'from': 0,
       'size': 100
     }).then(function (esResponse) {
+      console.log('esResponse', esResponse.hits.hits);
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });

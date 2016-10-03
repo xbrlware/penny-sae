@@ -196,8 +196,10 @@ module.exports = function (config) {
         }
       };
     },
-    'omx': function (cik) {
-      return {
+    'omx': function (omxObj) {
+      var m1 = {'match': {'__meta__.sym.cik': omxObj.controller.cik}};
+      var m2 = omxObj.search ? {'term': {'article': omxObj.search}} : null;
+      var r = {
         '_source': ['id', 'headline', 'date'],
         'sort': [
           {
@@ -206,12 +208,16 @@ module.exports = function (config) {
             }
           }
         ],
-        'query': {
-          'match': {
-            '__meta__.sym.cik': cik
-          }
-        }
+        'query': {}
       };
+
+      if (m2) {
+        r.query['bool'] = {'must': [m1, m2]};
+      } else {
+        r.query = m1;
+      }
+
+      return r;
     }
   };
 };

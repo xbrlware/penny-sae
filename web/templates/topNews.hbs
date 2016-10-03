@@ -1,36 +1,41 @@
-{{!-- web/templates/topNews --}}
+{{!-- web/templates/topNews.hbs --}}
+<div class="col-sm-12">
+	<div class="col-sm-12 search-input">
+		<div class="input-group" style="width: 100%;">
+			<div>
+				{{
+				focus-input
+				class="form-control"
+				placeholder="- Search articles -"
+				id="search-posts"
+				insert-newline="newsSearch"
+				}}
+			</div>
+		</div>
+	</div>
+</div>
 
-{{!-- Google News Plugin --}}
-
-<div id="google-news"></div>
-<div class="row">
-
-    <div class="col-sm-2">
-        {{#if model}}
-            <div class="btn-group-vertical">
-                
-                <button type="button" class="btn btn-default">
-                    {{#link-to "subNews"}}Google Search{{/link-to}}
-                </button>
-                
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        Globe NewsWire
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-omx" role="menu">
+<div class="col-sm-12">
+        <div class="col-sm-4" id="news-posts-cell">
+            <div class="headline-div">
+                <ul class="dropdown-menu-right dropdown-menu-omx" role="menu">
+                    {{#if model}}
                         {{#each release in model}}
                             <li class="li-omx">
                                 {{#link-to "omxNews" release.id}}
-                                {{release.date}} - {{release.headline}} {{/link-to}}
+                                    {{release.date}} - {{release.headline}}
+                                {{/link-to}}
                             </li>
                         {{/each}}
-                    </ul>
-                </div>
+                    {{else}}
+                        <li class="li-omx">
+                            No Results Returned
+                        </li>
+                    {{/if}}
+                </ul>
             </div>
-        {{/if}}
-    </div>
-
-    <div class="col-sm-10">
-        {{outlet}}
-    </div>
+        </div>
+        <div class="col-sm-8 article-omx">
+            {{outlet}}
+        </div>
 </div>
