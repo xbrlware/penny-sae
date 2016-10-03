@@ -4,9 +4,15 @@
 
 App.TopNewsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
+    var _this = this;
     App.Search.fetch_data('omx', {controller: this.get('controller.name'), search: null}).then(
       function (response) {
         controller.set('model', response.data);
+        if (response.data.length > 0) {
+          _this.transitionTo('omxNews', response.data[0].id);
+        } else {
+          _this.transitionTo('topNews');
+        }
       }
     );
   }
@@ -15,12 +21,16 @@ App.TopNewsRoute = Ember.Route.extend({
 App.TopNewsController = Ember.Controller.extend({
   needs: ['detail'],
   name: Ember.computed.alias('controllers.detail.model'),
-  searchWord: null,
   setModel: function (sw) {
     var _this = this;
     App.Search.fetch_data('omx', {controller: this.get('name'), search: sw}).then(
       function (response) {
         _this.set('model', response.data);
+        if (response.data.length > 0) {
+          _this.transitionTo('omxNews', response.data[0].id);
+        } else {
+          _this.transitionTo('topNews');
+        }
       }
     );
   },
