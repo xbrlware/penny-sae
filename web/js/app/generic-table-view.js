@@ -12,6 +12,8 @@ App.GenericTableView = Ember.View.extend({
 
   renderTable: function () {
     var con = this.get('controller');
+    var ele = Ember.$(con.get('tableDiv'));
+    Ember.$(ele).empty();
     Ember.$(con.get('tableDiv')).DataTable({
       fnDrawCallback: function (oSettings) {
         if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {

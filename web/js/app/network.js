@@ -66,17 +66,19 @@ App.NetworkAPI.reopenClass({
   expand_node: function (con, rgraph, cik, redFlagParams, init) {
     cik = zpad(cik.toString());
     App.NetworkAPI._fetch({'cik': cik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
-      if (init) {
-        rgraph.loadJSON(data.nodes);
+      if (data.nodes.length > 0) {
+        if (init) {
+          rgraph.loadJSON(data.nodes);
+        } else {
+          App.NetworkAPI._add_nodes(rgraph, data.nodes);
+        }
+        App.NetworkAPI._add_edges(rgraph, data.edges);
+        rgraph.refresh();
+        // Add edges for table
+        con.updateData(rgraph);
       } else {
-        App.NetworkAPI._add_nodes(rgraph, data.nodes);
+        con.updateData(rgraph);
       }
-      App.NetworkAPI._add_edges(rgraph, data.edges);
-
-      // Add edges for table
-      con.update_data(rgraph);
-
-      rgraph.refresh();
     });
   }
 });
@@ -199,11 +201,11 @@ App.RGraph.reopenClass({
   },
 
   addButtons: function (con, rgraph) {
-    button = $jit.id('toggle-terminal');
+    var button = $jit.id('toggle-terminal');
     button.onclick = function () {
       con.toggleProperty('hide_terminal');
 
-      $(this).context.value = (con.get('hide_terminal') ? 'Show' : 'Hide') + ' Terminal Nodes';
+      Ember.$(this).context.value = (con.get('hide_terminal') ? 'Show' : 'Hide') + ' Terminal Nodes';
       rgraph.graph.eachNode(function (node) {
         node.setData('alpha', con.get('hide_terminal') ? (node.data['terminal'] ? 0 : 1) : 1, 'end');
       });
