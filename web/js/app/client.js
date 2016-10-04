@@ -98,13 +98,14 @@ App.Search.reopenClass({
   },
 
   fetch_data: function (detailName, name) {
+    console.log('NAME :: ', name);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         url: detailName,
-        data: JSON.stringify(name),
+        data: typeof name === 'object' ? JSON.stringify(name) : name,
         success: function (response) {
           resolve(response);
         },

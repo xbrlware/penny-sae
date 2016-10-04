@@ -197,7 +197,7 @@ module.exports = function (config) {
       };
     },
     'omx': function (omxObj) {
-      var m1 = {'match': {'__meta__.sym.cik': omxObj.controller.cik}};
+      var m1 = {'match': {'__meta__.sym.cik': omxObj.cik}};
       var m2 = omxObj.search ? {'term': {'article': omxObj.search}} : null;
       var r = {
         '_source': ['id', 'headline', 'date'],

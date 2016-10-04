@@ -5,7 +5,7 @@
 App.TopNewsRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     var _this = this;
-    App.Search.fetch_data('omx', {controller: this.get('controller.name'), search: null}).then(
+    App.Search.fetch_data('omx', {cik: this.get('controller.name').cik, search: null}).then(
       function (response) {
         controller.set('model', response.data);
         if (response.data.length > 0) {
@@ -23,7 +23,7 @@ App.TopNewsController = Ember.Controller.extend({
   name: Ember.computed.alias('controllers.detail.model'),
   setModel: function (sw) {
     var _this = this;
-    App.Search.fetch_data('omx', {controller: this.get('name'), search: sw}).then(
+    App.Search.fetch_data('omx', {cik: this.get('name').cik, search: sw}).then(
       function (response) {
         _this.set('model', response.data);
         if (response.data.length > 0) {
