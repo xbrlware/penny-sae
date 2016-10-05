@@ -6,11 +6,20 @@
             Results: Page {{page}} 
             <br />
         {{/if}}
-        
+                
         {{#unless total_hits}}
             No companies in our database match your search criteria.
         {{else}}
             {{total_hits}} companies in our database match your search criteria. (Query took {{query_time}}s)
+            
+            {{#if searchTopic}}
+                {{#link-to 'summary'}}
+                    <div class="list-group-item thirty square" style='border-color:red; margin-bottom:5px; text-align:center;'>
+                        Results Summary
+                    </div>
+                {{/link-to}}
+            {{/if}}
+            
             <div class="list-group square">
                 {{#each h in hits}}
                     {{#if h.name}}
@@ -19,7 +28,6 @@
                 {{/each}}
             </div>
         {{/unless}}
-
     {{/unless}}
 </div>
 

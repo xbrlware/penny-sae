@@ -1,9 +1,14 @@
+server/es_scripts/ernest.js
+npm-debug.log
+*DS_Store
 penny.xcworkspace/
 server/node/node_modules/
 web/js/dist/
 web/templates/dist/
 web/css/style.less.css
-web/css/dist/
+web/css/dist/concat.css
+web/css/dist/nodesec-blessed.min.css
+web/css/dist/nodesec.min.css
 node_modules/
 server/node/*config.json
 web/config/*

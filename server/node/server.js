@@ -1,5 +1,13 @@
 // server/node/server.js
 
+const MIN_VERSION = 1;
+const MAJOR_VERSION = parseInt(process.version.replace('v', '').split('.')[0]);
+if (MAJOR_VERSION < MIN_VERSION) {
+  console.log('!! Major version of node.js is less than ', MIN_VERSION);
+  console.log('!! You probably need to update.');
+  process.exit();
+}
+
 var cluster = require('cluster');
 var _ = require('underscore')._;
 
@@ -10,7 +18,9 @@ function runServer () {
   var es = require('elasticsearch');
   var fs = require('fs');
   var app = express();
+  var compression = require('compression');
 
+  app.use(compression());
   app.use(require('body-parser').json());
 
   // headers
@@ -31,6 +41,7 @@ function runServer () {
   });
 
   require('./routes')(app, config, client);
+  require('./topic')(app, config, client);
   require('./network')(app, config, client);
   require('./boards')(app, config, client);
 

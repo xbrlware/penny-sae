@@ -19,6 +19,10 @@
                         {{#unless h.redFlags.possible}}
                             </p>
                         {{/unless}}
+                        {{!-- (*) This could be cleaned up --}}
+                        {{#if h.__topic__.doc_count}}
+                            -- Mentions : {{h.__topic__.doc_count}}
+                        {{/if}}
                     </div>
                     
                     <br />
@@ -36,7 +40,7 @@
     </div>
     <div class="accordion-body collapse out ab-sidebar">
         <div class="accordion-inner">
-        <table id="search_result_{{unbound h.cik}}" class="display"></table>
+            <table id="search_result_{{unbound h.cik}}" class="display"></table>
             {{view App.SearchResultsView cik=h.cik}}
         </div>
     </div>

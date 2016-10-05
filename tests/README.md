@@ -1,8 +1,8 @@
-#Nodesec Testing
+#Penny-SAE Testing
 
 ##Description
 
-> A Nodesec automated tester using Grunt, Karma, and Ember.Test.
+> A Penny-SAE automated tester using Grunt, Karma, and Ember.Test.
 
 ##USAGE
 

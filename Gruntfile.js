@@ -55,7 +55,7 @@ module.exports = function (grunt) {
           templateBasePath: '<%= cfg.tmp %>'
         },
         files: {
-          '<%= cfg.tdt %>templates.js': ['<%= cfg.tmp %>*.hbs', '<%= cfg.tmp %>detail/*.hbs']
+          '<%= cfg.tdt %>templates.js': ['<%= cfg.tmp %>*.hbs', '<%= cfg.tmp %>detail/*.hbs', '<%=cfg.tmp %>components/*.hbs']
         }
       }
     },

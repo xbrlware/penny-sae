@@ -8,7 +8,7 @@ var gconfig = {
  "DEFAULT_HIDE_TERMINAL": false,
  "DEFAULT_HIDE_NER": true,
  "DEFAULT_DATE_FILTER": [
-  "2000-01-01",
+  "2010-01-01",
   "2017-01-01"
  ],
  "DEFAULT_REDFLAG_PARAMS": {
@@ -67,9 +67,9 @@ var gconfig = {
  "GET_AGGS_URL": "aggs",
  "GAUGE": {
   "COLOR_PATT": [
-   "green",
-   "rgb(218, 218, 45)",
-   "red"
+   "rgba(0, 200, 0, 1.0)",
+   "rgba(218, 218, 45, 1.0)",
+   "rgba(200, 0, 0, 1.0)"
   ],
   "SIZE": {
    "HEIGHT": 80,

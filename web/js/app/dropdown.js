@@ -2,8 +2,6 @@
 
 /* global Ember, App, _, gconfig*/
 
-// Dropdown
-
 App.DropdownController = Ember.ObjectController.extend({
   needs: ['application'],
 

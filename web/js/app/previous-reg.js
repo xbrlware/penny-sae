@@ -29,7 +29,7 @@ App.PreviousRegController = Ember.Controller.extend({
   ],
 
   tableContent: function () {
-    return _.map(this.get('model'), function (x) {
+    return this.get('model').map(function (x) {
       return [x.company, x.date, x.release_number, x.link];
     });
   }.property('model')

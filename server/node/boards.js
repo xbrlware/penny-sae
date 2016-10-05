@@ -1,14 +1,17 @@
 // server/node/boards.js
 
 module.exports = function (app, config, client) {
-  var _ = require('underscore')._;
   var async = require('async');
+  var lomap = require('lodash/map');
+  var mapValues = require('lodash/mapValues');
+  var sortBy = require('lodash/sortBy');
+  var dropRight = require('lodash/dropRight');
 
   var boardQueryBuilder = {
-    'board': function (brdData) {
-      return {
+    'board': function (brdData, search = null, users = false) {
+      var q = {
         'size': 1000, // This limits the hits to 1000
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
+        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'msg_id', 'ticker', '__meta__.tri_pred'],
         'query': {
           'filtered': {
             'filter': {
@@ -21,29 +24,53 @@ module.exports = function (app, config, client) {
                         'lte': brdData.date_filter[1]
                       }
                     }
-                  },
-                  {
-                    'term': {
-                      '__meta__.sym.cik': brdData.cik
-                    }
                   }
                 ]
               }
             }
           }
-        },
-        'sort': {
-          'time': 'desc'
         }
       };
+      if (brdData.sentiment.type === 'neg') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neg': {'gte': brdData.sentiment.score}}});
+      } else if (brdData.sentiment.type === 'pos') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.pos': {'gte': brdData.sentiment.score}}});
+      } else if (brdData.sentiment.type === 'neut') {
+        q.query.filtered.filter.bool.must.push({'range': {'__meta__.tri_pred.neut': {'gte': brdData.sentiment.score}}});
+      }
+
+      if (users) {
+        q.query.filtered.filter.bool.must.push({
+          'bool': {
+            'must': [
+              {'match': { '__meta__.sym.cik': brdData.cik }},
+              {'terms': { 'user_id': brdData.users }}
+            ]
+          }
+        });
+      } else {
+        q.query.filtered.filter.bool.must.push({
+          'term': {
+            '__meta__.sym.cik': brdData.cik
+          }
+        });
+      }
+
+      if (search) {
+        lomap(search, function (s) {
+          q.query.filtered.filter.bool.must.push(s);
+        });
+      }
+
+      return q;
     },
     'boardTimeline': function (btData) {
-      return {
+      var bt = {
         'size': 0,
         'query': {
-          'constant_score': {
-            'filter': {
-              'term': {
+          'filtered': {
+            'query': {
+              'match': {
                 '__meta__.sym.cik': btData.cik
               }
             }
@@ -59,10 +86,18 @@ module.exports = function (app, config, client) {
           }
         }
       };
+
+      if (btData.sentiment.type === 'neg') {
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.neg': {'gte': btData.sentiment.score}}};
+      } else if (btData.sentiment.type === 'pos') {
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.pos': {'gte': btData.sentiment.score}}};
+      } else if (btData.sentiment.type === 'neut') {
+        bt.query.filtered['filter'] = {'range': {'__meta__.tri_pred.neut': {'gte': btData.sentiment.score}}};
+      }
+      return bt;
     },
     'getPVData': function (pvData) {
       return {
-        'size': 9999,
         'query': {
           'constant_score': {
             'filter': {
@@ -72,33 +107,43 @@ module.exports = function (app, config, client) {
             }
           }
         },
-        'sort': {
-          'date': {'order': 'desc'}
+        'aggs': {
+          'top_dates': {
+            'terms': {
+              'field': 'date',
+              'size': 9999
+            },
+            'aggs': {
+              'top_sort': {
+                'top_hits': {
+                  'sort': [
+                    {'date': {'order': 'desc'}}
+                  ],
+                  '_source': {
+                    'include': [
+                      'date',
+                      'open',
+                      'high',
+                      'low',
+                      'close',
+                      'volume'
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       };
     },
-    'timeline': function (tData) {
-      return {
+    'timeline': function (tData, search) {
+      var q = {
         'size': 0,
         'query': {
           'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {
-                    'range': {
-                      'time': {
-                        'gte': tData.date_filter[0],
-                        'lte': tData.date_filter[1]
-                      }
-                    }
-                  },
-                  {
-                    'term': {
-                      '__meta__.sym.cik': tData.cik
-                    }
-                  }
-                ]
+            'query': {
+              'match': {
+                '__meta__.sym.cik': tData.cik
               }
             }
           }
@@ -107,7 +152,8 @@ module.exports = function (app, config, client) {
           'posts': {
             'terms': {
               'field': 'user_id',
-              'size': 10
+              'size': tData.query_size,
+              'min_doc_count': tData.min_doc
             },
             'aggs': {
               'user': {
@@ -119,7 +165,13 @@ module.exports = function (app, config, client) {
                 'date_histogram': {
                   'field': 'time',
                   'interval': 'day',
+                  'format': 'yyyy/MM/dd',
                   'min_doc_count': 1
+                }
+              },
+              'stats': {
+                'stats_bucket': {
+                  'buckets_path': 'user_histogram>_count'
                 }
               },
               'pos': {
@@ -141,43 +193,30 @@ module.exports = function (app, config, client) {
           }
         }
       };
-    },
-    'user': function (users) {
-      return {
-        'size': 1000,
-        '_source': ['time', 'user_id', 'user', 'board_id', 'board', 'msg', 'ticker'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'bool': {
-                'must': [
-                  {
-                    'range': {
-                      'time': {
-                        'gte': users.date_filter[0],
-                        'lte': users.date_filter[1]
-                      }
-                    }
-                  },
-                  {
-                    'bool': {
-                      'must': [
-                        {'match': { '__meta__.sym.cik': users.cik }},
-                        {'terms': { 'user_id': users.users }}
-                      ]
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        'sort': {
-          'time': {
-            'order': 'desc'
-          }
+
+      var baseFilter = {'range': {'time': {'gte': tData.date_filter[0], 'lte': tData.date_filter[1]}}};
+
+      if (tData.sentiment.type === 'neg') {
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neg': {'gte': tData.sentiment.score}}}, baseFilter]}};
+      } else if (tData.sentiment.type === 'pos') {
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.pos': {'gte': tData.sentiment.score}}}, baseFilter]}};
+      } else if (tData.sentiment.type === 'neut') {
+        q.query.filtered['filter'] = {'bool': {'must': [{'range': {'__meta__.tri_pred.neut': {'gte': tData.sentiment.score}}}, baseFilter]}};
+      } else {
+        q.query.filtered['filter'] = baseFilter;
+      }
+
+      if (search) {
+        if (!q.query.filtered.filter.bool) {
+          q.query.filtered['filter'] = {'bool': {'must': [baseFilter]}};
         }
-      };
+
+        lomap(search, function (s) {
+          q.query.filtered.filter.bool.must.push(s);
+        });
+      }
+
+      return q;
     }
   };
 
@@ -187,12 +226,15 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
+    var s = d.search_term !== '' ? hasSearch(d) : null;
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.user(d)
+      body: boardQueryBuilder.board(d, s, true),
+      requestCache: true
     }).then(function (response) {
-      var m = _.map(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace('-', '/').split('T')[0];
+      var m = lomap(response.hits.hits, function (x) {
+        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         return x._source;
       });
       res.send(m);
@@ -203,15 +245,12 @@ module.exports = function (app, config, client) {
     var d = req.body;
     console.log('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
-      d = _.mapObject(d, function (value, key) {
-        if (!value) {
-          value = '';
-        }
-        return value;
+      d = mapValues(d, function (value, key) {
+        return value || '';
       });
     }
 
-    if (d.ticker.indexOf('.') !== -1) {
+    if (d.ticker !== undefined && d.ticker.indexOf('.') !== -1) {
       d.ticker = d.ticker.split('.')[0];
     }
 
@@ -233,6 +272,7 @@ module.exports = function (app, config, client) {
     if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
+
     async.parallel([
       function (cb) { getForumdata(d, cb); },
       function (cb) { getTimelineData(d, cb); }
@@ -245,25 +285,78 @@ module.exports = function (app, config, client) {
     });
   });
 
+  function hasSearch (data) {
+    return [{
+      'query': {
+        'bool': {
+          'must': {
+            'match': {
+              'msg': {
+                'query': data.search_term,
+                'operator': 'and'
+              }
+            }
+          },
+          'should': {
+            'match_phrase': {
+              'msg': {
+                'query': data.search_term,
+                'slop': 50
+              }
+            }
+          }
+        }
+      }
+    }];
+  }
+
   function getTimelineData (data, cb) {
+    var s = data.search_term !== '' ? hasSearch(data) : null;
+
     console.log('getTimelineData', data);
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.timeline(data)
+      body: boardQueryBuilder.timeline(data, s),
+      requestCache: true
     }).then(function (response) {
-      var q = _.map(response.aggregations.posts.buckets, function (x) {
+      var q = lomap(response.aggregations.posts.buckets, function (x) {
         return {
           id: x.key,
           user: x.user.buckets[0].key,
-          doc_count: x.doc_count,
-          pos: x.pos.value,
-          neut: x.neut.value,
-          neg: x.neg.value,
-          timeline: _.map(x.user_histogram.buckets, function (d) {
-            var t = d.key_as_string.replace('-', '/').split('T')[0];
-            return {'key_as_string': t, 'doc_count': d.doc_count};
-          })};
+          doc_count: x.stats.sum,
+          pred_data: [
+            {label: 'pos', value: x.pos.value},
+            {label: 'neut', value: x.neut.value},
+            {label: 'neg', value: x.neg.value}
+          ],
+          max: x.stats.max,
+          mean: x.stats.avg,
+          min: x.stats.min,
+          timeline: x.user_histogram.buckets
+        };
       });
+
+      if (data.sort_field === 'pos' || data.sort_field === 'neg' || data.sort_field === 'neut') {
+        q = sortBy(q, function (d) {
+          return lomap(d.pred_data, function (x) {
+            if (x.label === data.sort_field) {
+              return x.value;
+            }
+          });
+        });
+      } else {
+        q = sortBy(q, data.sort_field);
+      }
+
+      if (data.sort_type === 'desc') {
+        q.reverse();
+      }
+
+      if (data.query_size === 0) {
+        q = dropRight(q, (q.length - data.size));
+      }
+
       console.log('/getTimelineData :: returned', q.length);
       cb(null, q);
       return;
@@ -273,23 +366,29 @@ module.exports = function (app, config, client) {
   function getPostsTimelineData (data, cb) {
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.boardTimeline(data)
+      body: boardQueryBuilder.boardTimeline(data),
+      requestCache: true
     }).then(function (response) {
-      console.log('/getPostsTimelineData :: returned', response.aggregations.board_histogram.buckets.length);
-      cb(null, _.map(response.aggregations.board_histogram.buckets, function (d, i) {
-        return {index: i, date: d.key_as_string.replace('-', '/').split('T')[0], value: d.doc_count};
+      console.log('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
+      cb(null, lomap(response.aggregations.board_histogram.buckets, function (d, i) {
+        return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
     });
   }
 
   function getForumdata (data, cb) {
+    var s = data.search_term !== '' ? hasSearch(data) : null;
+
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
-      body: boardQueryBuilder.board(data)
+      body: boardQueryBuilder.board(data, s, false),
+      requestCache: true
     }).then(function (response) {
       console.log('/forumData :: returning', response.hits.hits.length);
-      cb(null, _.map(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace('-', '/').split('T')[0];
+      cb(null, lomap(response.hits.hits, function (x) {
+        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        x._source.msg = x._source.msg.replace(/\(Read Entire Message\)/g, '(to be continued)');
+        x._source.url = config['URL'] + x._source.msg_id;
         return x._source;
       }));
       return;
@@ -302,151 +401,10 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
       console.log('/pvData :: returning', response.hits.hits.length);
-      cb(null, _.pluck(response.hits.hits, '_source'));
+      cb(null, lomap(response.aggregations.top_dates.buckets, function (d) {
+        return d.top_sort.hits.hits[0]._source;
+      }));
       return;
     });
   }
-
-  // <Penny> This is not being used
-/*
-  app.post('/aggs', function (req, res) {
-    client.search({
-      index: 'crowdsar',
-      body: boardQueryBuilder.aggs(req.body),
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response) {
-      res.send({
-        'general': response.aggregations.significant_terms_general.buckets,
-        'ents': response.aggregations.ents.buckets
-      });
-    });
-  });
-*/
-/*
-  app.get('/coocurrence', function (req, res) {
-    var boardClause;
-    var userClause;
-    var dateClause = {
-      'users': {
-        'range': {
-          'date': {
-            'gte': +new Date(req.date ? req.date[0] : '2001-01-01 00:00:00'),
-            'lte': +new Date(req.date ? req.date[1] : '2015-01-01 00:00:00')
-          }
-        }
-      },
-      'cooc': {
-        'range': {
-          'date': {
-            'lte': +new Date('2015-01-01 00:00:00') // Everything up until faux end date
-          }
-        }
-      }
-    };
-
-    // Filter boards
-    if (req.boardIds && req.boardIds.length > 0) {
-      boardClause = {
-        'terms': {
-          'board_id': req.boardIds
-        }
-      };
-    }
-
-    // Filter users
-    if (req.userIds && req.userIds.length > 0) {
-      userClause = {
-        'terms': {
-          'user_id': req.userIds
-        }
-      };
-    }
-
-    var query1 = {
-      'query': {
-        'bool': {
-          'must': _.filter([dateClause.users, boardClause, userClause])
-        }
-      },
-      'aggs': {
-        'users': {
-          'terms': {
-            'field': 'user_id',
-            'size': 75
-          }
-        }
-      }
-    };
-
-    client.search({
-      index: config.INDEX,
-      body: query1,
-      searchType: 'count',
-      queryCache: true
-    }).then(function (response1) {
-      var users = _.pluck(response1.aggregations.users.buckets, 'key');
-      var query2 = {
-        'query': {
-          'bool': {
-            'must': _.filter([dateClause.cooc,
-                { 'terms': { 'user_id': users } }])
-          }
-        },
-        'aggs': {
-          'by_user': {
-            'terms': {
-              'field': 'user.cat', // This can change over time, so this actually isn't the best method
-              'size': 75
-            },
-            'aggs': {
-              'by_board': {
-                'terms': {
-                  'field': config.AGG_FIELD,
-                  'size': config.ROUTES.N_BOARDS
-                }
-              }
-            }
-          }
-        }
-      };
-
-      client.search({
-        index: config.INDEX,
-        body: query2,
-        searchType: 'count',
-        queryCache: true
-      }).then(function (response2) {
-        var filteredUsers = _.filter(response2.aggregations.by_user.buckets, function (user1) {
-          return user1.by_board.buckets.length > config.ROUTES.THRESH;
-        });
-        var out = _.map(filteredUsers, function (user1) {
-          var user1Boards = _.pluck(user1.by_board.buckets, 'key');
-          return {
-            'user1': user1.key,
-            'vals': _.map(filteredUsers, function (user2) {
-              var user2Boards = _.pluck(user2.by_board.buckets, 'key');
-              return _.intersection(user1Boards, user2Boards).length / _.union(user1Boards, user2Boards).length;
-            })
-          };
-        });
-        // Make a call to R to format the adjacency matrix
-        request.post({
-          'url': config.R_IP,
-          'json': {
-            'fun': 'process',
-            'params': _.flatten(out)
-          },
-          'headers': { 'Expect': 'nothing' }
-        }, function (error, response, body) {
-          if (error) {
-            console.error(error);
-          } else {
-            res.send(body);
-          }
-        });
-      });
-    });
-  });
-*/
 };

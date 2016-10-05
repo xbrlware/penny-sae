@@ -1,111 +1,10 @@
 // server/node/routes.js
 
-// Helpers
-function capitalizeFirstLetter (str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
-  //    'aggs': function (params) {
-  //      var dateClause, boardClause, userClause
-  //
-  //      // Filter by date
-  //      dateClause = {
-  //        'range': {
-  //          'date': {
-  //            'gte': +new Date(params.date ? params.date[0] : '2010-01-01'),
-  //            'lte': +new Date(params.date ? params.date[1] : '2015-01-01')
-  //          }
-  //        }
-  //      }
-  //      // Filter boards
-  //      if (params.boardIds && params.boardIds.length > 0) {
-  //        boardClause = {
-  //          'terms': {
-  //            'board_id': rsplit(params.boardIds, ',')
-  //          }
-  //        }
-  //      }
-  //      // Filter users
-  //      if (params.userIds && params.userIds.length > 0) {
-  //        userClause = {
-  //          'terms': {
-  //            'user_id': rsplit(params.userIds, ',')
-  //          }
-  //        }
-  //      }
-  //      return {
-  //        'size': 0,
-  //        'query': {
-  //          'bool': {
-  //            'must': _.filter([dateClause, boardClause, userClause])
-  //          }
-  //        },
-  //      //        'aggs': {
-  //      //          'significant_terms_general': {
-  //      //            'significant_terms': {
-  //      //              'field': 'msg',
-  //      //              'size': 10,
-  //      //              'mutual_information': {
-  //      //                'include_negatives': false
-  //      //              }
-  //      //            }
-  //      //          },
-  //      //          'ents': {
-  //      //            'terms': {
-  //      //              'field': 'ents.entity.cat', // Change to only be person
-  //      //              'size': 10
-  //      //            }
-  //      //          }
-  //      //        }
-  //      }
-  //    },
-  //    'search': function (params) {
-  //      var clause1 = {'prefix': {}}
-  //      clause1.prefix[params.type] = params.term
-  //
-  //      var clause2 = {'prefix': {}}
-  //      clause2.prefix[params.type + '_id'] = params.term
-  //
-  //      var clause3
-  //      if (params.type === 'board') {
-  //        clause3 = {'match': {'ticker': params.term}}
-  //      }
-  //
-  //      return {
-  //        'query': {
-  //          'bool': {
-  //            'should': _.filter([ clause1, clause2, clause3 ]),
-  //            'minimum_number_should_match': 1
-  //          }
-  //        },
-  //        'aggs': {
-  //          'top': {
-  //            'terms': {
-  //              'field': params.type + '_id',
-  //              'size': 5
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  // };
+  var queryBuilder = require('./queryBuilder')(config);
 
-  function redflagScript (params, score) {
-    return {
-      'script': {
-        'id': 'ernest',
-        'lang': 'js',
-        'params': {
-          'score': score,
-          'params': params
-        }
-      }
-    };
-  }
-
-  // Redflag helpers
+  // <redflag-helpers>
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
   function defaultRedFlags () {
     return _.chain(_.keys(config.DEFAULT_TOGGLES))
@@ -117,7 +16,7 @@ module.exports = function (app, config, client) {
     if (x.length > 12) {
       x = x.slice(0, 12) + '...';
     }
-    return capitalizeFirstLetter(x);
+    return x.charAt(0).toUpperCase() + x.slice(1);
   }
 
   var redflagLabel_ = {
@@ -126,7 +25,7 @@ module.exports = function (app, config, client) {
     'suspensions': function (params) { return 'Trading Suspensions'; },
     'delinquency': function (params) { return 'Late Filings'; },
     'otc_neighbors': function (params) { return 'OTC Neighbors'; },
-    //    "pv"            : function(params) {return 'No Revenues' },
+    //    "pv"            : function(params) {return 'Price / Volume' },
     'crowdsar': function (params) { return 'Forum Activity'; }
   };
 
@@ -147,203 +46,74 @@ module.exports = function (app, config, client) {
       .extend(redflagLabel(redFlags, redFlagParams))
       .value();
   }
+  // </redflag-helpers>
 
-  var queryBuilder = {
-    'search': function (query, redFlagParams) {
-      return {
-        '_source': ['cik', 'current_symbology.name'],
-        'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
-        'query': { 'match_phrase': { 'searchterms': query } }
-      };
-    },
-    'refresh': function (query, redFlagParams) {
-      return {
-        '_source': ['cik', 'current_symbology.name'],
-        'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
-        'query': { 'terms': { 'cik': query } }
-      };
-    },
-    'sort': function (redFlagParams) {
-      return {
-        '_source': ['cik', 'current_symbology.name'],
-        'script_fields': {'redFlags': redflagScript(redFlagParams, false)},
-        'query': {
-          'filtered': {
-            'filter': {
-              'or': _.map(_.keys(redFlagParams), function (key) {
-                return { 'exists': {'field': key} };
-              })
-            },
-            'query': {
-              'function_score': {
-                'functions': [ {'script_score': redflagScript(redFlagParams, true)} ]
-              }
-            }
-          }
-        }
-      };
-    },
-    'company_table': function (cik) {
-      return {
-        '_source': ['min_date', 'name', 'ticker', 'sic', '__meta__'],
-        'query': { 'term': { 'cik': cik } }, 'sort': [{'min_date': {'order': 'desc'}}]
-      };
-    },
-    'cik2name': function (cik) {
-      return {
-        '_source': ['current_symbology.name', 'current_symbology.ticker'],
-        'query': { 'term': { 'cik': cik } }
-      };
-    },
-    'cik2tickers': function (cik) {
-      return {
-        'query': {'term': {'cik': cik}},
-        'aggs': {'tickers': {'terms': {'field': 'ticker', 'size': 0}}}
-      };
-    },
-    'suspensions': function (cik) {
-      return {
-        '_source': ['company', 'link', 'date', 'release_number'],
-        'query': {
-          'term': {
-            '__meta__.sym.cik': cik
-          }
-        }
-      };
-    },
-    'pv': function (ticker) {
-      return {
-        'query': {
-          'constant_score': {
-            'filter': {
-              'term': {
-                'symbol.cat': ticker.toLowerCase()
-              }
-            }
-          }
-        },
-        'sort': {
-          'date': {
-            'order': 'asc'
-          }
-        }
-      };
-    },
-    'delinquency': function (cik) {
-      return {
-        '_source': ['form', 'date', '_enrich', 'url'],
-        'query': {
-          'terms': {
-            'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
-          }
-        },
-        'sort': {
-          'date': {
-            'order': 'desc'
-          }
-        }
-      };
-    },
-    'financials': function (cik) {
-      return {
-        '_source': ['name', 'form', 'date', 'url', '__meta__'],
-        'query': {
-          'filtered': {
-            'filter': {
-              'exists': {
-                'field': '__meta__.financials'
-              }
-            },
-            'query': {
-              'terms': {
-                'cik': [cik, cik.replace(/^0*/, '')] // Searching both widths
-              }
-            }
-          }
-        }
-      };
-    },
-    'omx': function (cik) {
-      return {
-        '_source': ['id', 'headline', 'date'],
-        'sort': [
-          {
-            'date': {
-              'order': 'desc'
-            }
-          }
-        ],
-        'query': {
-          'match': {
-            '__meta__.sym.cik': cik
-          }
-        }
-      };
-    }
-  };
-
-  app.post('/refresh', function (req, res) {
+  // <search>
+  function companySearch (req, cb, query = undefined) {
     var d = req.body;
-    console.log('/refresh :: ',
-      JSON.stringify(
-        d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-        null, 2
-      )
-    );
+
+    // Coerce parameters if we injected a query
+    d.query = query || d.query;
+    d.mode = query ? 'refresh' : d.mode;
 
     client.search({
       'index': config['ES']['INDEX']['AGG'],
-      'body': d.query ? queryBuilder.refresh(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
+      'body': d.query ? queryBuilder[d.mode](d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
       'from': 0,
-      'size': 15,
-      'preference': '_primary'
+      'size': 0,
+      'requestCache': true
     }).then(function (esResponse) {
-      var hits = _.map(esResponse.hits.hits, function (hit) {
+      console.log(esResponse);
+      var hits = _.map(esResponse.aggregations.top_hits.hits.hits, function (hit) {
         return {
           'cik': hit['_source']['cik'],
           'name': hit['_source']['current_symbology'] ? hit['_source']['current_symbology']['name'] : '<no-name>',
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
-      res.send({
+      console.log('took =', esResponse.took);
+      cb({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
         'hits': hits
       });
     });
-  });
+  }
+
+  function topicSearch (req, cb) {
+    var d = req.body;
+    client.search({
+      'index': config['ES']['INDEX']['CROWDSAR'],
+      'body': queryBuilder.topic.cik(d.query, 50),
+      'from': 0,
+      'size': 0,
+      'requestCache': true
+    }).then(function (esResponse) {
+      var ciks = _.pluck(esResponse.aggregations.ciks.buckets, 'key').slice(0, 50);
+      companySearch(req, function (companyResponse) {
+        companyResponse.hits = _.chain(companyResponse.hits).sortBy(function (x) {
+          return _.indexOf(ciks, '' + x['cik']);
+        })
+          .zip(esResponse.aggregations.ciks.buckets)
+          .map(function (x) {
+            return _.extend(x[0], {
+              '__topic__': {
+                'doc_count': x[1]['doc_count']
+              }
+            });
+          })
+          .value();
+        cb(companyResponse);
+      }, ciks);
+    });
+  }
 
   app.post('/search', function (req, res) {
-    var d = req.body;
-    console.log('/search :: ',
-      JSON.stringify(
-        d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-        null, 2
-      )
-    );
-
-    client.search({
-      'index': config['ES']['INDEX']['AGG'],
-      'body': d.query ? queryBuilder.search(d.query, d.redFlagParams) : queryBuilder.sort(d.redFlagParams),
-      'from': 0,
-      'size': 15,
-      'preference': '_primary'
-    }).then(function (esResponse) {
-      var hits = _.map(esResponse.hits.hits, function (hit) {
-        return {
-          'cik': hit['_source']['cik'],
-          'name': hit['_source']['current_symbology'] ? hit['_source']['current_symbology']['name'] : '<no-name>',
-          'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
-        };
-      });
-      res.send({
-        'query_time': esResponse.took / 1000,
-        'total_hits': esResponse.hits.total,
-        'hits': hits
-      });
-    });
+    !req.body.searchTopic ? companySearch(req, (x) => res.send(x)) : topicSearch(req, (x) => res.send(x));
   });
+  // </search>
 
+  // <details>
   app.post('/company_table', function (req, res) {
     var d = req.body;
     client.search({
@@ -354,19 +124,12 @@ module.exports = function (app, config, client) {
     }).then(function (esResponse) {
       res.send({
         'table': _.chain(esResponse.hits.hits).map(function (hit) {
-          // Use SIC code unless description is available
-          var sic = hit._source.sic;
-          if (hit._source.__meta__) {
-            if (hit._source.__meta__.sic_lab) {
-              sic = hit._source.__meta__.sic_lab;
-            }
-          }
-
+          var sicLab = (hit._source.__meta__ || {'sicLab': undefined}).sicLab;
           return {
             'min_date': hit._source.min_date,
             'name': hit._source.name,
             'ticker': hit._source.ticker,
-            'sic': sic
+            'sic': sicLab || hit._source.sic
           };
         }).value()
       });
@@ -454,10 +217,11 @@ module.exports = function (app, config, client) {
     var d = req.body;
     client.search({
       'index': config['ES']['INDEX']['OMX'],
-      'body': queryBuilder.omx(d.cik),
+      'body': queryBuilder.omx(d),
       'from': 0,
       'size': 100
     }).then(function (esResponse) {
+      console.log('esResponse', esResponse.hits.hits);
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });
@@ -472,4 +236,5 @@ module.exports = function (app, config, client) {
       res.send({'data': esResponse['_source']});
     });
   });
+// </details>
 };

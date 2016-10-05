@@ -2,57 +2,45 @@
 
 /* global Ember, App */
 
-// --
-
 App.TopNewsRoute = Ember.Route.extend({
-  beforeModel: function (args) {
-    this.transitionTo('subNews');
-  },
   setupController: function (controller, model) {
-    App.Search.fetch_data('omx', this.get('controller.name')).then(function (response) {
-      controller.set('model', response.data);
-    });
+    var _this = this;
+    App.Search.fetch_data('omx', {cik: this.get('controller.name').cik, search: null}).then(
+      function (response) {
+        controller.set('model', response.data);
+        if (response.data.length > 0) {
+          _this.transitionTo('omxNews', response.data[0].id);
+        } else {
+          _this.transitionTo('topNews');
+        }
+      }
+    );
   }
 });
 
 App.TopNewsController = Ember.Controller.extend({
   needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model')
-});
-
-// --
-
-App.SubNewsRoute = Ember.Route.extend({
-  setupController: function (controller, model) {
-    controller.set('model', 'cse.html?q="' + controller.get('name.name') + '"');
-  }
-});
-
-App.SubNewsController = Ember.Controller.extend({
-  needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model')
-});
-
-App.NewsView = Ember.View.extend({
-  classNames: ['news'],
-
-  controllerChanged: function () {
-    this.rerender();
-  }.observes('value'),
-
-  render: function (buffer) {
-    console.log('this value', this.get('value'));
-    buffer.push('<iframe id="cse-iframe" src=\'' +
-      this.get('value') + '\'}} frameborder="0"></iframe>');
+  name: Ember.computed.alias('controllers.detail.model'),
+  setModel: function (sw) {
+    var _this = this;
+    App.Search.fetch_data('omx', {cik: this.get('name').cik, search: sw}).then(
+      function (response) {
+        _this.set('model', response.data);
+        if (response.data.length > 0) {
+          _this.transitionTo('omxNews', response.data[0].id);
+        } else {
+          _this.transitionTo('topNews');
+        }
+      }
+    );
   },
 
-  willInsertElement: function () {
-    Ember.$.support.cors = true;
-    Ember.$('#google-news').load('html/cse.html');
+  actions: {
+    newsSearch: function (searchWord) {
+      this.setModel(searchWord);
+    }
   }
 });
-
-// --
 
 App.OmxNewsRoute = Ember.Route.extend({
   model: function (params) {

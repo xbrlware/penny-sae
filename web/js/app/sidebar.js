@@ -23,11 +23,9 @@ App.SidebarRoute = App.GRoute.extend({
         controller.set('isLoading', false);
       });
     } else if (model.st === '--' && controller.get('model') !== null) {
-      var parcel = _.map(controller.get('model').hits, function (x) {
-        return x.cik;
-      });
       appCon.set('searchTerm', undefined);
-      appCon.refresh_companies(parcel, function (response) {
+      var ciks = _.pluck(controller.get('model').hits, 'cik');
+      appCon.refresh_companies(ciks, function (response) {
         controller.set('model', response);
         controller.set('isLoading', false);
       });
@@ -55,6 +53,9 @@ App.SidebarRoute = App.GRoute.extend({
         controller.set('model', response);
         controller.con.set('isLoading', false);
       });
+    },
+    summary_detail: function () {
+      return [1, 2, 3];
     }
   }
 });
@@ -63,6 +64,7 @@ App.SidebarController = Ember.ObjectController.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
+  searchTopic: Ember.computed.alias('controllers.application.searchTopic'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
 
   actions: {

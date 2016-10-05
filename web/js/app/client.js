@@ -71,39 +71,26 @@ App.SearchResultsView = Ember.View.extend({
 App.Search = Ember.Object.extend({});
 
 App.Search.reopenClass({
-  search_company: function (query, redFlagParams) {
-    console.log('searching company');
+  search_company: function (query, redFlagParams, searchTopic = false, refresh = false) {
+    console.log('QUERY :: ', query, 'REFRESH :: ', refresh);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         url: 'search',
-        data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
+        data: JSON.stringify({
+          'query': query,
+          'redFlagParams': redFlagParams.get_toggled_params(),
+          'searchTopic': searchTopic,
+          'mode': refresh ? 'refresh' : 'search'
+        }),
         success: function (response) {
-          console.log('response in search_company --', response);
           resolve(App.SearchResults.create(response));
         },
         error: function (xhr, status, error) {
-          console.log('Error: ' + error.message);
-        }
-      });
-    });
-  },
-
-  refresh_company: function (query, redFlagParams) {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      Ember.$.ajax({
-        type: 'POST',
-        contentType: 'application/json',
-        dataType: 'json',
-        url: 'refresh',
-        data: JSON.stringify({'query': query, 'redFlagParams': redFlagParams.get_toggled_params()}),
-        success: function (response) {
-          console.log('response in refresh_company --', response);
-          resolve(App.SearchResults.create(response));
-        },
-        error: function (xhr, status, error) {
+          console.log('XHR ::', xhr);
+          console.log('STATUS ::', status);
           console.log('Error: ' + error.message);
         }
       });
@@ -117,7 +104,7 @@ App.Search.reopenClass({
         contentType: 'application/json',
         dataType: 'json',
         url: detailName,
-        data: JSON.stringify(name),
+        data: typeof name === 'object' ? JSON.stringify(name) : name,
         success: function (response) {
           resolve(response);
         },
