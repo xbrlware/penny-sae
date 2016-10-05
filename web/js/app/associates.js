@@ -2,8 +2,9 @@
 /* global Ember, App, d3, _ */
 
 App.AssociatesRoute = Ember.Route.extend({
-  model: function () {
-    return this.modelFor('detail');
+  setupController: function (controller) {
+    controller.set('model', this.modelFor('detail'));
+    controller.controllerChanged();
   }
 });
 
@@ -21,7 +22,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     this.expandNode();
   }.observes('controller.model'),
 
-  draw: function (data) {
+  draw: function (data, w, h) {
     /* make sure that any previously existing graph is removed */
     d3.select('.network-graph').selectAll('svg').remove();
     var nodes = {};
@@ -48,8 +49,8 @@ App.AssociatesController = Ember.ObjectController.extend({
     });
 
     /* default size for network graph */
-    var width = 800;
-    var height = 400;
+    var width = w || 1000;
+    var height = h || 400;
 
     /* set up graph properties */
     var force = d3.layout.force()
@@ -62,14 +63,8 @@ App.AssociatesController = Ember.ObjectController.extend({
       .start();
 
     var zoom = d3.behavior.zoom()
-      .scaleExtent([0.7, 10])
+      .scaleExtent([0.5, 10])
       .on('zoom', zoomed);
-
-    var drag = d3.behavior.drag()
-      .origin(function (d) { return d; })
-      .on('dragstart', this.dragstarted)
-      .on('drag', this.dragged)
-      .on('dragend', this.dragended);
 
     /* set up node tool tip */
     var tip = d3.tip()
@@ -89,7 +84,7 @@ App.AssociatesController = Ember.ObjectController.extend({
                 break;
               case 'red_flags':
                 if (d[key].possible) {
-                  htmlString += '<span>Red Flags: ' + (d[key].total ? d[key].total : '0') + '/' + d[key].possible + '</span><br />';
+                  htmlString += '<span>Red Flags: ' + (d[key].total ? d[key].total : '0') + '</span><br />';
                 }
                 break;
               case 'isDirector':
@@ -119,6 +114,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     var svg = d3.select('.network-graph').append('svg')
       .attr('width', width)
       .attr('height', height)
+      .attr('class', 'network-background')
       .call(zoom)
       .append('g');
 
@@ -172,16 +168,18 @@ App.AssociatesController = Ember.ObjectController.extend({
     function getImage (d) {
       /* which color icon to add to graph */
       if (d) {
-        console.log(d);
         if (d.issuer === 0) {
           /* if issuer */
           if (d.red_flags.total) {
-            if (d.red_flags.total === d.red_flags.possible) {
+            if (d.red_flags.total >= 4) {
               /* matches all red flags */
               return 'img/red_person.png';
-            } else {
-              /* only matches some */
+            } else if (d.red_flags.total > 2) {
+              return 'img/orange_person.png';
+            } else if (d.red_flags.total > 1) {
               return 'img/yellow_person.png';
+            } else {
+              return 'img/green_person.png';
             }
           } else {
             /* matches none */
@@ -189,10 +187,14 @@ App.AssociatesController = Ember.ObjectController.extend({
           }
         } else {
           if (d.red_flags.total) {
-            if (d.red_flags.total === d.red_flags.possible) {
+            if (d.red_flags.total >= 4) {
               return 'img/red_building.png';
-            } else {
+            } else if (d.red_flags.total > 2) {
+              return 'img/orange_building.png';
+            } else if (d.red_flags.total > 1) {
               return 'img/yellow_building.png';
+            } else {
+              return 'img/green_building.png';
             }
           } else {
             return 'img/green_building.png';
@@ -243,10 +245,10 @@ App.AssociatesController = Ember.ObjectController.extend({
           }
         });
       });
-      console.log(data);
       _this.set('rgraph', data.edges);
       _this.updateData(data.edges);
       _this.draw(data.edges);
+      _this.draw(data.edges, Ember.$('.network-graph').innerWidth(), Ember.$('.network-graph').innerHeight());
     });
   },
 
