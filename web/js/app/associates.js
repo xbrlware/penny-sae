@@ -14,11 +14,11 @@ App.AssociatesController = Ember.ObjectController.extend({
   noData: false,
   rGraphEdges: [],
   didInsertElement: function () {
-    this.expand_node();
+    this.expandNode();
   },
 
   controllerChanged: function () {
-    this.expand_node();
+    this.expandNode();
   }.observes('controller.model'),
 
   draw: function (data) {
@@ -60,6 +60,16 @@ App.AssociatesController = Ember.ObjectController.extend({
       .charge(-300)
       .on('tick', tick)
       .start();
+
+    var zoom = d3.behavior.zoom()
+      .scaleExtent([0.7, 10])
+      .on('zoom', zoomed);
+
+    var drag = d3.behavior.drag()
+      .origin(function (d) { return d; })
+      .on('dragstart', this.dragstarted)
+      .on('drag', this.dragged)
+      .on('dragend', this.dragended);
 
     /* set up node tool tip */
     var tip = d3.tip()
@@ -108,7 +118,9 @@ App.AssociatesController = Ember.ObjectController.extend({
     /* start svg tree */
     var svg = d3.select('.network-graph').append('svg')
       .attr('width', width)
-      .attr('height', height);
+      .attr('height', height)
+      .call(zoom)
+      .append('g');
 
     /* init links */
     var link = svg.selectAll('.link')
@@ -125,6 +137,13 @@ App.AssociatesController = Ember.ObjectController.extend({
       .attr('class', 'node')
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
+      .on('dblclick.zoom', function (d) {
+        d3.event.stopPropagation();
+        var dcx = (width / 2 - d.x * zoom.scale());
+        var dcy = (height / 2 - d.y * zoom.scale());
+        zoom.translate([dcx, dcy]);
+        svg.attr('transform', 'translate(' + dcx + ',' + dcy + ')scale(' + zoom.scale() + ')');
+      })
       .call(force.drag)
       .call(tip);
 
@@ -181,6 +200,12 @@ App.AssociatesController = Ember.ObjectController.extend({
         }
       }
     }
+
+    function zoomed () {
+      var trans = d3.event.translate;
+      var scale = d3.event.scale;
+      svg.attr('transform', 'translate(' + trans + ') scale(' + scale + ')');
+    }
   },
 
   zpad: function (x, n) {
@@ -203,7 +228,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     });
   },
 
-  expand_node: function () {
+  expandNode: function () {
     var _this = this;
     var cik = this.get('content.cik');
     var redFlagParams = this.get('redFlagParams');
@@ -220,12 +245,12 @@ App.AssociatesController = Ember.ObjectController.extend({
       });
       console.log(data);
       _this.set('rgraph', data.edges);
-      _this.update_data(data.edges);
+      _this.updateData(data.edges);
       _this.draw(data.edges);
     });
   },
 
-  update_data: function (rgraph) {
+  updateData: function (rgraph) {
     var rGraphEdges = _.map(rgraph, function (edges) {
       return {'data': edges};
     });
