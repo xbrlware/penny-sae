@@ -18,9 +18,22 @@
     
 {{#if noData}}
 {{else}}
+            
     <table>
         <tr>
-            <td>Red Flags:</td>
+            <td>
+                <div id='toggle-button'>
+                    <button type='button' {{action 'toggleTerminal'}}>
+                        {{#if terminalToggle}} 
+                            Show Terminal Nodes
+                        {{else}}
+                            Hide Terminal Nodes
+                        {{/if}}
+                    </button>
+                </div>
+            </td>
+            <td>&nbsp&nbsp</td>
+            <td><b>Red Flags:</b></td>
             <td><img src='img/green_person.png' height='20px'> = less than 1</td>
             <td><img src='img/yellow_person.png' height='20px'> = 1 - 1.99</td>
             <td><img src='img/orange_person.png' height='20px'> = 2 - 3.99</td>

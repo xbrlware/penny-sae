@@ -13,6 +13,7 @@ App.AssociatesController = Ember.ObjectController.extend({
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   isLoading: false,
   noData: false,
+  terminalToggle: false,
   rGraphEdges: [],
   didInsertElement: function () {
     this.expandNode();
@@ -23,6 +24,7 @@ App.AssociatesController = Ember.ObjectController.extend({
   },
 
   draw: function (data, w, h) {
+    /* check if any data came in */
     if (data.length < 1) {
       this.set('noData', true);
       return;
@@ -64,13 +66,13 @@ App.AssociatesController = Ember.ObjectController.extend({
       .nodes(d3.values(nodes))
       .links(data)
       .size([width, height])
-      .linkDistance(60)
-      .charge(-200)
+      .linkDistance(30)
+      .charge(-300)
       .on('tick', tick)
       .start();
 
     var zoom = d3.behavior.zoom()
-      .scaleExtent([0.5, 10])
+      .scaleExtent([0.3, 10])
       .on('zoom', zoomed);
 
     /* set up node tool tip */
@@ -78,7 +80,6 @@ App.AssociatesController = Ember.ObjectController.extend({
       .attr('class', 'd3-tip')
       .offset([-5, 0])
       .html(function (d) {
-        console.log('DD :: ', d);
         var cats = ['name', 'cik', 'red_flags', 'isDirector', 'isOfficer', 'isTenPercentOwner'];
         var htmlString = '';
         for (var key in d) {
@@ -244,7 +245,6 @@ App.AssociatesController = Ember.ObjectController.extend({
               }
             });
           });
-          console.log(data);
           resolve(data);
         },
         error: function (error) {
@@ -303,7 +303,29 @@ App.AssociatesController = Ember.ObjectController.extend({
     {title: 'Director'},
     {title: 'Officer'},
     {title: '10% Owner'}
-  ]
+  ],
+
+  toggleTerminalData () {
+    var n;
+    if (this.get('terminalToggle')) {
+      var m = JSON.parse(JSON.stringify(this.get('model').rgraph));
+      n = _.filter(m, function (d) {
+        return !d.node.data.terminal;
+      });
+      n = n.length < 1 ? this.get('model').rgraph : n;
+    } else {
+      n = this.get('model').rgraph;
+    }
+
+    this.draw(n, Ember.$('.network-graph').innerWidth(), Ember.$('.network-graph').innerHeight());
+  },
+
+  actions: {
+    toggleTerminal: function () {
+      this.set('terminalToggle', !this.terminalToggle);
+      this.toggleTerminalData();
+    }
+  }
 });
 
 App.AssociatesView = App.GenericTableView.extend({});
