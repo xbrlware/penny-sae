@@ -106,9 +106,13 @@ module.exports = function (grunt) {
       options: {
         cliArgs: ['--grunt-file', require('path').join(cwd, 'Gruntfile.js')]
       },
-      scripts: {
+      app: {
         files: ['<%= cfg.app %>*.js'],
         tasks: ['devApp']
+      },
+      lib: {
+        files: ['<%= cfg.lib %>*.js', '<%= cfg.tmp %>*.hbs'],
+        tasks: ['devLib']
       },
       less: {
         files: ['<%= cfg.lss %>*.less'],

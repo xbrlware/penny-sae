@@ -1,4 +1,5 @@
-{                                                                                                                                                    "css"        : "web/css/",   
+{
+    "css"        : "web/css/",
     "app"        : "web/js/app/",
     "lib"        : "web/js/libs/",
     "cdt"        : "web/css/dist/",

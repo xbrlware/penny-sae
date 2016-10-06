@@ -15,15 +15,18 @@
 </span>
 
 <div class="network-graph"></div>
-
-<table>
-    <tr>
-        <td>Red Flags:</td>
-        <td><img src='img/green_person.png' height='20px'> = less than 1</td>
-        <td><img src='img/yellow_person.png' height='20px'> = 1 - 1.99</td>
-        <td><img src='img/orange_person.png' height='20px'> = 2 - 3.99</td>
-        <td><img src='img/red_person.png' height='20px'> = more than 4</td>
-    </tr>
-</table>
+    
+{{#if noData}}
+{{else}}
+    <table>
+        <tr>
+            <td>Red Flags:</td>
+            <td><img src='img/green_person.png' height='20px'> = less than 1</td>
+            <td><img src='img/yellow_person.png' height='20px'> = 1 - 1.99</td>
+            <td><img src='img/orange_person.png' height='20px'> = 2 - 3.99</td>
+            <td><img src='img/red_person.png' height='20px'> = more than 4</td>
+        </tr>
+    </table>
+{{/if}}
 
 <table id="associates-table" class="display"></table>

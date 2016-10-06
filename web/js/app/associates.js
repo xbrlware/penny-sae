@@ -20,9 +20,16 @@ App.AssociatesController = Ember.ObjectController.extend({
 
   controllerChanged: function () {
     this.expandNode();
-  }.observes('controller.model'),
+  },
 
   draw: function (data, w, h) {
+    if (data.length < 1) {
+      this.set('noData', true);
+      return;
+    } else {
+      this.set('noData', false);
+    }
+
     /* make sure that any previously existing graph is removed */
     d3.select('.network-graph').selectAll('svg').remove();
     var nodes = {};
@@ -58,7 +65,7 @@ App.AssociatesController = Ember.ObjectController.extend({
       .links(data)
       .size([width, height])
       .linkDistance(60)
-      .charge(-300)
+      .charge(-200)
       .on('tick', tick)
       .start();
 
@@ -71,6 +78,7 @@ App.AssociatesController = Ember.ObjectController.extend({
       .attr('class', 'd3-tip')
       .offset([-5, 0])
       .html(function (d) {
+        console.log('DD :: ', d);
         var cats = ['name', 'cik', 'red_flags', 'isDirector', 'isOfficer', 'isTenPercentOwner'];
         var htmlString = '';
         for (var key in d) {
@@ -107,7 +115,7 @@ App.AssociatesController = Ember.ObjectController.extend({
             }
           }
         }
-        return htmlString;
+        return htmlString || '<span>N/A</span>';
       });
 
     /* start svg tree */
@@ -219,14 +227,31 @@ App.AssociatesController = Ember.ObjectController.extend({
     }
   },
 
-  fetch: function (params, cb) {
-    Ember.$.ajax({
-      type: 'POST',
-      contentType: 'application/json',
-      dataType: 'json',
-      url: 'network',
-      data: JSON.stringify(params),
-      success: cb
+  fetch: function (params) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: 'network',
+        data: JSON.stringify(params),
+        success: function (data) {
+          data.edges.forEach(function (edge) {
+            return _.map(data.nodes, function (node) {
+              if (node.id === edge.ownerCik) {
+                edge['node'] = node;
+                return edge;
+              }
+            });
+          });
+          console.log(data);
+          resolve(data);
+        },
+        error: function (error) {
+          console.error('associates.js [fetch] :: ', error.message);
+          resolve([]);
+        }
+      });
     });
   },
 
@@ -236,18 +261,9 @@ App.AssociatesController = Ember.ObjectController.extend({
     var redFlagParams = this.get('redFlagParams');
     var zCik = this.zpad(cik.toString());
 
-    this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}, function (data) {
-      data.edges.forEach(function (edge) {
-        return _.map(data.nodes, function (node) {
-          if (node.id === edge.ownerCik) {
-            edge['node'] = node;
-            return edge;
-          }
-        });
-      });
+    this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}).then(function (data) {
       _this.set('rgraph', data.edges);
       _this.updateData(data.edges);
-      _this.draw(data.edges);
       _this.draw(data.edges, Ember.$('.network-graph').innerWidth(), Ember.$('.network-graph').innerHeight());
     });
   },
