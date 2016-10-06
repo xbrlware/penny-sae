@@ -260,12 +260,13 @@ App.AssociatesController = Ember.ObjectController.extend({
     var cik = this.get('content.cik');
     var redFlagParams = this.get('redFlagParams');
     var zCik = this.zpad(cik.toString());
-
+    this.set('isLoading', true);
     this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}).then(function (data) {
       _this.set('rgraph', data.edges);
       _this.updateData(data.edges);
       _this.draw(data.edges, Ember.$('.network-graph').innerWidth(), Ember.$('.network-graph').innerHeight());
     });
+    this.set('isLoading', false);
   },
 
   updateData: function (rgraph) {
