@@ -49,7 +49,7 @@ App.BoardController = Ember.Controller.extend({
     sessionStorage.pennyFilters = JSON.stringify(ad);
 
     var brushDomain = this.brushChart.brush.empty() ? this.priceChart.x.domain() : this.brushChart.brush.extent();
-    brushDomain = _.uniq(brushDomain)[0] === undefined ? this.get('dateFilter') : brushDomain;
+    // brushDomain = _.uniq(brushDomain)[0] === undefined ? this.get('dateFilter') : brushDomain;
 
     this.ChartsObj.makeBarChart(this.postsChart, forumData, brushDomain);
     this.ChartsObj.makeClose(this.priceChart, pvData, brushDomain);
