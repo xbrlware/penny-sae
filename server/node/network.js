@@ -1,6 +1,9 @@
 var _ = require('underscore')._;
 var async = require('async');
 
+var logger = require('./logging');
+logger.level = 'debug';
+
 const MAX_NEIGHBORS = 100;
 
 function zpad (x, n) {
@@ -126,7 +129,7 @@ module.exports = function (app, config, client) {
       }).flatten().value()
     }).then((response) => {
       cb(formatRedFlagResponse(response, nodes));
-    }).catch(function (err) { console.log(err.stack); });
+    }).catch(function (err) { logger.debug(err.stack); });
   }
 
   function computeOwnerRedFlags (nodes, redFlagParams, cb) {
@@ -171,8 +174,8 @@ module.exports = function (app, config, client) {
         'body': neighborQueries
       }).then((response) => {
         cb(formatRedFlagResponse(response, nodes));
-      }).catch(function (err) { console.log(err.stack); });
-    }).catch(function (err) { console.log(err.stack); });
+      }).catch(function (err) { logger.debug(err.stack); });
+    }).catch(function (err) { logger.debug(err.stack); });
   }
 
   function computeRedFlags (nodes, redFlagParams, cb) {
@@ -213,20 +216,20 @@ module.exports = function (app, config, client) {
       'body': query
     }).then(function (response) {
       cb(false, _.pluck(response.hits.hits, '_source'));
-    }).catch(function (err) { console.log(err.stack); });
+    }).catch(function (err) { logger.debug(err.stack); });
   }
 
   app.post('/network', function (req, res) {
     var d = req.body;
     var cik = zpad(d.cik.toString());
     var redFlagParams = d.redFlagParams;
-    console.log('/network ::', d);
+    logger.info('/network ::', d);
 
     async.parallel([
       function (cb) { neighbors({ 'cik': cik, 'source': 'issuer', 'target': 'owner' }, cb); },
       function (cb) { neighbors({ 'cik': cik, 'source': 'owner', 'target': 'issuer' }, cb); }
     ], function (err, results) {
-      if (err) { console.error(err); }
+      if (err) { logger.debug(err); }
       var edges = _.chain([results]).flatten().value();
       var nodes = edges2nodes(edges);
       computeRedFlags(nodes, redFlagParams, function (nodes) {

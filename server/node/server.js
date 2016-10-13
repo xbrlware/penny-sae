@@ -1,15 +1,18 @@
 // server/node/server.js
 
+var cluster = require('cluster');
+var _ = require('underscore')._;
+
+var logger = require('./logging');
+logger.level = 'debug';
+
 const MIN_VERSION = 1;
 const MAJOR_VERSION = parseInt(process.version.replace('v', '').split('.')[0]);
 if (MAJOR_VERSION < MIN_VERSION) {
-  console.log('!! Major version of node.js is less than ', MIN_VERSION);
-  console.log('!! You probably need to update.');
+  logger.debug('!! Major version of node.js is less than ', MIN_VERSION);
+  logger.debug('!! You probably need to update.');
   process.exit();
 }
-
-var cluster = require('cluster');
-var _ = require('underscore')._;
 
 function runServer () {
   var config = _.extend(require('./server-config'), require('./global-config'));
@@ -57,7 +60,7 @@ function runServer () {
     app.listen(config.SERVER.PORT);
   }
 
-  console.log('Nodesec | protocol = %s | port = %s', config.HTTPS.ENABLED ? 'https' : 'http', config.SERVER.PORT);
+  logger.info('Nodesec | protocol = %s | port = %s', config.HTTPS.ENABLED ? 'https' : 'http', config.SERVER.PORT);
 }
 
 if (cluster.isMaster) {
@@ -66,7 +69,7 @@ if (cluster.isMaster) {
   _.map(_.range(cpuCount), function (i) { cluster.fork(); });
 
   cluster.on('exit', function (worker) {
-    console.log('Worker ' + worker.id + ' died');
+    logger.debug('Worker ' + worker.id + ' died');
     cluster.fork();
   });
 } else {

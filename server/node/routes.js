@@ -63,7 +63,6 @@ module.exports = function (app, config, client) {
       'size': 0,
       'requestCache': true
     }).then(function (esResponse) {
-      console.log(esResponse);
       var hits = _.map(esResponse.aggregations.top_hits.hits.hits, function (hit) {
         return {
           'cik': hit['_source']['cik'],
@@ -71,7 +70,6 @@ module.exports = function (app, config, client) {
           'redFlags': redflagPostprocess(hit['fields']['redFlags'][0], d.redFlagParams)
         };
       });
-      console.log('took =', esResponse.took);
       cb({
         'query_time': esResponse.took / 1000,
         'total_hits': esResponse.hits.total,
@@ -221,7 +219,6 @@ module.exports = function (app, config, client) {
       'from': 0,
       'size': 100
     }).then(function (esResponse) {
-      console.log('esResponse', esResponse.hits.hits);
       res.send({'data': _.pluck(esResponse.hits.hits, '_source')});
     });
   });

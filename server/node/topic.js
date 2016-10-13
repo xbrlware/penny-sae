@@ -3,6 +3,9 @@ module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var queryBuilder = require('./queryBuilder')(config);
 
+  var logger = require('./logging');
+  logger.level = 'debug';
+
   function timeSeries (query, cb) {
     // Given a search string, return histogram of mentions over time
     client.search({
@@ -55,12 +58,12 @@ module.exports = function (app, config, client) {
 
   app.post('/topic_summary', function (req, res) {
     var d = req.body;
-    console.log('topic_summary ->', d.query);
+    logger.info('topic_summary ->', d.query);
     async.parallel([
       function (cb) { timeSeries(d.query, cb); },
       function (cb) { sicDistribution(d.query, cb); }
     ], function (err, results) {
-      if (err) { console.error(err); }
+      if (err) { logger.debug(err); }
       res.send(_.reduce(results, function (a, b) { return _.extend(a, b); }, {}));
     });
   });

@@ -7,6 +7,9 @@ module.exports = function (app, config, client) {
   var sortBy = require('lodash/sortBy');
   var dropRight = require('lodash/dropRight');
 
+  var logger = require('./logging');
+  logger.level = 'debug';
+
   var boardQueryBuilder = {
     'board': function (brdData, search = null, users = false) {
       var q = {
@@ -222,7 +225,7 @@ module.exports = function (app, config, client) {
 
   app.post('/user', function (req, res) {
     var d = req.body;
-    console.log('/user ::', d);
+    logger.info('/user ::', d);
     if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
@@ -243,7 +246,7 @@ module.exports = function (app, config, client) {
 
   app.post('/board', function (req, res) {
     var d = req.body;
-    console.log('/board ::', d);
+    logger.info('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
       d = mapValues(d, function (value, key) {
         return value || '';
@@ -258,7 +261,7 @@ module.exports = function (app, config, client) {
       function (cb) { getPvData(d, cb); },
       function (cb) { getPostsTimelineData(d, cb); }
     ], function (error, results) {
-      if (error) { console.log(error); }
+      if (error) { logger.debug(error); }
       res.send({
         'pvData': results[0],
         'ptData': results[1]
@@ -268,7 +271,7 @@ module.exports = function (app, config, client) {
 
   app.post('/redraw', function (req, res) {
     var d = req.body;
-    console.log('/redraw ::', d);
+    logger.info('/redraw ::', d);
     if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
@@ -277,7 +280,7 @@ module.exports = function (app, config, client) {
       function (cb) { getForumdata(d, cb); },
       function (cb) { getTimelineData(d, cb); }
     ], function (error, results) {
-      if (error) { console.log(error); }
+      if (error) { logger.debug(error); }
       res.send({
         'data': results[0],
         'tlData': results[1]
@@ -313,7 +316,7 @@ module.exports = function (app, config, client) {
   function getTimelineData (data, cb) {
     var s = data.search_term !== '' ? hasSearch(data) : null;
 
-    console.log('getTimelineData', data);
+    logger.info('getTimelineData', data);
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
@@ -357,7 +360,7 @@ module.exports = function (app, config, client) {
         q = dropRight(q, (q.length - data.size));
       }
 
-      console.log('/getTimelineData :: returned', q.length);
+      logger.info('/getTimelineData :: returned', q.length);
       cb(null, q);
       return;
     });
@@ -369,7 +372,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.boardTimeline(data),
       requestCache: true
     }).then(function (response) {
-      console.log('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
+      logger.info('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
       cb(null, lomap(response.aggregations.board_histogram.buckets, function (d, i) {
         return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
       }));
@@ -384,7 +387,7 @@ module.exports = function (app, config, client) {
       body: boardQueryBuilder.board(data, s, false),
       requestCache: true
     }).then(function (response) {
-      console.log('/forumData :: returning', response.hits.hits.length);
+      logger.info('/forumData :: returning', response.hits.hits.length);
       cb(null, lomap(response.hits.hits, function (x) {
         x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
         x._source.msg = x._source.msg.replace(/\(Read Entire Message\)/g, '(to be continued)');
@@ -400,7 +403,7 @@ module.exports = function (app, config, client) {
       index: config['ES']['INDEX']['PV'],
       body: boardQueryBuilder.getPVData(data)
     }).then(function (response) {
-      console.log('/pvData :: returning', response.hits.hits.length);
+      logger.info('/pvData :: returning', response.hits.hits.length);
       cb(null, lomap(response.aggregations.top_dates.buckets, function (d) {
         return d.top_sort.hits.hits[0]._source;
       }));
