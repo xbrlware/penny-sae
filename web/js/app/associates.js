@@ -247,8 +247,8 @@ App.AssociatesController = Ember.ObjectController.extend({
           });
           resolve(data);
         },
-        error: function (error) {
-          console.error('associates.js [fetch] :: ', error.message);
+        error: function (e) {
+          console.log('Error :: ', e);
           resolve([]);
         }
       });

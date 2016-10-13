@@ -72,7 +72,6 @@ App.Search = Ember.Object.extend({});
 
 App.Search.reopenClass({
   search_company: function (query, redFlagParams, searchTopic = false, refresh = false) {
-    console.log('QUERY :: ', query, 'REFRESH :: ', refresh);
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
@@ -89,9 +88,9 @@ App.Search.reopenClass({
           resolve(App.SearchResults.create(response));
         },
         error: function (xhr, status, error) {
-          console.log('XHR ::', xhr);
-          console.log('STATUS ::', status);
-          console.log('Error: ' + error.message);
+          console.error('XHR ::', xhr);
+          console.error('STATUS ::', status);
+          console.error('Error: ' + error.message);
         }
       });
     });

@@ -23,7 +23,7 @@ Ember.Application.initializer({
 
 var App = Ember.Application.create({
   // for development only, remove for production
-  LOG_TRANSITIONS: true,
+  LOG_TRANSITIONS: false,
   // Global getters for localstorage
   isAdmin: function () {
     return window.localStorage.getItem('isAdmin') === 'true';

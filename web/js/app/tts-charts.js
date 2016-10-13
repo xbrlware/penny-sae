@@ -17,7 +17,7 @@ function fetchTts (args) {
     }),
     success: args.callback,
     error: function (xhr, status, error) {
-      console.log('Error: ' + error.message);
+      console.error('tts-charts.js :: ' + error.message);
     }
   });
 }

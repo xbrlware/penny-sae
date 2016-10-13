@@ -11,7 +11,9 @@ function fetchLeadership (args) {
       url: 'fetch_leadership',
       data: JSON.stringify({'cik': args.cik}),
       success: function (response) { resolve(response); },
-      error: function (xhr, status, error) { console.log('Error: ' + error.message); }
+      error: function (xhr, status, error) {
+        console.error('leadership.js :: ' + error.message);
+      }
     });
   });
 }
@@ -42,8 +44,6 @@ App.LeadershipView = Ember.View.extend({
     var self = this;
     moment().format();
 
-    console.log('data in make_chart leadership', data);
-
     data.forEach(function (d) {
       d.pos = posNames.map(function (pos) {
         var value = {};
@@ -51,7 +51,6 @@ App.LeadershipView = Ember.View.extend({
           value[key] = new Date(d[pos][key]);
         });
         var out = {pos: pos, value: value};
-        console.log('out', out);
         return out;
       });
     });
@@ -126,8 +125,7 @@ App.LeadershipView = Ember.View.extend({
       .style('fill', function (d) { return color(d.pos); })
       .on('mouseover', function (e) {
         self.set('e', e);
-      })
-      .on('click', function (e) { console.log('did click ', e); });
+      });
 
     state.selectAll('.vline')
       .data(data).enter()
@@ -163,11 +161,10 @@ App.LeadershipView = Ember.View.extend({
       .style('stroke', '#eee');
 
     d3.select('#d3inp').on('change', function () {
-      console.log('chaining');
       var xs = x0.domain(data.sort(this.checked
-        ? function (a, b) { console.log('is checked'); return d3.descending(a.name, b.name); }
-        : function (a, b) { console.log('is not checked'); return d3.ascending(a.name, b.name); })
-        .map(function (d) { console.log('d.name', d.name); return d.name; }))
+        ? function (a, b) { return d3.descending(a.name, b.name); }
+        : function (a, b) { return d3.ascending(a.name, b.name); })
+        .map(function (d) { return d.name; }))
         .copy();
       var transition = svg.transition().duration(750);
       // var delay = function (d, i) { return i * 50; }

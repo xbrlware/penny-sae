@@ -8,7 +8,6 @@ App.WrapperView = Ember.View.extend();
 
 App.WrapperRoute = App.GRoute.extend({
   beforeModel: function (params) {
-    console.log('wrapper.index --> ', params);
     if (params.targetName === 'wrapper.index') {
       this.transitionTo('application', config.DEFAULT_PATH);
     }

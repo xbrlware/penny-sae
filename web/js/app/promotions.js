@@ -8,14 +8,10 @@ App.PromotionsView = Ember.View.extend({
   templateName: 'promotions',
   didInsertElement: function () {
     var mod = this.get('controller').get('model');
-    console.log('promotions mod', mod);
     this.render_promotion_chart(mod);
   },
   render_promotion_chart: function (mod) {
-    console.log('rendering promotion chart', mod);
-
     var start = _.min(mod, function (x) { return x.date; });
-    console.log('start', start);
 
     var data = {};
     var key = new Date().getTime() / 1000;

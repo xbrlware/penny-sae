@@ -42,11 +42,8 @@ JQ.Widget = Ember.Mixin.create({
       options[key] = this.get(key);
       var observer = function () {
         var value = this.get(key);
-        try {
+        if (Ember.$.isFunction(this.get('ui').option)) {
           this.get('ui').option(key, value);
-        } catch (e) {
-          // this is here just to catch non-functions... is safe.
-          console.warn('safe to ignore :: ', e);
         }
       };
 

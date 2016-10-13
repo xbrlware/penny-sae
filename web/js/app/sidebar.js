@@ -43,7 +43,6 @@ App.SidebarRoute = App.GRoute.extend({
       toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
     },
     sort_companies: function () {
-      console.log('sidebar -> sort_companies');
       var controller = this.get('controller');
       var appCon = this.controllerFor('application');
       controller.set('isLoading', true);

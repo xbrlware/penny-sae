@@ -1,5 +1,5 @@
 // web/js/app/authentication.js
-/* global Ember, App, SimpleAuth, config */
+/* global Ember, App, SimpleAuth */
 
 App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
   tokenEndpoint: '/login', // *** TEST ***
@@ -27,7 +27,7 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
           },
           error: function (error) {
             if (error.status === 403) {
-              console.error('$$$ auth: access denied on restore -- ', error.responseText);
+              console.error('$$$ auth: access denied on restore -- ' + error.responseText);
               Ember.run(this, reject);
             } else {
               console.error('There was an error reaching the server. (Unrecognized certificate or bad connection most likely.)');
@@ -62,7 +62,7 @@ App.NodesecAuthenticator = SimpleAuth.Authenticators.Base.extend({
           });
         });
       }, function (xhr, status, error) {
-        console.log('$$$ auth: rejecting...', error, ' ', status, ' ', JSON.stringify(xhr));
+        console.error('$$$ auth: rejecting...', error, ' ', status, ' ', JSON.stringify(xhr));
         Ember.run(this, reject, xhr.responseText);
       }
       );

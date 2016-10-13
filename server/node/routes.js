@@ -4,6 +4,9 @@ module.exports = function (app, config, client) {
   var _ = require('underscore')._;
   var queryBuilder = require('./queryBuilder')(config);
 
+  const logger = require('./logging');
+  logger.level = 'debug';
+
   // <redflag-helpers>
   const DEFAULT_ = {'have': false, 'value': -1, 'is_flag': false};
   function defaultRedFlags () {

@@ -6,7 +6,6 @@ App.TopicPieChartController = Ember.ObjectController.extend({});
 
 App.TopicPieChartView = Ember.View.extend({
   controllerChanged: function () {
-    console.log('reloading...');
     this.makeChart(this);
   }.observes('controller.model'),
   didInsertElement: function () {
@@ -28,7 +27,6 @@ App.TopicPieChartView = Ember.View.extend({
     });
 
     data.push({label: 'Misc. Others', data: others, color: 'lightgrey'});
-    console.log('data', data);
     Ember.$.plot('#placeholder', data, {
       series: {
         pie: {

@@ -6,9 +6,7 @@
 
 App.PreviousRegRoute = Ember.Route.extend({
   setupController: function (controller, model) {
-    console.log('setupController', 'previousRegRoute');
     App.Search.fetch_data('suspensions', controller.get('name')).then(function (response) {
-      console.log('suspensions reseponse', response.data);
       controller.set('model', response.data);
       controller.set('have_records', response.data.length > 0);
     });
@@ -29,11 +27,13 @@ App.PreviousRegController = Ember.Controller.extend({
   ],
 
   tableContent: function () {
-    return this.get('model').map(function (x) {
-      return [x.company, x.date, x.release_number, x.link];
-    });
+    var m = this.get('model');
+    if (m) {
+      return m.map(function (x) {
+        return [x.company, x.date, x.release_number, x.link];
+      });
+    }
   }.property('model')
-
 });
 
 App.PreviousRegView = App.GenericTableView.extend();

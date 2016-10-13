@@ -57,7 +57,6 @@ App.DropdownController = Ember.ObjectController.extend({
     },
 
     refresh_companies: function () {
-      console.log('---- refresh_companies ----');
       var appCon = this.controllerFor('application');
       appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '--');
@@ -70,7 +69,7 @@ App.DropdownController = Ember.ObjectController.extend({
         try {
           self.set(feature, false);
         } catch (e) {
-          console.log(e.message);
+          console.error('dropdown.js :: ' + e.message);
         }
       });
       this.set(type, true);
