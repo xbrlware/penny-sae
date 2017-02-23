@@ -137,5 +137,6 @@ module.exports = function (grunt) {
   grunt.registerTask('css', ['less:dev', 'concat:devCSS', 'cssmin', 'bless']);
   grunt.registerTask('wth', ['watch']);
   grunt.registerTask('cmp', ['emberTemplates']);
-  grunt.registerTask('default', ['css', 'concat:libsJS', 'uglify:libs', 'concat:appsJS', 'uglify:apps', 'concat:allJS']);
+  grunt.registerTask('production', ['css', 'cmp', 'concat:libsJS', 'uglify:libs', 'concat:appsJS', 'uglify:apps', 'concat:prodJS']);
+  grunt.registerTask('development', ['css', 'cmp', 'concat:libsJS', 'concat:appsJS', 'concat:devJS']);
 };

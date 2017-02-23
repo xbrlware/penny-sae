@@ -305,7 +305,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     {title: '10% Owner'}
   ],
 
-  toggleTerminalData () {
+  toggleTerminalData: function () {
     var n;
     if (this.get('terminalToggle')) {
       var m = JSON.parse(JSON.stringify(this.get('model').rgraph));

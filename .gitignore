@@ -1,4 +1,5 @@
 *.swp
+tmux.sh
 server/es_scripts/ernest.js
 npm-debug.log
 *DS_Store

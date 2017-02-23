@@ -20,6 +20,7 @@ App.BoardController = Ember.Controller.extend({
   numOfPosters: 10,
   dateFilter: [new Date(gconfig.DEFAULT_DATE_FILTER[0]), new Date(gconfig.DEFAULT_DATE_FILTER[1])],
   ChartsObj: App.Chart.create(),
+
   rtDraw: function () {
     /* fired during init and when the brush moves */
     var data = this.get('model.ptData');
@@ -284,7 +285,7 @@ App.BoardController = Ember.Controller.extend({
     renderAll(_this);
   },
 
-  toggleSplitByFilterMember (id) {
+  toggleSplitByFilterMember: function (id) {
     /* toggles which users are seen in the forum messages */
     var xFilter = this.get('splitByFilter');
 
@@ -295,7 +296,7 @@ App.BoardController = Ember.Controller.extend({
     }
   },
 
-  renderX () {
+  renderX: function () {
     /* sets up data and then uses makeTimeSeries to draw all
      * users and their timelines
      */
@@ -353,7 +354,7 @@ App.BoardController = Ember.Controller.extend({
     });
   },
 
-  renderGauges () {
+  renderGauges: function () {
     /* loads data used for drawing gauges and then passes that data to drawGauge */
     var _this = this;
     var data = this.get('model.tlData');
@@ -368,20 +369,20 @@ App.BoardController = Ember.Controller.extend({
   renderCharts: function (forumData, pvdata) {
     /* renders Post Volume, Brush, Price, and Trading Volume charts */
     // date formatting functions
-    var dateDomain = this.brushChart.brush.extent();
+    var dateDomain = this.get('brushChart').brush.extent();
     d3.select('g.x.brush').remove();
 
     // draw brush chart
-    this.ChartsObj.makeBarChart(this.brushChart, forumData, [new Date('2004-01-01'), new Date()]);
+    this.ChartsObj.makeBarChart(this.get('brushChart'), forumData, [new Date('2004-01-01'), new Date()]);
 
     // set inital date ranges to be shown
     if (dateDomain[0] < new Date('2004-01-01')) {
-      this.brushChart.brush.extent(d3.extent(forumData, function (d) { return d.date; }));
+      this.get('brushChart').brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     } else {
-      this.brushChart.brush.extent(dateDomain);
+      this.get('brushChart').brush.extent(dateDomain);
     }
 
-    this.brushChart.brush(d3.select('.brush').transition());
+    this.get('brushChart').brush(d3.select('.brush').transition());
     this.rtDraw(pvdata, forumData);
   },
 
@@ -475,7 +476,7 @@ App.BoardController = Ember.Controller.extend({
       this.sortTimelines(a);
     },
 
-    topXClicked (id) {
+    topXClicked: function (id) {
       /* handles when user is clicked on */
       var _this = this;
       this.set('pageCount', 1);

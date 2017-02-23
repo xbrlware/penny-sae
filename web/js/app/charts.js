@@ -71,6 +71,7 @@ App.Chart = Ember.Object.extend({
       barWidth = chartObj.x.rangeBand();
     }
 
+    console.log('_data :: ', data);
     chartObj.div.selectAll('.bar')
       .data(_data)
       .enter().append('rect')
@@ -277,7 +278,7 @@ App.Chart = Ember.Object.extend({
     chartObj.div.select('g.y.axis').call(chartObj.yAxis);
   },
 
-  drawGauge (bindTo, gaugeData) {
+  drawGauge: function (bindTo, gaugeData) {
     /* handles drawing a single gauge using D3 */
     d3.select(bindTo).selectAll('svg').remove();
     var data = gaugeData;

@@ -9,25 +9,25 @@ var gconfig = {
  "DEFAULT_HIDE_NER": true,
  "DEFAULT_DATE_FILTER": [
   "2010-01-01",
-  "2017-01-01"
+  "2018-01-01"
  ],
  "DEFAULT_REDFLAG_PARAMS": {
   "crowdsar": {
    "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
+   "max_date": "2018-01-01",
    "metric": "sum",
    "field": "n_posts",
    "threshold": 10
   },
   "delinquency": {
    "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
+   "max_date": "2018-01-01",
    "form": "10-K",
    "threshold": 3
   },
   "financials": {
    "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
+   "max_date": "2018-01-01",
    "field": "profit",
    "value": 1000,
    "threshold": 1
@@ -41,12 +41,12 @@ var gconfig = {
   },
   "suspensions": {
    "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
+   "max_date": "2018-01-01",
    "threshold": 1
   },
   "symbology": {
    "min_date": "2000-01-01",
-   "max_date": "2017-01-01",
+   "max_date": "2018-01-01",
    "field": "name",
    "threshold": 1
   }

@@ -2,6 +2,7 @@
 
 module.exports = function (app, config, client) {
   var async = require('async');
+  var dateformat = require('dateformat');
   var lomap = require('lodash/map');
   var mapValues = require('lodash/mapValues');
   var sortBy = require('lodash/sortBy');
@@ -225,11 +226,16 @@ module.exports = function (app, config, client) {
 
   app.post('/user', function (req, res) {
     var d = req.body;
-    logger.info('/user ::', d);
     if (!d.cik || !d.users || !d.date_filter) {
       return res.send([]);
     }
     var s = d.search_term !== '' ? hasSearch(d) : null;
+
+    d.date_filter.map(function (dates, index) {
+      d.date_filter[index] = dateformat(dates, 'yyyy-mm-dd HH:MM:ss');
+    });
+
+    logger.info('/user ::', d);
 
     client.search({
       index: config['ES']['INDEX']['CROWDSAR'],
@@ -237,7 +243,11 @@ module.exports = function (app, config, client) {
       requestCache: true
     }).then(function (response) {
       var m = lomap(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        if (x._source.time.indexOf('T') !== -1) {
+          x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        } else {
+          x._source.date = x._source.time.replace(/-/g, '/');
+        }
         return x._source;
       });
       res.send(m);
@@ -246,7 +256,6 @@ module.exports = function (app, config, client) {
 
   app.post('/board', function (req, res) {
     var d = req.body;
-    logger.info('/board ::', d);
     if (!d.cik || !d.date_filter || !d.ticker) {
       d = mapValues(d, function (value, key) {
         return value || '';
@@ -271,10 +280,22 @@ module.exports = function (app, config, client) {
 
   app.post('/redraw', function (req, res) {
     var d = req.body;
-    logger.info('/redraw ::', d);
     if (!d.cik || !d.date_filter) {
       return res.send([]);
     }
+
+    d.date_filter = lomap(d.date_filter, df => {
+      if (df.indexOf('T') !== -1) {
+        let temp = df.split('T');
+        let day = temp[0];
+        let hours = temp[1].split('.')[0];
+        return day + ' ' + hours;
+      } else {
+        return df;
+      }
+    });
+
+    logger.info('/redraw ::', d);
 
     async.parallel([
       function (cb) { getForumdata(d, cb); },
@@ -374,7 +395,11 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       logger.info('/getPostsTimelineData :: returning', response.aggregations.board_histogram.buckets.length);
       cb(null, lomap(response.aggregations.board_histogram.buckets, function (d, i) {
-        return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
+        if (d.key_as_string.indexOf('T') !== -1) {
+          return {index: i, date: d.key_as_string.replace(/-/g, '/').split('T')[0], value: d.doc_count};
+        } else {
+          return {index: i, date: d.key_as_string.replace(/-/g, '/'), value: d.doc_count};
+        }
       }));
     });
   }
@@ -389,7 +414,11 @@ module.exports = function (app, config, client) {
     }).then(function (response) {
       logger.info('/forumData :: returning', response.hits.hits.length);
       cb(null, lomap(response.hits.hits, function (x) {
-        x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        if (x._source.time.indexOf('T') !== -1) {
+          x._source.date = x._source.time.replace(/-/g, '/').split('T')[0];
+        } else {
+          x._source.date = x._source.time.replace(/-/g, '/');
+        }
         x._source.msg = x._source.msg.replace(/\(Read Entire Message\)/g, '(to be continued)');
         x._source.url = config['URL'] + x._source.msg_id;
         return x._source;
