@@ -119,7 +119,12 @@ module.exports = function (config) {
     'company_table': function (cik) {
       return {
         '_source': ['min_date', 'name', 'ticker', 'sic', '__meta__'],
-        'query': { 'term': { 'cik': cik } }, 'sort': [{'min_date': {'order': 'desc'}}]
+        'query': {
+          'term': {
+            'cik': cik
+          }
+        },
+        'sort': [{'min_date': {'order': 'desc'}}]
       };
     },
     'cik2name': function (cik) {

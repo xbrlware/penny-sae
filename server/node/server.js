@@ -22,9 +22,11 @@ function runServer () {
   var fs = require('fs');
   var app = express();
   var compression = require('compression');
+  var bodyParser = require('body-parser');
 
   app.use(compression());
-  app.use(require('body-parser').json());
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
   // headers
   app.all('*', function (req, res, next) {

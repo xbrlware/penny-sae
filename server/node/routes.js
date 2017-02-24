@@ -216,6 +216,7 @@ module.exports = function (app, config, client) {
 
   app.post('/omx', function (req, res) {
     var d = req.body;
+    logger.info('/omx :: ', d);
     client.search({
       'index': config['ES']['INDEX']['OMX'],
       'body': queryBuilder.omx(d),
