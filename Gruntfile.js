@@ -107,7 +107,7 @@ module.exports = function (grunt) {
         cliArgs: ['--grunt-file', require('path').join(cwd, 'Gruntfile.js')]
       },
       app: {
-        files: ['<%= cfg.app %>*.js'],
+        files: ['<%= cfg.app %>/*/*.js'],
         tasks: ['devApp']
       },
       lib: {

@@ -47,4 +47,3 @@ App.FinancialsController = Ember.Controller.extend({
     });
   }.property('model')
 });
-

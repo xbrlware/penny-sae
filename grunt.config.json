@@ -6,7 +6,7 @@
     "jdt"        : "web/js/dist/",
     "lss"        : "web/css/",  
     "tdt"        : "web/templates/dist/",     
-    "tmp"        : "web/templates/",
+    "tmp"        : "web/js/app/templates/",
     
     "css_files"  : [
          "web/css/normalize.css",
@@ -67,6 +67,7 @@
            "web/js/app/components/filter-button.js",
            "web/js/app/views/link-view.js",
            "web/js/app/views/toggle-switch.js",
+           "web/js/app/components/generic-table.js",
            "web/js/app/views/generic-table.js",
            "web/js/app/routes/associates.js",
            "web/js/app/controllers/associates.js",
@@ -82,6 +83,7 @@
            "web/js/app/helpers/nice-number.js",
            "web/js/app/routes/financials.js",
            "web/js/app/controllers/financials.js",
+           "web/js/app/components/financials-component",
            "web/js/app/views/financials-view.js",
            "web/js/app/routes/front-page.js",
            "web/js/app/controllers/front-page.js",
