@@ -1,7 +1,7 @@
 // web/js/app/views/toggle-switch.js
 /* global Ember, App */
 
-App.ToggleSwitch = Ember.View.extend({
+App.ToggleSwitchView = Ember.View.extend({
   classNames: ['toggle-switch'],
   templateName: 'toggle-switch',
 

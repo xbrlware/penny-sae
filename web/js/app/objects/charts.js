@@ -74,7 +74,6 @@ App.Chart = Ember.Object.extend({
       barWidth = chartObj.x.rangeBand();
     }
 
-    console.log('_data :: ', data);
     chartObj.div.selectAll('.bar')
       .data(_data)
       .enter().append('rect')

@@ -19,31 +19,31 @@
         <table class="table hoverTable front-page">
 
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Company has no business, no revenues and no product."
                 valueBinding = "redFlagParams._toggles.financials"
             }}
 
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Company undergoes frequent material changes in business strategy or its line of business."
                 valueBinding = "redFlagParams._toggles.symbology"
             }}
 
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
                 valueBinding = "redFlagParams._toggles.otc_neighbors"
             }}
 
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Company has been the subject of a prior trading suspension."
                 valueBinding = "redFlagParams._toggles.suspensions"
             }}
 
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Company has not made disclosures in SEC or other regulatory filings."
                 valueBinding = "redFlagParams._toggles.delinquency"
             }}
@@ -73,13 +73,13 @@
             </tr>
 {{!--
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Company stock has experienced recent price and/or volume anomalies."
                 valueBinding = "redFlagParams._toggles.pv"
             }}
 --}}
             {{
-                view App.ToggleRowView
+                view "toggle-row"
                 text = "Investors have made allegations about malfeasance of the company on social media."
                 valueBinding = "redFlagParams._toggles.crowdsar"
             }}

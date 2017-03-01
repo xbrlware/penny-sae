@@ -23,7 +23,7 @@
             <div class="list-group square">
                 {{#each h in hits}}
                     {{#if h.name}}
-                        {{view App.HitView h=h}}
+                        {{view "hit" h=h}}
                     {{/if}}
                 {{/each}}
             </div>

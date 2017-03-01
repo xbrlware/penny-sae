@@ -207,8 +207,10 @@ App.BoardController = Ember.Controller.extend({
     /* redraw time lines and forum messages */
     /* numPosters is used by size in the ES query */
     var _this = this;
+    var detailCon = this.get('controllers.detail');
+
     var data = {
-      cik: this.controllerFor('detail').get('model.cik'),
+      cik: detailCon.get('model.cik'),
       date_filter: this.get('dateFilter'),
       search_term: this.get('searchTerm'),
       sentiment: {type: this.get('sentiment'), score: 0.5},
@@ -425,7 +427,8 @@ App.BoardController = Ember.Controller.extend({
 
   toggleSentiment: function (st) {
     var _this = this;
-    var cik = this.controllerFor('detail').get('model.cik');
+    var detailCon = this.get('controllers.detail');
+    var cik = detailCon.get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': _this.get('dateFilter'), 'sentiment': {type: st, score: 0.5}}).then(function (response) {
         _this.set('model', response);
@@ -482,9 +485,10 @@ App.BoardController = Ember.Controller.extend({
     topXClicked: function (id) {
       /* handles when user is clicked on */
       var _this = this;
+      var detailCon = this.get('controllers.detail');
       this.set('pageCount', 1);
       Ember.$('#ts-' + id).toggleClass('chart-selected');
-      var cik = this.controllerFor('detail').get('model.cik');
+      var cik = detailCon.get('model.cik');
       this.toggleSplitByFilterMember(id);
 
       if (this.get('splitByFilter').length) {

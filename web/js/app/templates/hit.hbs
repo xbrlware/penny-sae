@@ -14,10 +14,10 @@
                     <div id="badge-header">
                         {{#unless h.redFlags.possible}}
                             <p class="lg-text">
-                        {{/unless}}
-                            Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
-                        {{#unless h.redFlags.possible}}
+                                Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
                             </p>
+                        {{else}}
+                            Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
                         {{/unless}}
                         {{!-- (*) This could be cleaned up --}}
                         {{#if h.__topic__.doc_count}}
@@ -27,13 +27,13 @@
                     
                     <br />
 
-                    {{ view App.HitTextView redFlags=h.redFlags.financials type="financials" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags.symbology type="symbology" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags.suspensions type="suspensions" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags.delinquency type="delinquency" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags.otc_neighbors type="otc_neighbors" first_column=true }}
-                    {{ view App.HitTextView redFlags=h.redFlags.pv type="pv" first_column=false }}
-                    {{ view App.HitTextView redFlags=h.redFlags.crowdsar type="crowdsar" first_column=false }}
+                    {{ view "hit-text" redFlags=h.redFlags.financials type="financials" first_column=true }}
+                    {{ view "hit-text" redFlags=h.redFlags.symbology type="symbology" first_column=true }}
+                    {{ view "hit-text" redFlags=h.redFlags.suspensions type="suspensions" first_column=true }}
+                    {{ view "hit-text" redFlags=h.redFlags.delinquency type="delinquency" first_column=true }}
+                    {{ view "hit-text" redFlags=h.redFlags.otc_neighbors type="otc_neighbors" first_column=true }}
+                    {{ view "hit-text" redFlags=h.redFlags.pv type="pv" first_column=false }}
+                    {{ view "hit-text" redFlags=h.redFlags.crowdsar type="crowdsar" first_column=false }}
                 </div>
             </div>
         {{/link-to}}
@@ -41,7 +41,7 @@
     <div class="accordion-body collapse out ab-sidebar">
         <div class="accordion-inner">
             <table id="search_result_{{unbound h.cik}}" class="display"></table>
-            {{view App.SearchResultsView cik=h.cik}}
+            {{view "search-results" cik=h.cik}}
         </div>
     </div>
 </div>

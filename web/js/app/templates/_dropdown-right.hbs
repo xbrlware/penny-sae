@@ -8,15 +8,15 @@
             <label class="control-label"> Price Spike (%) </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.pv.price_jump
+                value=redFlagParams._params.pv.price_jump
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min=10
                 max=1000
                 step=5
-                valueBinding=redFlagParams._params.pv.price_jump
+                value=redFlagParams._params.pv.price_jump
                 class="form-control input-slider-dropdown"
             }}
         </div>
@@ -24,15 +24,15 @@
             <label class="control-label"> Trailing Volume Window (days) </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.pv.volume_window
+                value=redFlagParams._params.pv.volume_window
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min= 0
                 max=1000
                 step=10
-                valueBinding=redFlagParams._params.pv.volume_window
+                value=redFlagParams._params.pv.volume_window
                 class="input-slider-dropdown"
             }}
         </div>
@@ -40,15 +40,15 @@
             <label class="control-label"> Trailing Volume Multiplier </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.pv.volume_multiplier
+                value=redFlagParams._params.pv.volume_multiplier
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min=0
                 max=100
                 step=1
-                valueBinding=redFlagParams._params.pv.volume_multiplier
+                value=redFlagParams._params.pv.volume_multiplier
                 class="form-control input-slider-dropdown"
             }}
         </div>
@@ -56,15 +56,15 @@
             <label class="control-label"> Fall To (%) </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.pv.fall_to
+                value=redFlagParams._params.pv.fall_to
                 class="form-control input-text-hidden"
             }}    
             {{
-                view App.SliderView
+                view "slider"
                 min=0
                 max=100
                 step=1
-                valueBinding=redFlagParams._params.pv.fall_to
+                value=redFlagParams._params.pv.fall_to
                 class="input-slider-dropdown"
             }}
         </div>
@@ -72,15 +72,15 @@
             <label class="control-label"> Fall Within (days) </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.fall_within
+                value=redFlagParams._params.fall_within
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min=0
                 max=1000
                 step=10
-                valueBinding=redFlagParams._params.pv.fall_within
+                value=redFlagParams._params.pv.fall_within
                 class="input-slider-dropdown"
             }}
         </div>
@@ -94,25 +94,25 @@
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.crowdsar.min_date
-                valueBinding=redFlagParams._params.crowdsar.min_date
+                value=redFlagParams._params.crowdsar.min_date
                 class="form-control"
             }}
             <label class="control-label">To Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.crowdsar.max_date
-                valueBinding=redFlagParams._params.crowdsar.max_date
+                value=redFlagParams._params.crowdsar.max_date
                 class="form-control"
             }}
         </div>
         <div class="form-group">
             <label class="control-label"> Field </label>
             {{
-                view Ember.Select
+                view "select"
                 content=crowdsar_select_content.field
-                valueBinding=redFlagParams._params.crowdsar.field
+                value=redFlagParams._params.crowdsar.field
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -121,9 +121,9 @@
         <div class="form-group">
             <label class="control-label"> Metric </label>
             {{
-                view Ember.Select
+                view "select"
                 content=crowdsar_select_content.metric
-                valueBinding=redFlagParams._params.crowdsar.metric
+                value=redFlagParams._params.crowdsar.metric
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -133,7 +133,7 @@
             <label class="control-label"> Threshold </label>
             {{
                 input type="number"
-                valueBinding=redFlagParams._params.crowdsar.threshold
+                value=redFlagParams._params.crowdsar.threshold
                 class="form-control"
             }}
         </div>
@@ -150,9 +150,9 @@
                 
                     <span class="centered">
                         {{
-                            view Ember.Select
+                            view "select"
                             content=tout_select_content
-                            valueBinding="rf.tout.type"
+                            value="rf.tout.type"
                             optionValuePath="content.id"
                             optionLabelPath="content.name"}}
                     </span>
@@ -163,14 +163,14 @@
                 
                     {{
                         input type="text"
-                        valueBinding="rf.tout.past_months"
+                        value="rf.tout.past_months"
                         class="input-text-hidden"
                     }}
                     {{
-                        view App.SliderView min = 0
+                        view "slider" min = 0
                         max  = 5
                         step = 1
-                        valueBinding="rf.tout.past_months"
+                        value="rf.tout.past_months"
                         class="input-slider-dropdown"
                     }}
                 </div>
@@ -186,25 +186,25 @@
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.symbology.min_date
-                valueBinding=redFlagParams._params.symbology.min_date
+                value=redFlagParams._params.symbology.min_date
                 class="form-control"
             }}
             <label class="control-label">To Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.symbology.max_date
-                valueBinding=redFlagParams._params.symbology.max_date
+                value=redFlagParams._params.symbology.max_date
                 class="form-control"
             }}
         </div>
         <div class="form-group">
             <label class="control-label"> Name Field </label>
             {{
-                view Ember.Select
+                view "select"
                 content=symbology_select_content
-                valueBinding=redFlagParams._params.symbology.field
+                value=redFlagParams._params.symbology.field
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -214,7 +214,7 @@
             <label class="control-label"> Threshold </label>
             {{
                 input type="number"
-                valueBinding=redFlagParams._params.symbology.threshold
+                value=redFlagParams._params.symbology.threshold
                 class="form-control"
             }}
         </div>
@@ -227,26 +227,26 @@
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.financials.min_date
-                valueBinding=redFlagParams._params.financials.min_date
+                value=redFlagParams._params.financials.min_date
                 class="form-control"
             }}
                     
             <label class="control-label">To Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.financials.max_date
-                valueBinding=redFlagParams._params.financials.max_date
+                value=redFlagParams._params.financials.max_date
                 class="form-control"
             }}
         </div>
         <div class="form-group">
             <label class="control-label"> Financial Measure </label>
             {{
-                view Ember.Select
+                view "select"
                 content=financials_select_content
-                valueBinding=redFlagParams._params.financials.field
+                value=redFlagParams._params.financials.field
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -256,15 +256,15 @@
             <label class="control-label"> Value </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.financials.value
+                value=redFlagParams._params.financials.value
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min=0
                 max=1000000
                 step=100
-                valueBinding=redFlagParams._params.financials.value
+                value=redFlagParams._params.financials.value
                 class="input-slider-dropdown"
             }}
         </div>
@@ -273,7 +273,7 @@
             {{
                 input
                 type="number"
-                valueBinding=redFlagParams._params.financials.threshold
+                value=redFlagParams._params.financials.threshold
                 class="form-control"
             }}
         </div>
@@ -286,25 +286,25 @@
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.delinquency.min_date
-                valueBinding=redFlagParams._params.delinquency.min_date
+                value=redFlagParams._params.delinquency.min_date
                 class="form-control"
             }}
             <label class="control-label">To Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.delinquency.max_date
-                valueBinding=redFlagParams._params.delinquency.max_date
+                value=redFlagParams._params.delinquency.max_date
                 class="form-control"
             }}
         </div>
         <div class="form-group">
             <label class="control-label"> Form </label>
             {{
-                view Ember.Select
+                view "select"
                 content=late_filings_content
-                valueBinding=redFlagParams._params.delinquency.form
+                value=redFlagParams._params.delinquency.form
                 optionValuePath="content.id"
                 optionLabelPath="content.name"
                 class="form-control"
@@ -315,7 +315,7 @@
             {{
                 input type="number"
                 size=6
-                valueBinding=redFlagParams._params.delinquency.threshold
+                value=redFlagParams._params.delinquency.threshold
                 class="form-control"
             }}
         </div>
@@ -328,16 +328,16 @@
         <div class="form-group">
             <label class="control-label">From Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.suspensions.min_date
-                valueBinding=redFlagParams._params.suspensions.min_date
+                value=redFlagParams._params.suspensions.min_date
                 class="form-control"
             }}
             <label class="control-label">To Date:</label>
             {{
-                view App.DatepickerView
+                view "datepicker"
                 defaultDate=redFlagParams._params.suspensions.max_date
-                valueBinding=redFlagParams._params.suspensions.max_date
+                value=redFlagParams._params.suspensions.max_date
                 class="form-control"
             }}
         </div>
@@ -346,7 +346,7 @@
             <label class=" control-label"> Threshold </label>
             {{
                 input type="number"
-                valueBinding=redFlagParams._params.suspensions.threshold
+                value=redFlagParams._params.suspensions.threshold
                 class="form-control"
             }}
         </div>
@@ -360,14 +360,14 @@
             <label class="control-label"> Number of Neighbors </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.otc_neighbors.number_of_neighbors
+                value=redFlagParams._params.otc_neighbors.number_of_neighbors
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.RangeSliderView
+                view "range-slider"
                 min=0
                 max=100
-                valuesBinding=redFlagParams._params.otc_neighbors.number_of_neighbors
+                values=redFlagParams._params.otc_neighbors.number_of_neighbors
                 class="range-slider"
             }}
         </div>
@@ -375,15 +375,15 @@
             <label class="control-label"> Minimum Percent OTC </label>
             {{
                 input type="text"
-                valueBinding=redFlagParams._params.otc_neighbors.threshold
+                value=redFlagParams._params.otc_neighbors.threshold
                 class="form-control input-text-hidden"
             }}
             {{
-                view App.SliderView
+                view "slider"
                 min=0
                 max=100
                 step=1
-                valueBinding=redFlagParams._params.otc_neighbors.threshold
+                value=redFlagParams._params.otc_neighbors.threshold
                 class="input-slider-dropdown"
             }}
         </div>
