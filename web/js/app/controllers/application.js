@@ -12,9 +12,9 @@ App.ApplicationController = Ember.Controller.extend({
 
   search_company: function (cb) {
     App.Search.search_company(
-      this.searchTerm,
-      this.redFlagParams,
-      this.searchTopic,
+      this.get('searchTerm'),
+      this.get('redFlagParams'),
+      this.get('searchTopic'),
       false
     ).then(cb);
   },

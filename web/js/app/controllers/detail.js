@@ -3,7 +3,7 @@
 
 'use strict';
 
-App.DetailController = Ember.ObjectController.extend({
+App.DetailController = Ember.Controller.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams')
 });

@@ -3,4 +3,4 @@
 
 'use strict';
 
-App.TopicPieChartController = Ember.ObjectController.extend({});
+App.TopicPieChartController = Ember.Controller.extend({});

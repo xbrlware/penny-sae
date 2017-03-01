@@ -4,7 +4,7 @@
 
 'use strict';
 
-App.DropdownController = Ember.ObjectController.extend({
+App.DropdownController = Ember.Controller.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   symbology_select_content: [

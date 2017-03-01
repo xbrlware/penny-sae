@@ -3,14 +3,37 @@
 
 'use strict';
 
-App.SidebarController = Ember.ObjectController.extend({
+App.SidebarController = Ember.Controller.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
   searchTopic: Ember.computed.alias('controllers.application.searchTopic'),
   isLoading: Ember.computed.alias('controllers.application.isLoading'),
-
+  renderTemplate: function () {
+    this.render();
+  },
   actions: {
+    toggleFlag: function (flag) {
+      var toggles = this.get('redFlagParams').get_toggles();
+      toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
+    },
+
+    sort_companies: function () {
+      var _this = this;
+      var appCon = this.get('controllers.application');
+      this.set('isLoading', true);
+      appCon(function (response) {
+        _this.transitionToRoute();
+        _this.transitionToRoute('sidebar');
+        _this.set('model', response);
+        _this.set('isLoading', false);
+      });
+    },
+
+    summary_detail: function () {
+      return [1, 2, 3];
+    },
+
     iterateSidebar: function (dir) {
       if (dir > 0) {
         this.set('from', this.get('from') + gconfig.SIZE);

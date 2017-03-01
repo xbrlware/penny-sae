@@ -1,7 +1,7 @@
 // web/js/app/controllers/associates.js
 /* global Ember, App, d3, _ */
 
-App.AssociatesController = Ember.ObjectController.extend({
+App.AssociatesController = Ember.Controller.extend({
   needs: ['application'],
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
   isLoading: false,
@@ -241,7 +241,7 @@ App.AssociatesController = Ember.ObjectController.extend({
           resolve(data);
         },
         error: function (e) {
-          console.log('Error :: ', e);
+          console.error('Error :: ', e);
           resolve([]);
         }
       });
@@ -255,7 +255,7 @@ App.AssociatesController = Ember.ObjectController.extend({
     var zCik = this.zpad(cik.toString());
     this.set('isLoading', true);
     this.fetch({'cik': zCik, 'redFlagParams': redFlagParams.get_toggled_params()}).then(function (data) {
-      _this.set('rgraph', data.edges);
+      _this.set('model.rgraph', data.edges);
       _this.updateData(data.edges);
       _this.draw(data.edges, Ember.$('.network-graph').innerWidth(), Ember.$('.network-graph').innerHeight());
     });

@@ -3,7 +3,7 @@
 
 'use strict';
 
-App.SummaryController = Ember.ObjectController.extend({
+App.SummaryController = Ember.Controller.extend({
   needs: ['application'],
   searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
   chartObj: App.Chart.create(),

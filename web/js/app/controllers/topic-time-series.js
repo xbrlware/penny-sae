@@ -3,4 +3,4 @@
 
 'use strict';
 
-App.TopicTimeSeriesController = Ember.ObjectController.extend({});
+App.TopicTimeSeriesController = Ember.Controller.extend({});

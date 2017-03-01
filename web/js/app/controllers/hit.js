@@ -3,4 +3,4 @@
 
 'use strict';
 
-App.HitController = Ember.ObjectController.extend({});
+App.HitController = Ember.Controller.extend({});

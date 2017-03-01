@@ -7,10 +7,10 @@
             <br />
         {{/if}}
                 
-        {{#unless total_hits}}
+        {{#unless model.total_hits}}
             No companies in our database match your search criteria.
         {{else}}
-            {{total_hits}} companies in our database match your search criteria. (Query took {{query_time}}s)
+            {{model.total_hits}} companies in our database match your search criteria. (Query took {{query_time}}s)
             
             {{#if searchTopic}}
                 {{#link-to 'summary'}}
@@ -21,7 +21,7 @@
             {{/if}}
             
             <div class="list-group square">
-                {{#each h in hits}}
+                {{#each h in model.hits}}
                     {{#if h.name}}
                         {{view "hit" h=h}}
                     {{/if}}

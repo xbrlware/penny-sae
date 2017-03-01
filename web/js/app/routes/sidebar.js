@@ -8,13 +8,8 @@ App.SidebarRoute = App.GRoute.extend({
     return params;
   },
 
-  renderTemplate: function () {
-    this.render();
-  },
-
   setupController: function (controller, model) {
     var appCon = this.controllerFor('application');
-
     controller.set('isLoading', true);
     appCon.set('showNav', true);
     if (model.st === '-') {
@@ -36,26 +31,6 @@ App.SidebarRoute = App.GRoute.extend({
         controller.set('model', response);
         controller.set('isLoading', false);
       });
-    }
-  },
-  actions: {
-    toggleFlag: function (flag) {
-      var toggles = this.get('controller.redFlagParams').get_toggles();
-      toggles.get(flag) ? toggles.set(flag, false) : toggles.set(flag, true);
-    },
-    sort_companies: function () {
-      var controller = this.get('controller');
-      var appCon = this.controllerFor('application');
-      controller.set('isLoading', true);
-      appCon(function (response) {
-        controller.transitionToRoute();
-        controller.transitionToRoute('sidebar');
-        controller.set('model', response);
-        controller.con.set('isLoading', false);
-      });
-    },
-    summary_detail: function () {
-      return [1, 2, 3];
     }
   }
 });

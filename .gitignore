@@ -18,3 +18,4 @@ web/templates/dist/
 web/config/global-config.js
 web/config/local-config.js
 web/css/style.less.css
+bower_components
