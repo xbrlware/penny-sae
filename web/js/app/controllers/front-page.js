@@ -13,8 +13,9 @@ App.FrontpageController = Ember.Controller.extend({
   },
   actions: {
     companySearch: function (searchTerm) {
-      console.log('frontpage companySearch ::', searchTerm);
-      if (searchTerm) { this.transitionToRoute('sidebar', searchTerm); }
+      if (searchTerm) {
+        this.transitionToRoute('sidebar', searchTerm);
+      }
     },
     filterSearch: function () {
       this.transitionToRoute('sidebar', '-');

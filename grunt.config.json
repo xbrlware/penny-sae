@@ -28,7 +28,7 @@
          "web/js/libs/jquery-mousewheel.min.js",
          "web/js/libs/underscore-min.js",
          "web/js/libs/handlebars.min.js",
-         "web/js/libs/ember.js",
+         "web/js/libs/ember.debug.js",
          "web/js/libs/jquery.dataTables.min.js",
          "web/js/libs/ember-simple-auth.js",
          "web/templates/dist/templates.js",
