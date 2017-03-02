@@ -176,12 +176,12 @@
             </div>
             <div class="col-xs-12 timeline-container">
                 <ul class="col-xs-12 timeline-panel" id="timeline">
-                    {{#each top in topX}}
+                    {{#each topX as |top|}}
                         <li>    
                             <div class="col-xs-4">
-                                <div {{bind-attr id=(concat-helper 'gauge-' top)}} class="gauge chart"></div>
+                                <div id=(concat-helper 'gauge-' {{top}}) class="gauge chart"></div>
                             </div>
-                            <div class="col-xs-8 ts chart" {{bind-attr id=(concat-helper 'ts-' top)}}>
+                            <div class="col-xs-8 ts chart" id=(concat-helper 'ts-' {{top}})>
                                 <div class="timeline-info">                        
                                     <span class="title" {{action "topXClicked" top}}></span>
                                     <div class="count-wrapper pull-right during" {{action "sortUsers" "doc"}}></div>
@@ -211,14 +211,14 @@
             </div>
             <div class="forum-div">
                 <ul class="list-group" id="collection">'
-                    {{#each pfd in postFilteredData}}
+                    {{#each postFilteredData as |pfd|}}
                         <li class="list-group-item comments-group-item" id="forum-item">
                             <div class="list-group-item-heading message-header">
                                 <div>{{pfd.user}}</div>
                                 <div>{{pfd.board}}</div>
                                 <div>{{pfd.time}}</div>
                                 <div>
-                                    <a target="_blank" {{bind-attr href=pfd.url}}>
+                                    <a target="_blank" href={{pfd.url}}>
                                         {{pfd.msg_id}}
                                     </a>
                                 </div>

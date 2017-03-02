@@ -4,7 +4,7 @@
 'use strict';
 
 App.Router.map(function () {
-  this.route('login', {path: 'login'}, function () {});
+  this.route('login-page', {path: 'login'}, function () {});
   this.route('frontpage', {path: '/'}, function () {});
   this.route('sidebar', {path: 'sidebar/:st'}, function () {
     this.resource('summary', {path: 'summary'}, function () {});

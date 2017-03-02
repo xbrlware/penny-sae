@@ -4,7 +4,7 @@
 
 'use strict';
 
-App.LoginRoute = Ember.Route.extend({
+App.LoginPageRoute = Ember.Route.extend({
   setupController: function (controller, model) {
     if (this.get('session.isAuthenticated')) {
       this.transitionTo('frontpage');

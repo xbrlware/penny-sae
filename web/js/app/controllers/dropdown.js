@@ -5,8 +5,8 @@
 'use strict';
 
 App.DropdownController = Ember.Controller.extend({
-  needs: ['application'],
-  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
+  application: Ember.inject.controller(),
+  redFlagParams: Ember.computed.alias('application.redFlagParams'),
   symbology_select_content: [
     {id: undefined, name: 'Choose Type'},
     {id: 'name', name: 'Company Name'},
@@ -51,13 +51,13 @@ App.DropdownController = Ember.Controller.extend({
   delinquency: false,
   actions: {
     sort_companies: function () {
-      var appCon = this.get('controllers.application');
+      var appCon = this.get('application');
       appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '-');
     },
 
     refresh_companies: function () {
-      var appCon = this.get('controllers.application');
+      var appCon = this.get('application');
       appCon.transitionToRoute('sidebar', '');
       appCon.transitionToRoute('sidebar', '--');
     },

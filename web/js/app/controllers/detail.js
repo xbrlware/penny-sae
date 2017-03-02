@@ -4,7 +4,7 @@
 'use strict';
 
 App.DetailController = Ember.Controller.extend({
-  needs: ['application'],
+  application: Ember.inject.controller(),
   redFlagParams: Ember.computed.alias('controllers.application.redFlagParams')
 });
 

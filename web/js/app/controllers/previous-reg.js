@@ -4,8 +4,8 @@
 'use strict';
 
 App.PreviousRegController = Ember.Controller.extend({
-  needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  detail: Ember.inject.controller(),
+  name: Ember.computed.alias('detail.model'),
   have_records: true,
 
   tableDiv: '#previous-reg-table',

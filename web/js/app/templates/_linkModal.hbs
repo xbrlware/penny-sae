@@ -8,8 +8,8 @@
                 <h4 class="modal-title">Links to Appearances</h4>
             </div>
             <div class="modal-body">
-                {{#each x in links}}
-                    <a {{bind-attr href=x.link}}> {{x.link}} </a>
+                {{#each links as |x|}}
+                    <a href={{x.link}}> {{x.link}} </a>
                 {{/each}}
             </div>
             <div class="modal-footer">

@@ -3,8 +3,8 @@
 /* global Ember, App, _, niceNumber */
 
 App.FinancialsController = Ember.Controller.extend({
-  needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  detail: Ember.inject.controller(),
+  name: Ember.computed.alias('detail.model'),
   tableDiv: '#financials-table',
   tableColumns: [
     {title: 'Company', className: 'dt-body-right', defaultContent: 'NA'},

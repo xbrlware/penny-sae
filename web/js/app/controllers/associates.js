@@ -2,8 +2,8 @@
 /* global Ember, App, d3, _ */
 
 App.AssociatesController = Ember.Controller.extend({
-  needs: ['application'],
-  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
+  application: Ember.inject.controller(),
+  redFlagParams: Ember.computed.alias('application.redFlagParams'),
   isLoading: false,
   noData: false,
   terminalToggle: false,

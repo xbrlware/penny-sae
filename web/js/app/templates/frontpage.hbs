@@ -19,31 +19,31 @@
         <table class="table hoverTable front-page">
 
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Company has no business, no revenues and no product."
                 value = redFlagParams._toggles.financials
             }}
 
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Company undergoes frequent material changes in business strategy or its line of business."
                 value = redFlagParams._toggles.symbology
             }}
 
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
                 value = redFlagParams._toggles.otc_neighbors
             }}
 
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Company has been the subject of a prior trading suspension."
                 value = redFlagParams._toggles.suspensions
             }}
 
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Company has not made disclosures in SEC or other regulatory filings."
                 value = redFlagParams._toggles.delinquency
             }}
@@ -56,12 +56,12 @@
             </tr>
                         
             {{
-                view App.DisabledToggleRowView
+                disabled-toggle-row
                 text = "Company has experienced frequent or continuous changes in its business structure."
             }}
          
             {{
-                view App.DisabledToggleRowView
+                disabled-toggle-row
                 text = "Officers or insiders of the issuer have a history of securities violations."
             }}
             --}}
@@ -73,13 +73,13 @@
             </tr>
 {{!--
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Company stock has experienced recent price and/or volume anomalies."
-                value = "redFlagParams._toggles.pv"
+                value = redFlagParams._toggles.pv
             }}
 --}}
             {{
-                view "toggle-row"
+                toggle-row
                 text = "Investors have made allegations about malfeasance of the company on social media."
                 value = redFlagParams._toggles.crowdsar
             }}

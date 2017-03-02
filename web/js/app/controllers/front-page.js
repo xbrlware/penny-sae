@@ -5,8 +5,8 @@
 'use strict';
 
 App.FrontpageController = Ember.Controller.extend({
-  needs: ['application'],
-  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
+  application: Ember.inject.controller(),
+  redFlagParams: Ember.computed.alias('application.redFlagParams'),
   isAdmin: function () { return App.isAdmin(); }.property(),
   renderTemplate: function () {
     this.render();

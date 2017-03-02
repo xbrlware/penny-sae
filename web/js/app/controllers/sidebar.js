@@ -4,11 +4,11 @@
 'use strict';
 
 App.SidebarController = Ember.Controller.extend({
-  needs: ['application'],
-  redFlagParams: Ember.computed.alias('controllers.application.redFlagParams'),
-  searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
-  searchTopic: Ember.computed.alias('controllers.application.searchTopic'),
-  isLoading: Ember.computed.alias('controllers.application.isLoading'),
+  application: Ember.inject.controller(),
+  redFlagParams: Ember.computed.alias('application.redFlagParams'),
+  searchTerm: Ember.computed.alias('application.searchTerm'),
+  searchTopic: Ember.computed.alias('application.searchTopic'),
+  isLoading: Ember.computed.alias('application.isLoading'),
   renderTemplate: function () {
     this.render();
   },
@@ -20,7 +20,7 @@ App.SidebarController = Ember.Controller.extend({
 
     sort_companies: function () {
       var _this = this;
-      var appCon = this.get('controllers.application');
+      var appCon = this.get('application');
       this.set('isLoading', true);
       appCon(function (response) {
         _this.transitionToRoute();

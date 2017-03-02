@@ -10,31 +10,31 @@
         </th>
     </tr>
     {{
-        view "toggle-row"
+        toggle-row
         text = "Company has no business, no revenues and no product."
         value = redFlagParams._toggles.financials
         showParameters = "financials"
         }}
     {{
-        view "toggle-row"
+        toggle-row
         text = "Company undergoes frequent material changes in business strategy or its line of business."
         value = redFlagParams._toggles.symbology
         showParameters = "symbology"
         }}
     {{
-        view "toggle-row"
+        toggle-row
         text = "Officers or insiders of the issuer are associated with multiple penny stock issuers."
         value = redFlagParams._toggles.otc_neighbors
         showParameters = "otc_neighbors"
     }}
     {{
-        view "toggle-row"
+        toggle-row
         text = "Company has been the subject of a prior trading suspension."
         value = redFlagParams._toggles.suspensions
         showParameters = "suspensions"
     }}
     {{
-        view "toggle-row"
+        toggle-row
         text = "Company has not made disclosures in SEC or other regulatory filings."
         value = redFlagParams._toggles.delinquency
         showParameters = "delinquency"
@@ -65,14 +65,14 @@
     </tr>
 {{!--
     {{
-        view "toggle-row"
+        toggle-row
         text = "Company stock has experienced recent price and/or volume anomalies."
         value = "redFlagParams._toggles.pv"
         showParameters = "pv"
     }}
 --}}
     {{
-        view "toggle-row"
+        toggle-row
         text = "Investors have made allegations about malfeasance of the company on social media."
         value = redFlagParams._toggles.crowdsar
         showParameters = "crowdsar"

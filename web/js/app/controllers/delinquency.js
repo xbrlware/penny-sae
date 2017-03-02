@@ -4,8 +4,8 @@
 'use strict';
 
 App.DelinquencyController = Ember.Controller.extend(Ember.SortableMixin, {
-  needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  detail: Ember.inject.controller(),
+  name: Ember.computed.alias('detail.model'),
 
   tableDiv: '#delinquency-table',
   tableColumns: [

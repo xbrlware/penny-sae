@@ -4,8 +4,8 @@
 'use strict';
 
 App.SummaryController = Ember.Controller.extend({
-  needs: ['application'],
-  searchTerm: Ember.computed.alias('controllers.application.searchTerm'),
+  application: Ember.inject.controller(),
+  searchTerm: Ember.computed.alias('application.searchTerm'),
   chartObj: App.Chart.create(),
   createChartDimensions: function (id, hMultiplier, time) {
     var r = {};

@@ -3,8 +3,8 @@
 /* global Ember, App */
 
 App.TopNewsController = Ember.Controller.extend({
-  needs: ['detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  detail: Ember.inject.controller(),
+  name: Ember.computed.alias('detail.model'),
   setModel: function (sw) {
     var _this = this;
     App.Search.fetch_data('omx', {cik: this.get('name').cik, search: sw}).then(

@@ -2,7 +2,7 @@
 
 /* global Ember, App, SimpleAuth */
 
-App.LoginController = Ember.Controller.extend(SimpleAuth.LoginControllerMixin, {
+App.LoginPageController = Ember.Controller.extend(SimpleAuth.LoginControllerMixin, {
   authenticator: 'authenticator:custom',
   show_login: true,
   actions: {

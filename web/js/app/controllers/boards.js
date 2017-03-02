@@ -4,8 +4,9 @@
 'use strict';
 
 App.BoardController = Ember.Controller.extend({
-  needs: ['application', 'detail'],
-  name: Ember.computed.alias('controllers.detail.model'),
+  application: Ember.inject.controller(),
+  detail: Ember.inject.controller(),
+  name: Ember.computed.alias('detail.model'),
   routeName: undefined,
   selection_ids: undefined,
   topX: undefined,
@@ -207,7 +208,7 @@ App.BoardController = Ember.Controller.extend({
     /* redraw time lines and forum messages */
     /* numPosters is used by size in the ES query */
     var _this = this;
-    var detailCon = this.get('controllers.detail');
+    var detailCon = this.get('detail');
 
     var data = {
       cik: detailCon.get('model.cik'),
@@ -427,7 +428,7 @@ App.BoardController = Ember.Controller.extend({
 
   toggleSentiment: function (st) {
     var _this = this;
-    var detailCon = this.get('controllers.detail');
+    var detailCon = this.get('detail');
     var cik = detailCon.get('model.cik');
     App.Search.fetch_data('cik2name', {'cik': cik}).then(function (cData) {
       App.Search.fetch_data('board', {'cik': cik, 'ticker': cData.ticker, 'date_filter': _this.get('dateFilter'), 'sentiment': {type: st, score: 0.5}}).then(function (response) {
@@ -485,7 +486,7 @@ App.BoardController = Ember.Controller.extend({
     topXClicked: function (id) {
       /* handles when user is clicked on */
       var _this = this;
-      var detailCon = this.get('controllers.detail');
+      var detailCon = this.get('detail');
       this.set('pageCount', 1);
       Ember.$('#ts-' + id).toggleClass('chart-selected');
       var cik = detailCon.get('model.cik');

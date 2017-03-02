@@ -3,6 +3,6 @@
 
 'use strict';
 
-Ember.LinkView.reopen({
+Ember.LinkComponent.reopen({
   attributeBindings: ['data-toggle']
 });
