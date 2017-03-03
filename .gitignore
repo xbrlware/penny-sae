@@ -19,3 +19,4 @@ old/web/config/global-config.js
 old/web/config/local-config.js
 old/web/css/style.less.css
 old/bower_components/*
+tmux.sh
