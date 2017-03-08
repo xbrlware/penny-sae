@@ -1,0 +1,34 @@
+.front-page {
+    border    : none;
+    font-size : 20px;
+}
+
+.front-page > tbody > tr > td,
+.front-page > tbody > tr > th {
+    border : none;
+}
+
+.front-page td {
+    text-align : left;
+}
+
+.front-page .btn-submit-frontpage {
+    position : inherit;
+    width    : 100%;
+}
+
+.frontpage-align {
+    display: block;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: -65px;
+}
+
+.frontpage-table {
+    background-color: white;
+    border          : 1px solid black;
+    width           : 50%;
+    margin          : 0 auto;
+    margin-top      : 30px;
+}

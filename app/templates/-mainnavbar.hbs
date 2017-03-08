@@ -1,0 +1,56 @@
+{{!-- app/templates/-mainnavbar.hbs --}}
+
+{{#if searchCompanies.showNav}}
+    <nav class="navbar yamm navbar-fixed-top" id="navbar-bgcolor" role="navigation">
+            {{#if session.isAuthenticated}}
+                <a {{action 'invalidateSession'}} id="btn-logout" class="btn btn-link glyphicon glyphicon-off navbar-btn navbar-right"></a>
+            {{/if}}
+
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand red-text">Penny SAE</a>
+            </div>
+
+            <div class="collapse navbar-collapse">
+                <div class="navbar-form navbar-left" id="search-padding">
+                    <div class="form-group">
+                       {{
+                            focus-input class="form-control"
+                            placeholder="- Search-"
+                            id="search-text" 
+                            insert-newline="companySearch"
+                        }}
+                    </div>
+                    <div class="form-group">
+                        {{!-- (*) This needs to be cleaned up --}}
+                        {{#if searchCompanies.searchTopic}}
+                            Searching topics
+                        {{else}}
+                            Searching companies
+                        {{/if}}
+                        {{toggle-switch checked=searchCompanies.searchTopic}}
+                    </div>
+   
+                    {{#if searchCompanies.isLoading }}
+                        <i class="fa fa-spinner fa-spin" id="spinner"></i>
+                        <span class="loader-text" >Loading results...</span>
+                    {{/if }}
+                </div>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown yamm" id="big-dropdown">
+                        <a class="btn btn-default navbar-btn dropdown-toggle" id="big-dropdown-button"> Red Flag Filters </a>
+                        <ul class="dropdown-menu" id="filter-list">
+                            <li>
+                                <div class="yamm-content">
+                                    {{dropdown-component}}
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+{{/if}}

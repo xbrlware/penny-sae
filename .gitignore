@@ -20,3 +20,21 @@ old/web/config/local-config.js
 old/web/css/style.less.css
 old/bower_components/*
 tmux.sh
+
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+
+# dependencies
+/node_modules
+/bower_components
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log*
+testem.log

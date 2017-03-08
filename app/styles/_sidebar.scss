@@ -1,0 +1,12 @@
+/* Dropdown Menu table */
+.sidebar-index-table {
+    border: none;
+    font-size: 13px;
+}
+
+.sidebar-index-table > tbody > tr > td,
+.sidebar-index-table > tbody > tr > th{
+    border: none;
+    padding-top:7px;
+    padding-bottom:7px;
+}
