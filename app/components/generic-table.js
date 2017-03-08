@@ -23,7 +23,7 @@ export default Ember.Component.extend({
           Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
         }
       },
-      fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+      fnRowCallback: function (nRow, aData) {
         if (aData[4] === 'Late' && ele === '#delinquency-table') {
           Ember.$(nRow).css('color', 'red');
         }

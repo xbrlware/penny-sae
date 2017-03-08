@@ -70,7 +70,7 @@ export default GenericTable.extend({
   },
 
   getNer: function (cik, showHidden) {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
+    return new Ember.RSVP.Promise(function (resolve) {
       this.fetchNer({
         'cik': cik,
         'showHidden': showHidden,
@@ -96,11 +96,11 @@ export default GenericTable.extend({
   },
 
   update_model: function (model) {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
+    return new Ember.RSVP.Promise(function (resolve) {
       this.setNer({
         'cik': model.get('cik'),
         'data': model.get('data'),
-        'callback': function (response) {
+        'callback': function () {
           resolve();
         }
       });
@@ -313,7 +313,7 @@ export default GenericTable.extend({
   },
 
   fetch: function (params) {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
+    return new Ember.RSVP.Promise(function (resolve) {
       Ember.$.ajax({
         type: 'POST',
         contentType: 'application/json',

@@ -92,10 +92,10 @@ export default Ember.Object.extend({
         .append('text')
         .attr('class', 'bartext')
         .attr('text-anchor', 'start')
-        .attr('transform', function (d) { return 'rotate(-90)'; })
+        .attr('transform', function () { return 'rotate(-90)'; })
         .attr('fill', 'black')
-        .attr('x', function (d, i) { return -chartObj.height + 2; })
-        .attr('y', function (d, i) { return chartObj.x(d.date) - 2; })
+        .attr('x', function () { return -chartObj.height + 2; })
+        .attr('y', function (d) { return chartObj.x(d.date) - 2; })
         .text(function (d) { return d.date; });
     }
     // draw the axis
@@ -103,7 +103,7 @@ export default Ember.Object.extend({
 
     if (chartObj.text) {
       chartObj.div.selectAll('g.x.axis g.tick line')
-        .attr('y2', function (x) { return 0; });
+        .attr('y2', function () { return 0; });
     }
 
     if (!chartObj.brush) {
@@ -333,7 +333,7 @@ export default Ember.Object.extend({
       .on('mouseout', tip.hide);
 
     arcs.append('svg:path')
-      .attr('fill', function (d, i) { return color[d.data.label]; })
+      .attr('fill', function (d) { return color[d.data.label]; })
       .attr('d', arc);
 
     return arcs;

@@ -23,7 +23,7 @@ export default Ember.Component.extend(JqueryWidget, {
   changeMonth: true,
   changeYear: true,
   showOn: 'focus',
-  onSelect: function (event, ui) {
+  onSelect: function (event) {
     this.set('value', event);
   }
 });
