@@ -15,7 +15,6 @@ export default Ember.Component.extend({
   renderTable: function () {
     const _this = this;
     let ele = Ember.$(this.get('tableDiv'));
-    console.log('ELEMENT :: ', this.get('tableDiv'));
     Ember.$(ele).empty();
     Ember.$(ele).DataTable({
       fnDrawCallback: function (oSettings) {

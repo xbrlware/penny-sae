@@ -19,10 +19,8 @@ export default Ember.Component.extend(SearchMixin, {
 
   fillDetails: function () {
     const _this = this;
-    console.log('cik in component::', this.get('cik'));
     this.get('fetchData')('cik2name', {cik: this.get('cik')}).then(function (response) {
       _this.set('companyDetails', response);
-      console.log('companyDetails ::', _this.get('companyDetails'));
     });
   }
 });

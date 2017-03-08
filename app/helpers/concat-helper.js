@@ -3,7 +3,6 @@
 import Ember from 'ember';
 
 export function concatHelper (string1, string2) {
-  console.log(string2);
   return string1 + string2.toString();
 }
 

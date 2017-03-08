@@ -8,7 +8,6 @@ export default Ember.Controller.extend({
 
   actions: {
     companySearch: function (dada) {
-      console.log(dada);
       this.get('searchCompanies').getCompanies(dada, false);
     },
 

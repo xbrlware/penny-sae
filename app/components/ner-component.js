@@ -1,3 +1,5 @@
+// app/components/ner-component.js
+
 import _ from 'underscore';
 import GenericTable from './generic-table';
 
@@ -8,8 +10,6 @@ export default GenericTable.extend({
   didRender: function () {
     this.set('edges', this.get('rGraphEdges'));
     this.set('tableDiv', '#associates-table');
-    console.log('EDGES ::', this.get('edges'));
-    console.log('EDGES ::', this.get('edges'));
   },
 
   tableContent: function () {

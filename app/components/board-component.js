@@ -439,7 +439,6 @@ export default Ember.Component.extend(SearchMixin, {
     var dateDomain = this.get('brushChart').brush.extent();
     d3.select('g.x.brush').remove();
 
-    console.log('CHARTOBJECT :: ', this.chartObject);
     // draw brush chart
     this.chartObject.makeBarChart(this.get('brushChart'), forumData, [new Date('2004-01-01'), new Date()]);
 

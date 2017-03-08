@@ -1,3 +1,5 @@
+// app/components/top-news.js
+
 import Ember from 'ember';
 import SearchMixin from '../mixins/search-mixin';
 
@@ -21,7 +23,6 @@ export default Ember.Component.extend(SearchMixin, {
     this.get('fetchData')('omx', {cik: cik, search: sw}).then(
       function (response) {
         _this.set('newsModel', response.data);
-        console.log('RESPONSE ::', response);
         if (response.data.length > 0) {
           _this.set('articleId', response.data[0].id);
           _this.getArticle();
