@@ -22,6 +22,17 @@ You will need the following things properly installed on your computer.
 * `cd $PROJECT_ROOT/server/node`
 * `npm install`
 
+### Configuration
+
+There are three configuration files.
+
+UI configuration:
+* `$EDITOR app/user-config/global-config.js`
+
+Server configuration has two files:
+* `$EDITOR server/node/global-config.js`
+* `$EDITOR server/node/server-config.js`
+
 ### Code Generators
 
 Make use of the many generators for code, try `ember help generate` for more details
