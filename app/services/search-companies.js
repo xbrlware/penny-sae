@@ -1,7 +1,7 @@
 // app/services/search-companies.js
 
 import Ember from 'ember';
-import RedFlagParams from '../utils/red-flag-params';
+import RedFlagParams from '../objects/red-flag-params';
 
 export default Ember.Service.extend({
   searchTerm: undefined,

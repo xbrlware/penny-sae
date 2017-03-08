@@ -3,10 +3,7 @@
 import _ from 'underscore';
 import SearchMixin from '../mixins/search-mixin';
 import GenericTable from './generic-table';
-
-function niceNumber (x) {
-  return x === undefined ? 'NA' : x.toLocaleString();
-}
+import NiceNumber from '../utils/nice-number';
 
 export default GenericTable.extend(SearchMixin, {
   tableDiv: '#financials-table',
@@ -26,12 +23,12 @@ export default GenericTable.extend(SearchMixin, {
     {title: 'Company', className: 'dt-body-right', defaultContent: 'NA'},
     {title: 'Date', defaultContent: 'NA'},
     {title: 'Filing', className: 'dt-body-right', defaultContent: 'NA'},
-    {title: 'Assets', className: 'dt-body-right', render: niceNumber},
-    {title: 'Liabilities & Stockholders Equity', render: niceNumber},
-    {title: 'Net Income', render: niceNumber},
-    {title: 'Profit', className: 'dt-body-right', render: niceNumber},
-    {title: 'Revenues', className: 'dt-body-right', render: niceNumber},
-    {title: 'Earnings', render: niceNumber}
+    {title: 'Assets', className: 'dt-body-right', render: NiceNumber},
+    {title: 'Liabilities & Stockholders Equity', render: NiceNumber},
+    {title: 'Net Income', render: NiceNumber},
+    {title: 'Profit', className: 'dt-body-right', render: NiceNumber},
+    {title: 'Revenues', className: 'dt-body-right', render: NiceNumber},
+    {title: 'Earnings', render: NiceNumber}
   ],
 
   smartGet: function (obj, key) {

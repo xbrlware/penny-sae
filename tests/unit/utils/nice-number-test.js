@@ -1,10 +1,10 @@
-import searchResults from 'penny-sae/utils/search-results';
+import niceNumber from 'penny-sae/utils/nice-number';
 import { module, test } from 'qunit';
 
-module('Unit | Utility | search results');
+module('Unit | Utility | nice number');
 
 // Replace this with your real tests.
 test('it works', function(assert) {
-  let result = searchResults();
+  let result = niceNumber();
   assert.ok(result);
 });
