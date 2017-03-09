@@ -17,11 +17,6 @@ export default Ember.Component.extend({
     let ele = Ember.$(this.get('tableDiv'));
     Ember.$(ele).empty();
     Ember.$(ele).DataTable({
-      fnDrawCallback: function (oSettings) {
-        if (oSettings._iDisplayLength > oSettings._iRecordsDisplay) {
-          Ember.$(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
       fnRowCallback: function (nRow, aData) {
         if (aData[4] === 'Late' && ele[0].id === 'delinquency-table') {
           Ember.$(nRow).css('color', 'red');

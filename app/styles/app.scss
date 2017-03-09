@@ -365,16 +365,29 @@ select {
     font-family: 'gafata', sans-serif;
 }
 
-.paginate_button.next.disabled {
-    display: none;
-}
-
-.paginate_button.previous.disabled {
-    display: none;
-}
-
 .dataTables_length {
     display: none;
+}
+
+.pagination {
+    >.active {
+        >a {
+            background-color: red;
+            border-color: red;
+            color: #fff;
+        }
+    },
+    >li {
+        >a, >span {
+            color: red;
+        }
+    }
+}
+
+.paginate_button {
+    &.next.disabled, &.previous.disabled {
+        display: none;
+    }
 }
 
 .btn {

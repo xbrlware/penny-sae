@@ -5,7 +5,6 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   didInsertElement: function () {
     let redFlag = this.get('redFlags');
-    console.log('REDFLAG ::', redFlag);
 
     this.set('mid', 'badge-' + this.get('type'));
     this.set('have', redFlag['have']);
