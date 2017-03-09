@@ -42,7 +42,8 @@ function runServer () {
   require('./authentication/auth.js')(app, config);
 
   var client = new es.Client({
-    hosts: config.ES.HOST
+    hosts: config.ES.HOST,
+    apiVersion: '2.2'
   });
 
   require('./routes')(app, config, client);
