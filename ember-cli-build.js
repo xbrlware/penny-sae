@@ -68,6 +68,7 @@ module.exports = function (defaults) {
   app.import('vendor/img/yellow_person.png', { destDir: 'img' });
   app.import('vendor/img/red_person.png', { destDir: 'img' });
   app.import('vendor/img/orange_person.png', { destDir: 'img' });
+  app.import('vendor/img/ui-bg_glass_100_f6f6f6_1x400.png', { destDir: 'assets/images' });
 
   return app.toTree();
 };
