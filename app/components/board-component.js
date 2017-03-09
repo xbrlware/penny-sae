@@ -444,7 +444,8 @@ export default Ember.Component.extend(SearchMixin, {
 
     // set inital date ranges to be shown
     if (dateDomain[0] < new Date('2004-01-01')) {
-      this.get('brushChart').brush.extent(d3.extent(forumData, function (d) { return d.date; }));
+      this.get('brushChart').brush.extent([new Date(new Date().setMonth(new Date().getMonth() - 3)), new Date()]);
+      // this.get('brushChart').brush.extent(d3.extent(forumData, function (d) { return d.date; }));
     } else {
       this.get('brushChart').brush.extent(dateDomain);
     }
