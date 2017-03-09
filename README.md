@@ -12,7 +12,15 @@ You will need the following things properly installed on your computer.
 * [Ember CLI](https://ember-cli.com/)
 * [PhantomJS](http://phantomjs.org/)
 
+## Data
+
+Code to construct the Elasticsearch indices referenced by this app is contained in 
+
+    https://github.com/gophronesis/ernest
+    
 ## Installation
+
+Assuming that your elasticsearch indexes are up and running:
 
 * `git clone <repository-url>` this repository
 * `cd penny-sae`
