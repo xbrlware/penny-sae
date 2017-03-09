@@ -1,8 +1,8 @@
 @import "normalize";
-@import "dataTables";
 @import "ember-bootstrap-sass";
 @import "yamm";
 @import "font-awesome";
+@import "dataTables";
 
 @import "droidfont";
 @import "frontpage";
@@ -375,13 +375,6 @@ select {
 
 .dataTables_length {
     display: none;
-}
-
-#delinquency-table, #financials-table {
-    border: 1px solid silver;
-    td {
-       border: 0.25px solid silver;
-    }
 }
 
 .btn {

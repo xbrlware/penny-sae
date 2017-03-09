@@ -23,11 +23,12 @@ export default Ember.Component.extend({
         }
       },
       fnRowCallback: function (nRow, aData) {
-        if (aData[4] === 'Late' && ele === '#delinquency-table') {
+        if (aData[4] === 'Late' && ele[0].id === 'delinquency-table') {
           Ember.$(nRow).css('color', 'red');
         }
       },
       destroy: true,
+      searching: false,
       data: _this.get('tableContent'),
       columns: _this.tableColumns,
       pageLength: 50

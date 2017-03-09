@@ -3,7 +3,7 @@
 <span class="centered">
     {{#if model}}
         <h3>Late Filings</h3>
-        <table id="delinquency-table" class="display" style="width: 100%;"></table>
+        <table class="table table-striped table-bordered"  id="delinquency-table" class="display" style="width: 100%;"></table>
         {{delinquency-component tableCik=model}}
     {{else}}
         <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
