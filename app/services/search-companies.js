@@ -29,18 +29,22 @@ export default Ember.Service.extend({
     this.set('isLoading', true);
     this.set('showNav', true);
     this.set('searchTerm', searchTerm);
-    this.searchCompany(
-      searchTerm,
-      this.get('redFlagParams'),
-      this.get('searchTopic'),
-      update
-    ).then(function (response) {
-      _this.set('model', response);
-      _this.set('isLoading', false);
+    return new Ember.RSVP.Promise(function (resolve) {
+      _this.searchCompany(
+        searchTerm,
+        _this.get('redFlagParams'),
+        _this.get('searchTopic'),
+        update
+      ).then(function (response) {
+        _this.set('model', response);
+        _this.set('isLoading', false);
+        resolve(response);
+      });
     });
   },
 
   getModel: function () {
+    console.log('getModel :: ', this.get('model'));
     return this.get('model');
   },
 

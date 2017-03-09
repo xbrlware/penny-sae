@@ -8,7 +8,14 @@ export default Ember.Controller.extend({
 
   actions: {
     companySearch: function (dada) {
-      this.get('searchCompanies').getCompanies(dada, false);
+      const _this = this;
+      this.get('searchCompanies').getCompanies(dada, false).then(function (response) {
+        if (response.hits.length > 0) {
+          _this.transitionToRoute('sidebar.detail', response.hits[0].cik);
+        } else {
+          _this.transitionToRoute('sidebar.detail', '-');
+        }
+      });
     },
 
     invalidateSession: function () {
