@@ -285,7 +285,7 @@ module.exports = function (app, config, client) {
     }
 
     d.date_filter = lomap(d.date_filter, df => {
-      if (df.indexOf('T') !== -1) {
+      if (df && df.indexOf('T') !== -1) {
         let temp = df.split('T');
         let day = temp[0];
         let hours = temp[1].split('.')[0];

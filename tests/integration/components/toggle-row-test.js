@@ -5,21 +5,15 @@ moduleForComponent('toggle-row', 'Integration | Component | toggle row', {
   integration: true
 });
 
-test('it renders', function(assert) {
+test('it renders', function (assert) {
+  assert.expect(2);
 
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+  this.set('description', 'Check this if you believe it is true');
+  this.set('switchValue', true);
+  this.render(hbs`{{toggle-row text=description value=switchValue}}`);
+  assert.equal(this.$('i').prop('class'), 'fa fa-check-square-o fa-1x red-text');
 
-  this.render(hbs`{{toggle-row}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#toggle-row}}
-      template block text
-    {{/toggle-row}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  this.set('switchValue', false);
+  this.render(hbs`{{toggle-row text=description value=switchValue}}`);
+  assert.equal(this.$('i').prop('class'), 'fa fa-square-o fa-1x greyed');
 });
