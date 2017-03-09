@@ -7,6 +7,7 @@ import Gconfig from '../user-config/global-config';
 export default Ember.Object.extend({
   _params: Gconfig.DEFAULT_REDFLAG_PARAMS,
   _toggles: Gconfig.DEFAULT_TOGGLES,
+
   get_params: function () {
     return this.get('_params');
   },

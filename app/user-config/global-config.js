@@ -32,7 +32,7 @@ export default {
       'value': 1000,
       'threshold': 1
     },
-    'otc_neighbors': {
+    'otcNeighbors': {
       'number_of_neighbors': [
         2,
         10
@@ -56,7 +56,7 @@ export default {
     'suspensions': true,
     'delinquency': false,
     'crowdsar': false,
-    'otc_neighbors': false,
+    'otcNeighbors': false,
     'financials': false,
     'pv': false
   },

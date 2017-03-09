@@ -564,8 +564,11 @@ span {
     overflow-y: auto;
 }
 
-#div-dropdown-right {
-    margin-top: 20%;
+#div-dropdown {
+    &#div-dropdown-right {
+        overflow: visible;
+        margin-top: 20%;
+    }
 }
 
 /* Promotions */
