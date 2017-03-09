@@ -1,0 +1,391 @@
+{{!-- web/templates/dropdown-right.hbs --}}
+
+{{!--
+{{#if pv}}
+    <span class="centered"><h4>Price/Volume Anomaly Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label"> Price Spike (%) </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.pv.price_jump
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min=10
+                max=1000
+                step=5
+                value=redFlagParams._params.pv.price_jump
+                class="form-control input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Trailing Volume Window (days) </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.pv.volume_window
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min= 0
+                max=1000
+                step=10
+                value=redFlagParams._params.pv.volume_window
+                class="input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Trailing Volume Multiplier </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.pv.volume_multiplier
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min=0
+                max=100
+                step=1
+                value=redFlagParams._params.pv.volume_multiplier
+                class="form-control input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Fall To (%) </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.pv.fall_to
+                class="form-control input-text-hidden"
+            }}    
+            {{
+                view "slider"
+                min=0
+                max=100
+                step=1
+                value=redFlagParams._params.pv.fall_to
+                class="input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Fall Within (days) </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.fall_within
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min=0
+                max=1000
+                step=10
+                value=redFlagParams._params.pv.fall_within
+                class="input-slider-dropdown"
+            }}
+        </div>
+    </form>
+{{/if}}
+--}}
+
+{{#if crowdsar}}
+    <span class="centered"><h4>Social Media Malfeasance Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.crowdsar.min_date
+                value=redFlagParams._params.crowdsar.min_date
+                class="form-control"
+            }}
+            <label class="control-label">To Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.crowdsar.max_date
+                value=redFlagParams._params.crowdsar.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Field </label>
+            {{
+                view "select"
+                content=crowdsar_select_content.field
+                value=redFlagParams._params.crowdsar.field
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Metric </label>
+            {{
+                view "select"
+                content=crowdsar_select_content.metric
+                value=redFlagParams._params.crowdsar.metric
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Threshold </label>
+            {{
+                input type="number"
+                value=redFlagParams._params.crowdsar.threshold
+                class="form-control"
+            }}
+        </div>
+
+    </form>
+{{/if}}
+
+{{!--
+{{#if tout}}
+    <span class="centered"><h4>Tout Definition</h4></span>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class=" control-label"> Tout Metric </label>
+                
+                    <span class="centered">
+                        {{
+                            view "select"
+                            content=tout_select_content
+                            value="rf.tout.type"
+                            optionValuePath="content.id"
+                            optionLabelPath="content.name"}}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class=" control-label"> Touted in Past Y Months </label>
+                
+                    {{
+                        input type="text"
+                        value="rf.tout.past_months"
+                        class="input-text-hidden"
+                    }}
+                    {{
+                        view "slider" min = 0
+                        max  = 5
+                        step = 1
+                        value="rf.tout.past_months"
+                        class="input-slider-dropdown"
+                    }}
+                </div>
+            </div>
+        </form>
+    </span>
+{{/if}}
+--}}
+        
+{{#if symbology}}
+    <span class="centered"><h4>Change in Business Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.symbology.min_date
+                value=redFlagParams._params.symbology.min_date
+                class="form-control"
+            }}
+            <label class="control-label">To Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.symbology.max_date
+                value=redFlagParams._params.symbology.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Name Field </label>
+            {{
+                view "select"
+                content=symbology_select_content
+                value=redFlagParams._params.symbology.field
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Threshold </label>
+            {{
+                input type="number"
+                value=redFlagParams._params.symbology.threshold
+                class="form-control"
+            }}
+        </div>
+    </form>
+{{/if}}
+        
+{{#if financials}}
+    <span class="centered"><h4>No Business, No Revenues, No Product Definitions</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.financials.min_date
+                value=redFlagParams._params.financials.min_date
+                class="form-control"
+            }}
+                    
+            <label class="control-label">To Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.financials.max_date
+                value=redFlagParams._params.financials.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Financial Measure </label>
+            {{
+                view "select"
+                content=financials_select_content
+                value=redFlagParams._params.financials.field
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Value </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.financials.value
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min=0
+                max=1000000
+                step=100
+                value=redFlagParams._params.financials.value
+                class="input-slider-dropdown"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Number of Filings Below Value </label>
+            {{
+                input
+                type="number"
+                value=redFlagParams._params.financials.threshold
+                class="form-control"
+            }}
+        </div>
+    </form>
+{{/if}}
+
+{{#if delinquency}}
+    <span class="centered"><h4>Lack of Disclosures (Late Filings) Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.delinquency.min_date
+                value=redFlagParams._params.delinquency.min_date
+                class="form-control"
+            }}
+            <label class="control-label">To Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.delinquency.max_date
+                value=redFlagParams._params.delinquency.max_date
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Form </label>
+            {{
+                view "select"
+                content=late_filings_content
+                value=redFlagParams._params.delinquency.form
+                optionValuePath="content.id"
+                optionLabelPath="content.name"
+                class="form-control"
+            }}
+        </div>
+        <div class="form-group">
+            <label class=" control-label"> Threshold </label>
+            {{
+                input type="number"
+                size=6
+                value=redFlagParams._params.delinquency.threshold
+                class="form-control"
+            }}
+        </div>
+    </form>
+{{/if}}
+
+{{#if suspensions}}
+    <span class="centered"><h4>Trading Suspensions Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">From Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.suspensions.min_date
+                value=redFlagParams._params.suspensions.min_date
+                class="form-control"
+            }}
+            <label class="control-label">To Date:</label>
+            {{
+                view "datepicker"
+                defaultDate=redFlagParams._params.suspensions.max_date
+                value=redFlagParams._params.suspensions.max_date
+                class="form-control"
+            }}
+        </div>
+
+        <div class="form-group">
+            <label class=" control-label"> Threshold </label>
+            {{
+                input type="number"
+                value=redFlagParams._params.suspensions.threshold
+                class="form-control"
+            }}
+        </div>
+    </form>
+{{/if}}
+
+{{#if otc_neighbors}}
+    <span class="centered"><h4>OTC Affiliates Definition</h4></span>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label"> Number of Neighbors </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.otc_neighbors.number_of_neighbors
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "range-slider"
+                min=0
+                max=100
+                values=redFlagParams._params.otc_neighbors.number_of_neighbors
+                class="range-slider"
+            }}
+        </div>
+        <div class="form-group">
+            <label class="control-label"> Minimum Percent OTC </label>
+            {{
+                input type="text"
+                value=redFlagParams._params.otc_neighbors.threshold
+                class="form-control input-text-hidden"
+            }}
+            {{
+                view "slider"
+                min=0
+                max=100
+                step=1
+                value=redFlagParams._params.otc_neighbors.threshold
+                class="input-slider-dropdown"
+            }}
+        </div>
+    </form>
+{{/if}}

@@ -1,0 +1,33 @@
+{{!-- app/templates/components/login-page.hbs --}}
+
+<form id="login-form" {{action 'authenticate' on='submit'}}>
+    <h1 class="splash-header"> Penny: Suspicious Activity Explorer </h1>
+
+    {{#if show_login}}
+        <div class="input-group margin-bottom-sm">
+            {{input value=identification placeholder='Enter Username' class='form-control' id="input-username"}}
+        </div>
+        <div class="input-group">
+            {{input value=password placeholder='Enter Password' class='form-control' id="input-password" type='password'}}
+        </div>
+        <br />
+        {{#unless session.isAuthenticated}}
+            <button id="auth-submit" type="submit" class="btn btn-default">Login</button>
+        {{else}}
+            <h3 class="splash-header"> Redirecting... </h3>
+        {{/unless}}
+    {{else}}
+        {{#unless session.isAuthenticated}}
+            <h3 class="splash-header"> Verifying Credentials... </h3>
+        {{else}}
+            <h3 class="splash-header"> Redirecting... </h3>
+        {{/unless}}
+    {{/if}}
+
+    {{#if errorMessage}}
+        <div class="alert alert-danger alert-danger-login">
+            <strong> Login failed: </strong> {{errorMessage}}
+        </div>
+    {{/if}}
+
+</form>

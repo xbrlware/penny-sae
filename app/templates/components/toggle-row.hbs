@@ -1,0 +1,18 @@
+{{!-- web/templates/components/togglerow.hbs --}}
+    <td>
+        {{#if value}}
+            <i class="fa fa-check-square-o fa-1x red-text"></i>
+        {{else}}
+            <i class="fa fa-square-o fa-1x greyed"></i>
+        {{/if}}
+    </td>
+
+    <td>
+        {{text}}
+    </td>
+    
+    {{#if showParameters}}
+        <td class="dropdown-button" {{action "showParameters" showParameters}}>
+            Customize
+        </td>
+    {{/if}}

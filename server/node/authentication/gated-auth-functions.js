@@ -2,19 +2,21 @@
 
 /*
  * Assuming that we're determining the user by parsing a plain-text user information string,
- * you can modify the specifics by 
- *   
+ * you can modify the specifics by
+
  * a) changing the name of the field in $PROJECT_HOME/config/master_config.json
  *    (property config.AUTHENTICATION.GATED_OPTS.name)
- *       
+
  * b) changing the parseUserInfo function in this file to grab the
  *    username + id from the new token format
  *
  */
 
-module.exports = function (passport, config, make_token) {
-  var _ = require('underscore')._,
-    LocalStrategy = require('passport-local');
+module.exports = function (passport, config, makeToken) {
+  var LocalStrategy = require('passport-local');
+
+  var logger = require('../logging');
+  logger.level = 'debug';
 
   function parseUserInfo (token, location) {
     return {
@@ -53,10 +55,10 @@ module.exports = function (passport, config, make_token) {
       req.body = {'username': '---', 'password': '---'};
 
       passport.authenticate('gated-signin', function (err, user) {
-        if (err) { console.log('err', err); return next(err); }
+        if (err) { logger.debug(err); return next(err); }
         if (user) {
           res.send({
-            token: make_token({
+            token: makeToken({
               'username': user.username,
               'user_id': user.id,
               'ip': req.connection.remoteAddress,

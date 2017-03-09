@@ -1,0 +1,37 @@
+{{!-- app/templates/components/hit-component.hbs --}}
+<div {{action 'getDetails' h.cik}}>
+    <div class="list-group-item seventy square">
+        <div class="hit-text-wrapper">
+            <h5 class="list-group-item-heading">
+                {{h.name}}
+            </h5>
+        </div>
+        <div class="row-fluid hit-badge-wrapper">
+            <div id="badge-header">
+                {{#unless h.redFlags.possible}}
+                    <p class="lg-text">
+                        Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
+                    </p>
+                {{else}}
+                    Red Flags : {{h.redFlags.total}}/{{h.redFlags.possible}}
+                {{/unless}}
+                {{!-- (*) This could be cleaned up --}}
+                {{#if h.__topic__.doc_count}}
+                    -- Mentions : {{h.__topic__.doc_count}}
+                {{/if}}
+            </div>
+            <br />
+            {{hit-text redFlags=h.redFlags.financials type="financials" first_column=true }}
+            {{hit-text redFlags=h.redFlags.symbology type="symbology" first_column=true }}
+            {{hit-text redFlags=h.redFlags.suspensions type="suspensions" first_column=true }}
+            {{hit-text redFlags=h.redFlags.delinquency type="delinquency" first_column=true }}
+            {{hit-text redFlags=h.redFlags.otc_neighbors type="otcNeighbors" first_column=true }}
+            {{hit-text redFlags=h.redFlags.pv type="pv" first_column=false }}
+            {{hit-text redFlags=h.redFlags.crowdsar type="crowdsar" first_column=false }}
+        </div>
+    </div>
+</div>
+    {{!--
+        <table id="search_result_{{h.cik}}" class="display"></table>
+        {{search-results cik=h.cik}}
+        --}}

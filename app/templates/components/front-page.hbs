@@ -1,0 +1,97 @@
+{{!-- app/templates/components/frontpage.hbs --}}
+
+<div class="frontpage-align">
+    <h2 class="sae-head"> Penny: Suspicious Activity Explorer </h2>
+
+    <nav class="navbar yamm navbar-fixed-top" role="navigation">
+        {{#if session.isAuthenticated}}
+            <a {{action 'invalidateSession'}} id="btn-logout" class="btn glyphicon glyphicon-off btn-link pull-right"></a>
+        {{/if}}
+    </nav>
+
+    <div>
+        <h3 class="h3-small header-top-padding"> - Search By Company Name or Ticker - </h3>
+        {{focus-input class="input-fat centered" insert-newline="companySearch"}}
+    </div>
+            
+    <div class="frontpage-table">
+        <h3 class="h3-small"> - Search By Red Flags - </h3>
+        <table class="table hoverTable front-page">
+            <tbody>
+
+            {{
+                toggle-row
+                text="Company has no business, no revenues and no product."
+                value=searchCompanies.redFlagParams._toggles.financials
+            }}
+
+            {{
+                toggle-row
+                text="Company undergoes frequent material changes in business strategy or its line of business."
+                value=searchCompanies.redFlagParams._toggles.symbology
+            }}
+
+            {{
+                toggle-row
+                text="Officers or insiders of the issuer are associated with multiple penny stock issuers."
+                value=searchCompanies.redFlagParams._toggles.otcNeighbors
+            }}
+
+            {{
+                toggle-row
+                text="Company has been the subject of a prior trading suspension."
+                value=searchCompanies.redFlagParams._toggles.suspensions
+            }}
+
+            {{
+                toggle-row
+                text="Company has not made disclosures in SEC or other regulatory filings."
+                value=searchCompanies.redFlagParams._toggles.delinquency
+            }}
+
+            {{!--
+            <tr class="no-hover">
+                <td colspan="3">
+                    <div class="under-construction">Currently Under Development</div>
+                </td>
+            </tr>
+                        
+            {{
+                disabled-toggle-row
+                text = "Company has experienced frequent or continuous changes in its business structure."
+            }}
+         
+            {{
+                disabled-toggle-row
+                text = "Officers or insiders of the issuer have a history of securities violations."
+            }}
+            --}}
+
+            <tr class="no-hover" id="hovertable-bottom-border"><td></td><td></td></tr>
+            <tr class="no-hover">
+                <td></td>
+                <td><h3><font color="red"> Additional Red Flags </font></h3></td>
+            </tr>
+{{!--
+            {{
+                toggle-row
+                text = "Company stock has experienced recent price and/or volume anomalies."
+                value = searchCompanies.redFlagParams._toggles.pv
+            }}
+--}}
+            {{
+                toggle-row
+                text="Investors have made allegations about malfeasance of the company on social media."
+                value=searchCompanies.redFlagParams._toggles.crowdsar
+            }}
+                <tr class="no-hover">
+                    <td colspan="2">
+                        <button class="btn btn-success btn-submit-frontpage" {{action "filterSearch"}}>
+                            Find
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+</div>

@@ -1,0 +1,13 @@
+/* droid-sans-mono-regular - latin */
+@font-face {
+    font-family: 'Droid Sans Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local('Droid Sans Mono'), local('DroidSansMono'),
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.woff') format('woff'), /* Modern Browsers */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('fonts/droid-sans-mono-v7-latin/droid-sans-mono-v7-latin-regular.svg#DroidSansMono') format('svg'); /* Legacy iOS */
+}

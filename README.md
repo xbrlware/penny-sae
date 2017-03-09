@@ -1,51 +1,64 @@
 # Penny: Suspicious Activity Explorer
 
+Web app for exploring suspicious activity in penny stocks.  Incorporates EDGAR, XBRL, message board, press release and tout data.
+
+## Prerequisites
+
+You will need the following things properly installed on your computer.
+
+* [Git](https://git-scm.com/)
+* [Node.js](https://nodejs.org/) (with NPM)
+* [Bower](https://bower.io/)
+* [Ember CLI](https://ember-cli.com/)
+* [PhantomJS](http://phantomjs.org/)
+
 ## Data
 
 Code to construct the Elasticsearch indices referenced by this app is contained in 
 
     https://github.com/gophronesis/ernest
+    
+## Installation
 
-## Front-end Quick Start
+Assuming that your elasticsearch indexes are up and running:
 
-Assuming you have an Elasticsearch instance full of data:
+* `git clone <repository-url>` this repository
+* `cd penny-sae`
+* `npm install`
+* `bower install`
 
-```bash
+* `cd $PROJECT_ROOT/server/node`
+* `npm install`
 
-# Install Dependencies
-cd $PROJECT_ROOT
-npm install
+### Configuration
 
-cd $PROJECT_ROOT/server/node
-npm install
+There are three configuration files.
 
-# Set up server configuration files (eventually turn into Grunt task)
-cd $PROJECT_ROOT/config
-node configure.js
+UI configuration:
+* `$EDITOR app/user-config/global-config.js`
 
-# Compile static resources 
-cd $PROJECT_ROOT
-./grunt-all.sh
+Server configuration has two files:
+* `$EDITOR server/node/global-config.js`
+* `$EDITOR server/node/server-config.js`
 
-# Launch app!
-cd $PROJECT_ROOT/server/node
-node server.js
+### Code Generators
 
-```
+Make use of the many generators for code, try `ember help generate` for more details
 
-## Grunt Tasks
+### Running Tests
 
-```
-devApp - compiles the nodesec specific js into one file without uglifying it.
+* `ember test`
+* `ember test --server`
 
-devLib - compiles all libraries (underscore, handlebars, etc.) into one file with uglifying it. It also runs the task cmp which compiles templates and adds them to the libs.js.
+### Building
 
-css    - compiles, minifies, and blesses all css files.
-cmp    - compiles all handlebars files.
+* `ember build` (development)
+* `ember build --environment production` (production)
 
-prodApp and prodLib do the same thing as devApp/devLib, but they also uglify the files. These have not been tested yet, so use at your own risk.
+## Further Reading / Useful Links
 
-wth    - starts grunt-watch, but you must customize this to handle your tasks.
-```
-
-All file locations and variables available to grunt tasks are located in ./grunt.config.json.
+* [ember.js](http://emberjs.com/)
+* [ember-cli](https://ember-cli.com/)
+* Development Browser Extensions
+  * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
+  * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)

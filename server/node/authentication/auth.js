@@ -3,14 +3,15 @@
 module.exports = function (app, config) {
   // ***
   // Setup
-  var passport = require('passport'),
-    morgan = require('morgan'),
-    cookieParser = require('cookie-parser'),
-    methodOverride = require('method-override'),
-    session = require('express-session'),
-    jwt = require('jwt-simple'),
-    moment = require('moment'),
-    _ = require('underscore')._;
+  var passport = require('passport');
+  var cookieParser = require('cookie-parser');
+  var methodOverride = require('method-override');
+  var jwt = require('jwt-simple');
+  var moment = require('moment');
+  var _ = require('underscore')._;
+
+  var logger = require('../logging');
+  logger.level = 'debug';
 
   app.use(cookieParser());
   app.use(methodOverride());
@@ -18,22 +19,20 @@ module.exports = function (app, config) {
   app.use(passport.session());
 
   passport.serializeUser(function (user, done) {
-    console.log('serializing ' + user.username);
     done(null, user);
   });
   passport.deserializeUser(function (obj, done) {
-    console.log('deserializing ' + obj);
     done(null, obj);
   });
 
   // ***
   // Logging in
-  function make_token (params) {
-    var timeout_date = moment().add(config.TIMEOUT_AMOUNT, config.TIMEOUT_UNITS).valueOf();
+  function makeToken (params) {
+    var timeoutDate = moment().add(config.TIMEOUT_AMOUNT, config.TIMEOUT_UNITS).valueOf();
     // <>
     // If using `gated` authentication, we set the timeout date to very far away
     if (config.AUTHENTICATION.STRATEGY === 'gated') {
-      timeout_date = moment().add(999, 'days').valueOf();
+      timeoutDate = moment().add(999, 'days').valueOf();
     }
     // <>
 
@@ -42,22 +41,22 @@ module.exports = function (app, config) {
       ip: params.ip,
       user_id: params.user_id,
       isAdmin: params.isAdmin,
-      exp: timeout_date
+      exp: timeoutDate
     }, app.get('jwtTokenSecret'));
   }
   // Set authentication strategy (either `ldap` or `local`)
-  var auth_strategies = require('./auth-strategies')(passport, make_token, config);
+  var authStrategies = require('./auth-strategies')(passport, makeToken, config);
 
-  auth_strategies[config.AUTHENTICATION.STRATEGY].set_strategy();
+  authStrategies[config.AUTHENTICATION.STRATEGY].set_strategy();
 
   app.post('/login', function (req, res, next) {
-    console.log('trying to login');
-    auth_strategies[config.AUTHENTICATION.STRATEGY].authenticate(req, res, next);
+    logger.info('logging in');
+    authStrategies[config.AUTHENTICATION.STRATEGY].authenticate(req, res, next);
   });
 
   // ***
   // Verifying that user is logged in
-  function check_token (req, res, next) {
+  function checkToken (req, res, next) {
     req.user = undefined;
     req.user_id = undefined;
     req.isAdmin = undefined;
@@ -67,14 +66,14 @@ module.exports = function (app, config) {
     if (token) {
       try {
         var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-        console.warn('decoded.exp --> ', decoded.exp);
+        logger.info('decoded.exp' + decoded.exp);
 
         if (decoded.exp <= Date.now()) {
-          console.log(new Date(decoded.exp), '-- token expires');
-          console.log('token has expired...');
+          logger.info(new Date(decoded.exp), '-- token expires');
+          logger.info('token has expired...');
           return next();
-        } else if (decoded.ip != req.connection.remoteAddress) {
-          console.log('ip address mismatch');
+        } else if (decoded.ip !== req.connection.remoteAddress) {
+          logger.debug('ip address mismatch');
           return next();
         } else {
           req.user = decoded.iss;
@@ -82,9 +81,9 @@ module.exports = function (app, config) {
           req.isAdmin = decoded.isAdmin;
 
           if (Date.now() >= (decoded.exp - config.TIMEOUT_WARNING_WINDOW)) {
-            console.log('>>> about to expire', (decoded.exp - Date.now()) / 1000, ' seconds');
+            logger.info('>>> about to expire', (decoded.exp - Date.now()) / 1000, ' seconds');
             res.send({
-              new_token: make_token({
+              new_token: makeToken({
                 'username': req.user,
                 'ip': req.ip,
                 'user_id': req.user_id,
@@ -96,11 +95,11 @@ module.exports = function (app, config) {
           }
         }
       } catch (err) {
-        console.log('errror decoding', err);
+        logger.debug('errror decoding', err);
         return next();
       }
     } else {
-      console.log('no token on header!');
+      logger.debug('no token on header!');
       return next();
     }
   }
@@ -115,7 +114,7 @@ module.exports = function (app, config) {
     res.status(401).send('Forbidden!');
   }
 
-  app.get('/check_token', check_token, ensureAuthenticated, function (req, res, next) {
+  app.get('/check_token', checkToken, ensureAuthenticated, function (req, res, next) {
     res.send({'authenticated': true});
   });
 
@@ -129,11 +128,11 @@ module.exports = function (app, config) {
   });
 
   if (config.AUTHENTICATION.ENABLED) {
-    app.get(/^\/[^-]/, check_token, ensureAuthenticated);
-    app.post(/^\/[^-]/, check_token, ensureAuthenticated);
+    app.get(/^\/[^-]/, checkToken, ensureAuthenticated);
+    app.post(/^\/[^-]/, checkToken, ensureAuthenticated);
 
-    var admin_required = ['/check_er', '/fetch_history', '/post_update'];
-    _.map(admin_required, function (path) {
+    var adminRequired = ['/check_er', '/fetch_history', '/post_update'];
+    _.map(adminRequired, function (path) {
       app.post(path, ensureAdmin);
     });
   }

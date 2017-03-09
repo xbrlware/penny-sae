@@ -1,0 +1,37 @@
+{{!-- app/templates/components/detail-component.hbs --}}
+
+<div class="container hundred-width">
+    <div class="row-fluid">
+        <nav class="navbar navbar-border">
+            <div class="col-sm-6">
+                <h1 class="zero-top-margin"> {{companyDetails.name}} </h1>
+            </div>
+            <div class="col-sm-2">
+                <span class="centered">
+                    <h4> {{companyDetails.ticker}} </h4>
+                </span>
+            </div>
+            <div class="col-sm-2">
+                <span class="centered">
+                    <h4 class="greyed">  CIK: {{companyDetails.cik}} </h4>
+                </span>
+            </div>
+            <br />
+            <ul class="nav navbar-nav" id="view-selector">
+                <li>{{#link-to 'sidebar.detail.board'     }} Price/Volume + Message Board {{/link-to}}</li>
+                <li>{{#link-to 'sidebar.detail.topnews'}} NewsWire {{/link-to}}</li>
+                    <li>{{#link-to 'sidebar.detail.financials'}} Financials {{/link-to}}</li>
+                    <li>{{#link-to 'sidebar.detail.delinquency'}} Late <br /> Filings {{/link-to}}</li>
+                <li>{{#link-to 'sidebar.detail.previousreg'}} Regulatory <br /> Actions {{/link-to}}</li>
+                <li>{{#link-to 'sidebar.detail.associates'}} Network <br /> Analysis {{/link-to}}</li>
+{{!--
+                <li>{{#link-to 'promotions'  }} Stock Promotions                         {{/link-to}}</li>
+                <li>{{#link-to 'leadership'  }} Leadership                               {{/link-to}}</li>
+--}}
+            </ul>
+        </nav>
+    </div>
+</div>
+<div class="col-sm-12 col-sm-12-no-padding">
+    {{outlet}}
+</div>

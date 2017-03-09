@@ -1,0 +1,36 @@
+{{!-- web/templates/sidebar.hbs --}}
+
+<div class="col-sm-4 no-padding-leftright">
+    {{#unless isLoading}}
+        {{#if from}}
+            Results: Page {{page}} 
+            <br />
+        {{/if}}
+                
+        {{#unless model.total_hits}}
+            No companies in our database match your search criteria.
+        {{else}}
+            {{model.total_hits}} companies in our database match your search criteria. (Query took {{query_time}}s)
+            
+            {{#if searchTopic}}
+                {{#link-to 'summary'}}
+                    <div class="list-group-item thirty square" style='border-color:red; margin-bottom:5px; text-align:center;'>
+                        Results Summary
+                    </div>
+                {{/link-to}}
+            {{/if}}
+            
+            <div class="list-group square">
+                {{#each h in model.hits}}
+                    {{#if h.name}}
+                        {{view "hit" h=h}}
+                    {{/if}}
+                {{/each}}
+            </div>
+        {{/unless}}
+    {{/unless}}
+</div>
+
+<div class="col-sm-8 outlet-min-width">
+    {{outlet}}
+</div>

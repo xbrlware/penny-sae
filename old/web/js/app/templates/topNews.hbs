@@ -1,0 +1,41 @@
+{{!-- web/templates/topNews.hbs --}}
+<div class="col-sm-12">
+	<div class="col-sm-12 search-input">
+		<div class="input-group" style="width: 100%;">
+			<div>
+				{{
+				focus-input
+				class="form-control"
+				placeholder="- Search articles -"
+				id="search-posts"
+				insert-newline="newsSearch"
+				}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-sm-12">
+        <div class="col-sm-4" id="news-posts-cell">
+            <div class="headline-div">
+                <ul class="dropdown-menu-right dropdown-menu-omx" role="menu">
+                    {{#if model}}
+                        {{#each release in model}}
+                            <li class="li-omx">
+                                {{#link-to "omxNews" release.id}}
+                                    {{release.date}} - {{release.headline}}
+                                {{/link-to}}
+                            </li>
+                        {{/each}}
+                    {{else}}
+                        <li class="li-omx">
+                            No Results Returned
+                        </li>
+                    {{/if}}
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-8 article-omx">
+            {{outlet}}
+        </div>
+</div>

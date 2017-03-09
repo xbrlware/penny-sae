@@ -1,0 +1,23 @@
+{
+  "name": "Penny-SAE-root",
+  "description": "Penny-SAE grunt dependencies",
+  "main": "Gruntfile.js",
+  "authors": [
+    "Phronesis LLC"
+  ],
+  "license": "AVL2",
+  "keywords": [
+    "development"
+  ],
+  "homepage": "https://github.com/gophronesis/penny-sae",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ember": "1.13.13"
+  }
+}

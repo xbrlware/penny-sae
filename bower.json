@@ -1,0 +1,14 @@
+{
+  "name": "penny-sae",
+  "dependencies": {
+    "bootstrap-sass": "3.3.5",
+    "font-awesome": "^4.7.0",
+    "underscore": "^1.8.3",
+    "datatables.net": "^2.1.1",
+    "datatables.net-bs": "^2.1.1",
+    "d3": "3",
+    "d3-tip": "0.6",
+    "jquery-ui": "^1.12.1",
+    "normalize-scss": "normalize.scss#^6.0.0"
+  }
+}

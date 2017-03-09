@@ -1,0 +1,12 @@
+{{!-- web/templates/delinquency.hbs --}}
+
+{{!-- Late Filing History --}}
+<span class="centered">
+    {{#if model}}
+        <h3>Late Filings</h3>
+        <table id="delinquency-table" class="display"></table>
+        {{view "delinquency"}}
+    {{else}}
+        <h4> This company has not provided it's financials the the SEC's XBRL format. </h4>
+    {{/if}}
+</span>

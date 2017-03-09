@@ -1,0 +1,11 @@
+{{!-- app/templates/sidebar/detail/previousreg.hbs --}}
+
+<span class="centered">
+    <h3>Regulatory Actions</h3>
+    {{#if haveRecords}}
+        <table class="table table-striped table-bordered"  id="previous-reg-table" class="display"></table>
+        {{regulatory-actions tableCik=model}}
+    {{else}}
+        <h4> This company has never been the subject of an SEC trading suspension. </h4>
+    {{/if}}
+</span>

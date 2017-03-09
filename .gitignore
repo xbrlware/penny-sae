@@ -1,14 +1,40 @@
-penny.xcworkspace/
-server/node/node_modules/
-web/js/dist/
-web/templates/dist/
-web/css/style.less.css
-web/css/dist/
-node_modules/
-server/node/*config.json
-web/config/*
-web/templates/dist/
-web/config/global-config.js
-web/config/local-config.js
-web/css/style.less.css
-web/css/style.less.css
+old/*.swp
+old/tmux.sh
+old/server/es_scripts/ernest.js
+old/npm-debug.log
+old/*DS_Store
+old/penny.xcworkspace/
+old/server/node/node_modules/
+old/web/js/dist/
+old/web/templates/dist/
+old/web/css/style.less.css
+old/web/css/dist/concat.css
+old/web/css/dist/nodesec-blessed.min.css
+old/web/css/dist/nodesec.min.css
+old/node_modules/
+old/server/node/*config.json
+old/web/config/*
+old/web/templates/dist/
+old/web/config/global-config.js
+old/web/config/local-config.js
+old/web/css/style.less.css
+old/bower_components/*
+tmux.sh
+
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+
+# dependencies
+/node_modules
+/bower_components
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log*
+testem.log

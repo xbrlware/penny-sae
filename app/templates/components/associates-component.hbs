@@ -1,0 +1,48 @@
+{{!-- web/templates/associates.hbs --}}
+
+<span class="centered">
+    <h3>
+        {{#if isLoading}}
+            <span class="centered"> - Loading - </span>
+        {{else}}
+            Known Associates
+        {{/if}}
+        
+        {{#if noData}}
+            <span class="centered"> - No network data available - </span>
+        {{/if}}
+    </h3>
+</span>
+
+<div class="network-graph"></div>
+    
+{{#if noData}}
+{{else}}
+            
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div id='toggle-button'>
+                        <button type='button' {{action 'toggleTerminal'}}>
+                            {{#if terminalToggle}} 
+                                Show Terminal Nodes
+                            {{else}}
+                                Hide Terminal Nodes
+                            {{/if}}
+                        </button>
+                    </div>
+                </td>
+                <td><span>&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+                <td><b>Red Flags:</b></td>
+                <td><img src='/img/green_person.png' height='20px'> = less than 1</td>
+                <td><img src='/img/yellow_person.png' height='20px'> = 1 - 1.99</td>
+                <td><img src='/img/orange_person.png' height='20px'> = 2 - 3.99</td>
+                <td><img src='/img/red_person.png' height='20px'> = more than 4</td>
+            </tr>
+        </tbody>
+    </table>
+{{/if}}
+
+<table class="table table-striped table-bordered" id="associates-table" class="display"></table>
+{{ner-component rGraphEdges=rGraphEdges}}

@@ -1,16 +1,21 @@
-function delinquency (data, params) {
-  var n = 0;
+function delinquency (doc, params, key) {
+  var data = doc[key + '_stringified'].values;
   var have = data != null;
+  var n = 0;
+
   if (have) {
     for (i = 0; i < data.length; i++) {
-      var is_late = data[i].is_late == true;
-      var form = data[i].form == params.form;
-      n += is_late & form & time_filter(data[i].deadline, params.min_date, params.max_date);
+      var pdata = JSON.parse(data[i]);
+      var tf = time_filter(pdata.deadline, params.min_date, params.max_date);
+      var form = pdata.form == params.form;
+      var is_late = pdata.is_late == true;
+      n += is_late & form & tf;
     }
   }
+
   return {
     'value': n,
-    'is_flag': n > 0,
+    'is_flag': n >= params.threshold,
     'have': have
   };
 }
