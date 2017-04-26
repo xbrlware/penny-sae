@@ -53,8 +53,8 @@ module.exports = function (defaults) {
     destDir: 'assets/fonts/droid-sans-mono-v7-latin'
   });
 
-  app.import('bower_components/datatables.net/js/jquery.dataTables.js');
-  app.import('bower_components/datatables.net-bs/js/dataTables.bootstrap.js');
+  app.import('bower_components/datatables/media/js/jquery.dataTables.js');
+  app.import('bower_components/datatables/media/js/dataTables.bootstrap.js');
 
   app.import('bower_components/d3/d3.js');
   app.import('bower_components/d3-tip/index.js');

@@ -27,6 +27,11 @@ Assuming that your elasticsearch indexes are up and running:
 * `npm install`
 * `bower install`
 
+For development:
+    * `ember build`
+For production:
+    * `ember build --environment production`
+
 * `cd $PROJECT_ROOT/server/node`
 * `npm install`
 
