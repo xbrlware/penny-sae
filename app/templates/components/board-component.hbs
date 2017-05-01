@@ -7,9 +7,9 @@
 {{/if }}
 
 {{#if isData}}
-    <div class="col-xs-12" id="techan-wrapper">
+    <div class="col-md-12" id="techan-wrapper">
         <div class="row">
-            <div class="col-xs-6 col-xs-offset-1 btn-group" id="bg">
+            <div class="col-md-6 col-md-offset-1 btn-group" id="bg">
                 {{
                 filter-button
                 action="toggleVolume"
@@ -53,14 +53,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-5" id="tl-posts-volume"></div>
-            <div class="col-xs-1"></div>
-            <div class="col-xs-5" id="pv-price-chart"></div>
+            <div class="col-md-5" id="tl-posts-volume"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5" id="pv-price-chart"></div>
         </div>
         <div class="row">
-            <div class="col-xs-5" id="tl-brush-chart"></div>
-            <div class="col-xs-1"></div>
-            <div class="col-xs-5" id="pv-volume-chart"></div>
+            <div class="col-md-5" id="tl-brush-chart"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5" id="pv-volume-chart"></div>
         </div>
     </div>
 {{else}}
@@ -69,16 +69,16 @@
     </span>
 {{/if}}
 
-<div class="col-xs-12 charts-wrapper">
-    <div class="col-xs-6" id="gauge-timeline-cell">
+<div class="col-md-12 charts-wrapper">
+    <div class="col-md-6" id="gauge-timeline-cell">
         {{#if timelineLoading}}
             <div class="data-progress centered">
                 <i class="fa fa-spinner fa-spin" id="spinner"></i>
                 <span class="loader-text" >Loading Timeline Data...</span>
             </div>
         {{else}}
-            <div class="col-xs-12 timeline-head">
-                <div class="col-xs-3 number-posters">
+            <div class="col-md-12 timeline-head">
+                <div class="col-md-3 number-posters">
                     {{
                     focus-input
                     class="form-control"
@@ -87,8 +87,8 @@
                     insert-newline="numPosters"
                     }}
                 </div>
-                <div class="col-xs-9 filter-button">
-                    <div class="col-xs-12 btn-group top-buttons">
+                <div class="col-md-9 filter-button">
+                    <div class="col-md-12 btn-group top-buttons">
                         {{
                         filter-button
                         action="ascdesc"
@@ -130,7 +130,7 @@
                         title="neg"
                         }}
                     </div>
-                    <div class="col-xs-12 btn-group bottom-buttons">
+                    <div class="col-md-12 btn-group bottom-buttons">
                         {{
                         filter-button
                         action="ascdesc"
@@ -174,14 +174,14 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 timeline-container">
-                <ul class="col-xs-12 timeline-panel" id="timeline">
+            <div class="col-md-12 timeline-container">
+                <ul class="col-md-12 timeline-panel" id="timeline">
                     {{#each topX as |t|}}
-                        <li>    
-                            <div class="col-xs-4">
+                        <li class="col-md-12">    
+                            <div class="col-md-4">
                                 <div id="gauge-{{t}}" class="gauge chart"></div>
                             </div>
-                            <div class="col-xs-8 ts chart" id="ts-{{t}}">
+                            <div class="col-md-8 ts chart" id="ts-{{t}}">
                                 <div class="timeline-info">                        
                                     <span class="title" {{action "topXClicked" t}}></span>
                                     <div class="count-wrapper pull-right during" {{action "sortUsers" "doc"}}></div>
@@ -193,7 +193,7 @@
             </div>
         {{/if}}
     </div>
-    <div class="col-xs-6" id="forum-posts-cell">
+    <div class="col-md-6" id="forum-posts-cell">
         {{#if isLoading}}
         {{else}}
             <div class="search-input">

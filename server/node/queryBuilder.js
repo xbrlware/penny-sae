@@ -1,3 +1,8 @@
+// server/node/queryBuilder.js
+
+/* global require, module */
+
+
 var _ = require('underscore')._;
 
 module.exports = function (config) {

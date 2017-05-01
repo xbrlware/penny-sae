@@ -1,4 +1,5 @@
 // server/node/routes.js
+/* global require, module */
 
 module.exports = function (app, config, client) {
   var _ = require('underscore')._;
@@ -25,11 +26,11 @@ module.exports = function (app, config, client) {
   var redflagLabel_ = {
     'financials': function (params) { return 'Low ' + prettify(params.field); },
     'symbology': function (params) { return prettify(params.field) + ' Change'; },
-    'suspensions': function (params) { return 'Trading Suspensions'; },
-    'delinquency': function (params) { return 'Late Filings'; },
-    'otc_neighbors': function (params) { return 'OTC Neighbors'; },
+    'suspensions': function () { return 'Trading Suspensions'; },
+    'delinquency': function () { return 'Late Filings'; },
+    'otc_neighbors': function () { return 'OTC Neighbors'; },
     //    "pv"            : function(params) {return 'Price / Volume' },
-    'crowdsar': function (params) { return 'Forum Activity'; }
+    'crowdsar': function () { return 'Forum Activity'; }
   };
 
   function redflagLabel (redFlags, redFlagParams) {
